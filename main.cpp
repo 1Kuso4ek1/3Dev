@@ -1,3 +1,7 @@
+/*
+This file is an example of using the engine.
+https://vk.com/idngames
+*/
 //include everything we need
 #include "Texture.h"
 #include "Camera.h"
