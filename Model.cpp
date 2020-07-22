@@ -44,7 +44,7 @@ bool Model::Load(std::string filename, std::string texture)
 bool Model::Load(std::string filename)
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast);
+	const aiScene* scene = importer.ReadFile(filename, 0);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
 	{
 		std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
