@@ -51,7 +51,7 @@ bool Model::Load(std::string filename, std::string texture)
 bool Model::Load(std::string filename)
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(filename, 0);
+	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
 	{
 		std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
