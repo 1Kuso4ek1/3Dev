@@ -1,5 +1,12 @@
 #include "Model.h"
 
+Model::~Model()
+{
+	delete[] vertexArray;
+	delete[] normalArray;
+	delete[] uvArray;
+}
+
 bool Model::Load(std::string filename, std::string texture)
 {
 	ModelTexture = LoadTexture(texture);

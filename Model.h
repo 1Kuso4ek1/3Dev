@@ -9,6 +9,7 @@ private:
 	int numVerts;
 	GLuint ModelTexture;
 public:
+	~Model();
 	bool Load(std::string filename, std::string texture); //Load with texture
 	bool Load(std::string filename); //Load without texture
 	void Draw(bool tex = true); //Draw with texture, or if bool tex = false, draw without texture
