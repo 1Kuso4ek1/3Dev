@@ -1,7 +1,3 @@
-/*
-This file is an example of using the engine.
-https://vk.com/idngames
-*/
 //include everything we need
 #include "Texture.h"
 #include "Camera.h"
@@ -49,8 +45,8 @@ int main() {
 	//Creating camera. x = 15 y = 7 z = 15 speed = 4
 	Camera cam(15, 7, 15, 4);
 	/////////////////////////////////////////////////
-	//Model cyborg; //Cyborg model
-	//cyborg.Load("cyborg.obj", "cyborg_diffuse.png"); //Loading static model
+	Model cyborg; //Cyborg model
+	cyborg.Load("cyborg.obj", "cyborg_diffuse.png"); //Loading static model
 	Animation cyborg_anim(20);
 	cyborg_anim.LoadAnimation("Animation test/cyborg");
 	//Settings for lighting
@@ -67,7 +63,6 @@ int main() {
 	l.SetParameters(dif, GL_DIFFUSE); //Diffuse
 	//////////////////
 	sf::Clock clock;
-	int frame = 1;
 	//Main cycle
 	while (w.isOpen()) {
 		sf::Event event;
@@ -98,12 +93,12 @@ int main() {
 		l.SetParameters(pos, GL_POSITION);
 		
 		glTranslatef(10, 0, 10);
-		if (frame >= 19) {
-			frame = 1;
-		}
-		frame++;
-		cyborg_anim.DrawAnimation(frame, cyborg_texture); //Drawing frame
+		cyborg_anim.DrawAnimation(0.5, cyborg_texture); //Drawing frame
 		glTranslatef(-10, -0, -10);
+
+		glTranslatef(5, 0, 10);
+		cyborg.Draw(); //Drawing static model
+		glTranslatef(-5, -0, -10);
 
 		glTranslatef(cam.x, cam.y, cam.z);
 		RenderSkybox(skybox, 1000); //Drawing skybox

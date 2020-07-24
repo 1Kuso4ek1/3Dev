@@ -30,12 +30,20 @@ void Animation::LoadAnimation(std::string filename)
 	}
 }
 
-void Animation::DrawAnimation(int frame, GLuint texture)
+void Animation::DrawAnimation(float speed, GLuint texture)
 {
-	m[frame].Draw(texture);
+	if(current_frame >= frames - 1) {
+		current_frame = 1;
+	}
+	m[(int)current_frame].Draw(texture);
+	current_frame += speed;
 }
 
-void Animation::DrawAnimation(int frame)
+void Animation::DrawAnimation(float speed)
 {
-	m[frame].Draw(false);
+	if (current_frame >= frames - 1) {
+		current_frame = 1;
+	}
+	m[(int)current_frame].Draw(false);
+	current_frame += speed;
 }
