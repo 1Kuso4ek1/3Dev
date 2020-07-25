@@ -6,6 +6,6 @@ private:
 	GLenum lightNum;
 public:
 	Light(GLenum lightNum);
-	void SetParameters(float parameters[4], GLenum type);
+	void SetParameters(float parameters[], GLenum type);
 };
 

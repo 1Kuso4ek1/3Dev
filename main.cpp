@@ -42,8 +42,8 @@ int main() {
 	skybox[4] = LoadTexture("resources/skybox3/skybox_bottom.bmp");
 	skybox[5] = LoadTexture("resources/skybox3/skybox_top.bmp");
 	///////////////////////
-	//Creating camera. x = 15 y = 7 z = 15 speed = 4
-	Camera cam(15, 7, 15, 4);
+	//Creating camera. x = 15 y = 7 z = 15 speed = 1
+	Camera cam(15, 7, 15, 1);
 	/////////////////////////////////////////////////
 	Model cyborg; //Cyborg model
 	cyborg.Load("cyborg.obj", "cyborg_diffuse.png"); //Loading static model
@@ -51,19 +51,26 @@ int main() {
 	cyborg_anim.LoadAnimation("Animation test/cyborg");
 	//Settings for lighting
 	float amb[4] = { 2, 2, 2, 1 }; //Ambient
-	float dif[4] = { 3, 3, 3, 1 }; //Diffuse
-	float pos[4] = { 1000, 500, 1000, 1 }; //Position
+	float dif[4] = { 2, 2, 2, 1 }; //Diffuse
+	float pos[4] = { 0, 0, 0, 1 }; //Position
+	float spec[4] = { 2, 2, 2, 1 }; //Specular
+	float c[1] = { 0.2 }; //Linear attenuation
+
 	///////////////////////
-	//Creating light
+	//Creating lights
 	Light l(GL_LIGHT0);
+	Light l1(GL_LIGHT1);
 	////////////////
 	//Light parameters
 	l.SetParameters(pos, GL_POSITION); //Position
-	l.SetParameters(amb, GL_AMBIENT); //Ambient
+	l.SetParameters(spec, GL_SPECULAR); //Specular
+	l.SetParameters(c, GL_LINEAR_ATTENUATION); //Linear attenuation
+	l1.SetParameters(amb, GL_AMBIENT); //Ambient
 	l.SetParameters(dif, GL_DIFFUSE); //Diffuse
 	//////////////////
 	sf::Clock clock;
 	//Main cycle
+	float xx = 0, yy = 0, zz = 0;
 	while (w.isOpen()) {
 		sf::Event event;
 		while (w.pollEvent(event)) {
@@ -79,7 +86,15 @@ int main() {
 		clock.restart();
 		time = time / 40;
 		if (time > 5) time = 5;
-
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) //If pressed Q, move the light to the place of the camera
+		{
+			xx = cam.x;
+			yy = cam.y;
+			zz = cam.z;
+		}
+		glTranslatef(xx, yy, zz);
+		l.SetParameters(pos, GL_POSITION); //put the light in place
+		glTranslatef(-xx, -yy, -zz);
 		//Camera controls
 		cam.Move(time);
 		cam.Mouse(w.getPosition().x, w.getPosition().y, 1366, 768);
@@ -89,8 +104,6 @@ int main() {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		cam.Look();
-
-		l.SetParameters(pos, GL_POSITION);
 		
 		glTranslatef(10, 0, 10);
 		cyborg_anim.DrawAnimation(0.5, cyborg_texture); //Drawing frame

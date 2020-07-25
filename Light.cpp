@@ -4,7 +4,7 @@ Light::Light(GLenum lightNum) : lightNum(lightNum) {
 	glEnable(lightNum);
 }
 
-void Light::SetParameters(float parameters[4], GLenum type)
+void Light::SetParameters(float parameters[], GLenum type)
 {
 	glLightfv(lightNum, type, parameters);
 }
