@@ -1,7 +1,7 @@
 # 3Dev
 3Dev is a simple 3D engine. It uses OpenGL, SFML, Assimp.
 
-# Features:
+## Features:
 
 Loading textures
 
@@ -17,5 +17,5 @@ Drawing simple meshes
 
 Loading shaders
 
-# Animation
+## Animation
 ![](animation.gif)
