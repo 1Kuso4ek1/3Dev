@@ -1,6 +1,6 @@
 # 3Dev
-3Dev - простейший движок для 3D игр, написанный на C++ с библиотеками SFML, OpenGL, Assimp. 
+Simple 3D game engine, that uses SFML, OpenGL, Assimp. 
 ## 3Dev Editor
-В разработке находится редактор, с помощью которого можно будет легко создать сцену, а потом начать создавать игру. 
-## Установка.
-В папке 3Dev Editor находится exe файл, а так же все нужные DLL, скачивайте zip с репориторием, читайте туториал, создавайте сцены!
+3Dev Editor is in development, but now, if you on Windows, you can launch exe file in 3Dev Editor folder and make your scene.
+## Tutorial
+If you don't know how to make your scene, you can read small tutorial (only Russian language).
