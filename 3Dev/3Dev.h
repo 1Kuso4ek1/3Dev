@@ -9,7 +9,6 @@
 #include <vector>
 #include <string>
 #include <cstdio>
-#include <glm/glm.hpp>
 #include <assimp/BaseImporter.h>
 #include <assimp/cimport.h>
 #include <assimp/Importer.hpp>
