@@ -6,8 +6,13 @@ Simple 3D game engine, that uses SFML, OpenGL, Assimp.
 If you don't know how to make your scene, you can read small tutorial (only Russian language).
 ## TODO
 Make Scene class
+
 Make it cross-platform
+
 Add lights (3Dev Editor)
+
 Add export function (3Dev Editor)
+
 Add simple physics
+
 Add advanced physics
