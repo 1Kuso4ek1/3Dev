@@ -7,7 +7,7 @@ If you don't know how to make your scene, you can read small tutorial (only Russ
 ## TODO
 Make Scene class
 
-Make it cross-platform
+Make it cross-platform - DONE
 
 Add lights (3Dev Editor)
 
