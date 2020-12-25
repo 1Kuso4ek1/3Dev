@@ -22,7 +22,7 @@ In 3Dev folder you have model, skybox, code and building files. First you need t
 ```
 git clone https://github.com/assimp/assimp
 ```
-int terminal, you don't need to build it. Then download and build https://github.com/1Kuso4ek1/ibs, move executable near main.cpp, then execute
+in terminal, you don't need to build it. Then download and build https://github.com/1Kuso4ek1/ibs, move executable near main.cpp, then execute
 ```
 ./ibs build.ibs libraries.ibs
 ```
