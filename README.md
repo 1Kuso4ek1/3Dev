@@ -18,7 +18,11 @@ Add simple physics
 Add advanced physics
 
 ## Building test game (Linux)
-In 3Dev folder you have model, skybox, code and building files. First you need to download assimp sources in 3Dev folder, rename assimp folder to "assimp" (logic), you don't need to build it. Then download and build https://github.com/1Kuso4ek1/ibs, move executable near main.cpp, then execute
+In 3Dev folder you have model, skybox, code and building files. First you need to download assimp sources in 3Dev folder, execute
+```
+git clone https://github.com/assimp/assimp
+```
+int terminal, you don't need to build it. Then download and build https://github.com/1Kuso4ek1/ibs, move executable near main.cpp, then execute
 ```
 ./ibs build.ibs libraries.ibs
 ```
