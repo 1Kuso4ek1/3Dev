@@ -1,0 +1,30 @@
+flags {
+Iinclude/
+Iassimp/include/
+}
+files {
+game.cpp
+src/Model.cpp
+src/Animation.cpp
+src/Shape.cpp
+src/Shader.cpp
+src/Button.cpp
+src/Gui.cpp
+src/Camera.cpp
+src/Light.cpp
+}
+libs {
+GL
+GLU
+GLEW
+assimp
+pthread
+sfml-graphics
+sfml-window
+sfml-system
+sfml-audio
+sfml-network
+}
+name {
+game
+}
