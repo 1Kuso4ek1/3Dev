@@ -5,8 +5,23 @@
 #include <Skybox.h>
 #include <Model.h>
 #include <Animation.h>
+#include <Shape.h>
+
+struct player {
+	float x, z, speed, health = 100, damage;
+	int enemy;
+	void ai(float ex, float ez, float time) {
+		if (z > ez) z -= speed * time;
+		if (z < ez) z += speed * time;
+		if (x > ex) x -= speed * time;
+		if (x < ex) x += speed * time;
+	}
+};
 
 int main() {
+	
+	const int players_amount = 100; //Change it if you want another number of players
+	
 	//Settings for SFML window
 	sf::ContextSettings s;
 	s.depthBits = 24;
@@ -31,7 +46,7 @@ int main() {
 	glEnable(GL_LIGHTING);
 	//////////////////
 	//Loading some textures
-	GLuint cyborg_texture = LoadTexture("cyborg_diffuse.png");
+	GLuint texture = LoadTexture("t.jpg");
 
 	GLuint skybox[6];
 	skybox[0] = LoadTexture("resources/skybox3/skybox_front.bmp");
@@ -41,12 +56,12 @@ int main() {
 	skybox[4] = LoadTexture("resources/skybox3/skybox_bottom.bmp");
 	skybox[5] = LoadTexture("resources/skybox3/skybox_top.bmp");
 	///////////////////////
-	//Creating camera. x = 15 y = 7 z = 15 speed = 0.4
-	Camera cam(15, 7, 15, 0.4);
+	Camera cam(300, 20, 300, 2);
 	/////////////////////////////////////////////////
 	Model cyborg("cyborg.obj", "cyborg_diffuse.png", "", 5, 0, 10); //Cyborg model
+	Shape map(1000, 2, 1000, 0, -2, 0);
 	//Settings for lighting
-	float amb[4] = { 2, 2, 2, 1 }; //Ambient
+	float amb[4] = { 2.5, 2.5, 2.5, 1 }; //Ambient
 	float dif[4] = { 2, 2, 2, 1 }; //Diffuse
 	float pos[4] = { 0, 0, 0, 1 }; //Position
 	float spec[4] = { 2, 2, 2, 1 }; //Specular
@@ -65,6 +80,16 @@ int main() {
 	l.SetParameters(dif, GL_DIFFUSE); //Diffuse
 	//////////////////
 	sf::Clock clock;
+	std::vector<player> a;
+	for(int i = 0; i < players_amount; i++) {
+		player temp;
+		temp.x = rand() % 1000;
+		temp.z = rand() % 1000;
+		temp.enemy = rand() % players_amount;
+		temp.damage = 0.1 + 0.5 * rand() / (float)RAND_MAX;
+		temp.speed = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+		a.push_back(temp);
+	}
 	//Main cycle
 	while (w.isOpen()) {
 		sf::Event event;
@@ -82,7 +107,7 @@ int main() {
 		time = time / 40;
 		if (time > 5) time = 5;
 		
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) l.SetPosition(cam.x, cam.y, cam.z); //If pressed Q, move the light to the place of the camera
+		l.SetPosition(cam.x, cam.y, cam.z);
 		
 		glTranslatef(l.x, l.y, l.z);
 		l.SetParameters(pos, GL_POSITION); //put the light in place
@@ -98,13 +123,35 @@ int main() {
 		glLoadIdentity();
 		
 		cam.Look();
-
-		cyborg.Draw(); //Drawing static model
-
+		map.Draw(texture);
+		
+		for(int i = 0; i < a.size(); i++) {
+			sf::Vector2f v(a[a[i].enemy].x, a[a[i].enemy].z);
+			sf::Vector2f vd = v - sf::Vector2f(a[i].x, a[i].z);
+			cyborg.SetRotation(0, std::atan2(vd.y, vd.x) * 180.f / 3.14f, 0);
+			a[i].ai(a[a[i].enemy].x, a[a[i].enemy].z, time);
+			if (a[i].x <= a[a[i].enemy].x + 10 && a[i].x >= a[a[i].enemy].x - 10) {
+				if (a[i].z <= a[a[i].enemy].z + 10 && a[i].z >= a[a[i].enemy].z - 10) {
+					a[a[i].enemy].health -= a[i].damage * time;
+				}
+			}
+			cyborg.SetPosition(a[i].x, 0, a[i].z);
+			cyborg.Draw();
+			if(a[a[i].enemy].health <= 0) {
+				a[i].enemy = rand() % a.size();
+			}
+			if(a[i].health <= 0) {
+				a.erase(a.begin() + i);
+				std::cout << a.size() << " players left" << std::endl;
+			}
+		}
+		
+		glDisable(GL_LIGHTING);
 		glTranslatef(cam.x, cam.y, cam.z);
-		RenderSkybox(skybox, 1000); //Drawing skybox
+		RenderSkybox(skybox, 2000); //Drawing skybox
 		glTranslatef(-cam.x, -cam.y, -cam.z);
-
+		glEnable(GL_LIGHTING);
+		
 		w.display();
 	}
 } 
