@@ -20,6 +20,8 @@ Animation::Animation(int frames, std::string filename, std::string stexture, flo
 			}
 		}
 		m[i].SetPosition(x, y, z);
+		m[i].SetRotation(rx, ry, rz);
+		m[i].SetSize(sx, sy, sz);
 	}
 }
 
