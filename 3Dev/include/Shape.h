@@ -6,7 +6,6 @@ public:
 
 	void Draw(GLuint texture);
 	void Draw(GLuint texture[6]);
-	void Draw(sf::Color color);
 private:
 	float w, h, d;
 	float x, y, z;
