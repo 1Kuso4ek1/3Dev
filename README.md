@@ -11,7 +11,6 @@ If you don't know how to make your scene, you can read small tutorial (only Russ
 - [ ] Add export function (3Dev Editor)
 - [ ] Add simple physics (optional, if advanced physics will work fast)
 - [ ] Add advanced physics
-- [ ] Add scene class
 - [ ] Add text input (Gui) 
 ## Building test game (Linux)
 In 3Dev folder you have model, skybox, code and building files. First you need to download assimp sources in 3Dev folder, execute
