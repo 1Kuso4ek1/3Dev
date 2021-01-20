@@ -1,17 +1,32 @@
 #include "Model.h"
 
-Model::Model(std::string filename, std::string texture, std::string ID, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ) : x(x), y(y), z(z), ID(ID), filename(filename), stexture(texture), rotationX(rotationX), rotationY(rotationY), rotationZ(rotationZ), sizeX(sizeX), sizeY(sizeY), sizeZ(sizeZ)
+Model::Model(std::string filename, std::string texture, std::string ID, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ) : ID(ID), filename(filename), texture(texture)
 {
+	SetPosition(x, y, z);
+	SetRotation(rotationX, rotationY, rotationZ);
+	SetSize(sizeX, sizeY, sizeZ);
 	Load(filename, texture);
 }
 
-Model::Model(std::string filename, std::string texture, std::string ID, float x, float y, float z) : x(x), y(y), z(z), ID(ID), filename(filename), stexture(texture)
+Model::Model(std::string filename, std::string texture, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ) : filename(filename), texture(texture)
 {
+	SetPosition(x, y, z);
+	SetRotation(rotationX, rotationY, rotationZ);
+	SetSize(sizeX, sizeY, sizeZ);
 	Load(filename, texture);
 }
 
-Model::Model(std::string filename, std::string ID, float x, float y, float z) : x(x), y(y), z(z), ID(ID)
+Model::Model(std::string filename, std::string texture, float x, float y, float z) : filename(filename), texture(texture)
 {
+	SetPosition(x, y, z);
+	SetSize(1, 1, 1);
+	Load(filename, texture);
+}
+
+Model::Model(std::string filename, float x, float y, float z) : filename(filename)
+{
+	SetPosition(x, y, z);
+	SetSize(1, 1, 1);
 	Load(filename);
 }
 
@@ -110,11 +125,11 @@ void Model::Draw(bool tex)
 {
 	if (tex) {
 		glPushMatrix();
-		glTranslatef(x, y, z);
-		glScalef(sizeX, sizeY, sizeZ);
-		glRotatef(rotationX, 1, 0, 0);
-		glRotatef(rotationY, 0, 1, 0);
-		glRotatef(rotationZ, 0, 0, 1);
+		glTranslatef(position.x, position.y, position.z);
+		glScalef(size.x, size.y, size.z);
+		glRotatef(rotation.x, 1, 0, 0);
+		glRotatef(rotation.y, 0, 1, 0);
+		glRotatef(rotation.z, 0, 0, 1);
 		glBindTexture(GL_TEXTURE_2D, ModelTexture);
 
 		glEnableClientState(GL_VERTEX_ARRAY);
@@ -134,13 +149,12 @@ void Model::Draw(bool tex)
 	}
 	else {
 		glPushMatrix();
-
-		glTranslatef(x, y, z);
-		glScalef(sizeX, sizeY, sizeZ);
-		glRotatef(rotationX, 1, 0, 0);
-		glRotatef(rotationY, 0, 1, 0);
-		glRotatef(rotationZ, 0, 0, 1);
-
+		glTranslatef(position.x, position.y, position.z);
+		glScalef(size.x, size.y, size.z);
+		glRotatef(rotation.x, 1, 0, 0);
+		glRotatef(rotation.y, 0, 1, 0);
+		glRotatef(rotation.z, 0, 0, 1);
+	
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
 
@@ -157,11 +171,11 @@ void Model::Draw(bool tex)
 void Model::Draw(GLuint texture)
 {
 	glPushMatrix();
-	glTranslatef(x, y, z);
-	glScalef(sizeX, sizeY, sizeZ);
-	glRotatef(rotationX, 1, 0, 0);
-	glRotatef(rotationY, 0, 1, 0);
-	glRotatef(rotationZ, 0, 0, 1);
+	glTranslatef(position.x, position.y, position.z);
+	glScalef(size.x, size.y, size.z);
+	glRotatef(rotation.x, 1, 0, 0);
+	glRotatef(rotation.y, 0, 1, 0);
+	glRotatef(rotation.z, 0, 0, 1);
 
 	glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -183,21 +197,61 @@ void Model::Draw(GLuint texture)
 
 void Model::SetPosition(float x, float y, float z)
 {
-	this->x = x;
-	this->y = y;
-	this->z = z;
+	position = sf::Vector3f(x, y, z);
 }
 
 void Model::SetSize(float sizeX, float sizeY, float sizeZ)
 {
-	this->sizeX = sizeX;
-	this->sizeY = sizeY;
-	this->sizeZ = sizeZ;
+	size = sf::Vector3f(sizeX, sizeY, sizeZ);
 }
 
 void Model::SetRotation(float rotationX, float rotationY, float rotationZ)
 {
-	this->rotationX = rotationX;
-	this->rotationY = rotationY;
-	this->rotationZ = rotationZ;
+	rotation = sf::Vector3f(rotationX, rotationY, rotationZ);
+}
+
+void Model::SetID(std::string ID) {
+	this->ID = ID;
+}
+
+void Model::AddPosition(float x, float y, float z) {
+	position.x += x;
+	position.y += y;
+	position.z += z;
+}
+
+void Model::AddRotation(float rotationX, float rotationY, float rotationZ) {
+	rotation.x += rotationX;
+	rotation.y += rotationY;
+	rotation.z += rotationZ;
+}
+
+void Model::AddSize(float sizeX, float sizeY, float sizeZ) {
+	size.x += sizeX;
+	size.y += sizeY;
+	size.z += sizeZ;
+}
+
+sf::Vector3f Model::GetPosition() {
+	return position;
+}
+
+sf::Vector3f Model::GetRotation() {
+	return rotation;
+}
+
+sf::Vector3f Model::GetSize() {
+	return size;
+}
+
+std::string Model::GetID() {
+	return ID;
+}
+
+std::string Model::GetFilename() {
+	return filename;
+}
+
+std::string Model::GetTextureFilename() {
+	return texture;
 }
