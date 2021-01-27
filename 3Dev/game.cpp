@@ -19,7 +19,7 @@ struct player {
 };
 
 int main() {
-	
+	srand(int(time(0)));
 	const int players_amount = 100; //Change it if you want another number of players
 	
 	//Settings for SFML window
@@ -37,9 +37,7 @@ int main() {
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_NOTEQUAL, 0);
 	glDepthMask(GL_TRUE);
-	glClearDepth(1.f);
 	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
 	gluPerspective(45.f, 1366.f / 768.f, 0.1, 50000.f);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_NORMALIZE);
@@ -58,27 +56,27 @@ int main() {
 	///////////////////////
 	Camera cam(300, 20, 300, 2);
 	/////////////////////////////////////////////////
-	Model cyborg("cyborg.obj", "cyborg_diffuse.png", "", 5, 0, 10); //Cyborg model
+	Model cyborg("cyborg.obj", "cyborg_diffuse.png", 0, 0, 0); //Cyborg model
 	Shape map(1000, 2, 1000, 0, -2, 0);
 	//Settings for lighting
-	float amb[4] = { 2.5, 2.5, 2.5, 1 }; //Ambient
-	float dif[4] = { 2, 2, 2, 1 }; //Diffuse
-	float pos[4] = { 0, 0, 0, 1 }; //Position
-	float spec[4] = { 2, 2, 2, 1 }; //Specular
-	float c[1] = { 0.2 }; //Linear attenuation
-
+	float amb[4] = { 2, 2, 2, 1 }; //Ambient
+	float dif[4] = { 1, 1, 1, 1 }; //Diffuse
+	float spec[4] = { 5, 0, 0, 1 }; //Specular
+	float lin[1] = { 0.3 }; //Linear attenuation
 	///////////////////////
 	//Creating lights
-	Light l((GLenum)GL_LIGHT0, 0, 0, 0);
-	Light l1((GLenum)GL_LIGHT1, 0, 0, 0);
+	Light l(GL_LIGHT0, 0, 0, 0);
+	Light l1(GL_LIGHT1, 0, 0, 0);
 	////////////////
 	//Light parameters
-	l.SetParameters(pos, GL_POSITION); //Position
-	l.SetParameters(spec, GL_SPECULAR); //Specular
-	l.SetParameters(c, GL_LINEAR_ATTENUATION); //Linear attenuation
-	l1.SetParameters(amb, GL_AMBIENT); //Ambient
-	l.SetParameters(dif, GL_DIFFUSE); //Diffuse
+	l1.SetParameters(amb, GL_AMBIENT); 
+	l.SetParameters(dif, GL_DIFFUSE); 
+	l.SetParameters(spec, GL_SPECULAR); 
+	l.SetParameters(lin, GL_LINEAR_ATTENUATION); 
 	//////////////////
+	//Material
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 64);
 	sf::Clock clock;
 	std::vector<player> a;
 	for(int i = 0; i < players_amount; i++) {
@@ -86,8 +84,8 @@ int main() {
 		temp.x = rand() % 1000;
 		temp.z = rand() % 1000;
 		temp.enemy = rand() % players_amount;
-		temp.damage = 0.1 + 0.5 * rand() / (float)RAND_MAX;
-		temp.speed = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+		temp.damage = 0.1 + 1 * rand() / (float)RAND_MAX;
+		temp.speed = 0.5 + 1 * rand() / (float)RAND_MAX;
 		a.push_back(temp);
 	}
 	//Main cycle
@@ -109,9 +107,7 @@ int main() {
 		
 		l.SetPosition(cam.x, cam.y, cam.z);
 		
-		glTranslatef(l.x, l.y, l.z);
-		l.SetParameters(pos, GL_POSITION); //put the light in place
-		glTranslatef(-l.x, -l.y, -l.z);
+		l.Update();
 		
 		//Camera controls
 		cam.Move(time);
@@ -126,9 +122,6 @@ int main() {
 		map.Draw(texture);
 		
 		for(int i = 0; i < a.size(); i++) {
-			sf::Vector2f v(a[a[i].enemy].x, a[a[i].enemy].z);
-			sf::Vector2f vd = v - sf::Vector2f(a[i].x, a[i].z);
-			cyborg.SetRotation(0, std::atan2(vd.y, vd.x) * 180.f / 3.14f, 0);
 			a[i].ai(a[a[i].enemy].x, a[a[i].enemy].z, time);
 			if (a[i].x <= a[a[i].enemy].x + 10 && a[i].x >= a[a[i].enemy].x - 10) {
 				if (a[i].z <= a[a[i].enemy].z + 10 && a[i].z >= a[a[i].enemy].z - 10) {
