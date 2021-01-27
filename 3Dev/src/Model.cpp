@@ -210,48 +210,58 @@ void Model::SetRotation(float rotationX, float rotationY, float rotationZ)
 	rotation = sf::Vector3f(rotationX, rotationY, rotationZ);
 }
 
-void Model::SetID(std::string ID) {
+void Model::SetID(std::string ID)
+{
 	this->ID = ID;
 }
 
-void Model::AddPosition(float x, float y, float z) {
+void Model::AddPosition(float x, float y, float z) 
+{
 	position.x += x;
 	position.y += y;
 	position.z += z;
 }
 
-void Model::AddRotation(float rotationX, float rotationY, float rotationZ) {
+void Model::AddRotation(float rotationX, float rotationY, float rotationZ) 
+{
 	rotation.x += rotationX;
 	rotation.y += rotationY;
 	rotation.z += rotationZ;
 }
 
-void Model::AddSize(float sizeX, float sizeY, float sizeZ) {
+void Model::AddSize(float sizeX, float sizeY, float sizeZ) 
+{
 	size.x += sizeX;
 	size.y += sizeY;
 	size.z += sizeZ;
 }
 
-sf::Vector3f Model::GetPosition() {
+sf::Vector3f Model::GetPosition() 
+{
 	return position;
 }
 
-sf::Vector3f Model::GetRotation() {
+sf::Vector3f Model::GetRotation() 
+{
 	return rotation;
 }
 
-sf::Vector3f Model::GetSize() {
+sf::Vector3f Model::GetSize() 
+{
 	return size;
 }
 
-std::string Model::GetID() {
+std::string Model::GetID() 
+{
 	return ID;
 }
 
-std::string Model::GetFilename() {
+std::string Model::GetFilename() 
+{
 	return filename;
 }
 
-std::string Model::GetTextureFilename() {
+std::string Model::GetTextureFilename() 
+{
 	return texture;
 }

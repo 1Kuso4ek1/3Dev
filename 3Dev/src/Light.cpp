@@ -25,27 +25,29 @@ void Light::SetPosition(float x, float y, float z)
 	position = sf::Vector3f(x, y, z);
 }
 
-void Light::SetID(std::string ID) {
+void Light::SetID(std::string ID) 
+{
 	this->ID = ID;
 }
 
-void Light::Update() {
+void Light::Update() 
+{
 	float parameters[4] = { position.x, position.y, position.z, 1 };
 	SetParameters(parameters, GL_POSITION);
 }
 
-float* Light::GetParameters(GLenum type)
+void Light::GetParameters(GLenum type, float* var)
 {
-	float* parameters;
-	glGetLightfv(lightNum, type, parameters);
-	return parameters;
+	glGetLightfv(lightNum, type, var);
 }
 
-GLenum Light::GetLightNum() {
+GLenum Light::GetLightNum() 
+{
 	return lightNum;
 }
 
-sf::Vector3f Light::GetPosition() {
+sf::Vector3f Light::GetPosition() 
+{
 	return position;
 }
 
