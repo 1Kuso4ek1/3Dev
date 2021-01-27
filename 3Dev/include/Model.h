@@ -27,7 +27,7 @@ public:
 	void AddPosition(float x, float y, float z);
 	void AddSize(float sizeX, float sizeY, float sizeZ);
 	void AddRotation(float rotationX, float rotationY, float rotationZ);
-	
+		
 	sf::Vector3f GetPosition();
 	sf::Vector3f GetRotation();
 	sf::Vector3f GetSize();

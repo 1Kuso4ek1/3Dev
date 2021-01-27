@@ -15,7 +15,7 @@ public:
 	
 	void Update();
 	
-	float* GetParameters(GLenum type);
+	void GetParameters(GLenum type, float* var);
 	GLenum GetLightNum();
 	sf::Vector3f GetPosition();
 	std::string GetID();
