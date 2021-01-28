@@ -6,13 +6,21 @@ Simple 3D game engine, that uses SFML, OpenGL, Assimp.
 If you don't know how to make your scene, you can read small tutorial (only Russian language).
 ## Features
 Loading many model formats (.obj, .fbx, .dae, etc.)
+
 Loading animations
+
 Loading textures
+
 GUI (Buttons, Text box (soon))
+
 Class for lighting
+
 Class for camera
+
 Small class for simple shapes
+
 Skybox
+
 3Dev Editor (soon)
 ## TODO
 - [x] Make it cross-platform
