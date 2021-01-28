@@ -46,7 +46,6 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath) {
 	glAttachShader(this->Program, vertex);
 	glAttachShader(this->Program, fragment);
 	glLinkProgram(this->Program);
-	//Если есть ошибки - вывести их
 	glGetProgramiv(this->Program, GL_LINK_STATUS, &success);
 	if (!success)
 	{
