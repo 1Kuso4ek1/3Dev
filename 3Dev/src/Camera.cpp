@@ -52,5 +52,5 @@ void Camera::Look()
 
 void Camera::Look(float x, float y, float z)
 {
-	gluLookAt(x, y, z, x - sin(angleX / 180 * pi), y + tan(angleY / 180 * pi), z - cos(angleX / 180 * pi), 0, 1, 0);
+	gluLookAt(this->x, this->y, this->z, x, y, z, 0, 1, 0);
 }
