@@ -3,6 +3,7 @@
 class Model
 {
 public:
+	int numVerts;
 	float* vertexArray;
 		
 	Model(std::string filename, std::string texture, std::string ID, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ);
@@ -43,7 +44,6 @@ private:
 	float* normalArray;
 	float* uvArray;
 
-	int numVerts;
 	GLuint ModelTexture;
 };
 

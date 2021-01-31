@@ -6,7 +6,10 @@ public:
 
 	void Draw(GLuint texture);
 	void Draw(GLuint texture[6]);
+	
+	sf::Vector3f GetPosition();
+	sf::Vector3f GetSize();
 private:
-	float w, h, d;
-	float x, y, z;
+	sf::Vector3f size;
+	sf::Vector3f position;
 };
