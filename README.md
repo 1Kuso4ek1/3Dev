@@ -11,7 +11,7 @@ Loading animations
 
 Loading textures
 
-GUI (Buttons, Text box (soon))
+GUI (Buttons, Text box)
 
 Class for lighting
 
