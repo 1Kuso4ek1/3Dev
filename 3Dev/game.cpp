@@ -2,8 +2,22 @@
 #include <Model.h>
 #include <Light.h>
 #include <Skybox.h>
+#include <Shader.h>
+#include <Gui.h>
 
 int main() {
+	gui::Gui gui;
+	
+	gui::TextBox txbx(5, 30, 70, 20, 2, 12, 1);
+	gui::Button bt(5, 5, 80, 20, "Enter shininess", 12, 2);
+	bt.SetColor(sf::Color(0, 0, 0, 0));
+	gui::Button bt1(5, 55, 70, 20, "Teapot", 12, 2);
+	gui::Button bt2(5, 80, 70, 20, "Torus", 12, 3);
+	gui.Add(txbx);
+	gui.Add(bt);
+	gui.Add(bt1);
+	gui.Add(bt2);
+	
 	sf::ContextSettings s;
 	s.depthBits = 24;
 	
@@ -47,15 +61,24 @@ int main() {
 	l.SetParameters(la, GL_LINEAR_ATTENUATION); 
 	l.SetParameters(dif, GL_DIFFUSE);
 	sf::Clock clock;
+	glewInit();
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dif);
+    bool a = true;
+    int teashininess = 20;
+    int torshininess = 120;
     while(w.isOpen()) {
         sf::Event event;
         while(w.pollEvent(event)) {
+			if(gui.CatchEvent(event, w) == bt1.ID) {
+				teashininess = stoi(gui.GetTextBoxString(1));
+			}
+			else if(gui.CatchEvent(event, w, false) == bt2.ID) {
+				torshininess = stoi(gui.GetTextBoxString(1));
+			}
             if(event.type == sf::Event::Closed) {
                 w.close();
             }
         }
-        
         float time = clock.getElapsedTime().asMilliseconds();
 		clock.restart();
 		time = time / 40;
@@ -65,16 +88,18 @@ int main() {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		
-		cam.Mouse(w);
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) a = !a;
+		
+		if(a) cam.Mouse(w);
 		cam.Move(time);
         cam.Look();
 		
 		l.Update();
 		
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 120);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, torshininess);
 		torus.Draw();
 		
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, teashininess);
 		teapot.AddRotation(0, 0.4, 0);
 		teapot.Draw();
 		
@@ -83,6 +108,8 @@ int main() {
 		RenderSkybox(skybox, 1000);
 		glTranslatef(-cam.x, -cam.y, -cam.z);
 		glEnable(GL_LIGHTING);
+
+		gui.Draw(w);
 
         w.display();
     }
