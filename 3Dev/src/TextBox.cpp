@@ -51,7 +51,7 @@ void gui::TextBox::TextEntered(sf::Event& event)
 		}
 		SetText(enteredText);
 		if(enteredText.size() * text.getCharacterSize() > w * 2) {
-			w += text.getCharacterSize() / 1.5;
+			w += text.getCharacterSize();
 			shape.setSize(sf::Vector2f(w, h));
 		}
 	}
