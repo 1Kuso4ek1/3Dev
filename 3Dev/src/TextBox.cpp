@@ -20,14 +20,44 @@ void gui::TextBox::SetFont(std::string filename)
 	text.setFont(font);
 }
 
-void gui::TextBox::SetColor(sf::Color color)
+void gui::TextBox::SetTextColor(sf::Color color)
 {
-	shape.setFillColor(color);
+	text.setFillColor(color);
 }
 
 void gui::TextBox::SetText(std::string text)
 {
 	this->text.setString(text);
+}
+
+void gui::TextBox::SetTextSize(int size)
+{
+	text.setCharacterSize(size);
+}
+
+void gui::TextBox::SetColor(sf::Color color)
+{
+	shape.setFillColor(color);
+}
+
+void gui::TextBox::SetOutlineColor(sf::Color color)
+{
+	shape.setOutlineColor(color);
+}
+
+void gui::TextBox::SetOutlineThickness(int outlineThickness)
+{
+	shape.setOutlineThickness(outlineThickness);
+}
+
+void gui::TextBox::SetPosition(float x, float y)
+{
+	shape.setPosition(x, y);
+}
+
+void gui::TextBox::SetSize(float w, float h)
+{
+	shape.setSize(sf::Vector2f(w, h));	
 }
 
 void gui::TextBox::Draw(sf::RenderWindow& w)
@@ -50,7 +80,7 @@ void gui::TextBox::TextEntered(sf::Event& event)
 			}
 		}
 		SetText(enteredText);
-		if(enteredText.size() * text.getCharacterSize() > w * 2) {
+		if(enteredText.size() * text.getCharacterSize() > w * 1.5) {
 			w += text.getCharacterSize();
 			shape.setSize(sf::Vector2f(w, h));
 		}

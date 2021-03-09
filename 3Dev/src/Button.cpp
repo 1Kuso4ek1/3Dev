@@ -1,8 +1,7 @@
 #include "Button.h"
 
-gui::Button::Button(float x, float y, float w, float h, std::string text, float fontSize, int id)
+gui::Button::Button(float x, float y, float w, float h, std::string text, float fontSize, int id, int outlineThickness, bool check) : ID(id), check(check)
 {
-	ID = id;
 	font.loadFromFile("arial.ttf");
 	this->text.setFont(font);
 	this->text.setCharacterSize(fontSize);
@@ -11,6 +10,8 @@ gui::Button::Button(float x, float y, float w, float h, std::string text, float 
 	shape.setFillColor(sf::Color::Black);
 	shape.setSize(sf::Vector2f(w, h));
 	shape.setPosition(x, y);
+	shape.setOutlineThickness(outlineThickness);
+	shape.setOutlineColor(sf::Color::Black);
 }
 
 void gui::Button::SetFont(std::string filename)
@@ -19,14 +20,44 @@ void gui::Button::SetFont(std::string filename)
 	text.setFont(font);
 }
 
-void gui::Button::SetColor(sf::Color color)
+void gui::Button::SetTextColor(sf::Color color)
 {
-	shape.setFillColor(color);
+	text.setFillColor(color);
 }
 
 void gui::Button::SetText(std::string text)
 {
 	this->text.setString(text);
+}
+
+void gui::Button::SetTextSize(int size)
+{
+	text.setCharacterSize(size);
+}
+
+void gui::Button::SetColor(sf::Color color)
+{
+	shape.setFillColor(color);
+}
+
+void gui::Button::SetOutlineColor(sf::Color color)
+{
+	shape.setOutlineColor(color);
+}
+
+void gui::Button::SetOutlineThickness(int outlineThickness)
+{
+	shape.setOutlineThickness(outlineThickness);
+}
+
+void gui::Button::SetPosition(float x, float y)
+{
+	shape.setPosition(x, y);
+}
+
+void gui::Button::SetSize(float w, float h)
+{
+	shape.setSize(sf::Vector2f(w, h));	
 }
 
 void gui::Button::Draw(sf::RenderWindow& w)
