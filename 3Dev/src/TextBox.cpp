@@ -69,6 +69,13 @@ void gui::TextBox::isPressed(sf::Event& event, sf::Vector2f pos)
 			}
 		}
 	}
+	if (event.type == sf::Event::KeyPressed)
+	{
+		if(event.key.code == sf::Keyboard::Enter)
+		{
+			inFocus = false;
+		}
+	}
 }
 
 std::string gui::TextBox::GetText()

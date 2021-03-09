@@ -1,33 +1,54 @@
 #include "Animation.h"
 
-Animation::Animation(int frames, std::string filename, std::string texture, float x, float y, float z, float speed, std::string ID, float rx, float ry, float rz, float sx, float sy, float sz) : frames(frames), position(x, y, z), speed(speed), ID(ID), filename(filename), texture(texture), rotation(rx, ry, rz), size(sx, sy, sz) {
-	animationTexture = LoadTexture(texture);
-	m = new Model[frames - 1];
-	for (int i = 0; i < frames - 1; i++) {
-		if (i <= 9) {
-			if (!m[i].Load(filename + "_00000" + std::to_string(i) + ".obj")) {
-				delete[] m;
-			}
-		}
-		else if (i <= 99 && i > 9) {
-			if (!m[i].Load(filename + "_0000" + std::to_string(i) + ".obj")) {
-				delete[] m;
-			}
-		}
-		else if (i <= 999 && i > 99 && i > 9) {
-			if (!m[i].Load(filename + "_000" + std::to_string(i) + ".obj")) {
-				delete[] m;
-			}
-		}
-		m[i].SetPosition(x, y, z);
-		m[i].SetRotation(rx, ry, rz);
-		m[i].SetSize(sx, sy, sz);
-	}
+Animation::Animation(std::string filename, std::string texture, int frames, float speed, std::string ID, float x, float y, float z, float rx, float ry, float rz, float sx, float sy, float sz) : frames(frames), position(x, y, z), speed(speed), ID(ID), filename(filename), texture(texture), rotation(rx, ry, rz), size(sx, sy, sz)
+{
+	Load(filename, texture, frames);
 }
+
+Animation::Animation(std::string filename, std::string texture, int frames, float speed) : frames(frames), speed(speed), position(0, 0, 0), rotation(0, 0, 0), size(1, 1, 1), ID("")
+{
+	Load(filename, texture, frames);
+}
+
+Animation::Animation() : speed(1), position(0, 0, 0), rotation(0, 0, 0), size(1, 1, 1), ID("") {}
 
 Animation::~Animation()
 {
 	delete[] m;
+}
+
+void Animation::Load(std::string filename, std::string texture, int frames)
+{
+	this->frames = frames;
+	animationTexture = LoadTexture(texture);
+	m = new Model[frames - 1];
+	for (int i = 0; i < frames - 1; i++) 
+	{
+		if (i <= 9)
+		{
+			if (!m[i].Load(filename + "_00000" + std::to_string(i) + ".obj")) 
+			{
+				delete[] m;
+			}
+		}
+		else if (i <= 99 && i > 9) 
+		{
+			if (!m[i].Load(filename + "_0000" + std::to_string(i) + ".obj")) 
+			{
+				delete[] m;
+			}
+		}
+		else if (i <= 999 && i > 99 && i > 9) 
+		{
+			if (!m[i].Load(filename + "_000" + std::to_string(i) + ".obj")) 
+			{
+				delete[] m;
+			}
+		}
+		m[i].SetPosition(position.x, position.y, position.z);
+		m[i].SetRotation(rotation.x, rotation.y, rotation.z);
+		m[i].SetSize(size.x, size.y, size.z);
+	}
 }
 
 void Animation::DrawAnimation(float time)

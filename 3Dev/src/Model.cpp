@@ -127,9 +127,10 @@ void Model::Draw(bool tex)
 		glPushMatrix();
 		glTranslatef(position.x, position.y, position.z);
 		glScalef(size.x, size.y, size.z);
-		glRotatef(rotation.x, 1, 0, 0);
 		glRotatef(rotation.y, 0, 1, 0);
 		glRotatef(rotation.z, 0, 0, 1);
+		glRotatef(rotation.x, 1, 0, 0);
+		
 		glBindTexture(GL_TEXTURE_2D, ModelTexture);
 
 		glEnableClientState(GL_VERTEX_ARRAY);
@@ -151,9 +152,6 @@ void Model::Draw(bool tex)
 		glPushMatrix();
 		glTranslatef(position.x, position.y, position.z);
 		glScalef(size.x, size.y, size.z);
-		glRotatef(rotation.x, 1, 0, 0);
-		glRotatef(rotation.y, 0, 1, 0);
-		glRotatef(rotation.z, 0, 0, 1);
 	
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
@@ -173,10 +171,10 @@ void Model::Draw(GLuint texture)
 	glPushMatrix();
 	glTranslatef(position.x, position.y, position.z);
 	glScalef(size.x, size.y, size.z);
-	glRotatef(rotation.x, 1, 0, 0);
 	glRotatef(rotation.y, 0, 1, 0);
 	glRotatef(rotation.z, 0, 0, 1);
-
+	glRotatef(rotation.x, 1, 0, 0);
+	
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
