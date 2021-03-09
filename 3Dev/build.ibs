@@ -1,13 +1,20 @@
 flags {
 Iinclude/
 Iassimp/include/
-Llib/
 }
 files {
 game.cpp
+src/Animation.cpp
+src/Button.cpp
+src/Camera.cpp
+src/Gui.cpp
+src/Light.cpp
+src/Model.cpp
+src/Shader.cpp
+src/Shape.cpp
+src/TextBox.cpp
 }
 libs {
-3Dev
 GL
 GLU
 GLEW
