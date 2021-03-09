@@ -4,9 +4,13 @@
 class Animation
 {
 public:
-	Animation(int frames, std::string filename, std::string texture, float x, float y, float z, float speed, std::string ID, float rx, float ry, float rz, float sx, float sy, float sz); //Constructor
+	Animation(std::string filename, std::string texture, int frames, float speed, std::string ID, float x, float y, float z, float rx, float ry, float rz, float sx, float sy, float sz);
+	Animation(std::string filename, std::string texture, int frames, float speed);
+	Animation();
 	~Animation();
-
+	
+	void Load(std::string filename, std::string texture, int frames);
+	
 	void DrawAnimation(float time);
 	void DrawFrame(int frame);
 	
