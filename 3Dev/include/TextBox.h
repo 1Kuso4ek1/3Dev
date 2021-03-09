@@ -9,8 +9,16 @@ namespace gui {
 		TextBox(float x, float y, float w, float h, float outlineThickness, float fontSize, int id);
 		
 		void SetFont(std::string filename);
-		void SetColor(sf::Color color);
+		void SetTextColor(sf::Color color);
 		void SetText(std::string text);
+		void SetTextSize(int size);
+		
+		void SetColor(sf::Color color);
+		void SetOutlineColor(sf::Color color);
+		void SetOutlineThickness(int outlineThickness);
+		
+		void SetPosition(float x, float y);
+		void SetSize(float w, float h);
 		
 		void Draw(sf::RenderWindow& w);
 		
