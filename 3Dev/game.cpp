@@ -1,5 +1,6 @@
 #include <Camera.h>
 #include <Model.h>
+#include <Animation.h>
 #include <Light.h>
 #include <Skybox.h>
 #include <Shader.h>
@@ -9,14 +10,16 @@ int main() {
 	gui::Gui gui;
 	
 	gui::TextBox txbx(5, 30, 70, 20, 2, 12, 1);
-	gui::Button bt(5, 5, 80, 20, "Enter shininess", 12, 2);
+	gui::Button bt(5, 5, 80, 20, "Enter shininess", 12, 2, 0);
 	bt.SetColor(sf::Color(0, 0, 0, 0));
-	gui::Button bt1(5, 55, 70, 20, "Teapot", 12, 2);
-	gui::Button bt2(5, 80, 70, 20, "Torus", 12, 3);
+	gui::Button bt1(5, 55, 70, 20, "Teapot", 12, 2, 0);
+	gui::Button bt2(5, 80, 70, 20, "Torus", 12, 3, 0);
+	gui::Button bt3(5, 105, 70, 20, "Cyborg", 12, 4, 0);
 	gui.Add(txbx);
 	gui.Add(bt);
 	gui.Add(bt1);
 	gui.Add(bt2);
+	gui.Add(bt3);
 	
 	sf::ContextSettings s;
 	s.depthBits = 24;
@@ -55,7 +58,9 @@ int main() {
 	Camera cam(5, 3, 15, 1);
 	Model torus("resources/models/torus.obj", "resources/textures/texture.png", 0, 0, 0);
 	Model teapot("resources/models/teapot.obj", "resources/textures/gold.jpg", 10, 0, 0);
-	Light l(GL_LIGHT0, 5, 5, 20);
+	Animation cyborg("resources/animation/cyborg", "resources/textures/cyborg_diffuse.png", 20, 1);
+	cyborg.SetPosition(-5, 0, 0);
+	Light l(GL_LIGHT0, 0, 10, 10);
 	l.SetParameters(amb, GL_AMBIENT);
 	l.SetParameters(dif, GL_SPECULAR);
 	l.SetParameters(la, GL_LINEAR_ATTENUATION); 
@@ -66,6 +71,9 @@ int main() {
     bool a = true;
     int teashininess = 20;
     int torshininess = 120;
+    int remyshininess = 50;
+    sf::Clock aa;
+    
     while(w.isOpen()) {
         sf::Event event;
         while(w.pollEvent(event)) {
@@ -74,6 +82,9 @@ int main() {
 			}
 			else if(gui.CatchEvent(event, w, false) == bt2.ID) {
 				torshininess = stoi(gui.GetTextBoxString(1));
+			}
+			else if(gui.CatchEvent(event, w, false) == bt3.ID) {
+				remyshininess = stoi(gui.GetTextBoxString(1));
 			}
             if(event.type == sf::Event::Closed) {
                 w.close();
@@ -95,20 +106,19 @@ int main() {
         cam.Look();
 		
 		l.Update();
-		
 		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, torshininess);
 		torus.Draw();
-		
 		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, teashininess);
 		teapot.AddRotation(0, 0.4, 0);
 		teapot.Draw();
-		
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, remyshininess);
+		cyborg.DrawAnimation(time);
         glDisable(GL_LIGHTING);
 		glTranslatef(cam.x, cam.y, cam.z);
 		RenderSkybox(skybox, 1000);
 		glTranslatef(-cam.x, -cam.y, -cam.z);
 		glEnable(GL_LIGHTING);
-
+		
 		gui.Draw(w);
 
         w.display();
