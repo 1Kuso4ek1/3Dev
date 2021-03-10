@@ -53,9 +53,11 @@ void Animation::Load(std::string filename, std::string texture, int frames)
 
 void Animation::DrawAnimation(float time)
 {
-	if ((int)current_frame >= frames - 1) {
+	if ((int)current_frame >= frames - 1 && loop) 
+	{
 		current_frame = 1;
 	}
+	else if((int)current_frame >= frames - 1 && !loop) { m[(int)current_frame - 1].Draw(animationTexture); return; }
 	m[(int)current_frame].Draw(animationTexture);
 	current_frame += speed * time;
 }
@@ -63,6 +65,11 @@ void Animation::DrawAnimation(float time)
 void Animation::DrawFrame(int frame)
 {
 	m[frame].Draw(animationTexture);
+}
+
+void Animation::Restart()
+{
+	current_frame = 1;
 }
 
 void Animation::SetPosition(float x, float y, float z)
@@ -90,6 +97,16 @@ void Animation::SetRotation(float rotationX, float rotationY, float rotationZ)
 	for (int i = 0; i < frames - 1; i++) {
 		m[i].SetRotation(rotationX, rotationY, rotationZ);
 	}
+}
+
+void Animation::SetLoop(bool loop)
+{
+	this->loop = loop;
+}
+
+void Animation::SetSpeed(float speed)
+{
+	this->speed = speed;
 }
 
 void Animation::AddPosition(float x, float y, float z)
