@@ -14,10 +14,14 @@ public:
 	void DrawAnimation(float time);
 	void DrawFrame(int frame);
 	
+	void Restart();
+	
 	void SetPosition(float x, float y, float z);
 	void SetSize(float sizeX, float sizeY, float sizeZ);
 	void SetRotation(float rotationX, float rotationY, float rotationZ);
 	void SetID(std::string ID);
+	void SetLoop(bool loop);
+	void SetSpeed(float speed);
 	
 	void AddPosition(float x, float y, float z);
 	void AddSize(float sizeX, float sizeY, float sizeZ);
@@ -45,5 +49,7 @@ private:
 	float speed;
 	
 	GLuint animationTexture;
+	
+	bool loop = true;
 };
 
