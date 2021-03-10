@@ -80,8 +80,8 @@ void gui::TextBox::TextEntered(sf::Event& event)
 			}
 		}
 		SetText(enteredText);
-		if(enteredText.size() * text.getCharacterSize() > w * 1.5) {
-			w += text.getCharacterSize();
+		if(enteredText.size() * text.getCharacterSize() > w * 1.8) {
+			w += text.getCharacterSize() / 2;
 			shape.setSize(sf::Vector2f(w, h));
 		}
 	}
