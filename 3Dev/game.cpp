@@ -71,7 +71,7 @@ int main() {
     bool a = true;
     int teashininess = 20;
     int torshininess = 120;
-    int remyshininess = 50;
+    int cyborgshininess = 50;
     sf::Clock aa;
     
     while(w.isOpen()) {
@@ -84,7 +84,7 @@ int main() {
 				torshininess = stoi(gui.GetTextBoxString(1));
 			}
 			else if(gui.CatchEvent(event, w, false) == bt3.ID) {
-				remyshininess = stoi(gui.GetTextBoxString(1));
+				cyborgshininess = stoi(gui.GetTextBoxString(1));
 			}
             if(event.type == sf::Event::Closed) {
                 w.close();
@@ -111,7 +111,7 @@ int main() {
 		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, teashininess);
 		teapot.AddRotation(0, 0.4, 0);
 		teapot.Draw();
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, remyshininess);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, cyborgshininess);
 		cyborg.DrawAnimation(time);
         glDisable(GL_LIGHTING);
 		glTranslatef(cam.x, cam.y, cam.z);
