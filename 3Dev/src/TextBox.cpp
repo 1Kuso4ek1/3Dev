@@ -53,6 +53,7 @@ void gui::TextBox::SetOutlineThickness(int outlineThickness)
 void gui::TextBox::SetPosition(float x, float y)
 {
 	shape.setPosition(x, y);
+	text.setPosition(x + 2, y);
 }
 
 void gui::TextBox::SetSize(float w, float h)

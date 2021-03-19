@@ -53,6 +53,7 @@ void gui::Button::SetOutlineThickness(int outlineThickness)
 void gui::Button::SetPosition(float x, float y)
 {
 	shape.setPosition(x, y);
+	text.setPosition(x + 2, y);
 }
 
 void gui::Button::SetSize(float w, float h)
