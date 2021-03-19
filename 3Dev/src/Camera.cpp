@@ -31,6 +31,15 @@ void Camera::Move(float time)
 	}
 }
 
+void Camera::ThirdPerson(float centerx, float centery, float centerz, float dist)
+{
+	float horizontald = dist * cos(angleY * pi / 180);
+	float verticald = dist * sin(angleY * pi / 180);
+	x = centerx - (horizontald * sin(angleX * pi / 180));
+	y = verticald + centery;
+	z = centerz - (horizontald * cos(angleX * pi / 180));
+}
+
 void Camera::Mouse(sf::RenderWindow& window)
 {
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
