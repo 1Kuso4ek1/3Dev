@@ -27,8 +27,7 @@ Skybox
 - [ ] Add lights (3Dev Editor)
 - [ ] Add shapes (3Dev Editor)
 - [ ] Add export function (3Dev Editor)
-- [ ] Add simple physics (optional, if advanced physics will work fast)
-- [ ] Add advanced physics
+- [ ] Add physics
 - [x] Improve GUI
 - [x] Add text input (Gui) 
 ## Building test game (Linux)
