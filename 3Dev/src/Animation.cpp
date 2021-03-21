@@ -124,6 +124,11 @@ void Animation::AddSize(float sizeX, float sizeY, float sizeZ)
 	SetSize(size.x + sizeX, size.y + sizeY, size.z + sizeZ);
 }
 
+int Animation::GetCurrentFrame()
+{
+	return (int)current_frame;
+}
+
 sf::Vector3f Animation::GetPosition() {
 	return position;
 }
