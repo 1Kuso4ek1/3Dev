@@ -23,6 +23,13 @@ Model::Model(std::string filename, std::string texture, float x, float y, float 
 	Load(filename, texture);
 }
 
+Model::Model(std::string filename, GLuint texture, float x, float y, float z) : filename(filename), ModelTexture(texture)
+{
+	SetPosition(x, y, z);
+	SetSize(1, 1, 1);
+	Load(filename);
+}
+
 Model::Model(std::string filename, float x, float y, float z) : filename(filename)
 {
 	SetPosition(x, y, z);

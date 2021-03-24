@@ -10,6 +10,11 @@ Animation::Animation(std::string filename, std::string texture, int frames, floa
 	Load(filename, texture, frames);
 }
 
+Animation::Animation(std::string filename, GLuint texture, int frames, float speed) : animationTexture(texture), frames(frames), speed(speed), position(0, 0, 0), rotation(0, 0, 0), size(1, 1, 1), ID("")
+{
+	Load(filename, frames);
+}
+
 Animation::Animation() : speed(1), position(0, 0, 0), rotation(0, 0, 0), size(1, 1, 1), ID("") {}
 
 Animation::~Animation()
@@ -155,4 +160,37 @@ std::string Animation::GetTextureFilename() {
 
 int Animation::GetFrames() {
 	return frames;
+}
+
+void Animation::Load(std::string filename, int frames)
+{
+	this->frames = frames;
+	m = new Model[frames - 1];
+	for (int i = 0; i < frames - 1; i++) 
+	{
+		if (i <= 9)
+		{
+			if (!m[i].Load(filename + "_00000" + std::to_string(i) + ".obj")) 
+			{
+				delete[] m;
+			}
+		}
+		else if (i <= 99 && i > 9) 
+		{
+			if (!m[i].Load(filename + "_0000" + std::to_string(i) + ".obj")) 
+			{
+				delete[] m;
+			}
+		}
+		else if (i <= 999 && i > 99 && i > 9) 
+		{
+			if (!m[i].Load(filename + "_000" + std::to_string(i) + ".obj")) 
+			{
+				delete[] m;
+			}
+		}
+		m[i].SetPosition(position.x, position.y, position.z);
+		m[i].SetRotation(rotation.x, rotation.y, rotation.z);
+		m[i].SetSize(size.x, size.y, size.z);
+	}
 }
