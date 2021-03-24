@@ -25,6 +25,7 @@ public:
 	void SetSize(float sizeX, float sizeY, float sizeZ);
 	void SetRotation(float rotationX, float rotationY, float rotationZ);
 	void SetID(std::string ID);
+	void SetTexture(GLuint texture);
 	
 	void AddPosition(float x, float y, float z);
 	void AddSize(float sizeX, float sizeY, float sizeZ);

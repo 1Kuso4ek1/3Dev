@@ -23,6 +23,7 @@ public:
 	void SetID(std::string ID);
 	void SetLoop(bool loop);
 	void SetSpeed(float speed);
+	void SetTexture(GLuint texture);
 	
 	void AddPosition(float x, float y, float z);
 	void AddSize(float sizeX, float sizeY, float sizeZ);
