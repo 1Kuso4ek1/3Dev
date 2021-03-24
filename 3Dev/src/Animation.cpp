@@ -114,6 +114,11 @@ void Animation::SetSpeed(float speed)
 	this->speed = speed;
 }
 
+void Animation::SetTexture(GLuint texture)
+{
+	animationTexture = texture;
+}
+
 void Animation::AddPosition(float x, float y, float z)
 {
 	SetPosition(position.x + x, position.y + y, position.z + z);

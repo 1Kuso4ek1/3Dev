@@ -130,7 +130,8 @@ bool Model::Load(std::string filename)
 
 void Model::Draw(bool tex)
 {
-	if (tex) {
+	if (tex)
+	{
 		glPushMatrix();
 		glTranslatef(position.x, position.y, position.z);
 		glScalef(size.x, size.y, size.z);
@@ -155,7 +156,8 @@ void Model::Draw(bool tex)
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glPopMatrix();
 	}
-	else {
+	else
+	{
 		glPushMatrix();
 		glTranslatef(position.x, position.y, position.z);
 		glScalef(size.x, size.y, size.z);
@@ -218,6 +220,11 @@ void Model::SetRotation(float rotationX, float rotationY, float rotationZ)
 void Model::SetID(std::string ID)
 {
 	this->ID = ID;
+}
+
+void Model::SetTexture(GLuint texture)
+{
+	ModelTexture = texture;
 }
 
 void Model::AddPosition(float x, float y, float z) 
