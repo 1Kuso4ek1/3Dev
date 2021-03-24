@@ -6,6 +6,7 @@ class Animation
 public:
 	Animation(std::string filename, std::string texture, int frames, float speed, std::string ID, float x, float y, float z, float rx, float ry, float rz, float sx, float sy, float sz);
 	Animation(std::string filename, std::string texture, int frames, float speed);
+	Animation(std::string filename, GLuint texture, int frames, float speed);
 	Animation();
 	~Animation();
 	
@@ -39,6 +40,8 @@ public:
 	
 	int GetFrames();
 private:
+	void Load(std::string filename, int frames);
+
 	sf::Vector3f position, rotation, size;
 
 	int frames;
