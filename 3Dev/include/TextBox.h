@@ -10,7 +10,7 @@ namespace gui {
 		
 		void SetFont(std::string filename);
 		void SetTextColor(sf::Color color);
-		void SetText(std::string text);
+		void SetText(sf::String text);
 		void SetTextSize(int size);
 		void SetTextOutlineColor(sf::Color color);
 		void SetTextOutlineThickness(int outlineThickness);
@@ -32,7 +32,7 @@ namespace gui {
 	private:
 		float x, y, w, h;
 		bool inFocus = false;
-		std::string enteredText;
+		sf::String enteredText;
 				
 		sf::Font font;
 		sf::Text text;
