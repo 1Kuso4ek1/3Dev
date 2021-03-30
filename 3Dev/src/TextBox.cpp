@@ -35,6 +35,21 @@ void gui::TextBox::SetTextSize(int size)
 	text.setCharacterSize(size);
 }
 
+void gui::TextBox::SetTextOutlineColor(sf::Color color)
+{
+	text.setOutlineColor(color);
+}
+
+void gui::TextBox::SetTextOutlineThickness(int outlineThickness)
+{
+	text.setOutlineThickness(outlineThickness);
+}
+
+void gui::TextBox::SetTextPosition(float x, float y)
+{
+	text.setPosition(x, y);
+}
+
 void gui::TextBox::SetColor(sf::Color color)
 {
 	shape.setFillColor(color);

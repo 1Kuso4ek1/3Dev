@@ -84,6 +84,48 @@ void gui::Gui::SetFont(int ID, std::string filename)
 	}
 }
 
+void gui::Gui::SetTextOutlineColor(int ID, sf::Color color)
+{
+	for (int i = 0; i < buttons.size(); i++) {
+		if (buttons[i].ID == ID) {
+			buttons[i].SetTextOutlineColor(color);
+		}
+	}
+	for (int i = 0; i < textboxes.size(); i++) {
+		if (textboxes[i].ID == ID) {
+			textboxes[i].SetTextOutlineColor(color);
+		}
+	}
+}
+
+void gui::Gui::SetTextOutlineThickness(int ID, int outlineThickness)
+{
+	for (int i = 0; i < buttons.size(); i++) {
+		if (buttons[i].ID == ID) {
+			buttons[i].SetTextOutlineThickness(outlineThickness);
+		}
+	}
+	for (int i = 0; i < textboxes.size(); i++) {
+		if (textboxes[i].ID == ID) {
+			textboxes[i].SetTextOutlineThickness(outlineThickness);
+		}
+	}
+}
+
+void gui::Gui::SetTextPosition(int ID, float x, float y)
+{
+	for (int i = 0; i < buttons.size(); i++) {
+		if (buttons[i].ID == ID) {
+			buttons[i].SetTextPosition(x, y);
+		}
+	}
+	for (int i = 0; i < textboxes.size(); i++) {
+		if (textboxes[i].ID == ID) {
+			textboxes[i].SetTextPosition(x, y);
+		}
+	}
+}
+
 void gui::Gui::SetColor(int ID, sf::Color color)
 {
 	for (int i = 0; i < buttons.size(); i++) {

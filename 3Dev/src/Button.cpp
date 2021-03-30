@@ -35,6 +35,21 @@ void gui::Button::SetTextSize(int size)
 	text.setCharacterSize(size);
 }
 
+void gui::Button::SetTextOutlineColor(sf::Color color)
+{
+	text.setOutlineColor(color);
+}
+
+void gui::Button::SetTextOutlineThickness(int outlineThickness)
+{
+	text.setOutlineThickness(outlineThickness);
+}
+
+void gui::Button::SetTextPosition(float x, float y)
+{
+	text.setPosition(x, y);
+}
+
 void gui::Button::SetColor(sf::Color color)
 {
 	shape.setFillColor(color);
