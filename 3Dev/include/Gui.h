@@ -15,6 +15,9 @@ namespace gui {
 		void SetTextColor(int ID, sf::Color color);
 		void SetTextSize(int ID, int size);
 		void SetFont(int ID, std::string filename);
+		void SetTextOutlineColor(int ID, sf::Color color);
+		void SetTextOutlineThickness(int ID, int outlineThickness);
+		void SetTextPosition(int ID, float x, float y);
 		
 		void SetColor(int ID, sf::Color color);
 		void SetOutlineColor(int ID, sf::Color color);
