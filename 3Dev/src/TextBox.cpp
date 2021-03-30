@@ -25,7 +25,7 @@ void gui::TextBox::SetTextColor(sf::Color color)
 	text.setFillColor(color);
 }
 
-void gui::TextBox::SetText(std::string text)
+void gui::TextBox::SetText(sf::String text)
 {
 	this->text.setString(text);
 }
@@ -92,11 +92,11 @@ void gui::TextBox::TextEntered(sf::Event& event)
 				enteredText += event.text.unicode;
 			}
 			else {
-				if(enteredText.size() > 0) enteredText.erase(enteredText.size() - 1);
+				if(enteredText.getSize() > 0) enteredText.erase(enteredText.getSize() - 1);
 			}
 		}
 		SetText(enteredText);
-		if(enteredText.size() * text.getCharacterSize() > w * 1.8) {
+		if(enteredText.getSize() * text.getCharacterSize() > w * 1.8) {
 			w += text.getCharacterSize() / 2;
 			shape.setSize(sf::Vector2f(w, h));
 		}

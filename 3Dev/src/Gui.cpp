@@ -28,7 +28,7 @@ void gui::Gui::Add(gui::TextBox& textbox)
 	textboxes.emplace_back(textbox);
 }
 
-void gui::Gui::SetText(int ID, std::string text)
+void gui::Gui::SetText(int ID, sf::String text)
 {
 	for (int i = 0; i < buttons.size(); i++) {
 		if (buttons[i].ID == ID) {

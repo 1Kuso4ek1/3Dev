@@ -1,6 +1,6 @@
 #include "Button.h"
 
-gui::Button::Button(float x, float y, float w, float h, std::string text, float fontSize, int id, int outlineThickness, bool check) : ID(id), check(check)
+gui::Button::Button(float x, float y, float w, float h, sf::String text, float fontSize, int id, int outlineThickness, bool check) : ID(id), check(check)
 {
 	font.loadFromFile("arial.ttf");
 	this->text.setFont(font);
