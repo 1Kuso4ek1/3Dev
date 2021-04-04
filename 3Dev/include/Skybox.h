@@ -1,5 +1,7 @@
 #pragma once
 #include "3Dev.h"
+
+[[deprecated("Use static void Shape::Draw(GLuint, float, float, float, float, float, float) or static void Shape::Draw(GLuint*, float, float, float, float, float, float) instead")]]
 void RenderSkybox(GLuint skybox[], float size)
 {
 	glBindTexture(GL_TEXTURE_2D, skybox[0]);
