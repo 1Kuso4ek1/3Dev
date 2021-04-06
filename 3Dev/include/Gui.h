@@ -30,6 +30,12 @@ namespace gui {
 		
 		std::string GetTextBoxString(int id);
 	private:
+		template<class T>
+		void Find(int ID, std::function<void(gui::Button&, T)> f1, std::function<void(gui::TextBox&, T)> f2, T a);
+		
+		template<class T>
+		void Find(int ID, std::function<void(gui::Button&, T, T)> f1, std::function<void(gui::TextBox&, T, T)> f2, T a, T b);
+		
 		std::vector<gui::Button> buttons;
 		std::vector<gui::TextBox> textboxes;
 	};
