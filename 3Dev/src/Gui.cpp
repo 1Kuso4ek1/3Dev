@@ -30,170 +30,62 @@ void gui::Gui::Add(gui::TextBox& textbox)
 
 void gui::Gui::SetText(int ID, sf::String text)
 {
-	for (int i = 0; i < buttons.size(); i++) {
-		if (buttons[i].ID == ID) {
-			buttons[i].SetText(text);
-		}
-	}
-	for (int i = 0; i < textboxes.size(); i++) {
-		if (textboxes[i].ID == ID) {
-			textboxes[i].SetText(text);
-		}
-	}
+	Find(ID, std::function<void(gui::Button&, sf::String)>(&gui::Button::SetText), std::function<void(gui::TextBox&, sf::String)>(&gui::TextBox::SetText), text);
 }
 
 void gui::Gui::SetTextColor(int ID, sf::Color color)
 {
-	for (int i = 0; i < buttons.size(); i++) {
-		if (buttons[i].ID == ID) {
-			buttons[i].SetTextColor(color);
-		}
-	}
-	for (int i = 0; i < textboxes.size(); i++) {
-		if (textboxes[i].ID == ID) {
-			textboxes[i].SetTextColor(color);
-		}
-	}
+	Find(ID, std::function<void(gui::Button&, sf::Color)>(&gui::Button::SetTextColor), std::function<void(gui::TextBox&, sf::Color)>(&gui::TextBox::SetTextColor), color);
 }
 
 void gui::Gui::SetTextSize(int ID, int size)
 {
-	for (int i = 0; i < buttons.size(); i++) {
-		if (buttons[i].ID == ID) {
-			buttons[i].SetTextSize(size);
-		}
-	}
-	for (int i = 0; i < textboxes.size(); i++) {
-		if (textboxes[i].ID == ID) {
-			textboxes[i].SetTextSize(size);
-		}
-	}
+	Find(ID, std::function<void(gui::Button&, int)>(&gui::Button::SetTextSize), std::function<void(gui::TextBox&, int)>(&gui::TextBox::SetTextSize), size);
 }
 
 void gui::Gui::SetFont(int ID, std::string filename)
 {
-	for (int i = 0; i < buttons.size(); i++) {
-		if (buttons[i].ID == ID) {
-			buttons[i].SetFont(filename);
-		}
-	}
-	for (int i = 0; i < textboxes.size(); i++) {
-		if (textboxes[i].ID == ID) {
-			textboxes[i].SetFont(filename);
-		}
-	}
+	Find(ID, std::function<void(gui::Button&, std::string)>(&gui::Button::SetFont), std::function<void(gui::TextBox&, std::string)>(&gui::TextBox::SetFont), filename);
 }
 
 void gui::Gui::SetTextOutlineColor(int ID, sf::Color color)
 {
-	for (int i = 0; i < buttons.size(); i++) {
-		if (buttons[i].ID == ID) {
-			buttons[i].SetTextOutlineColor(color);
-		}
-	}
-	for (int i = 0; i < textboxes.size(); i++) {
-		if (textboxes[i].ID == ID) {
-			textboxes[i].SetTextOutlineColor(color);
-		}
-	}
+	Find(ID, std::function<void(gui::Button&, sf::Color)>(&gui::Button::SetTextOutlineColor), std::function<void(gui::TextBox&, sf::Color)>(&gui::TextBox::SetTextOutlineColor), color);
 }
 
 void gui::Gui::SetTextOutlineThickness(int ID, int outlineThickness)
 {
-	for (int i = 0; i < buttons.size(); i++) {
-		if (buttons[i].ID == ID) {
-			buttons[i].SetTextOutlineThickness(outlineThickness);
-		}
-	}
-	for (int i = 0; i < textboxes.size(); i++) {
-		if (textboxes[i].ID == ID) {
-			textboxes[i].SetTextOutlineThickness(outlineThickness);
-		}
-	}
+	Find(ID, std::function<void(gui::Button&, int)>(&gui::Button::SetTextOutlineThickness), std::function<void(gui::TextBox&, int)>(&gui::TextBox::SetTextOutlineThickness), outlineThickness);
 }
 
 void gui::Gui::SetTextPosition(int ID, float x, float y)
 {
-	for (int i = 0; i < buttons.size(); i++) {
-		if (buttons[i].ID == ID) {
-			buttons[i].SetTextPosition(x, y);
-		}
-	}
-	for (int i = 0; i < textboxes.size(); i++) {
-		if (textboxes[i].ID == ID) {
-			textboxes[i].SetTextPosition(x, y);
-		}
-	}
+	Find(ID, std::function<void(gui::Button&, float, float)>(&gui::Button::SetTextPosition), std::function<void(gui::TextBox&, float, float)>(&gui::TextBox::SetTextPosition), x, y);
 }
 
 void gui::Gui::SetColor(int ID, sf::Color color)
 {
-	for (int i = 0; i < buttons.size(); i++) {
-		if (buttons[i].ID == ID) {
-			buttons[i].SetColor(color);
-		}
-	}
-	for (int i = 0; i < textboxes.size(); i++) {
-		if (textboxes[i].ID == ID) {
-			textboxes[i].SetColor(color);
-		}
-	}
+	Find(ID, std::function<void(gui::Button&, sf::Color)>(&gui::Button::SetColor), std::function<void(gui::TextBox&, sf::Color)>(&gui::TextBox::SetColor), color);
 }
 
 void gui::Gui::SetOutlineColor(int ID, sf::Color color)
 {
-	for (int i = 0; i < buttons.size(); i++) {
-		if (buttons[i].ID == ID) {
-			buttons[i].SetOutlineColor(color);
-		}
-	}
-	for (int i = 0; i < textboxes.size(); i++) {
-		if (textboxes[i].ID == ID) {
-			textboxes[i].SetOutlineColor(color);
-		}
-	}
+	Find(ID, std::function<void(gui::Button&, sf::Color)>(&gui::Button::SetOutlineColor), std::function<void(gui::TextBox&, sf::Color)>(&gui::TextBox::SetOutlineColor), color);
 }
 
 void gui::Gui::SetOutlineThickness(int ID, int outlineThickness)
 {
-	for (int i = 0; i < buttons.size(); i++) {
-		if (buttons[i].ID == ID) {
-			buttons[i].SetOutlineThickness(outlineThickness);
-		}
-	}
-	for (int i = 0; i < textboxes.size(); i++) {
-		if (textboxes[i].ID == ID) {
-			textboxes[i].SetOutlineThickness(outlineThickness);
-		}
-	}
+	Find(ID, std::function<void(gui::Button&, int)>(&gui::Button::SetOutlineThickness), std::function<void(gui::TextBox&, int)>(&gui::TextBox::SetOutlineThickness), outlineThickness);
 }
 
 void gui::Gui::SetPosition(int ID, float x, float y)
 {
-	for (int i = 0; i < buttons.size(); i++) {
-		if (buttons[i].ID == ID) {
-			buttons[i].SetPosition(x, y);
-		}
-	}
-	for (int i = 0; i < textboxes.size(); i++) {
-		if (textboxes[i].ID == ID) {
-			textboxes[i].SetPosition(x, y);
-		}
-	}
+	Find(ID, std::function<void(gui::Button&, float, float)>(&gui::Button::SetPosition), std::function<void(gui::TextBox&, float, float)>(&gui::TextBox::SetPosition), x, y);
 }
 
 void gui::Gui::SetSize(int ID, float w, float h)
 {
-	for (int i = 0; i < buttons.size(); i++) {
-		if (buttons[i].ID == ID) {
-			buttons[i].SetSize(w, h);
-		}
-	}
-	for (int i = 0; i < textboxes.size(); i++) {
-		if (textboxes[i].ID == ID) {
-			textboxes[i].SetSize(w, h);
-		}
-	}
+	Find(ID, std::function<void(gui::Button&, float, float)>(&gui::Button::SetSize), std::function<void(gui::TextBox&, float, float)>(&gui::TextBox::SetSize), w, h);
 }
 
 void gui::Gui::Draw(sf::RenderWindow& w)
@@ -212,4 +104,24 @@ std::string gui::Gui::GetTextBoxString(int id)
 		if(i.ID == id) return i.GetText();
 	}
 	return "";
+}
+
+template<class T>
+void gui::Gui::Find(int ID, std::function<void(gui::Button&, T)> f1, std::function<void(gui::TextBox&, T)> f2, T a)
+{
+	for (auto& i : buttons)
+		if (i.ID == ID) f1(i, a);
+		
+	for (auto& i : textboxes)
+		if (i.ID == ID) f2(i, a);
+}
+
+template<class T>
+void gui::Gui::Find(int ID, std::function<void(gui::Button&, T, T)> f1, std::function<void(gui::TextBox&, T, T)> f2, T a, T b)
+{
+	for (auto& i : buttons)
+		if (i.ID == ID) f1(i, a, b);
+		
+	for (auto& i : textboxes)
+		if (i.ID == ID) f2(i, a, b);
 }
