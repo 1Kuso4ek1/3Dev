@@ -1,6 +1,6 @@
 #include <TextBox.h>
 
-gui::TextBox::TextBox(float x, float y, float w, float h, float outlineThickness, float fontSize, int id) : ID(id), x(x), y(y), w(w), h(h)
+gui::TextBox::TextBox(float x, float y, float w, float h, float outlineThickness, float fontSize, int id, sf::String enteredText) : ID(id), x(x), y(y), w(w), h(h), enteredText(enteredText)
 {
 	font.loadFromFile("arial.ttf");
 	text.setFillColor(sf::Color::Black);
@@ -12,6 +12,7 @@ gui::TextBox::TextBox(float x, float y, float w, float h, float outlineThickness
 	shape.setOutlineColor(sf::Color::Black);
 	shape.setSize(sf::Vector2f(w, h));
 	shape.setPosition(x, y);
+	SetText(enteredText);
 }
 
 void gui::TextBox::SetFont(std::string filename)
