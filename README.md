@@ -30,6 +30,7 @@ Skybox
 - [ ] Add physics
 - [x] Improve GUI
 - [x] Add text input (Gui) 
+- [ ] Adding and subtracting models and animations (maybe)
 ## Building test game (Linux)
 In 3Dev folder you have model, skybox, code and building files. First you need to download assimp sources in 3Dev folder, execute
 ```
