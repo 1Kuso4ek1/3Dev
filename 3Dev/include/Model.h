@@ -15,10 +15,9 @@ public:
 	Model();
 	~Model();
 
-	bool Load(std::string filename, std::string texture);
-	bool Load(std::string filename);
+	bool Load(std::string filename, std::string texture = "");
 
-	void Draw(bool tex = true);
+	void Draw();
 	void Draw(GLuint texture);
 	
 	void SetPosition(float x, float y, float z);
@@ -46,6 +45,8 @@ private:
 	float* normalArray;
 	float* uvArray;
 
-	GLuint ModelTexture;
+	GLuint ModelTexture = 0;
+	
+	aiMesh* mesh;
 };
 
