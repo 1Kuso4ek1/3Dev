@@ -17,9 +17,7 @@ Class for lighting
 
 Class for camera
 
-Small class for simple shapes
-
-Skybox
+Class for simple shapes
 
 3Dev Editor (soon)
 ## TODO
@@ -31,6 +29,8 @@ Skybox
 - [x] Improve GUI
 - [x] Add text input (Gui) 
 - [ ] Adding and subtracting models and animations (maybe)
+- [ ] Animation states
+- [ ] Materials
 ## Building test game (Linux)
 In 3Dev folder you have model, skybox, code and building files. First you need to download assimp sources in 3Dev folder, execute
 ```
