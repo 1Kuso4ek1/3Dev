@@ -48,7 +48,7 @@ Model::~Model()
 
 bool Model::Load(std::string filename, std::string texture)
 {
-	ModelTexture = (texture == "") ? 0 : LoadTexture(texture);
+	if(ModelTexture == 0) ModelTexture = (texture == "") ? 0 : LoadTexture(texture);
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
