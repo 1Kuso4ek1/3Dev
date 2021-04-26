@@ -6,7 +6,7 @@ namespace gui {
 	public:
 		int ID;
 	
-		TextBox(float x, float y, float w, float h, float outlineThickness, float fontSize, int id, sf::String enteredText = "");
+		TextBox(float x, float y, float w, float h, float outlineThickness, float fontSize, int id, sf::String enteredText = "", sf::String font = "arial.ttf");
 		
 		void SetFont(std::string filename);
 		void SetTextColor(sf::Color color);

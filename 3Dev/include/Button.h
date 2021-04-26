@@ -7,7 +7,7 @@ namespace gui {
 		int ID;
 		bool check;
 		
-		Button(float x, float y, float w, float h, sf::String text, float fontSize, int id, int outlineThickness, bool check = true);
+		Button(float x, float y, float w, float h, sf::String text, float fontSize, int id, int outlineThickness, bool check = true, sf::String font = "arial.ttf");
 
 		void SetFont(std::string filename);
 		void SetTextColor(sf::Color color);
