@@ -1,9 +1,9 @@
 #include "Button.h"
 
-gui::Button::Button(float x, float y, float w, float h, sf::String text, float fontSize, int id, int outlineThickness, bool check) : ID(id), check(check)
+gui::Button::Button(float x, float y, float w, float h, sf::String text, float fontSize, int id, int outlineThickness, bool check, sf::String font) : ID(id), check(check)
 {
-	font.loadFromFile("arial.ttf");
-	this->text.setFont(font);
+	this->font.loadFromFile(font);
+	this->text.setFont(this->font);
 	this->text.setCharacterSize(fontSize);
 	this->text.setString(text);
 	this->text.setPosition(x + 2, y);

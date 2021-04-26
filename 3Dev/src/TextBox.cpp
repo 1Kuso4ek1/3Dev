@@ -1,10 +1,10 @@
 #include <TextBox.h>
 
-gui::TextBox::TextBox(float x, float y, float w, float h, float outlineThickness, float fontSize, int id, sf::String enteredText) : ID(id), x(x), y(y), w(w), h(h), enteredText(enteredText)
+gui::TextBox::TextBox(float x, float y, float w, float h, float outlineThickness, float fontSize, int id, sf::String enteredText, sf::String font) : ID(id), x(x), y(y), w(w), h(h), enteredText(enteredText)
 {
-	font.loadFromFile("arial.ttf");
+	this->font.loadFromFile(font);
 	text.setFillColor(sf::Color::Black);
-	text.setFont(font);
+	text.setFont(this->font);
 	text.setCharacterSize(fontSize);
 	text.setPosition(x + 2, y);
 	shape.setFillColor(sf::Color::White);
