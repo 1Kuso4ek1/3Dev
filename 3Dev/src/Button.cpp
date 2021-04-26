@@ -25,7 +25,7 @@ void gui::Button::SetTextColor(sf::Color color)
 	text.setFillColor(color);
 }
 
-void gui::Button::SetText(std::string text)
+void gui::Button::SetText(sf::String text)
 {
 	this->text.setString(text);
 }
