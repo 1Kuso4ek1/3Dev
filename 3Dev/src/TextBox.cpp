@@ -127,5 +127,6 @@ void gui::TextBox::isPressed(sf::Event& event, sf::Vector2f pos)
 
 std::string gui::TextBox::GetText()
 {
-	return enteredText;
+	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+	return converter.to_bytes(enteredText.toWideString());
 }
