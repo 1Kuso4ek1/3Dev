@@ -104,6 +104,11 @@ void Animation::SetRotation(float rotationX, float rotationY, float rotationZ)
 	}
 }
 
+void Animation::SetID(std::string ID)
+{
+	this->ID = ID;
+}
+
 void Animation::SetLoop(bool loop)
 {
 	this->loop = loop;
