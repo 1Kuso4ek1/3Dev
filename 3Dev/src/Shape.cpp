@@ -11,32 +11,32 @@ void Shape::Draw(GLuint texture, float x, float y, float z, float w, float h, fl
 	glRotatef(rotation.x, 1, 0, 0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glNormal3f(0.0, 0.0, 1.0); glVertex3f(-w, -h, -d);
+	glTexCoord2f(0, 0); glNormal3f(0.0, 0.0, -1.0); glVertex3f(-w, -h, -d);
 	glTexCoord2f(1, 0); glVertex3f(w, -h, -d);
 	glTexCoord2f(1, 1); glVertex3f(w, h, -d);
 	glTexCoord2f(0, 1); glVertex3f(-w, h, -d);
 
-	glTexCoord2f(0, 0); glNormal3f(-1.0, 0.0, 0.0); glVertex3f(w, -h, d);
+	glTexCoord2f(0, 0); glNormal3f(1.0, 0.0, 0.0); glVertex3f(w, -h, d);
 	glTexCoord2f(1, 0); glVertex3f(-w, -h, d);
 	glTexCoord2f(1, 1); glVertex3f(-w, h, d);
 	glTexCoord2f(0, 1); glVertex3f(w, h, d);
 
-	glTexCoord2f(0, 0); glNormal3f(0.0, 0.0, -1.0); glVertex3f(-w, -h, d);
+	glTexCoord2f(0, 0); glNormal3f(0.0, 0.0, 1.0); glVertex3f(-w, -h, d);
 	glTexCoord2f(1, 0); glVertex3f(-w, -h, -d);
 	glTexCoord2f(1, 1); glVertex3f(-w, h, -d);
 	glTexCoord2f(0, 1); glVertex3f(-w, h, d);
 
-	glTexCoord2f(0, 0); glNormal3f(1.0, 0.0, 0.0); glVertex3f(w, -h, -d);
+	glTexCoord2f(0, 0); glNormal3f(-1.0, 0.0, 0.0); glVertex3f(w, -h, -d);
 	glTexCoord2f(1, 0); glVertex3f(w, -h, d);
 	glTexCoord2f(1, 1); glVertex3f(w, h, d);
 	glTexCoord2f(0, 1); glVertex3f(w, h, -d);
 
-	glTexCoord2f(0, 0); glNormal3f(0.0, 1.0, 0.0); glVertex3f(-w, -h, d);
+	glTexCoord2f(0, 0); glNormal3f(0.0, -1.0, 0.0); glVertex3f(-w, -h, d);
 	glTexCoord2f(1, 0); glVertex3f(w, -h, d);
 	glTexCoord2f(1, 1); glVertex3f(w, -h, -d);
 	glTexCoord2f(0, 1); glVertex3f(-w, -h, -d);
 
-	glTexCoord2f(0, 0); glNormal3f(0.0, -1.0, 0.0); glVertex3f(-w, h, -d);
+	glTexCoord2f(0, 0); glNormal3f(0.0, 1.0, 0.0); glVertex3f(-w, h, -d);
 	glTexCoord2f(1, 0); glVertex3f(w, h, -d);
 	glTexCoord2f(1, 1); glVertex3f(w, h, d);
 	glTexCoord2f(0, 1); glVertex3f(-w, h, d);
@@ -54,7 +54,7 @@ void Shape::Draw(GLuint texture[6], float x, float y, float z, float w, float h,
 	glRotatef(rotation.x, 1, 0, 0);
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glNormal3f(0.0, 0.0, 1.0); glVertex3f(-w, -h, -d);
+	glTexCoord2f(0, 0); glNormal3f(0.0, 0.0, -1.0); glVertex3f(-w, -h, -d);
 	glTexCoord2f(1, 0); glVertex3f(w, -h, -d);
 	glTexCoord2f(1, 1); glVertex3f(w, h, -d);
 	glTexCoord2f(0, 1); glVertex3f(-w, h, -d);
@@ -62,7 +62,7 @@ void Shape::Draw(GLuint texture[6], float x, float y, float z, float w, float h,
 
 	glBindTexture(GL_TEXTURE_2D, texture[1]);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glNormal3f(-1.0, 0.0, 0.0); glVertex3f(w, -h, d);
+	glTexCoord2f(0, 0); glNormal3f(1.0, 0.0, 0.0); glVertex3f(w, -h, d);
 	glTexCoord2f(1, 0); glVertex3f(-w, -h, d);
 	glTexCoord2f(1, 1); glVertex3f(-w, h, d);
 	glTexCoord2f(0, 1); glVertex3f(w, h, d);
@@ -70,7 +70,7 @@ void Shape::Draw(GLuint texture[6], float x, float y, float z, float w, float h,
 
 	glBindTexture(GL_TEXTURE_2D, texture[2]);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glNormal3f(0.0, 0.0, -1.0); glVertex3f(-w, -h, d);
+	glTexCoord2f(0, 0); glNormal3f(0.0, 0.0, 1.0); glVertex3f(-w, -h, d);
 	glTexCoord2f(1, 0); glVertex3f(-w, -h, -d);
 	glTexCoord2f(1, 1); glVertex3f(-w, h, -d);
 	glTexCoord2f(0, 1); glVertex3f(-w, h, d);
@@ -78,7 +78,7 @@ void Shape::Draw(GLuint texture[6], float x, float y, float z, float w, float h,
 
 	glBindTexture(GL_TEXTURE_2D, texture[3]);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glNormal3f(1.0, 0.0, 0.0); glVertex3f(w, -h, -d);
+	glTexCoord2f(0, 0); glNormal3f(-1.0, 0.0, 0.0); glVertex3f(w, -h, -d);
 	glTexCoord2f(1, 0); glVertex3f(w, -h, d);
 	glTexCoord2f(1, 1); glVertex3f(w, h, d);
 	glTexCoord2f(0, 1); glVertex3f(w, h, -d);
@@ -86,7 +86,7 @@ void Shape::Draw(GLuint texture[6], float x, float y, float z, float w, float h,
 
 	glBindTexture(GL_TEXTURE_2D, texture[4]);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glNormal3f(0.0, 1.0, 0.0); glVertex3f(-w, -h, d);
+	glTexCoord2f(0, 0); glNormal3f(0.0, -1.0, 0.0); glVertex3f(-w, -h, d);
 	glTexCoord2f(1, 0); glVertex3f(w, -h, d);
 	glTexCoord2f(1, 1); glVertex3f(w, -h, -d);
 	glTexCoord2f(0, 1); glVertex3f(-w, -h, -d);
@@ -94,7 +94,7 @@ void Shape::Draw(GLuint texture[6], float x, float y, float z, float w, float h,
 
 	glBindTexture(GL_TEXTURE_2D, texture[5]);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glNormal3f(0.0, -1.0, 0.0); glVertex3f(-w, h, -d);
+	glTexCoord2f(0, 0); glNormal3f(0.0, 1.0, 0.0); glVertex3f(-w, h, -d);
 	glTexCoord2f(1, 0); glVertex3f(w, h, -d);
 	glTexCoord2f(1, 1); glVertex3f(w, h, d);
 	glTexCoord2f(0, 1); glVertex3f(-w, h, d);
@@ -121,7 +121,7 @@ void Shape::DrawPlane(GLuint texture) {
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glBegin(GL_QUADS);
 	
-	glTexCoord2f(0, 0); glVertex3f(-size.x, 0, -size.z);
+	glTexCoord2f(0, 0); glNormal3f(0.0, -1.0, 0.0); glVertex3f(-size.x, 0, -size.z);
 	glTexCoord2f(1, 0); glVertex3f(size.x, 0, -size.z);
 	glTexCoord2f(1, 1); glVertex3f(size.x, 0, size.z);
 	glTexCoord2f(0, 1); glVertex3f(-size.x, 0, size.z);
