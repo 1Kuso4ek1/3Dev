@@ -25,7 +25,7 @@ Class for simple shapes
 - [ ] Add lights (3Dev Editor)
 - [ ] Add shapes (3Dev Editor)
 - [ ] Add export function (3Dev Editor)
-- [ ] Add physics
+- [x] Add physics
 - [x] Improve GUI
 - [x] Add text input (Gui) 
 - [ ] Adding and subtracting models and animations (maybe)
