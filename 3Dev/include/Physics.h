@@ -1,24 +1,24 @@
 #include <3Dev.h>
 
-sf::Vector3f collision(float x, float y, float z, Model& m, float p = 1)
+std::pair<int, sf::Vector3f> collision(float x, float y, float z, Model& m, float p = 1)
 {
-	for (int j = 0; j < m.numVerts * 3; j += 3) {
-		if(abs(x - ((m.GetPosition().x + m.vertexArray[j]) * m.GetSize().x)) <= p * m.GetSize().x && abs(z - ((m.GetPosition().z + m.vertexArray[j + 2] * m.GetSize().z))) <= p * m.GetSize().z)
+	for (int i = 0; i < m.numVerts * 3; i += 3) {
+		if(abs(x - ((m.GetPosition().x + m.vertexArray[i]))) <= p && abs(z - ((m.GetPosition().z + m.vertexArray[i + 2]))) <= p)
 		{
-			if (y <= (m.GetPosition().y + m.vertexArray[j + 1]) * m.GetSize().y && y >= (m.GetPosition().y - m.vertexArray[j + 1]) / m.GetSize().y) {
-				return sf::Vector3f(((m.GetPosition().z + m.vertexArray[j]) * m.GetSize().z) - z, ((m.GetPosition().y + m.vertexArray[j + 1]) * m.GetSize().y) - y, ((m.GetPosition().z + m.vertexArray[j + 2]) * m.GetSize().z) - z);
+			if (y <= (m.GetPosition().y + m.vertexArray[i + 1]) && y >= (m.GetPosition().y - m.vertexArray[i + 1]) / m.GetSize().y) {
+				return std::make_pair(i, sf::Vector3f(((m.GetPosition().x + m.vertexArray[i])) - x, ((m.GetPosition().y + m.vertexArray[i + 1])) - y, ((m.GetPosition().z + m.vertexArray[i + 2])) - z));
 			}
 		}
 	}
-	return sf::Vector3f(0, 0, 0);
+	return std::make_pair(-1, sf::Vector3f(0, 0, 0));
 }
 
 bool collision(Model& m, float x, float y, float z, float w = 0, float h = 0, float d = 0)
 {
-	for (int j = 0; j < m.numVerts * 3; j += 3) {
-		if((m.GetPosition().x + m.vertexArray[j] <= x + w && m.GetPosition().x + m.vertexArray[j] >= x - w) && (m.GetPosition().z + m.vertexArray[j + 2] <= z + d && m.GetPosition().z + m.vertexArray[j + 2] >= z - d))
+	for (int i = 0; i < m.numVerts * 3; i += 3) {
+		if((m.GetPosition().x + m.vertexArray[i] <= x + w && m.GetPosition().x + m.vertexArray[i] >= x - w) && (m.GetPosition().z + m.vertexArray[i + 2] <= z + d && m.GetPosition().z + m.vertexArray[i + 2] >= z - d))
 		{
-			if (m.GetPosition().y + m.vertexArray[j + 1] <= y + h && m.GetPosition().y + m.vertexArray[j + 1] >= y - h) {
+			if (m.GetPosition().y + m.vertexArray[i + 1] <= y + h && m.GetPosition().y + m.vertexArray[i + 1] >= y - h) {
 				return true;
 			}
 		}
@@ -51,10 +51,10 @@ sf::Vector3f collision(float x, float y, float z, Shape s)
 
 bool collision(Model& m, Shape s)
 {
-	for (int j = 0; j < m.numVerts * 3; j += 3) {
-		if((m.GetPosition().x + m.vertexArray[j] <= s.GetPosition().x + s.GetSize().x && m.GetPosition().x + m.vertexArray[j] >= s.GetPosition().x - s.GetSize().x) && (m.GetPosition().z + m.vertexArray[j + 2] <= s.GetPosition().z + s.GetSize().z && m.GetPosition().z + m.vertexArray[j + 2] >= s.GetPosition().z - s.GetSize().z))
+	for (int i = 0; i < m.numVerts * 3; i += 3) {
+		if((m.GetPosition().x + m.vertexArray[i] <= s.GetPosition().x + s.GetSize().x && m.GetPosition().x + m.vertexArray[i] >= s.GetPosition().x - s.GetSize().x) && (m.GetPosition().z + m.vertexArray[i + 2] <= s.GetPosition().z + s.GetSize().z && m.GetPosition().z + m.vertexArray[i + 2] >= s.GetPosition().z - s.GetSize().z))
 		{
-			if (m.GetPosition().y + m.vertexArray[j + 1] <= s.GetPosition().y + s.GetSize().y && m.GetPosition().y + m.vertexArray[j + 1] >= s.GetPosition().y - s.GetSize().y) {
+			if (m.GetPosition().y + m.vertexArray[i + 1] <= s.GetPosition().y + s.GetSize().y && m.GetPosition().y + m.vertexArray[i + 1] >= s.GetPosition().y - s.GetSize().y) {
 				return true;
 			}
 		}
