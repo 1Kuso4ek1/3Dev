@@ -1,6 +1,7 @@
 flags {
 I3Dev/include/
 Iassimp/include/
+I"3Dev Edtor"
 }
 files {
 "3Dev Editor/main.cpp"
