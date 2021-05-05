@@ -5,12 +5,14 @@ class Animation
 {
 public:
 	Animation(std::string filename, std::string texture, int frames, float speed, std::string ID, float x, float y, float z, float rx, float ry, float rz, float sx, float sy, float sz);
+	Animation(std::string filename, GLuint texture, int frames, float speed, std::string ID, float x, float y, float z, float rx, float ry, float rz, float sx, float sy, float sz);
 	Animation(std::string filename, std::string texture, int frames, float speed);
 	Animation(std::string filename, GLuint texture, int frames, float speed);
 	Animation();
 	~Animation();
 	
 	void Load(std::string filename, std::string texture, int frames);
+	void Load(std::string filename, int frames);
 	
 	void DrawAnimation(float time);
 	void DrawFrame(int frame);
@@ -29,8 +31,6 @@ public:
 	void AddSize(float sizeX, float sizeY, float sizeZ);
 	void AddRotation(float rotationX, float rotationY, float rotationZ);
 	
-	int GetCurrentFrame();
-	
 	sf::Vector3f GetPosition();
 	sf::Vector3f GetRotation();
 	sf::Vector3f GetSize();
@@ -40,9 +40,10 @@ public:
 	std::string GetTextureFilename();
 	
 	int GetFrames();
-private:
-	void Load(std::string filename, int frames);
+	int GetCurrentFrame();
 
+	float GetSpeed();
+private:
 	sf::Vector3f position, rotation, size;
 
 	int frames;
@@ -54,7 +55,7 @@ private:
 	float current_frame = 1;
 	float speed;
 	
-	GLuint animationTexture;
+	GLuint animationTexture = 0;
 	
 	bool loop = true;
 };

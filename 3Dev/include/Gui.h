@@ -12,6 +12,7 @@ namespace gui {
 		void Add(gui::TextBox& textbox);
 		
 		void SetText(int ID, sf::String text);
+		void SetEnteredText(int ID, sf::String text);
 		void SetTextColor(int ID, sf::Color color);
 		void SetTextSize(int ID, int size);
 		void SetFont(int ID, std::string filename);
