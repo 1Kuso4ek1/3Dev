@@ -46,7 +46,7 @@ ibs build.ibs libraries.ibs
 ```
 in terminal.
 ## Building 3Dev Editor (Linux)
-It's really easy. If you already build ibs, just write
+It's really easy. Open terminal in 3Dev Editor forlder, then, if you already build ibs, just write
 ```
 ibs editor.ibs libraries.ibs
 ```
