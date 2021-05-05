@@ -13,6 +13,8 @@ public:
 	void SetPosition(float x, float y, float z);
 	void SetID(std::string ID);
 	
+	void AddPosition(float x, float y, float z);
+	
 	void Update();
 	
 	void GetParameters(GLenum type, float* var);
