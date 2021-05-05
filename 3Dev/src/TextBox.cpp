@@ -31,6 +31,12 @@ void gui::TextBox::SetText(sf::String text)
 	this->text.setString(text);
 }
 
+void gui::TextBox::SetEnteredText(sf::String text)
+{
+	enteredText = text;
+	SetText(enteredText);
+}
+
 void gui::TextBox::SetTextSize(int size)
 {
 	text.setCharacterSize(size);

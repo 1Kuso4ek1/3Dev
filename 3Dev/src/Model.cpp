@@ -8,6 +8,14 @@ Model::Model(std::string filename, std::string texture, std::string ID, float x,
 	Load(filename, texture);
 }
 
+Model::Model(std::string filename, GLuint texture, std::string ID, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ) : ID(ID), filename(filename), ModelTexture(texture)
+{
+	SetPosition(x, y, z);
+	SetRotation(rotationX, rotationY, rotationZ);
+	SetSize(sizeX, sizeY, sizeZ);
+	Load(filename);
+}
+
 Model::Model(std::string filename, std::string texture, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ) : filename(filename), texture(texture)
 {
 	SetPosition(x, y, z);

@@ -33,6 +33,13 @@ void gui::Gui::SetText(int ID, sf::String text)
 	Find(ID, std::function<void(gui::Button&, sf::String)>(&gui::Button::SetText), std::function<void(gui::TextBox&, sf::String)>(&gui::TextBox::SetText), text);
 }
 
+void gui::Gui::SetEnteredText(int ID, sf::String text)
+{
+	for(auto& i : textboxes) {
+		if(i.ID == ID) i.SetEnteredText(text);
+	}
+}
+
 void gui::Gui::SetTextColor(int ID, sf::Color color)
 {
 	Find(ID, std::function<void(gui::Button&, sf::Color)>(&gui::Button::SetTextColor), std::function<void(gui::TextBox&, sf::Color)>(&gui::TextBox::SetTextColor), color);
