@@ -7,6 +7,7 @@
 #include <Shape.h>
 #include "AllGui.h"
 #include <filesystem>
+#include <memory>
 
 Camera cam(0, 0, 0, 1);
 bool right = false;
