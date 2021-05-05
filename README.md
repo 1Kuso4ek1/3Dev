@@ -22,7 +22,7 @@ Class for simple shapes
 3Dev Editor (soon)
 ## TODO
 - [x] Make it cross-platform
-- [ ] Add lights (3Dev Editor)
+- [x] Add lights (3Dev Editor)
 - [ ] Add shapes (3Dev Editor)
 - [ ] Add export function (3Dev Editor)
 - [x] Add physics
