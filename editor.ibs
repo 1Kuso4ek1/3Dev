@@ -1,0 +1,31 @@
+flags {
+I3Dev/include/
+Iassimp/include/
+}
+files {
+"3Dev Editor/main.cpp"
+3Dev/src/Animation.cpp
+3Dev/src/Button.cpp
+3Dev/src/Camera.cpp
+3Dev/src/Gui.cpp
+3Dev/src/Light.cpp
+3Dev/src/Model.cpp
+3Dev/src/Shader.cpp
+3Dev/src/Shape.cpp
+3Dev/src/TextBox.cpp
+}
+libs {
+GL
+GLU
+GLEW
+assimp
+stdc++fs
+sfml-graphics
+sfml-window
+sfml-system
+sfml-audio
+sfml-network
+}
+name {
+3Dev Editor
+}
