@@ -36,8 +36,18 @@ In 3Dev folder you have model, skybox, code and building files. First you need t
 ```
 git clone https://github.com/assimp/assimp
 ```
-in terminal, you don't need to build it. Then download and build https://github.com/1Kuso4ek1/ibs, move executable near main.cpp, then execute
+in terminal, you don't need to build it. Then download and build https://github.com/1Kuso4ek1/ibs, write
 ```
-./ibs build.ibs libraries.ibs
+sudo cp ibs /usr/bin
 ```
-in terminal. 
+to use ibs everywhere you want, then execute
+```
+ibs build.ibs libraries.ibs
+```
+in terminal.
+## Building 3Dev Editor (Linux)
+It's really easy. If you already build ibs, just write
+```
+ibs editor.ibs libraries.ibs
+```
+wait, and enjoy! :)
