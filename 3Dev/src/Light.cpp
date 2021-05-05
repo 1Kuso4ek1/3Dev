@@ -30,6 +30,11 @@ void Light::SetID(std::string ID)
 	this->ID = ID;
 }
 
+void Light::AddPosition(float x, float y, float z)
+{
+	SetPosition(position.x + x, position.y + y, position.z + z);
+}
+
 void Light::Update() 
 {
 	float parameters[4] = { position.x, position.y, position.z, 1 };
