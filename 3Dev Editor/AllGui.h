@@ -86,7 +86,7 @@ gui::TextBox labtb(520, 260, 30, 20, 1, 12, 61, "0");
 gui::Button lightNumberb(410, 140, 0, 0, "Light number", 12, 38, 0);
 gui::TextBox lightNumberbtb(500, 140, 30, 20, 1, 12, 39, "0");
 
-gui::Button warning(410, 110, 0, 0, "In \"Light number\" field enter number only between 0 and 8!", 12, 40, 0);
+gui::Button warning(410, 110, 0, 0, "In \"Light number\" field enter number only between 0 and 7!", 12, 40, 0);
 
 gui::Button deleteb(410, 230, 50, 20, "Delete", 12, 53, 0);
 
