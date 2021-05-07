@@ -26,7 +26,7 @@ std::vector<std::shared_ptr<Light>> lights;
 
 GLenum lightnumber;
 GLuint skybox[6];
-std::string filename, texture, id;
+std::string filename, texture, id, templatefile;
 
 int selected = -1, selectedAnim = -1, selectedLight = -1;
 int frames = 0, lightNum = 0;
@@ -41,6 +41,97 @@ bool showcursor = true;
 bool modeldialog = false, animationdialog = false, lightdialog = false, modeleditdialog = false, animationeditdialog = false, lighteditdialog = false, savedialog = false, loaddialog = false;
 
 Shape lightShape(0.3, 0.3, 0.3, 0, 0, 0);
+
+void SaveProject(std::string filename)
+{
+	std::ofstream output(filename);
+	output << models.size() << std::endl;
+	for(int i = 0; i < models.size(); i++)
+	{
+		output << models[i]->GetID() << " " << models[i]->GetFilename() << " " << (models[i]->GetTextureFilename().empty() ? "notex" : models[i]->GetTextureFilename()) << " " << models[i]->GetPosition().x << " " << models[i]->GetPosition().y << " " << models[i]->GetPosition().z << " " << models[i]->GetRotation().x << " " << models[i]->GetRotation().y << " " << models[i]->GetRotation().z << " " << models[i]->GetSize().x << " " << models[i]->GetSize().y << " " << models[i]->GetSize().z << std::endl;
+	}
+	output << animations.size() << std::endl;
+	for(int i = 0; i < animations.size(); i++)
+	{
+		output << animations[i]->GetID() << " " << animations[i]->GetFilename() << " " << (animations[i]->GetTextureFilename().empty() ? "notex" : animations[i]->GetTextureFilename()) << " " << animations[i]->GetFrames() << "" << animations[i]->GetSpeed() << " " << animations[i]->GetPosition().x << " " << animations[i]->GetPosition().y << " " << animations[i]->GetPosition().z << " " << animations[i]->GetRotation().x << " " << animations[i]->GetRotation().y << " " << animations[i]->GetRotation().z << " " << animations[i]->GetSize().x << " " << animations[i]->GetSize().y << " " << animations[i]->GetSize().z << std::endl;
+	}
+	output << lights.size() << std::endl;
+	for(int i = 0; i < lights.size(); i++)
+	{
+		float la[1] = { 0 };
+		float ads[4] = { 0, 0, 0, 1 };
+		output << lights[i]->GetID() << " " << std::hex << lights[i]->GetLightNum() << " " << lights[i]->GetPosition().x << " " << lights[i]->GetPosition().y << " " << lights[i]->GetPosition().z << " ";
+		lights[i]->GetParameters(GL_LINEAR_ATTENUATION, la);
+		output << la[0] << " ";
+		lights[i]->GetParameters(GL_AMBIENT, ads);
+		output << ads[0] << " " << ads[1] << " " << ads[2] << " ";
+		lights[i]->GetParameters(GL_DIFFUSE, ads);
+		output << ads[0] << " " << ads[1] << " " << ads[2] << " ";
+		lights[i]->GetParameters(GL_SPECULAR, ads);
+		output << ads[0] << " " << ads[1] << " " << ads[2] << std::endl;
+	}
+	output.close();
+}
+
+bool LoadProject(std::string filename)
+{
+	std::ifstream input(filename);
+	if(input.is_open())
+	{
+		int it = 0;
+		input >> it;
+		for(int i = 0; i < it; i++)
+		{
+			input >> id >> filename >> texture >> x >> y >> z >> rotx >> roty >> rotz >> sizex >> sizey >> sizez;
+			if(texture != "notex") models.emplace_back(std::make_shared<Model>(filename, texture, id, x, y, z, rotx, roty, rotz, sizex, sizey, sizez));
+			else models.emplace_back(std::make_shared<Model>(filename, GLuint(0), id, x, y, z, rotx, roty, rotz, sizex, sizey, sizez));
+		}
+		input >> it;
+		for(int i = 0; i < it; i++)
+		{
+			input >> id >> filename >> texture >> frames >> speed >> x >> y >> z >> rotx >> roty >> rotz >> sizex >> sizey >> sizez;
+			if(texture != "notex") animations.emplace_back(std::make_shared<Animation>(filename, texture, frames, speed, id, x, y, z, 0, 0, 0, 1, 1, 1));
+			else animations.emplace_back(std::make_shared<Animation>(filename, GLuint(0), frames, speed, id, x, y, z, 0, 0, 0, 1, 1, 1));
+		}
+		input >> it;
+		for(int i = 0; i < it; i++)
+		{
+			float la[1] = { 0 };
+			float ads[4] = { 0, 0, 0, 1 };
+			input >> id >> std::hex >> lightNum >> x >> y >> z;
+			lights.emplace_back(std::make_shared<Light>(lightNum, x, y, z, id));
+			input >> la[0];
+			lights[i]->SetParameters(la, GL_LINEAR_ATTENUATION);
+			input >> ads[0] >> ads[1] >> ads[2];
+			lights[i]->SetParameters(ads, GL_AMBIENT);
+			input >> ads[0] >> ads[1] >> ads[2];
+			lights[i]->SetParameters(ads, GL_DIFFUSE);
+			input >> ads[0] >> ads[1] >> ads[2];
+			lights[i]->SetParameters(ads, GL_SPECULAR);
+		}
+		input.close();
+		return true;
+	}
+	return false;
+}
+
+void ReadConfig()
+{
+	std::ifstream input("editor.cfg");
+	std::string param, val;
+	if(input.is_open())
+	{
+		while(input >> param >> val)
+		{
+			if(param == "template_file" && val != "NULL") templatefile = val;
+			if(param == "default_project" && val != "NULL")
+			{ 
+				LoadProject(val); 
+				saveLoadDialog.SetEnteredText(pnamebtb.ID, val);
+			}
+		}
+	}
+}
 
 void GLsetup(float width, float height)
 {
@@ -68,7 +159,9 @@ int main() {
 	w.setFramerateLimit(60);
 	
 	GLsetup(width, height);
-
+	
+	ReadConfig();
+	
 	skybox[0] = LoadTexture("resources/skybox3/skybox_front.bmp");
 	skybox[1] = LoadTexture("resources/skybox3/skybox_back.bmp");
 	skybox[2] = LoadTexture("resources/skybox3/skybox_left.bmp");
@@ -224,34 +317,7 @@ int main() {
 			{
 				if (saveLoadDialog.CatchEvent(event, w) == ok.ID)
 				{
-					filename = saveLoadDialog.GetTextBoxString(pnamebtb.ID);
-					std::ofstream output(filename);
-					output << models.size() << std::endl;
-					for(int i = 0; i < models.size(); i++)
-					{
-						output << models[i]->GetID() << " " << models[i]->GetFilename() << " " << (models[i]->GetTextureFilename().empty() ? "notex" : models[i]->GetTextureFilename()) << " " << models[i]->GetPosition().x << " " << models[i]->GetPosition().y << " " << models[i]->GetPosition().z << " " << models[i]->GetRotation().x << " " << models[i]->GetRotation().y << " " << models[i]->GetRotation().z << " " << models[i]->GetSize().x << " " << models[i]->GetSize().y << " " << models[i]->GetSize().z << std::endl;
-					}
-					output << animations.size() << std::endl;
-					for(int i = 0; i < animations.size(); i++)
-					{
-						output << animations[i]->GetID() << " " << animations[i]->GetFilename() << " " << (animations[i]->GetTextureFilename().empty() ? "notex" : animations[i]->GetTextureFilename()) << " " << animations[i]->GetFrames() << "" << animations[i]->GetSpeed() << " " << animations[i]->GetPosition().x << " " << animations[i]->GetPosition().y << " " << animations[i]->GetPosition().z << " " << animations[i]->GetRotation().x << " " << animations[i]->GetRotation().y << " " << animations[i]->GetRotation().z << " " << animations[i]->GetSize().x << " " << animations[i]->GetSize().y << " " << animations[i]->GetSize().z << std::endl;
-					}
-					output << lights.size() << std::endl;
-					for(int i = 0; i < lights.size(); i++)
-					{
-						float la[1] = { 0 };
-						float ads[4] = { 0, 0, 0, 1 };
-						output << lights[i]->GetID() << " " << std::hex << lights[i]->GetLightNum() << " " << lights[i]->GetPosition().x << " " << lights[i]->GetPosition().y << " " << lights[i]->GetPosition().z << " ";
-						lights[i]->GetParameters(GL_LINEAR_ATTENUATION, la);
-						output << la[0] << " ";
-						lights[i]->GetParameters(GL_AMBIENT, ads);
-						output << ads[0] << " " << ads[1] << " " << ads[2] << " ";
-						lights[i]->GetParameters(GL_DIFFUSE, ads);
-						output << ads[0] << " " << ads[1] << " " << ads[2] << " ";
-						lights[i]->GetParameters(GL_SPECULAR, ads);
-						output << ads[0] << " " << ads[1] << " " << ads[2] << std::endl;
-					}
-					output.close();
+					SaveProject(saveLoadDialog.GetTextBoxString(pnamebtb.ID));
 					savedialog = false;
 				}
 			}
@@ -260,44 +326,7 @@ int main() {
 			{
 				if (saveLoadDialog.CatchEvent(event, w) == ok.ID)
 				{
-					filename = saveLoadDialog.GetTextBoxString(pnamebtb.ID);
-					std::ifstream input(filename);
-					if(input.is_open())
-					{
-						int it = 0;
-						input >> it;
-						for(int i = 0; i < it; i++)
-						{
-							input >> id >> filename >> texture >> x >> y >> z >> rotx >> roty >> rotz >> sizex >> sizey >> sizez;
-							if(texture != "notex") models.emplace_back(std::make_shared<Model>(filename, texture, id, x, y, z, 0, 0, 0, 1, 1, 1));
-							else models.emplace_back(std::make_shared<Model>(filename, GLuint(0), id, x, y, z, 0, 0, 0, 1, 1, 1));
-						}
-						input >> it;
-						for(int i = 0; i < it; i++)
-						{
-							input >> id >> filename >> texture >> frames >> speed >> x >> y >> z >> rotx >> roty >> rotz >> sizex >> sizey >> sizez;
-							if(texture != "notex") animations.emplace_back(std::make_shared<Animation>(filename, texture, frames, speed, id, x, y, z, 0, 0, 0, 1, 1, 1));
-							else animations.emplace_back(std::make_shared<Animation>(filename, GLuint(0), frames, speed, id, x, y, z, 0, 0, 0, 1, 1, 1));
-						}
-						input >> it;
-						for(int i = 0; i < it; i++)
-						{
-							float la[1] = { 0 };
-							float ads[4] = { 0, 0, 0, 1 };
-							input >> id >> std::hex >> lightNum >> x >> y >> z;
-							lights.emplace_back(std::make_shared<Light>(lightNum, x, y, z, id));
-							input >> la[0];
-							lights[i]->SetParameters(la, GL_LINEAR_ATTENUATION);
-							input >> ads[0] >> ads[1] >> ads[2];
-							lights[i]->SetParameters(ads, GL_AMBIENT);
-							input >> ads[0] >> ads[1] >> ads[2];
-							lights[i]->SetParameters(ads, GL_DIFFUSE);
-							input >> ads[0] >> ads[1] >> ads[2];
-							lights[i]->SetParameters(ads, GL_SPECULAR);
-						}
-						input.close();
-						loaddialog = false;
-					}
+					if(LoadProject(saveLoadDialog.GetTextBoxString(pnamebtb.ID))) loaddialog = false;
 					else saveLoadDialog.SetEnteredText(pnamebtb.ID, "Error!");
 				}
 			}
