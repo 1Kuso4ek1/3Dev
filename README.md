@@ -1,7 +1,7 @@
 # 3Dev
 Simple 3D game engine, that uses SFML, OpenGL, Assimp. 
 ## 3Dev Editor
-3Dev Editor is in development, but now, if you on Windows, you can launch exe file in 3Dev Editor folder and make your scene.
+3Dev Editor's source code is now here!
 ## Tutorial
 Check Wiki, if you want to learn how to make games with 3Dev.
 ## Features
