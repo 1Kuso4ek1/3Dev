@@ -38,7 +38,7 @@ float x, y, z, rotx, roty, rotz, sizex, sizey, sizez, temp;
 bool move = false, resize = false, rotate = false;
 bool modelmove = false, animmove = false, lightmove = false;
 bool showcursor = true;
-bool modeldialog = false, animationdialog = false, lightdialog = false, modeleditdialog = false, animationeditdialog = false, lighteditdialog = false, savedialog = false, loaddialog = false;
+bool modeldialog = false, animationdialog = false, lightdialog = false, modeleditdialog = false, animationeditdialog = false, lighteditdialog = false, savedialog = false, loaddialog = false, exportdialog = false;
 
 Shape lightShape(0.3, 0.3, 0.3, 0, 0, 0);
 
@@ -53,7 +53,7 @@ void SaveProject(std::string filename)
 	output << animations.size() << std::endl;
 	for(int i = 0; i < animations.size(); i++)
 	{
-		output << animations[i]->GetID() << " " << animations[i]->GetFilename() << " " << (animations[i]->GetTextureFilename().empty() ? "notex" : animations[i]->GetTextureFilename()) << " " << animations[i]->GetFrames() << "" << animations[i]->GetSpeed() << " " << animations[i]->GetPosition().x << " " << animations[i]->GetPosition().y << " " << animations[i]->GetPosition().z << " " << animations[i]->GetRotation().x << " " << animations[i]->GetRotation().y << " " << animations[i]->GetRotation().z << " " << animations[i]->GetSize().x << " " << animations[i]->GetSize().y << " " << animations[i]->GetSize().z << std::endl;
+		output << animations[i]->GetID() << " " << animations[i]->GetFilename() << " " << (animations[i]->GetTextureFilename().empty() ? "notex" : animations[i]->GetTextureFilename()) << " " << animations[i]->GetFrames() << " " << animations[i]->GetSpeed() << " " << animations[i]->GetPosition().x << " " << animations[i]->GetPosition().y << " " << animations[i]->GetPosition().z << " " << animations[i]->GetRotation().x << " " << animations[i]->GetRotation().y << " " << animations[i]->GetRotation().z << " " << animations[i]->GetSize().x << " " << animations[i]->GetSize().y << " " << animations[i]->GetSize().z << std::endl;
 	}
 	output << lights.size() << std::endl;
 	for(int i = 0; i < lights.size(); i++)
@@ -133,6 +133,133 @@ void ReadConfig()
 	}
 }
 
+bool ExportProject(std::string filename)
+{
+	if(!templatefile.empty())
+	{
+		std::ofstream output(filename);
+		std::ifstream input(templatefile);
+		std::string code;
+		
+		std::istreambuf_iterator<char> inputit(input), emptyit;
+		std::back_insert_iterator<std::string> strin(code);
+		std::copy(inputit, emptyit, strin);
+		
+		size_t modelspos = code.find("//Models");
+		if(modelspos != std::string::npos)
+		{
+			code.erase(modelspos, std::strlen("//Models"));
+			for(int i = 0; i < models.size(); i++)
+			{
+				std::string mdlstr("Model " + models[i]->GetID() + "(\"" + models[i]->GetFilename() + "\", " + (models[i]->GetTextureFilename().empty() ? "GLuint(0)" : "\"" + models[i]->GetTextureFilename() + "\"") + ", " + std::to_string(models[i]->GetPosition().x) + ", " + std::to_string(models[i]->GetPosition().y) + ", " + std::to_string(models[i]->GetPosition().z)
+				+ ", " + std::to_string(models[i]->GetRotation().x) + ", " + std::to_string(models[i]->GetRotation().y) + ", " + std::to_string(models[i]->GetRotation().z)+ ", " + std::to_string(models[i]->GetSize().x) + ", " + std::to_string(models[i]->GetSize().y) + ", " + std::to_string(models[i]->GetSize().z) + ");\n");
+				code.insert(modelspos, mdlstr);
+				modelspos += mdlstr.size();
+			}
+		}
+		size_t modelsdrawpos = code.find("//ModelsDraw");
+		if(modelsdrawpos != std::string::npos)
+		{
+			code.erase(modelsdrawpos, std::strlen("//ModelsDraw"));
+			for(int i = 0; i < models.size(); i++)
+			{
+				std::string mdldrwstr(models[i]->GetID() + ".Draw();\n");
+				code.insert(modelsdrawpos, mdldrwstr);
+				modelsdrawpos += mdldrwstr.size();
+			}
+		}
+		size_t animationspos = code.find("//Animations");
+		if(animationspos != std::string::npos)
+		{
+			code.erase(animationspos, std::strlen("//Animations"));
+			for(int i = 0; i < animations.size(); i++)
+			{
+				std::string animstr("Animation " + animations[i]->GetID() + "(\"" + animations[i]->GetFilename() + "\", " + (animations[i]->GetTextureFilename().empty() ? "GLuint(0)" : "\"" + animations[i]->GetTextureFilename() + "\"") + ", " + std::to_string(animations[i]->GetFrames()) + ", " + std::to_string(animations[i]->GetSpeed()) + ", \"" + animations[i]->GetID() + "\", " + std::to_string(animations[i]->GetPosition().x) + ", " + std::to_string(animations[i]->GetPosition().y) + ", " + std::to_string(animations[i]->GetPosition().z)
+				+ ", " + std::to_string(animations[i]->GetRotation().x) + ", " + std::to_string(animations[i]->GetRotation().y) + ", " + std::to_string(animations[i]->GetRotation().z)+ ", " + std::to_string(animations[i]->GetSize().x) + ", " + std::to_string(animations[i]->GetSize().y) + ", " + std::to_string(animations[i]->GetSize().z) + ");\n");
+				code.insert(animationspos, animstr);
+				animationspos += animstr.size();
+			}
+		}
+		size_t animationsdrawpos = code.find("//AnimationsDraw");
+		if(animationsdrawpos != std::string::npos)
+		{
+			code.erase(animationsdrawpos, std::strlen("//AnimationsDraw"));
+			for(int i = 0; i < animations.size(); i++)
+			{
+				std::string animdrwstr(animations[i]->GetID() + ".DrawAnimation(time);\n");
+				code.insert(animationsdrawpos, animdrwstr);
+				animationsdrawpos += animdrwstr.size();
+			}
+		}
+		size_t lightspos = code.find("//Lights");
+		if(lightspos != std::string::npos)
+		{
+			code.erase(lightspos, std::strlen("//Lights"));
+			for(int i = 0; i < lights.size(); i++)
+			{
+				std::stringstream ss;
+				ss << std::hex << lights[i]->GetLightNum();
+				float la[1] = { 0 };
+				float ads[4] = { 0, 0, 0, 1 };
+				lights[i]->GetParameters(GL_LINEAR_ATTENUATION, la);
+				std::string lghstr("float la" + lights[i]->GetID() + "[1] = { " + std::to_string(la[0]) + " };\n");
+				code.insert(lightspos, lghstr);
+				lightspos += lghstr.size();
+				
+				lights[i]->GetParameters(GL_AMBIENT, ads);
+				lghstr = std::string("float amb" + lights[i]->GetID() + "[4] = { " + std::to_string(ads[0]) + ", " + std::to_string(ads[1]) + ", " + std::to_string(ads[2]) + ", " + std::to_string(ads[3]) + " };\n");
+				code.insert(lightspos, lghstr);
+				lightspos += lghstr.size();
+				
+				lights[i]->GetParameters(GL_DIFFUSE, ads);
+				lghstr = std::string("float dif" + lights[i]->GetID() + "[4] = { " + std::to_string(ads[0]) + ", " + std::to_string(ads[1]) + ", " + std::to_string(ads[2]) + ", " + std::to_string(ads[3]) + " };\n");
+				code.insert(lightspos, lghstr);
+				lightspos += lghstr.size();
+				
+				lights[i]->GetParameters(GL_SPECULAR, ads);
+				lghstr = std::string("float spc" + lights[i]->GetID() + "[4] = { " + std::to_string(ads[0]) + ", " + std::to_string(ads[1]) + ", " + std::to_string(ads[2]) + ", " + std::to_string(ads[3]) + " };\n\n");
+				code.insert(lightspos, lghstr);
+				lightspos += lghstr.size();
+				
+				lghstr = std::string("Light " + lights[i]->GetID() + "(0x" + ss.str() + ", " + std::to_string(lights[i]->GetPosition().x) + ", " + std::to_string(lights[i]->GetPosition().y) + ", " + std::to_string(lights[i]->GetPosition().z) + ");\n\n");
+				code.insert(lightspos, lghstr);
+				lightspos += lghstr.size();
+				
+				lghstr = std::string(lights[i]->GetID() + ".SetParameters(la" + lights[i]->GetID() + ", GL_LINEAR_ATTENUATION);\n");
+				code.insert(lightspos, lghstr);
+				lightspos += lghstr.size();
+				
+				lghstr = std::string(lights[i]->GetID() + ".SetParameters(amb" + lights[i]->GetID() + ", GL_AMBIENT);\n");
+				code.insert(lightspos, lghstr);
+				lightspos += lghstr.size();
+				
+				lghstr = std::string(lights[i]->GetID() + ".SetParameters(dif" + lights[i]->GetID() + ", GL_DIFFUSE);\n");
+				code.insert(lightspos, lghstr);
+				lightspos += lghstr.size();
+				
+				lghstr = std::string(lights[i]->GetID() + ".SetParameters(spc" + lights[i]->GetID() + ", GL_SPECULAR);\n\n");
+				code.insert(lightspos, lghstr);
+				lightspos += lghstr.size();
+			}
+		}
+		size_t lightsdrawpos = code.find("//LightsUpdate");
+		if(lightsdrawpos != std::string::npos)
+		{
+			code.erase(lightsdrawpos, std::strlen("//LightsUpdate"));
+			for(int i = 0; i < lights.size(); i++)
+			{
+				std::string lghtdrwstr(lights[i]->GetID() + ".Update();\n");
+				code.insert(lightsdrawpos, lghtdrwstr);
+				lightsdrawpos += lghtdrwstr.size();
+			}
+		}
+		output << code;
+		input.close();
+		return true;
+	}
+	else return false;
+} 
+
 void GLsetup(float width, float height)
 {
 	glEnable(GL_BLEND);
@@ -154,7 +281,7 @@ int main() {
 
 	int width = 1280, height = 720;
 
-	sf::RenderWindow w(sf::VideoMode(width, height), "3Dev", sf::Style::Default, s);
+	sf::RenderWindow w(sf::VideoMode(width, height), "3Dev Editor", sf::Style::Default, s);
 	w.setVerticalSyncEnabled(true);
 	w.setFramerateLimit(60);
 	
@@ -176,14 +303,15 @@ int main() {
 	while (w.isOpen()) {
 		sf::Event event;
 		while (w.pollEvent(event)) {			
-			if (gui.CatchEvent(event, w) == modelButton.ID && !animationdialog && !animationeditdialog && !lightdialog && !modeleditdialog && !lighteditdialog && !savedialog && !loaddialog) modeldialog = !modeldialog;
-			if (gui.CatchEvent(event, w) == animationButton.ID && !modeldialog && !lightdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !savedialog && !loaddialog) animationdialog = !animationdialog;
-			if (gui.CatchEvent(event, w) == lightButton.ID && !modeldialog && !animationdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !savedialog && !loaddialog) lightdialog = !lightdialog;
-			if (gui.CatchEvent(event, w) == editButton.ID && !animationdialog && !animationeditdialog && !lightdialog && !modeldialog && !lighteditdialog && !savedialog && !loaddialog && selected != -1) modeleditdialog = !modeleditdialog;
-			if (gui.CatchEvent(event, w) == editButton1.ID && !modeleditdialog && !animationdialog && !lightdialog && !modeldialog && !lighteditdialog && !savedialog && !loaddialog && selectedAnim != -1) animationeditdialog = !animationeditdialog;
-			if (gui.CatchEvent(event, w) == editButton2.ID && !animationdialog && !animationeditdialog && !lightdialog && !modeldialog && !lighteditdialog && !savedialog && !loaddialog && !modeleditdialog && selectedLight != -1) lighteditdialog = !lighteditdialog;
-			if (gui.CatchEvent(event, w) == saveButton.ID && !modeldialog && !animationdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !loaddialog) savedialog = !savedialog;
-			if (gui.CatchEvent(event, w) == loadButton.ID && !modeldialog && !animationdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !savedialog) loaddialog = !loaddialog;
+			if (gui.CatchEvent(event, w) == modelButton.ID && !animationdialog && !animationeditdialog && !lightdialog && !modeleditdialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog) modeldialog = !modeldialog;
+			if (gui.CatchEvent(event, w) == animationButton.ID && !modeldialog && !lightdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog) animationdialog = !animationdialog;
+			if (gui.CatchEvent(event, w) == lightButton.ID && !modeldialog && !animationdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog) lightdialog = !lightdialog;
+			if (gui.CatchEvent(event, w) == editButton.ID && !animationdialog && !animationeditdialog && !lightdialog && !modeldialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog && selected != -1) modeleditdialog = !modeleditdialog;
+			if (gui.CatchEvent(event, w) == editButton1.ID && !modeleditdialog && !animationdialog && !lightdialog && !modeldialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog && selectedAnim != -1) animationeditdialog = !animationeditdialog;
+			if (gui.CatchEvent(event, w) == editButton2.ID && !animationdialog && !animationeditdialog && !lightdialog && !modeldialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog && !modeleditdialog && selectedLight != -1) lighteditdialog = !lighteditdialog;
+			if (gui.CatchEvent(event, w) == saveButton.ID && !modeldialog && !animationdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !loaddialog && !exportdialog) savedialog = !savedialog;
+			if (gui.CatchEvent(event, w) == loadButton.ID && !modeldialog && !animationdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !savedialog && !exportdialog) loaddialog = !loaddialog;
+			if (gui.CatchEvent(event, w) == exportButton.ID && !modeldialog && !animationdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !savedialog && !loaddialog) exportdialog = !exportdialog;
 			
 			if(modeldialog)
 			{
@@ -210,7 +338,7 @@ int main() {
 				if (animationDialog.CatchEvent(event, w) == ok.ID)
 				{
 					filename = animationDialog.GetTextBoxString(filenamebtb.ID);
-					if(std::filesystem::exists(filename))
+					if(std::filesystem::exists(filename + "_000000.obj"))
 					{
 						texture = animationDialog.GetTextBoxString(texturebtb.ID);
 						id = animationDialog.GetTextBoxString(idbtb.ID).empty() ? "nn" : animationDialog.GetTextBoxString(idbtb.ID);
@@ -308,7 +436,7 @@ int main() {
 				{
 					lights.erase(lights.begin() + selectedLight);
 					selectedLight -= 1;
-					gui.SetText(infoButton.ID, (selectedLight < 0) ? "NULL" : lights[selectedLight]->GetID());
+					gui.SetText(infoButton4.ID, (selectedLight < 0) ? "NULL" : lights[selectedLight]->GetID());
 					lighteditdialog = false;
 				}
 			}
@@ -330,6 +458,16 @@ int main() {
 					else saveLoadDialog.SetEnteredText(pnamebtb.ID, "Error!");
 				}
 			}
+			
+			if(exportdialog)
+			{
+				if (saveLoadDialog.CatchEvent(event, w) == ok.ID)
+				{
+					if(ExportProject(saveLoadDialog.GetTextBoxString(pnamebtb.ID))) exportdialog = false;
+					else saveLoadDialog.SetEnteredText(pnamebtb.ID, "Error!");
+				}
+			}
+			
 			if (gui.CatchEvent(event, w) == plusButton.ID) {
 				if (selected != models.size() - 1) {
 					selected++;
@@ -413,10 +551,10 @@ int main() {
 			showcursor = true;
 		}
 		
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) move = true; resize = false; rotate = false;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) move = false; resize = false; rotate = true;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::G)) move = false; resize = true; rotate = false;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) move = resize = rotate = false;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) { move = true; resize = false; rotate = false; }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) { move = false; resize = false; rotate = true; }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::G)) { move = false; resize = true; rotate = false; }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) { move = resize = rotate = false; }
 		
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) choice = 0;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) choice = 1;
@@ -427,61 +565,61 @@ int main() {
 			{
 				switch (choice)
 				{
-				case 0: models[selected]->AddPosition((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0, 0, 0); break;
-				case 1: models[selected]->AddPosition(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0, 0); break;
-				case 2: models[selected]->AddPosition(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0); break;
+				case 0: models[selected]->AddPosition((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0, 0, 0); break;
+				case 1: models[selected]->AddPosition(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0, 0); break;
+				case 2: models[selected]->AddPosition(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0); break;
 				}
 			}
 			if (animmove && selectedAnim >= 0) {
 				switch (choice)
 				{
-				case 0: animations[selectedAnim]->AddPosition((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0, 0, 0); break;
-				case 1: animations[selectedAnim]->AddPosition(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0, 0); break;
-				case 2: animations[selectedAnim]->AddPosition(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0); break;
+				case 0: animations[selectedAnim]->AddPosition((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0, 0, 0); break;
+				case 1: animations[selectedAnim]->AddPosition(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0, 0); break;
+				case 2: animations[selectedAnim]->AddPosition(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0); break;
 				}
 			}
 			if (lightmove && selectedLight >= 0) {
 				switch (choice)
 				{
-				case 0: lights[selectedLight]->AddPosition((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0, 0, 0); break;
-				case 1: lights[selectedLight]->AddPosition(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0, 0); break;
-				case 2: lights[selectedLight]->AddPosition(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0); break;
+				case 0: lights[selectedLight]->AddPosition((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0, 0, 0); break;
+				case 1: lights[selectedLight]->AddPosition(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0, 0); break;
+				case 2: lights[selectedLight]->AddPosition(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0); break;
 				}
 			}
 		}
-		if (rotate) {
-			if (modelmove) {
+		else if (rotate) {
+			if (modelmove && selected >= 0) {
 				switch (choice)
 				{
-				case 0: models[selected]->AddRotation((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0, 0, 0); break;
-				case 1: models[selected]->AddRotation(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0, 0); break;
-				case 2: models[selected]->AddRotation(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0); break;
+				case 0: models[selected]->AddRotation((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.3 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.3 * time : 0, 0, 0); break;
+				case 1: models[selected]->AddRotation(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.3 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.3 * time : 0, 0); break;
+				case 2: models[selected]->AddRotation(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.3 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.3 * time : 0); break;
 				}
 			}
-			if (animmove) {
+			if (animmove && selectedAnim >= 0) {
 				switch (choice)
 				{
-				case 0: animations[selectedAnim]->AddRotation((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0, 0, 0); break;
-				case 1: animations[selectedAnim]->AddRotation(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0, 0); break;
-				case 2: animations[selectedAnim]->AddRotation(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0); break;
+				case 0: animations[selectedAnim]->AddRotation((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.3 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.3 * time : 0, 0, 0); break;
+				case 1: animations[selectedAnim]->AddRotation(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.3 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.3 * time : 0, 0); break;
+				case 2: animations[selectedAnim]->AddRotation(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.3 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.3 * time : 0); break;
 				}
 			}
 		}
-		if (resize) {
-			if (modelmove) {
+		else if (resize) {
+			if (modelmove && selected >= 0) {
 				switch (choice)
 				{
-				case 0: models[selected]->AddSize((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0, 0, 0); break;
-				case 1: models[selected]->AddSize(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0, 0); break;
-				case 2: models[selected]->AddSize(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0); break;
+				case 0: models[selected]->AddSize((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.01 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.01 * time : 0, 0, 0); break;
+				case 1: models[selected]->AddSize(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.01 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.01 * time : 0, 0); break;
+				case 2: models[selected]->AddSize(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.01 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.01 * time : 0); break;
 				}
 			}
-			if (animmove) {
+			if (animmove && selectedAnim >= 0) {
 				switch (choice)
 				{
-				case 0: animations[selectedAnim]->AddSize((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0, 0, 0); break;
-				case 1: animations[selectedAnim]->AddSize(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0, 0); break;
-				case 2: animations[selectedAnim]->AddSize(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 : 0); break;
+				case 0: animations[selectedAnim]->AddSize((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.01 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.01 * time : 0, 0, 0); break;
+				case 1: animations[selectedAnim]->AddSize(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.01 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.01 * time : 0, 0); break;
+				case 2: animations[selectedAnim]->AddSize(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.01 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.01 * time : 0); break;
 				}
 			}
 		}
@@ -524,7 +662,7 @@ int main() {
 		if(modeleditdialog) modelEditDialog.Draw(w);		
 		if(animationeditdialog) animationEditDialog.Draw(w);		
 		if(lighteditdialog) lightEditDialog.Draw(w);
-		if(savedialog || loaddialog) saveLoadDialog.Draw(w);
+		if(savedialog || loaddialog || exportdialog) saveLoadDialog.Draw(w);
 		
 		gui.Draw(w);
 					
