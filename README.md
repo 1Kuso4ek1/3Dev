@@ -19,7 +19,7 @@ Class for camera
 
 Class for simple shapes
 
-3Dev Editor (soon)
+3Dev Editor
 ## TODO
 - [x] Make it cross-platform
 - [x] Add lights (3Dev Editor)
@@ -28,7 +28,6 @@ Class for simple shapes
 - [x] Add physics
 - [x] Improve GUI
 - [x] Add text input (Gui) 
-- [ ] Adding and subtracting models and animations (maybe)
 - [ ] Animation states
 - [ ] Materials
 - [ ] Particle system
