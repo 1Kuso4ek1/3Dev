@@ -8,6 +8,7 @@ public:
 		
 	Model(std::string filename, std::string texture, std::string ID, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ);
 	Model(std::string filename, GLuint texture, std::string ID, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ);
+	Model(std::string filename, GLuint texture, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ);
 	Model(std::string filename, std::string texture, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ);
 	Model(std::string filename, std::string texture, float x, float y, float z);
 	Model(std::string filename, GLuint texture, float x, float y, float z);
