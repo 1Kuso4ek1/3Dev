@@ -115,7 +115,7 @@ bool LoadProject(std::string filename)
 	return false;
 }
 
-void ReadConfig()
+void ReadConfig(bool loaddefproj = true)
 {
 	std::ifstream input("editor.cfg");
 	std::string param, val;
@@ -124,7 +124,7 @@ void ReadConfig()
 		while(input >> param >> val)
 		{
 			if(param == "template_file" && val != "NULL") templatefile = val;
-			if(param == "default_project" && val != "NULL")
+			if(param == "default_project" && val != "NULL" && loaddefproj)
 			{ 
 				LoadProject(val); 
 				saveLoadDialog.SetEnteredText(pnamebtb.ID, val);
@@ -275,7 +275,7 @@ void GLsetup(float width, float height)
 	glEnable(GL_LIGHTING);	
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 	sf::ContextSettings s;
 	s.depthBits = 24;
 
@@ -287,7 +287,8 @@ int main() {
 	
 	GLsetup(width, height);
 	
-	ReadConfig();
+	ReadConfig(argv[1] == nullptr);
+	if(argv[1] != nullptr) LoadProject(argv[1]);
 	
 	skybox[0] = LoadTexture("resources/skybox3/skybox_front.bmp");
 	skybox[1] = LoadTexture("resources/skybox3/skybox_back.bmp");
@@ -306,9 +307,38 @@ int main() {
 			if (gui.CatchEvent(event, w) == modelButton.ID && !animationdialog && !animationeditdialog && !lightdialog && !modeleditdialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog) modeldialog = !modeldialog;
 			if (gui.CatchEvent(event, w) == animationButton.ID && !modeldialog && !lightdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog) animationdialog = !animationdialog;
 			if (gui.CatchEvent(event, w) == lightButton.ID && !modeldialog && !animationdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog) lightdialog = !lightdialog;
-			if (gui.CatchEvent(event, w) == editButton.ID && !animationdialog && !animationeditdialog && !lightdialog && !modeldialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog && selected != -1) modeleditdialog = !modeleditdialog;
-			if (gui.CatchEvent(event, w) == editButton1.ID && !modeleditdialog && !animationdialog && !lightdialog && !modeldialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog && selectedAnim != -1) animationeditdialog = !animationeditdialog;
-			if (gui.CatchEvent(event, w) == editButton2.ID && !animationdialog && !animationeditdialog && !lightdialog && !modeldialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog && !modeleditdialog && selectedLight != -1) lighteditdialog = !lighteditdialog;
+			if (gui.CatchEvent(event, w) == editButton.ID && !animationdialog && !animationeditdialog && !lightdialog && !modeldialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog && selected != -1) 
+			{
+				modelEditDialog.SetEnteredText(idbtb.ID, models[selected]->GetID());
+				modelEditDialog.SetEnteredText(xbtb.ID, std::to_string(models[selected]->GetPosition().x)); modelEditDialog.SetEnteredText(ybtb.ID, std::to_string(models[selected]->GetPosition().y)); modelEditDialog.SetEnteredText(zbtb.ID, std::to_string(models[selected]->GetPosition().z));
+				modelEditDialog.SetEnteredText(rxbtb.ID, std::to_string(models[selected]->GetRotation().x)); modelEditDialog.SetEnteredText(rybtb.ID, std::to_string(models[selected]->GetRotation().y)); modelEditDialog.SetEnteredText(rzbtb.ID, std::to_string(models[selected]->GetRotation().z));
+				modelEditDialog.SetEnteredText(sxbtb.ID, std::to_string(models[selected]->GetSize().x)); modelEditDialog.SetEnteredText(sybtb.ID, std::to_string(models[selected]->GetSize().y)); modelEditDialog.SetEnteredText(szbtb.ID, std::to_string(models[selected]->GetSize().z));
+				modeleditdialog = !modeleditdialog;
+			}
+			if (gui.CatchEvent(event, w) == editButton1.ID && !modeleditdialog && !animationdialog && !lightdialog && !modeldialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog && selectedAnim != -1) 
+			{
+				animationEditDialog.SetEnteredText(idbtb.ID, animations[selectedAnim]->GetID());
+				animationEditDialog.SetEnteredText(xbtb.ID, std::to_string(animations[selectedAnim]->GetPosition().x)); animationEditDialog.SetEnteredText(ybtb.ID, std::to_string(animations[selectedAnim]->GetPosition().y)); animationEditDialog.SetEnteredText(zbtb.ID, std::to_string(animations[selectedAnim]->GetPosition().z));
+				animationEditDialog.SetEnteredText(rxbtb.ID, std::to_string(animations[selectedAnim]->GetRotation().x)); animationEditDialog.SetEnteredText(rybtb.ID, std::to_string(animations[selectedAnim]->GetRotation().y)); animationEditDialog.SetEnteredText(rzbtb.ID, std::to_string(animations[selectedAnim]->GetRotation().z));
+				animationEditDialog.SetEnteredText(sxbtb.ID, std::to_string(animations[selectedAnim]->GetSize().x)); animationEditDialog.SetEnteredText(sybtb.ID, std::to_string(animations[selectedAnim]->GetSize().y)); animationEditDialog.SetEnteredText(szbtb.ID, std::to_string(animations[selectedAnim]->GetSize().z));
+				animationEditDialog.SetEnteredText(speedbtb.ID, std::to_string(animations[selectedAnim]->GetSpeed()));
+				animationeditdialog = !animationeditdialog;
+			}
+			if (gui.CatchEvent(event, w) == editButton2.ID && !animationdialog && !animationeditdialog && !lightdialog && !modeldialog && !lighteditdialog && !savedialog && !loaddialog && !exportdialog && !modeleditdialog && selectedLight != -1) 
+			{
+				lightEditDialog.SetEnteredText(idbtb.ID, lights[selectedLight]->GetID());
+				lightEditDialog.SetEnteredText(xbtb.ID, std::to_string(lights[selectedLight]->GetPosition().x)); lightEditDialog.SetEnteredText(ybtb.ID, std::to_string(lights[selectedLight]->GetPosition().y)); lightEditDialog.SetEnteredText(zbtb.ID, std::to_string(lights[selectedLight]->GetPosition().z));
+				float ads[4] = { 0, 0, 0, 1 }, la[1] = { 0 };
+				lights[selectedLight]->GetParameters(GL_AMBIENT, ads);
+				lightEditDialog.SetEnteredText(axbtb.ID, std::to_string(ads[0])); lightEditDialog.SetEnteredText(aybtb.ID, std::to_string(ads[1])); lightEditDialog.SetEnteredText(azbtb.ID, std::to_string(ads[2]));
+				lights[selectedLight]->GetParameters(GL_DIFFUSE, ads);
+				lightEditDialog.SetEnteredText(rxbtb.ID, std::to_string(ads[0])); lightEditDialog.SetEnteredText(rybtb.ID, std::to_string(ads[1])); lightEditDialog.SetEnteredText(rzbtb.ID, std::to_string(ads[2]));
+				lights[selectedLight]->GetParameters(GL_SPECULAR, ads);
+				lightEditDialog.SetEnteredText(sxbtb.ID, std::to_string(ads[0])); lightEditDialog.SetEnteredText(sybtb.ID, std::to_string(ads[1])); lightEditDialog.SetEnteredText(szbtb.ID, std::to_string(ads[2]));
+				lights[selectedLight]->GetParameters(GL_LINEAR_ATTENUATION, la);
+				lightEditDialog.SetEnteredText(labtb.ID, std::to_string(la[0]));
+				lighteditdialog = !lighteditdialog;
+			}
 			if (gui.CatchEvent(event, w) == saveButton.ID && !modeldialog && !animationdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !loaddialog && !exportdialog) savedialog = !savedialog;
 			if (gui.CatchEvent(event, w) == loadButton.ID && !modeldialog && !animationdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !savedialog && !exportdialog) loaddialog = !loaddialog;
 			if (gui.CatchEvent(event, w) == exportButton.ID && !modeldialog && !animationdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !savedialog && !loaddialog) exportdialog = !exportdialog;

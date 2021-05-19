@@ -36,40 +36,40 @@ gui::Button textureb(410, 140, 0, 0, "Texture", 12, 24, 0);
 gui::TextBox texturebtb(480, 140, 100, 20, 1, 12, 25);
 
 gui::Button xb(410, 170, 0, 0, "X", 12, 26, 0);
-gui::TextBox xbtb(425, 170, 30, 20, 1, 12, 27, "0");
+gui::TextBox xbtb(435, 170, 80, 20, 1, 12, 27, "0");
 
-gui::Button yb(460, 170, 0, 0, "Y", 12, 28, 0);
-gui::TextBox ybtb(475, 170, 30, 20, 1, 12, 29, "0");
+gui::Button yb(520, 170, 0, 0, "Y", 12, 28, 0);
+gui::TextBox ybtb(545, 170, 80, 20, 1, 12, 29, "0");
 
-gui::Button zb(510, 170, 0, 0, "Z", 12, 30, 0);
-gui::TextBox zbtb(525, 170, 30, 20, 1, 12, 31, "0");
+gui::Button zb(630, 170, 0, 0, "Z", 12, 30, 0);
+gui::TextBox zbtb(655, 170, 80, 20, 1, 12, 31, "0");
 
 gui::Button axb(410, 170, 0, 0, "AR", 12, 54, 0);
-gui::TextBox axbtb(435, 170, 30, 20, 1, 12, 55, "0");
+gui::TextBox axbtb(435, 170, 80, 20, 1, 12, 55, "0");
 
-gui::Button ayb(470, 170, 0, 0, "AG", 12, 56, 0);
-gui::TextBox aybtb(495, 170, 30, 20, 1, 12, 57, "0");
+gui::Button ayb(520, 170, 0, 0, "AG", 12, 56, 0);
+gui::TextBox aybtb(545, 170, 80, 20, 1, 12, 57, "0");
 
-gui::Button azb(530, 170, 0, 0, "AB", 12, 58, 0);
-gui::TextBox azbtb(555, 170, 30, 20, 1, 12, 59, "0");
+gui::Button azb(630, 170, 0, 0, "AB", 12, 58, 0);
+gui::TextBox azbtb(655, 170, 80, 20, 1, 12, 59, "0");
 
 gui::Button rxb(410, 170, 0, 0, "RX", 12, 41, 0);
-gui::TextBox rxbtb(435, 170, 30, 20, 1, 12, 42, "0");
+gui::TextBox rxbtb(435, 170, 80, 20, 1, 12, 42, "0");
 
-gui::Button ryb(470, 170, 0, 0, "RY", 12, 43, 0);
-gui::TextBox rybtb(495, 170, 30, 20, 1, 12, 44, "0");
+gui::Button ryb(520, 170, 0, 0, "RY", 12, 43, 0);
+gui::TextBox rybtb(545, 170, 80, 20, 1, 12, 44, "0");
 
-gui::Button rzb(530, 170, 0, 0, "RZ", 12, 45, 0);
-gui::TextBox rzbtb(555, 170, 30, 20, 1, 12, 46, "0");
+gui::Button rzb(630, 170, 0, 0, "RZ", 12, 45, 0);
+gui::TextBox rzbtb(655, 170, 80, 20, 1, 12, 46, "0");
 
 gui::Button sxb(410, 200, 0, 0, "SX", 12, 47, 0);
-gui::TextBox sxbtb(435, 200, 30, 20, 1, 12, 48, "1");
+gui::TextBox sxbtb(435, 200, 80, 20, 1, 12, 48, "1");
 
-gui::Button syb(470, 200, 0, 0, "SY", 12, 49, 0);
-gui::TextBox sybtb(495, 200, 30, 20, 1, 12, 50, "1");
+gui::Button syb(520, 200, 0, 0, "SY", 12, 49, 0);
+gui::TextBox sybtb(545, 200, 80, 20, 1, 12, 50, "1");
 
-gui::Button szb(530, 200, 0, 0, "SZ", 12, 51, 0);
-gui::TextBox szbtb(555, 200, 30, 20, 1, 12, 52, "1");
+gui::Button szb(630, 200, 0, 0, "SZ", 12, 51, 0);
+gui::TextBox szbtb(655, 200, 80, 20, 1, 12, 52, "1");
 
 gui::Button idb(410, 200, 0, 0, "ID", 12, 32, 0);
 gui::TextBox idbtb(440, 200, 100, 20, 1, 12, 33);
@@ -78,10 +78,10 @@ gui::Button framesb(410, 230, 0, 0, "Frames", 12, 34, 0);
 gui::TextBox framesbtb(470, 230, 50, 20, 1, 12, 35, "0");
 
 gui::Button speedb(410, 260, 0, 0, "Speed", 12, 36, 0);
-gui::TextBox speedbtb(460, 260, 30, 20, 1, 12, 37, "1");
+gui::TextBox speedbtb(460, 260, 80, 20, 1, 12, 37, "1");
 
 gui::Button lab(410, 260, 0, 0, "Linear attenuation", 12, 60, 0);
-gui::TextBox labtb(520, 260, 30, 20, 1, 12, 61, "0");
+gui::TextBox labtb(520, 260, 80, 20, 1, 12, 61, "0");
 
 gui::Button lightNumberb(410, 140, 0, 0, "Light number", 12, 38, 0);
 gui::TextBox lightNumberbtb(500, 140, 30, 20, 1, 12, 39, "0");
@@ -251,13 +251,13 @@ gui::Gui SetupModelEditDialog()
 	idbtb.SetPosition(440, 110);
 	
 	xb.SetPosition(410, 140);
-	xbtb.SetPosition(425, 140);
+	xbtb.SetPosition(435, 140);
 	
-	yb.SetPosition(460, 140);
-	ybtb.SetPosition(475, 140);
+	yb.SetPosition(520, 140);
+	ybtb.SetPosition(545, 140);
 	
-	zb.SetPosition(510, 140);
-	zbtb.SetPosition(525, 140);
+	zb.SetPosition(630, 140);
+	zbtb.SetPosition(655, 140);
 	
 	rxb.SetTextColor(sf::Color::Black);
 	ryb.SetTextColor(sf::Color::Black);
@@ -378,20 +378,20 @@ gui::Gui SetupLightEditDialog()
 	rxb.SetPosition(410, 200);
 	rxbtb.SetPosition(435, 200);
 	
-	ryb.SetPosition(470, 200);
-	rybtb.SetPosition(495, 200);
+	ryb.SetPosition(520, 200);
+	rybtb.SetPosition(545, 200);
 	
-	rzb.SetPosition(530, 200);
-	rzbtb.SetPosition(555, 200);
+	rzb.SetPosition(630, 200);
+	rzbtb.SetPosition(655, 200);
 	
 	sxb.SetPosition(410, 230);
 	sxbtb.SetPosition(435, 230);
 	
-	syb.SetPosition(470, 230);
-	sybtb.SetPosition(495, 230);
+	syb.SetPosition(520, 230);
+	sybtb.SetPosition(545, 230);
 	
-	szb.SetPosition(530, 230);
-	szbtb.SetPosition(555, 230);
+	szb.SetPosition(630, 230);
+	szbtb.SetPosition(655, 230);
 	
 	deleteb.SetPosition(410, 290);
 	
