@@ -3,7 +3,7 @@
 std::pair<int, sf::Vector3f> collision(float x, float y, float z, Model& m, float p = 1)
 {
 	for (int i = 0; i < m.numVerts * 3; i += 3) {
-		if(abs(x - ((m.GetPosition().x + m.vertexArray[i]))) <= p && abs(z - ((m.GetPosition().z + m.vertexArray[i + 2]))) <= p)
+		if(std::abs(x - ((m.GetPosition().x + m.vertexArray[i]))) <= p && std::abs(z - ((m.GetPosition().z + m.vertexArray[i + 2]))) <= p)
 		{
 			if (y <= (m.GetPosition().y + m.vertexArray[i + 1]) && y >= (m.GetPosition().y - m.vertexArray[i + 1])) {
 				return std::make_pair(i, sf::Vector3f(((m.GetPosition().x + m.vertexArray[i])) - x, ((m.GetPosition().y + m.vertexArray[i + 1])) - y, ((m.GetPosition().z + m.vertexArray[i + 2])) - z));
@@ -19,7 +19,7 @@ std::pair<std::vector<int>, std::vector<int>> collision(Model& m1, Model& m, flo
 	std::vector<int> v1;
 	for (int i = 0; i < m.numVerts * 3; i += 3 * mskip) {
 		for (int j = 0; j < m1.numVerts * 3; j += 3 * m1skip) {
-			if(fabsf(((m1.GetPosition().x + ((m1.vertexArray[j] * cos(m1.GetRotation().y * pi / 180)) * sin(m1.GetRotation().x * pi / 180)))) - ((m.GetPosition().x + m.vertexArray[i]))) <= p && fabsf(((m1.GetPosition().z + ((m1.vertexArray[j + 2] * cos(m1.GetRotation().y * pi / 180)) * cos(m1.GetRotation().z * pi / 180)))) - ((m.GetPosition().z + m.vertexArray[i + 2]))) <= p)
+			if(std::abs(((m1.GetPosition().x + (((m1.vertexArray[j] * cosf(m1.GetRotation().y * pi / 180)) * sinf(m1.GetRotation().y * pi / 180))))) - ((m.GetPosition().x + m.vertexArray[i]))) <= p && std::abs(((m1.GetPosition().z + (((m1.vertexArray[j + 2] * cosf(m1.GetRotation().y * pi / 180)) * cosf(m1.GetRotation().y * pi / 180))))) - ((m.GetPosition().z + m.vertexArray[i + 2]))) <= p)
 			{
 				if ((m1.GetPosition().y + m1.vertexArray[j + 1]) <= (m.GetPosition().y + m.vertexArray[i + 1]) && (m1.GetPosition().y - m1.vertexArray[j + 1]) >= (m.GetPosition().y - m.vertexArray[i + 1])) {
 					v.push_back(j);
