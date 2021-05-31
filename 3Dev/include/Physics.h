@@ -1,5 +1,13 @@
 #include <3Dev.h>
 
+sf::Vector3f rotate(sf::Vector3f pos, sf::Vector3f rot)
+{
+	float x = pos.x * (cos(rot.x * pi / 180) * cos(rot.y * pi / 180)) + pos.y * (cos(rot.x * pi / 180) * sin(rot.y * pi / 180) * sin(rot.z * pi / 180) - sin(rot.x * pi / 180) * cos(rot.z * pi / 180)) + pos.z * (cos(rot.x * pi / 180) * sin(rot.y * pi / 180) * cos(rot.z * pi / 180) + sin(rot.y * pi / 180) * sin(rot.z * pi / 180));
+	float y = pos.x * (sin(rot.x * pi / 180) * cos(rot.y * pi / 180)) + pos.y * (sin(rot.x * pi / 180) * sin(rot.y * pi / 180) * sin(rot.z * pi / 180) + cos(rot.x * pi / 180) * cos(rot.z * pi / 180)) + pos.z * (sin(rot.x * pi / 180) * sin(rot.y * pi / 180) * cos(rot.z * pi / 180) - cos(rot.y * pi / 180) * sin(rot.z * pi / 180));
+	float z = pos.x * (-sin(rot.y * pi / 180)) + pos.y * (cos(rot.y * pi / 180) * sin(rot.z * pi / 180)) + pos.z * (cos(rot.y * pi / 180) * cos(rot.z * pi / 180));
+	return sf::Vector3f(x, y, z);
+}
+
 std::pair<int, sf::Vector3f> collision(float x, float y, float z, Model& m, float p = 1)
 {
 	for (int i = 0; i < m.numVerts * 3; i += 3) {
@@ -17,11 +25,18 @@ std::pair<std::vector<int>, std::vector<int>> collision(Model& m1, Model& m, flo
 {
 	std::vector<int> v;
 	std::vector<int> v1;
+	std::vector<float> rotvert;
+	for (int j = 0; j < m1.numVerts * 3; j += 3) {
+		sf::Vector3f res(rotate(sf::Vector3f(m1.vertexArray[j], m1.vertexArray[j + 1], m1.vertexArray[j + 2]), m1.GetRotation()));
+		rotvert.push_back(res.x);
+		rotvert.push_back(res.y);
+		rotvert.push_back(res.z);
+	}
 	for (int i = 0; i < m.numVerts * 3; i += 3 * mskip) {
 		for (int j = 0; j < m1.numVerts * 3; j += 3 * m1skip) {
-			if(std::abs(((m1.GetPosition().x + (((m1.vertexArray[j] * cosf(m1.GetRotation().y * pi / 180)) * sinf(m1.GetRotation().y * pi / 180))))) - ((m.GetPosition().x + m.vertexArray[i]))) <= p && std::abs(((m1.GetPosition().z + (((m1.vertexArray[j + 2] * cosf(m1.GetRotation().y * pi / 180)) * cosf(m1.GetRotation().y * pi / 180))))) - ((m.GetPosition().z + m.vertexArray[i + 2]))) <= p)
+			if(std::abs(m1.GetPosition().x + rotvert[j] - (m.GetPosition().x + m.vertexArray[i])) <= p && std::abs(m1.GetPosition().z + rotvert[j + 2] - (m.GetPosition().z + m.vertexArray[i + 2])) <= p)
 			{
-				if ((m1.GetPosition().y + m1.vertexArray[j + 1]) <= (m.GetPosition().y + m.vertexArray[i + 1]) && (m1.GetPosition().y - m1.vertexArray[j + 1]) >= (m.GetPosition().y - m.vertexArray[i + 1])) {
+				if ((m1.GetPosition().y + rotvert[j + 1]) <= (m.GetPosition().y + m.vertexArray[i + 1]) && (m1.GetPosition().y - rotvert[j + 1]) >= (m.GetPosition().y - m.vertexArray[i + 1])) {
 					v.push_back(j);
 					v1.push_back(i);
 				}
