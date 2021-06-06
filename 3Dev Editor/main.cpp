@@ -9,9 +9,6 @@
 #include <filesystem>
 #include <memory>
 
-Camera cam(0, 0, 0, 1);
-bool right = false;
-
 gui::Gui modelDialog(SetupModelDialog());
 gui::Gui animationDialog(SetupAnimationDialog());
 gui::Gui lightDialog(SetupLightDialog());
@@ -33,14 +30,17 @@ int frames = 0, lightNum = 0;
 int choice = 0;
 
 float speed = 0;
-float x, y, z, rotx, roty, rotz, sizex, sizey, sizez, temp;
+float x, y, z, rotx, roty, rotz, sizex, sizey, sizez, temp, m_move = 0.1, m_rotate = 0.3, m_resize = 0.01;
 
+bool right = false;
 bool move = false, resize = false, rotate = false;
 bool modelmove = false, animmove = false, lightmove = false;
 bool showcursor = true;
 bool modeldialog = false, animationdialog = false, lightdialog = false, modeleditdialog = false, animationeditdialog = false, lighteditdialog = false, savedialog = false, loaddialog = false, exportdialog = false;
 
 Shape lightShape(0.3, 0.3, 0.3, 0, 0, 0);
+
+Camera cam(0, 0, 0, 1);
 
 void SaveProject(std::string filename)
 {
@@ -129,6 +129,10 @@ void ReadConfig(bool loaddefproj = true)
 				LoadProject(val); 
 				saveLoadDialog.SetEnteredText(pnamebtb.ID, val);
 			}
+			if(param == "m_move" && val != "NULL") m_move = stof(val);
+			if(param == "m_rotate" && val != "NULL") m_rotate = stof(val);
+			if(param == "m_resize" && val != "NULL") m_resize = stof(val);
+			if(param == "cam_speed" && val != "NULL") cam.speed = stof(val);
 		}
 	}
 }
@@ -595,25 +599,25 @@ int main(int argc, char* argv[]) {
 			{
 				switch (choice)
 				{
-				case 0: models[selected]->AddPosition((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0, 0, 0); break;
-				case 1: models[selected]->AddPosition(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0, 0); break;
-				case 2: models[selected]->AddPosition(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0); break;
+				case 0: models[selected]->AddPosition((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_move * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_move * time : 0, 0, 0); break;
+				case 1: models[selected]->AddPosition(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_move * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_move * time : 0, 0); break;
+				case 2: models[selected]->AddPosition(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_move * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_move * time : 0); break;
 				}
 			}
 			if (animmove && selectedAnim >= 0) {
 				switch (choice)
 				{
-				case 0: animations[selectedAnim]->AddPosition((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0, 0, 0); break;
-				case 1: animations[selectedAnim]->AddPosition(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0, 0); break;
-				case 2: animations[selectedAnim]->AddPosition(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0); break;
+				case 0: animations[selectedAnim]->AddPosition((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_move * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_move * time : 0, 0, 0); break;
+				case 1: animations[selectedAnim]->AddPosition(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_move * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_move * time : 0, 0); break;
+				case 2: animations[selectedAnim]->AddPosition(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_move * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_move * time : 0); break;
 				}
 			}
 			if (lightmove && selectedLight >= 0) {
 				switch (choice)
 				{
-				case 0: lights[selectedLight]->AddPosition((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0, 0, 0); break;
-				case 1: lights[selectedLight]->AddPosition(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0, 0); break;
-				case 2: lights[selectedLight]->AddPosition(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.1 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.1 * time : 0); break;
+				case 0: lights[selectedLight]->AddPosition((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_move * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_move * time : 0, 0, 0); break;
+				case 1: lights[selectedLight]->AddPosition(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_move * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_move * time : 0, 0); break;
+				case 2: lights[selectedLight]->AddPosition(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_move * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_move * time : 0); break;
 				}
 			}
 		}
@@ -621,17 +625,17 @@ int main(int argc, char* argv[]) {
 			if (modelmove && selected >= 0) {
 				switch (choice)
 				{
-				case 0: models[selected]->AddRotation((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.3 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.3 * time : 0, 0, 0); break;
-				case 1: models[selected]->AddRotation(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.3 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.3 * time : 0, 0); break;
-				case 2: models[selected]->AddRotation(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.3 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.3 * time : 0); break;
+				case 0: models[selected]->AddRotation((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_rotate * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_rotate * time : 0, 0, 0); break;
+				case 1: models[selected]->AddRotation(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_rotate * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_rotate * time : 0, 0); break;
+				case 2: models[selected]->AddRotation(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_rotate * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_rotate * time : 0); break;
 				}
 			}
 			if (animmove && selectedAnim >= 0) {
 				switch (choice)
 				{
-				case 0: animations[selectedAnim]->AddRotation((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.3 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.3 * time : 0, 0, 0); break;
-				case 1: animations[selectedAnim]->AddRotation(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.3 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.3 * time : 0, 0); break;
-				case 2: animations[selectedAnim]->AddRotation(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.3 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.3 * time : 0); break;
+				case 0: animations[selectedAnim]->AddRotation((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_rotate * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_rotate * time : 0, 0, 0); break;
+				case 1: animations[selectedAnim]->AddRotation(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_rotate * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_rotate * time : 0, 0); break;
+				case 2: animations[selectedAnim]->AddRotation(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_rotate * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_rotate * time : 0); break;
 				}
 			}
 		}
@@ -639,17 +643,17 @@ int main(int argc, char* argv[]) {
 			if (modelmove && selected >= 0) {
 				switch (choice)
 				{
-				case 0: models[selected]->AddSize((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.01 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.01 * time : 0, 0, 0); break;
-				case 1: models[selected]->AddSize(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.01 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.01 * time : 0, 0); break;
-				case 2: models[selected]->AddSize(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.01 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.01 * time : 0); break;
+				case 0: models[selected]->AddSize((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_resize * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_resize * time : 0, 0, 0); break;
+				case 1: models[selected]->AddSize(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_resize * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_resize * time : 0, 0); break;
+				case 2: models[selected]->AddSize(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_resize * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_resize * time : 0); break;
 				}
 			}
 			if (animmove && selectedAnim >= 0) {
 				switch (choice)
 				{
-				case 0: animations[selectedAnim]->AddSize((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.01 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.01 * time : 0, 0, 0); break;
-				case 1: animations[selectedAnim]->AddSize(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.01 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.01 * time : 0, 0); break;
-				case 2: animations[selectedAnim]->AddSize(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? 0.01 * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -0.01 * time : 0); break;
+				case 0: animations[selectedAnim]->AddSize((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_resize * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_resize * time : 0, 0, 0); break;
+				case 1: animations[selectedAnim]->AddSize(0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_resize * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_resize * time : 0, 0); break;
+				case 2: animations[selectedAnim]->AddSize(0, 0, (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) ? m_resize * time : (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) ? -m_resize * time : 0); break;
 				}
 			}
 		}
