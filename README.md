@@ -28,7 +28,7 @@ Class for simple shapes
 - [x] Add physics
 - [x] Improve GUI
 - [x] Add text input (Gui) 
-- [ ] Animation states
+- [x] Animation states
 - [ ] Materials
 - [ ] Particle system
 ## Building test game (Linux)
