@@ -96,13 +96,13 @@ void Animation::Load(std::string filename, int frames)
 
 void Animation::DrawAnimation(float time)
 {
-	if ((int)current_frame >= frames - 1 && loop) 
+	if ((int)current_frame >= frames - 1 && loop && state == Playing) 
 	{
 		current_frame = 1;
 	}
-	else if((int)current_frame >= frames - 1 && !loop) { m[(int)current_frame - 1].Draw(animationTexture); return; }
+	else if((int)current_frame >= frames - 1 && !loop && state == Playing) { m[(int)current_frame - 1].Draw(animationTexture); return; }
 	m[(int)current_frame].Draw(animationTexture);
-	current_frame += speed * time;
+	if(state == Playing) current_frame += speed * time;
 }
 
 void Animation::DrawFrame(int frame)
@@ -113,6 +113,22 @@ void Animation::DrawFrame(int frame)
 void Animation::Restart()
 {
 	current_frame = 1;
+}
+
+void Animation::Stop()
+{
+	state = Stopped;
+	Restart();
+}
+
+void Animation::Pause()
+{
+	state = Paused;
+}
+
+void Animation::Play()
+{
+	state = Playing;
 }
 
 void Animation::SetPosition(float x, float y, float z)
@@ -213,4 +229,9 @@ int Animation::GetCurrentFrame()
 float Animation::GetSpeed()
 {
 	return speed;
+}
+
+Animation::State Animation::GetState()
+{
+	return state;
 }
