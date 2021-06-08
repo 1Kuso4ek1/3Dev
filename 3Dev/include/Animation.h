@@ -4,6 +4,13 @@
 class Animation
 {
 public:
+	enum State
+	{
+		Playing,
+		Paused,
+		Stopped
+	};
+	
 	Animation(std::string filename, std::string texture, int frames, float speed, std::string ID, float x, float y, float z, float rx, float ry, float rz, float sx, float sy, float sz);
 	Animation(std::string filename, GLuint texture, int frames, float speed, std::string ID, float x, float y, float z, float rx, float ry, float rz, float sx, float sy, float sz);
 	Animation(std::string filename, std::string texture, int frames, float speed);
@@ -18,6 +25,9 @@ public:
 	void DrawFrame(int frame);
 	
 	void Restart();
+	void Stop();
+	void Pause();
+	void Play();
 	
 	void SetPosition(float x, float y, float z);
 	void SetSize(float sizeX, float sizeY, float sizeZ);
@@ -43,6 +53,8 @@ public:
 	int GetCurrentFrame();
 
 	float GetSpeed();
+	
+	State GetState();
 private:
 	sf::Vector3f position, rotation, size;
 
@@ -56,6 +68,8 @@ private:
 	float speed;
 	
 	GLuint animationTexture = 0;
+	
+	State state = Playing;
 	
 	bool loop = true;
 };
