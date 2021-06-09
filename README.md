@@ -29,7 +29,10 @@ Class for simple shapes
 - [x] Improve GUI
 - [x] Add text input (Gui) 
 - [x] Animation states
-- [ ] Materials
+- [x] Materials
+- [ ] Models with materials
+- [ ] Animations with materials
+- [ ] Materials in 3Dev Editor
 - [ ] Particle system
 ## Building test game (Linux)
 In 3Dev folder you have model, skybox, code and building files. First you need to download assimp sources in 3Dev folder, execute
