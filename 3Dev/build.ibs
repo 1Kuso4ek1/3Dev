@@ -13,6 +13,7 @@ src/Model.cpp
 src/Shader.cpp
 src/Shape.cpp
 src/TextBox.cpp
+src/Material.cpp
 }
 libs {
 GL
