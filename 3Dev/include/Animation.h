@@ -36,6 +36,7 @@ public:
 	void SetLoop(bool loop);
 	void SetSpeed(float speed);
 	void SetTexture(GLuint texture);
+	void SetMaterial(Material mat);
 	
 	void AddPosition(float x, float y, float z);
 	void AddSize(float sizeX, float sizeY, float sizeZ);
@@ -55,7 +56,11 @@ public:
 	float GetSpeed();
 	
 	State GetState();
+	
+	Material GetMaterial();
 private:
+	Material mat;
+	
 	sf::Vector3f position, rotation, size;
 
 	int frames;

@@ -1,5 +1,7 @@
 #pragma once
 #include "Texture.h"
+#include "Material.h"
+
 class Model
 {
 public:
@@ -27,6 +29,7 @@ public:
 	void SetRotation(float rotationX, float rotationY, float rotationZ);
 	void SetID(std::string ID);
 	void SetTexture(GLuint texture);
+	void SetMaterial(Material mat);
 	
 	void AddPosition(float x, float y, float z);
 	void AddSize(float sizeX, float sizeY, float sizeZ);
@@ -39,7 +42,11 @@ public:
 	std::string GetID();
 	std::string GetFilename();
 	std::string GetTextureFilename();
+	
+	Material GetMaterial();
 private:
+	Material mat;
+	
 	std::string ID, filename, texture;
 
 	sf::Vector3f position, rotation, size;
