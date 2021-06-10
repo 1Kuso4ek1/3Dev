@@ -178,6 +178,14 @@ void Animation::SetTexture(GLuint texture)
 	animationTexture = texture;
 }
 
+void Animation::SetMaterial(Material mat)
+{
+	this->mat = mat;
+	for (int i = 0; i < frames - 1; i++) {
+		m[i].SetMaterial(this->mat);
+	}
+}
+
 void Animation::AddPosition(float x, float y, float z)
 {
 	SetPosition(position.x + x, position.y + y, position.z + z);
@@ -234,4 +242,9 @@ float Animation::GetSpeed()
 Animation::State Animation::GetState()
 {
 	return state;
+}
+
+Material Animation::GetMaterial()
+{
+	return mat;
 }

@@ -106,8 +106,12 @@ bool Model::Load(std::string filename, std::string texture)
 void Model::Draw()
 {
 	glPushMatrix();
+	
+	mat.Activate();
+	
 	glTranslatef(position.x, position.y, position.z);
 	glScalef(size.x, size.y, size.z);
+	
 	glRotatef(rotation.y, 0, 1, 0);
 	glRotatef(rotation.z, 0, 0, 1);
 	glRotatef(rotation.x, 1, 0, 0);
@@ -133,8 +137,12 @@ void Model::Draw()
 void Model::Draw(GLuint texture)
 {
 	glPushMatrix();
+	
+	mat.Activate();
+	
 	glTranslatef(position.x, position.y, position.z);
 	glScalef(size.x, size.y, size.z);
+	
 	glRotatef(rotation.y, 0, 1, 0);
 	glRotatef(rotation.z, 0, 0, 1);
 	glRotatef(rotation.x, 1, 0, 0);
@@ -180,6 +188,11 @@ void Model::SetID(std::string ID)
 void Model::SetTexture(GLuint texture)
 {
 	ModelTexture = texture;
+}
+
+void Model::SetMaterial(Material mat)
+{
+	this->mat = mat;
 }
 
 void Model::AddPosition(float x, float y, float z) 
@@ -231,4 +244,9 @@ std::string Model::GetFilename()
 std::string Model::GetTextureFilename() 
 {
 	return texture;
+}
+
+Material Model::GetMaterial()
+{
+	return mat;
 }
