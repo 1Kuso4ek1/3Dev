@@ -23,15 +23,14 @@ Class for simple shapes
 ## TODO
 - [x] Make it cross-platform
 - [x] Add lights (3Dev Editor)
-- [ ] Add shapes (3Dev Editor)
 - [x] Add export function (3Dev Editor)
 - [x] Add physics
 - [x] Improve GUI
 - [x] Add text input (Gui) 
 - [x] Animation states
 - [x] Materials
-- [ ] Models with materials
-- [ ] Animations with materials
+- [x] Models with materials
+- [x] Animations with materials
 - [ ] Materials in 3Dev Editor
 - [ ] Particle system
 ## Building test game (Linux)
