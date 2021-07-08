@@ -1,6 +1,5 @@
 #include <3Dev.h>
-#include <codecvt>
-#include <locale>
+#include <algorithm>
 
 namespace gui {
 	class TextBox 
