@@ -81,7 +81,7 @@ void Animation::Load(std::string filename, int frames)
 				delete[] m;
 			}
 		}
-		else if (i <= 999 && i > 99 && i > 9) 
+		else if (i <= 999 && i > 99) 
 		{
 			if (!m[i].Load(filename + "_000" + std::to_string(i) + ".obj")) 
 			{
