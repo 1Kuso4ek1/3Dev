@@ -2,35 +2,11 @@
 #include <Model.h>
 #include <Animation.h>
 #include <Light.h>
-#include <Skybox.h>
-#include <Shader.h>
+#include <Shape.h>
 #include <Gui.h>
 
-int main() {
-	gui::Gui gui;
-	
-	gui::TextBox txbx(5, 30, 70, 20, 2, 12, 1);
-	gui::Button bt(5, 5, 80, 20, "Enter shininess", 12, 2, 0);
-	bt.SetColor(sf::Color(0, 0, 0, 0));
-	gui::Button bt1(5, 55, 70, 20, "Teapot", 12, 2, 0);
-	gui::Button bt2(5, 80, 70, 20, "Torus", 12, 3, 0);
-	gui::Button bt3(5, 105, 70, 20, "Cyborg", 12, 4, 0);
-	gui.Add(txbx);
-	gui.Add(bt);
-	gui.Add(bt1);
-	gui.Add(bt2);
-	gui.Add(bt3);
-	
-	sf::ContextSettings s;
-	s.depthBits = 24;
-	
-	int width = 1280, height = 720;
-	
-	sf::RenderWindow w(sf::VideoMode(width, height), "3Dev", sf::Style::Default, s);
-	
-	w.setVerticalSyncEnabled(true);
-	w.setFramerateLimit(120);
-	
+void GLsetup(float width, float height)
+{
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
@@ -42,15 +18,37 @@ int main() {
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_LIGHTING);
+}
+
+int main() {
+	gui::Gui gui;
 	
-	GLuint skybox[6];
-	skybox[0] = LoadTexture("resources/skybox/skybox_front.bmp");
-	skybox[1] = LoadTexture("resources/skybox/skybox_back.bmp");
-	skybox[2] = LoadTexture("resources/skybox/skybox_left.bmp");
-	skybox[3] = LoadTexture("resources/skybox/skybox_right.bmp");
-	skybox[4] = LoadTexture("resources/skybox/skybox_bottom.bmp");
-	skybox[5] = LoadTexture("resources/skybox/skybox_top.bmp");
+	gui::TextBox txbx(5, 30, 70, 20, 2, 12, 1);
+	gui::Button bt(5, 5, 80, 20, "Enter shininess", 12, 2, 0), bt1(5, 55, 70, 20, "Teapot", 12, 2, 0), 
+	bt2(5, 80, 70, 20, "Torus", 12, 3, 0), bt3(5, 105, 70, 20, "Cyborg", 12, 4, 0);
+	bt.SetColor(sf::Color(0, 0, 0, 0));
+	gui.Add(txbx); gui.Add(bt); gui.Add(bt1); gui.Add(bt2); gui.Add(bt3);
 	
+	sf::ContextSettings s;
+	s.depthBits = 24;
+	
+	int width = 1280, height = 720;
+	
+	sf::RenderWindow w(sf::VideoMode(width, height), "3Dev", sf::Style::Default, s);
+	
+	w.setVerticalSyncEnabled(true);
+	w.setFramerateLimit(120);
+	
+	GLsetup(width, height);
+	
+	GLuint skybox[6] = {
+		LoadTexture("resources/skybox/skybox_front.bmp"),
+		LoadTexture("resources/skybox/skybox_back.bmp"),
+		LoadTexture("resources/skybox/skybox_left.bmp"),
+		LoadTexture("resources/skybox/skybox_right.bmp"),
+		LoadTexture("resources/skybox/skybox_bottom.bmp"),
+		LoadTexture("resources/skybox/skybox_top.bmp")
+	};
 	float amb[4] = { 2, 2, 2, 1 };
 	float dif[4] = { 2, 2, 2, 1 };
 	float la[1] = { 0.3 }; 
@@ -67,24 +65,36 @@ int main() {
 	l.SetParameters(dif, GL_DIFFUSE);
 	sf::Clock clock;
 	glewInit();
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dif);
     bool a = true;
-    int teashininess = 20;
-    int torshininess = 120;
-    int cyborgshininess = 50;
+    float teashininess[1] = { 20 };
+    float torshininess[1] = { 120 };
+    float cyborgshininess[1] = { 50 };
     sf::Clock aa;
-    
+    Material cyborgm, torm, teapotm;
+    cyborgm.SetParameters(cyborgshininess, GL_SHININESS);
+    cyborgm.SetParameters(dif, GL_SPECULAR);
+    torm.SetParameters(torshininess, GL_SHININESS);
+    torm.SetParameters(dif, GL_SPECULAR);
+    teapotm.SetParameters(teashininess, GL_SHININESS);
+    teapotm.SetParameters(dif, GL_SPECULAR);
+    torus.SetMaterial(torm); teapot.SetMaterial(teapotm); cyborg.SetMaterial(cyborgm);
     while(w.isOpen()) {
         sf::Event event;
         while(w.pollEvent(event)) {
 			if(gui.CatchEvent(event, w) == bt1.ID) {
-				teashininess = stoi(gui.GetTextBoxString(1));
+				teashininess[0] = stoi(gui.GetTextBoxString(1));
+				teapotm.SetParameters(teashininess, GL_SHININESS);
+				teapot.SetMaterial(teapotm);
 			}
 			else if(gui.CatchEvent(event, w, false) == bt2.ID) {
-				torshininess = stoi(gui.GetTextBoxString(1));
+				torshininess[0] = stoi(gui.GetTextBoxString(1));
+				torm.SetParameters(torshininess, GL_SHININESS);
+				torus.SetMaterial(torm);
 			}
 			else if(gui.CatchEvent(event, w, false) == bt3.ID) {
-				cyborgshininess = stoi(gui.GetTextBoxString(1));
+				cyborgshininess[0] = stoi(gui.GetTextBoxString(1));
+				cyborgm.SetParameters(cyborgshininess, GL_SHININESS);
+				cyborg.SetMaterial(cyborgm);
 			}
             if(event.type == sf::Event::Closed) {
                 w.close();
@@ -106,17 +116,14 @@ int main() {
         cam.Look();
 		
 		l.Update();
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, torshininess);
+
 		torus.Draw();
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, teashininess);
 		teapot.AddRotation(0, 0.4, 0);
 		teapot.Draw();
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, cyborgshininess);
 		cyborg.DrawAnimation(time);
+
         glDisable(GL_LIGHTING);
-		glTranslatef(cam.x, cam.y, cam.z);
-		RenderSkybox(skybox, 1000);
-		glTranslatef(-cam.x, -cam.y, -cam.z);
+		Shape::Draw(skybox, cam.x, cam.y, cam.z, 1000, 1000, 1000);
 		glEnable(GL_LIGHTING);
 		
 		gui.Draw(w);
