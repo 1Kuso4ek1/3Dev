@@ -15,9 +15,9 @@ Light::~Light()
 	glDisable(lightNum);
 }
 
-void Light::SetParameters(float parameters[], GLenum type)
+void Light::SetParameters(std::vector<float> parameters, GLenum type)
 {
-	glLightfv(lightNum, type, parameters);
+	glLightfv(lightNum, type, &parameters[0]);
 }
 
 void Light::SetPosition(float x, float y, float z)
@@ -37,16 +37,17 @@ void Light::AddPosition(float x, float y, float z)
 
 void Light::Update() 
 {
-	float parameters[4] = { position.x, position.y, position.z, 1 };
-	SetParameters(parameters, GL_POSITION);
+	SetParameters({ position.x, position.y, position.z, 1 }, GL_POSITION);
 }
 
-void Light::GetParameters(GLenum type, float* var)
+std::vector<float> Light::GetParameters(GLenum type)
 {
+	float var[] = { 0, 0, 0, 0 };
 	glGetLightfv(lightNum, type, var);
+	return std::vector<float>(var, var + sizeof(var) / sizeof(float));
 }
 
-GLenum Light::GetLightNum() 
+GLenum Light::GetLightNum()
 {
 	return lightNum;
 }
