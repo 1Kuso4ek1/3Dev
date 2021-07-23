@@ -59,15 +59,15 @@ void SaveProject(std::string filename)
 	for(int i = 0; i < lights.size(); i++)
 	{
 		float la[1] = { 0 };
-		float ads[4] = { 0, 0, 0, 1 };
+		std::vector<float> ads = { 0, 0, 0, 1 };
 		output << lights[i]->GetID() << " " << std::hex << lights[i]->GetLightNum() << " " << lights[i]->GetPosition().x << " " << lights[i]->GetPosition().y << " " << lights[i]->GetPosition().z << " ";
-		lights[i]->GetParameters(GL_LINEAR_ATTENUATION, la);
+		la[0] = lights[i]->GetParameters(GL_LINEAR_ATTENUATION)[0];
 		output << la[0] << " ";
-		lights[i]->GetParameters(GL_AMBIENT, ads);
+		ads = lights[i]->GetParameters(GL_AMBIENT);
 		output << ads[0] << " " << ads[1] << " " << ads[2] << " ";
-		lights[i]->GetParameters(GL_DIFFUSE, ads);
+		ads = lights[i]->GetParameters(GL_DIFFUSE);
 		output << ads[0] << " " << ads[1] << " " << ads[2] << " ";
-		lights[i]->GetParameters(GL_SPECULAR, ads);
+		ads = lights[i]->GetParameters(GL_SPECULAR);
 		output << ads[0] << " " << ads[1] << " " << ads[2] << std::endl;
 	}
 	output.close();
@@ -97,11 +97,11 @@ bool LoadProject(std::string filename)
 		for(int i = 0; i < it; i++)
 		{
 			float la[1] = { 0 };
-			float ads[4] = { 0, 0, 0, 1 };
+			std::vector<float> ads = { 0, 0, 0, 1 };
 			input >> id >> std::hex >> lightNum >> x >> y >> z;
 			lights.emplace_back(std::make_shared<Light>(lightNum, x, y, z, id));
 			input >> la[0];
-			lights[i]->SetParameters(la, GL_LINEAR_ATTENUATION);
+			lights[i]->SetParameters({ la[0] }, GL_LINEAR_ATTENUATION);
 			input >> ads[0] >> ads[1] >> ads[2];
 			lights[i]->SetParameters(ads, GL_AMBIENT);
 			input >> ads[0] >> ads[1] >> ads[2];
@@ -201,47 +201,37 @@ bool ExportProject(std::string filename)
 			code.erase(lightspos, std::strlen("//Lights"));
 			for(int i = 0; i < lights.size(); i++)
 			{
+				auto paramtostr = [&](std::vector<float> vec) 
+				{ 
+					std::string output;
+					for(auto& i : vec)
+					{
+						output += std::to_string(i) + ", ";
+					}
+					output.erase(output.end() - 2, output.end());
+					return output;
+				};
+				
 				std::stringstream ss;
 				ss << std::hex << lights[i]->GetLightNum();
-				float la[1] = { 0 };
-				float ads[4] = { 0, 0, 0, 1 };
-				lights[i]->GetParameters(GL_LINEAR_ATTENUATION, la);
-				std::string lghstr("float la" + lights[i]->GetID() + "[1] = { " + std::to_string(la[0]) + " };\n");
+				
+				std::string lghstr = std::string("Light " + lights[i]->GetID() + "(0x" + ss.str() + ", " + std::to_string(lights[i]->GetPosition().x) + ", " + std::to_string(lights[i]->GetPosition().y) + ", " + std::to_string(lights[i]->GetPosition().z) + ");\n\n");
 				code.insert(lightspos, lghstr);
 				lightspos += lghstr.size();
 				
-				lights[i]->GetParameters(GL_AMBIENT, ads);
-				lghstr = std::string("float amb" + lights[i]->GetID() + "[4] = { " + std::to_string(ads[0]) + ", " + std::to_string(ads[1]) + ", " + std::to_string(ads[2]) + ", " + std::to_string(ads[3]) + " };\n");
+				lghstr = std::string(lights[i]->GetID() + ".SetParameters({ " + std::to_string(lights[i]->GetParameters(GL_LINEAR_ATTENUATION)[0]) + " }, GL_LINEAR_ATTENUATION);\n");
 				code.insert(lightspos, lghstr);
 				lightspos += lghstr.size();
 				
-				lights[i]->GetParameters(GL_DIFFUSE, ads);
-				lghstr = std::string("float dif" + lights[i]->GetID() + "[4] = { " + std::to_string(ads[0]) + ", " + std::to_string(ads[1]) + ", " + std::to_string(ads[2]) + ", " + std::to_string(ads[3]) + " };\n");
+				lghstr = std::string(lights[i]->GetID() + ".SetParameters({ " + paramtostr(lights[i]->GetParameters(GL_AMBIENT)) + " }, GL_AMBIENT);\n");
 				code.insert(lightspos, lghstr);
 				lightspos += lghstr.size();
 				
-				lights[i]->GetParameters(GL_SPECULAR, ads);
-				lghstr = std::string("float spc" + lights[i]->GetID() + "[4] = { " + std::to_string(ads[0]) + ", " + std::to_string(ads[1]) + ", " + std::to_string(ads[2]) + ", " + std::to_string(ads[3]) + " };\n\n");
+				lghstr = std::string(lights[i]->GetID() + ".SetParameters({ " + paramtostr(lights[i]->GetParameters(GL_DIFFUSE)) + " }, GL_DIFFUSE);\n");
 				code.insert(lightspos, lghstr);
 				lightspos += lghstr.size();
 				
-				lghstr = std::string("Light " + lights[i]->GetID() + "(0x" + ss.str() + ", " + std::to_string(lights[i]->GetPosition().x) + ", " + std::to_string(lights[i]->GetPosition().y) + ", " + std::to_string(lights[i]->GetPosition().z) + ");\n\n");
-				code.insert(lightspos, lghstr);
-				lightspos += lghstr.size();
-				
-				lghstr = std::string(lights[i]->GetID() + ".SetParameters(la" + lights[i]->GetID() + ", GL_LINEAR_ATTENUATION);\n");
-				code.insert(lightspos, lghstr);
-				lightspos += lghstr.size();
-				
-				lghstr = std::string(lights[i]->GetID() + ".SetParameters(amb" + lights[i]->GetID() + ", GL_AMBIENT);\n");
-				code.insert(lightspos, lghstr);
-				lightspos += lghstr.size();
-				
-				lghstr = std::string(lights[i]->GetID() + ".SetParameters(dif" + lights[i]->GetID() + ", GL_DIFFUSE);\n");
-				code.insert(lightspos, lghstr);
-				lightspos += lghstr.size();
-				
-				lghstr = std::string(lights[i]->GetID() + ".SetParameters(spc" + lights[i]->GetID() + ", GL_SPECULAR);\n\n");
+				lghstr = std::string(lights[i]->GetID() + ".SetParameters({ " + paramtostr(lights[i]->GetParameters(GL_SPECULAR)) + " }, GL_SPECULAR);\n\n");
 				code.insert(lightspos, lghstr);
 				lightspos += lghstr.size();
 			}
@@ -332,15 +322,10 @@ int main(int argc, char* argv[]) {
 			{
 				lightEditDialog.SetEnteredText(idbtb.ID, lights[selectedLight]->GetID());
 				lightEditDialog.SetEnteredText(xbtb.ID, std::to_string(lights[selectedLight]->GetPosition().x)); lightEditDialog.SetEnteredText(ybtb.ID, std::to_string(lights[selectedLight]->GetPosition().y)); lightEditDialog.SetEnteredText(zbtb.ID, std::to_string(lights[selectedLight]->GetPosition().z));
-				float ads[4] = { 0, 0, 0, 1 }, la[1] = { 0 };
-				lights[selectedLight]->GetParameters(GL_AMBIENT, ads);
-				lightEditDialog.SetEnteredText(axbtb.ID, std::to_string(ads[0])); lightEditDialog.SetEnteredText(aybtb.ID, std::to_string(ads[1])); lightEditDialog.SetEnteredText(azbtb.ID, std::to_string(ads[2]));
-				lights[selectedLight]->GetParameters(GL_DIFFUSE, ads);
-				lightEditDialog.SetEnteredText(rxbtb.ID, std::to_string(ads[0])); lightEditDialog.SetEnteredText(rybtb.ID, std::to_string(ads[1])); lightEditDialog.SetEnteredText(rzbtb.ID, std::to_string(ads[2]));
-				lights[selectedLight]->GetParameters(GL_SPECULAR, ads);
-				lightEditDialog.SetEnteredText(sxbtb.ID, std::to_string(ads[0])); lightEditDialog.SetEnteredText(sybtb.ID, std::to_string(ads[1])); lightEditDialog.SetEnteredText(szbtb.ID, std::to_string(ads[2]));
-				lights[selectedLight]->GetParameters(GL_LINEAR_ATTENUATION, la);
-				lightEditDialog.SetEnteredText(labtb.ID, std::to_string(la[0]));
+				lightEditDialog.SetEnteredText(axbtb.ID, std::to_string(lights[selectedLight]->GetParameters(GL_AMBIENT)[0])); lightEditDialog.SetEnteredText(aybtb.ID, std::to_string(lights[selectedLight]->GetParameters(GL_AMBIENT)[1])); lightEditDialog.SetEnteredText(azbtb.ID, std::to_string(lights[selectedLight]->GetParameters(GL_AMBIENT)[2]));
+				lightEditDialog.SetEnteredText(rxbtb.ID, std::to_string(lights[selectedLight]->GetParameters(GL_DIFFUSE)[0])); lightEditDialog.SetEnteredText(rybtb.ID, std::to_string(lights[selectedLight]->GetParameters(GL_DIFFUSE)[1])); lightEditDialog.SetEnteredText(rzbtb.ID, std::to_string(lights[selectedLight]->GetParameters(GL_DIFFUSE)[2]));
+				lightEditDialog.SetEnteredText(sxbtb.ID, std::to_string(lights[selectedLight]->GetParameters(GL_SPECULAR)[0])); lightEditDialog.SetEnteredText(sybtb.ID, std::to_string(lights[selectedLight]->GetParameters(GL_SPECULAR)[1])); lightEditDialog.SetEnteredText(szbtb.ID, std::to_string(lights[selectedLight]->GetParameters(GL_SPECULAR)[2]));
+				lightEditDialog.SetEnteredText(labtb.ID, std::to_string(lights[selectedLight]->GetParameters(GL_LINEAR_ATTENUATION)[0]));
 				lighteditdialog = !lighteditdialog;
 			}
 			if (gui.CatchEvent(event, w) == saveButton.ID && !modeldialog && !animationdialog && !animationeditdialog && !modeleditdialog && !lighteditdialog && !loaddialog && !exportdialog) savedialog = !savedialog;
@@ -451,18 +436,12 @@ int main(int argc, char* argv[]) {
 				int temp = lightEditDialog.CatchEvent(event, w);
 				if (temp == ok.ID)
 				{
-					float ads[4] = { 0, 0, 0, 1 };
-					float la[1] = { 0 };
 					if(!lightEditDialog.GetTextBoxString(idbtb.ID).empty()) lights[selectedLight]->SetID(lightEditDialog.GetTextBoxString(idbtb.ID));
 					lights[selectedLight]->SetPosition(stof(lightEditDialog.GetTextBoxString(xbtb.ID)), stof(lightEditDialog.GetTextBoxString(ybtb.ID)), stof(lightEditDialog.GetTextBoxString(zbtb.ID)));
-					ads[0] = stof(lightEditDialog.GetTextBoxString(axbtb.ID)); ads[1] = stof(lightEditDialog.GetTextBoxString(aybtb.ID)); ads[2] = stof(lightEditDialog.GetTextBoxString(azbtb.ID));
-					lights[selectedLight]->SetParameters(ads, GL_AMBIENT);
-					ads[0] = stof(lightEditDialog.GetTextBoxString(rxbtb.ID)); ads[1] = stof(lightEditDialog.GetTextBoxString(rybtb.ID)); ads[2] = stof(lightEditDialog.GetTextBoxString(rzbtb.ID));
-					lights[selectedLight]->SetParameters(ads, GL_DIFFUSE);
-					ads[0] = stof(lightEditDialog.GetTextBoxString(sxbtb.ID)); ads[1] = stof(lightEditDialog.GetTextBoxString(sybtb.ID)); ads[2] = stof(lightEditDialog.GetTextBoxString(szbtb.ID));
-					lights[selectedLight]->SetParameters(ads, GL_SPECULAR);
-					la[0] = stof(lightEditDialog.GetTextBoxString(labtb.ID));
-					lights[selectedLight]->SetParameters(la, GL_LINEAR_ATTENUATION);
+					lights[selectedLight]->SetParameters({ stof(lightEditDialog.GetTextBoxString(axbtb.ID)), stof(lightEditDialog.GetTextBoxString(aybtb.ID)), stof(lightEditDialog.GetTextBoxString(azbtb.ID)), 1 }, GL_AMBIENT);
+					lights[selectedLight]->SetParameters({ stof(lightEditDialog.GetTextBoxString(rxbtb.ID)), stof(lightEditDialog.GetTextBoxString(rybtb.ID)), stof(lightEditDialog.GetTextBoxString(rzbtb.ID)), 1 }, GL_DIFFUSE);
+					lights[selectedLight]->SetParameters({ stof(lightEditDialog.GetTextBoxString(sxbtb.ID)), stof(lightEditDialog.GetTextBoxString(sybtb.ID)), stof(lightEditDialog.GetTextBoxString(szbtb.ID)), 1 }, GL_SPECULAR);
+					lights[selectedLight]->SetParameters({ stof(lightEditDialog.GetTextBoxString(labtb.ID)) }, GL_LINEAR_ATTENUATION);
 					gui.SetText(infoButton4.ID, lights[selectedLight]->GetID());
 					lighteditdialog = false;
 				}
