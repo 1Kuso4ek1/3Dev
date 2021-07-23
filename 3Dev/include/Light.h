@@ -9,7 +9,7 @@ public:
 
 	~Light();
 	
-	void SetParameters(float parameters[], GLenum type);
+	void SetParameters(std::vector<float> parameters, GLenum type);
 	void SetPosition(float x, float y, float z);
 	void SetID(std::string ID);
 	
@@ -17,7 +17,8 @@ public:
 	
 	void Update();
 	
-	void GetParameters(GLenum type, float* var);
+	std::vector<float> GetParameters(GLenum type);
+	
 	GLenum GetLightNum();
 	sf::Vector3f GetPosition();
 	std::string GetID();

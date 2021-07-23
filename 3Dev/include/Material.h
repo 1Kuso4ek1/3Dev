@@ -4,12 +4,14 @@
 class Material
 {
 public:
-	void SetParameters(float parameters[], GLuint type);
-	void SetMap(std::unordered_map<GLenum, float*> m);
+	Material();
+
+	void SetParameters(std::vector<float> parameters, GLuint type);
+	void SetMap(std::unordered_map<GLenum, std::vector<float>> m);
 	void operator=(Material& right);
 	void Activate();
 	
-	std::unordered_map<GLenum, float*> GetMap();
+	std::unordered_map<GLenum, std::vector<float>> GetMap();
 private:
-	std::unordered_map<GLenum, float*> mat;
+	std::unordered_map<GLenum, std::vector<float>> mat;
 };
