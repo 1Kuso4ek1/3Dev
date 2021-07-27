@@ -8,37 +8,42 @@ sf::Vector3f rotate(sf::Vector3f pos, sf::Vector3f rot)
 	return sf::Vector3f(x, y, z);
 }
 
+std::vector<float> rotatemodel(Model& m)
+{
+	std::vector<float> ret;
+	for (int i = 0; i < m.numVerts * 3; i += 3) {
+		sf::Vector3f res(rotate(sf::Vector3f(m.vertexArray[i], m.vertexArray[i + 1], m.vertexArray[i + 2]), m.GetRotation()));
+		ret.push_back(res.x); ret.push_back(res.y); ret.push_back(res.z);
+	}
+	return ret;
+}
+
 std::pair<int, sf::Vector3f> collision(float x, float y, float z, Model& m, float p = 1)
 {
+	std::vector<float> rotvert = rotatemodel(m);
 	for (int i = 0; i < m.numVerts * 3; i += 3) {
-		if(std::abs(x - ((m.GetPosition().x + m.vertexArray[i]))) <= p && std::abs(z - ((m.GetPosition().z + m.vertexArray[i + 2]))) <= p)
+		if(std::abs(x - ((m.GetPosition().x + rotvert[i]))) <= p && std::abs(z - ((m.GetPosition().z + rotvert[i + 2]))) <= p)
 		{
-			if (y <= (m.GetPosition().y + m.vertexArray[i + 1]) && y >= (m.GetPosition().y - m.vertexArray[i + 1])) {
-				return std::make_pair(i, sf::Vector3f(((m.GetPosition().x + m.vertexArray[i])) - x, ((m.GetPosition().y + m.vertexArray[i + 1])) - y, ((m.GetPosition().z + m.vertexArray[i + 2])) - z));
+			if (y <= (m.GetPosition().y + rotvert[i + 1]) && y >= (m.GetPosition().y - rotvert[i + 1])) {
+				return std::make_pair(i, sf::Vector3f(((m.GetPosition().x + rotvert[i])) - x, ((m.GetPosition().y + rotvert[i + 1])) - y, ((m.GetPosition().z + rotvert[i + 2])) - z));
 			}
 		}
 	}
 	return std::make_pair(-1, sf::Vector3f(0, 0, 0));
 }
 
-std::pair<std::vector<int>, std::vector<int>> collision(Model& m1, Model& m, float p = 1, int m1skip = 1, int mskip = 1)
+std::pair<std::vector<std::pair<int, sf::Vector3f>>, std::vector<std::pair<int, sf::Vector3f>>> collision(Model& m1, Model& m, float p = 1, int m1skip = 1, int mskip = 1)
 {
-	std::vector<int> v;
-	std::vector<int> v1;
-	std::vector<float> rotvert;
-	for (int j = 0; j < m1.numVerts * 3; j += 3) {
-		sf::Vector3f res(rotate(sf::Vector3f(m1.vertexArray[j], m1.vertexArray[j + 1], m1.vertexArray[j + 2]), m1.GetRotation()));
-		rotvert.push_back(res.x);
-		rotvert.push_back(res.y);
-		rotvert.push_back(res.z);
-	}
+	std::vector<std::pair<int, sf::Vector3f>> v, v1;
+	std::vector<float> rotvert = rotatemodel(m1), rotvert1 = rotatemodel(m);
+	
 	for (int i = 0; i < m.numVerts * 3; i += 3 * mskip) {
 		for (int j = 0; j < m1.numVerts * 3; j += 3 * m1skip) {
-			if(std::abs(m1.GetPosition().x + rotvert[j] - (m.GetPosition().x + m.vertexArray[i])) <= p && std::abs(m1.GetPosition().z + rotvert[j + 2] - (m.GetPosition().z + m.vertexArray[i + 2])) <= p)
+			if(std::abs(m1.GetPosition().x + rotvert[j] - (m.GetPosition().x + rotvert1[i])) <= p && std::abs(m1.GetPosition().z + rotvert[j + 2] - (m.GetPosition().z + rotvert1[i + 2])) <= p)
 			{
-				if ((m1.GetPosition().y + rotvert[j + 1]) <= (m.GetPosition().y + m.vertexArray[i + 1]) && (m1.GetPosition().y - rotvert[j + 1]) >= (m.GetPosition().y - m.vertexArray[i + 1])) {
-					v.push_back(j);
-					v1.push_back(i);
+				if ((m1.GetPosition().y + rotvert[j + 1]) <= (m.GetPosition().y + rotvert1[i + 1]) && (m1.GetPosition().y - rotvert[j + 1]) >= (m.GetPosition().y - rotvert1[i + 1])) {
+					v.push_back(std::make_pair(j, sf::Vector3f(0, (m.GetPosition().y + rotvert1[i + 1]) - (m1.GetPosition().y + rotvert[j + 1]), 0)));
+					v1.push_back(std::make_pair(i, sf::Vector3f(0, (m.GetPosition().y - rotvert1[i + 1]) - (m1.GetPosition().y - rotvert[j + 1]), 0)));
 				}
 			}
 		}
