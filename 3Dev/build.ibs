@@ -1,6 +1,5 @@
 flags {
 Iinclude/
-Iassimp/include/
 }
 files {
 game.cpp
