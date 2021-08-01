@@ -1,5 +1,4 @@
 linux {
-git clone https://github.com/assimp/assimp
 sudo apt install libglew-dev
 sudo apt install libassimp-dev
 sudo apt install libsfml-dev
