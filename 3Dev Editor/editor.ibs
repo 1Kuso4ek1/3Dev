@@ -3,7 +3,7 @@ std=c++17
 I../3Dev/include/
 }
 files {
-../3Dev/src/main.cpp
+main.cpp
 ../3Dev/src/Animation.cpp
 ../3Dev/src/Button.cpp
 ../3Dev/src/Camera.cpp
