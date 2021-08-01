@@ -33,11 +33,7 @@ Class for simple shapes
 - [x] Animations with materials
 - [ ] Materials in 3Dev Editor
 ## Building test game (Linux)
-In 3Dev folder you have model, skybox, code and building files. First you need to download assimp sources in 3Dev folder, execute
-```
-git clone https://github.com/assimp/assimp
-```
-in terminal, you don't need to build it. Then download and build https://github.com/1Kuso4ek1/ibs, write
+In 3Dev folder you have model, skybox, code and building files. Download and build https://github.com/1Kuso4ek1/ibs, write
 ```
 sudo cp ibs /usr/bin
 ```
