@@ -48,7 +48,7 @@ void Animation::Load(std::string filename, std::string texture, int frames)
 				delete[] m;
 			}
 		}
-		else if (i <= 999 && i > 99 && i > 9) 
+		else if (i <= 999 && i > 99) 
 		{
 			if (!m[i].Load(filename + "_000" + std::to_string(i) + ".obj")) 
 			{
@@ -135,7 +135,8 @@ void Animation::SetPosition(float x, float y, float z)
 {
 	position = sf::Vector3f(x, y, z);
 
-	for (int i = 0; i < frames - 1; i++) {
+	for (int i = 0; i < frames - 1; i++) 
+	{
 		m[i].SetPosition(x, y, z);
 	}
 }
@@ -144,7 +145,8 @@ void Animation::SetSize(float sizeX, float sizeY, float sizeZ)
 {
 	size = sf::Vector3f(sizeX, sizeY, sizeZ);
 
-	for (int i = 0; i < frames - 1; i++) {
+	for (int i = 0; i < frames - 1; i++) 
+	{
 		m[i].SetSize(sizeX, sizeY, sizeZ);
 	}
 }
@@ -153,7 +155,8 @@ void Animation::SetRotation(float rotationX, float rotationY, float rotationZ)
 {
 	rotation = sf::Vector3f(rotationX, rotationY, rotationZ);
 
-	for (int i = 0; i < frames - 1; i++) {
+	for (int i = 0; i < frames - 1; i++) 
+	{
 		m[i].SetRotation(rotationX, rotationY, rotationZ);
 	}
 }
@@ -181,7 +184,8 @@ void Animation::SetTexture(GLuint texture)
 void Animation::SetMaterial(Material mat)
 {
 	this->mat = mat;
-	for (int i = 0; i < frames - 1; i++) {
+	for (int i = 0; i < frames - 1; i++) 
+	{
 		m[i].SetMaterial(this->mat);
 	}
 }
@@ -201,31 +205,38 @@ void Animation::AddSize(float sizeX, float sizeY, float sizeZ)
 	SetSize(size.x + sizeX, size.y + sizeY, size.z + sizeZ);
 }
 
-sf::Vector3f Animation::GetPosition() {
+sf::Vector3f Animation::GetPosition() 
+{
 	return position;
 }
 
-sf::Vector3f Animation::GetRotation() {
+sf::Vector3f Animation::GetRotation() 
+{
 	return rotation;
 }
 
-sf::Vector3f Animation::GetSize() {
+sf::Vector3f Animation::GetSize() 
+{
 	return size;
 }
 
-std::string Animation::GetID() {
+std::string Animation::GetID() 
+{
 	return ID;
 }
 
-std::string Animation::GetFilename() {
+std::string Animation::GetFilename() 
+{
 	return filename;
 }
 
-std::string Animation::GetTextureFilename() {
+std::string Animation::GetTextureFilename() 
+{
 	return texture;
 }
 
-int Animation::GetFrames() {
+int Animation::GetFrames() 
+{
 	return frames;
 }
 
