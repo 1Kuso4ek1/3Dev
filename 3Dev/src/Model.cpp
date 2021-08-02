@@ -197,23 +197,17 @@ void Model::SetMaterial(Material mat)
 
 void Model::AddPosition(float x, float y, float z) 
 {
-	position.x += x;
-	position.y += y;
-	position.z += z;
+	position += sf::Vector3f(x, y, z);
 }
 
 void Model::AddRotation(float rotationX, float rotationY, float rotationZ) 
 {
-	rotation.x += rotationX;
-	rotation.y += rotationY;
-	rotation.z += rotationZ;
+	rotation += sf::Vector3f(rotationX, rotationY, rotationZ);
 }
 
 void Model::AddSize(float sizeX, float sizeY, float sizeZ) 
 {
-	size.x += sizeX;
-	size.y += sizeY;
-	size.z += sizeZ;
+	size += sf::Vector3f(sizeX, sizeY, sizeZ);
 }
 
 sf::Vector3f Model::GetPosition() 
