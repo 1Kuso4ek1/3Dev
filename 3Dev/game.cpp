@@ -17,7 +17,7 @@ void GLsetup(float width, float height)
     gluPerspective(45.f, (float)width / (float)height, 0.1, 5000.f);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_NORMALIZE);
-    glEnable(GL_LIGHTING);
+    Light::EnableLighting();
 }
 
 int main()
@@ -42,16 +42,16 @@ int main()
     GLsetup(width, height);
 	
     GLuint skybox[6] = {
-	LoadTexture("resources/skybox/skybox_front.bmp"),
-	LoadTexture("resources/skybox/skybox_back.bmp"),
-	LoadTexture("resources/skybox/skybox_left.bmp"),
-	LoadTexture("resources/skybox/skybox_right.bmp"),
-	LoadTexture("resources/skybox/skybox_bottom.bmp"),
-	LoadTexture("resources/skybox/skybox_top.bmp")
+        LoadTexture("resources/skybox/skybox_front.bmp"),
+        LoadTexture("resources/skybox/skybox_back.bmp"),
+        LoadTexture("resources/skybox/skybox_left.bmp"),
+        LoadTexture("resources/skybox/skybox_right.bmp"),
+        LoadTexture("resources/skybox/skybox_bottom.bmp"),
+        LoadTexture("resources/skybox/skybox_top.bmp")
     };
     
     Camera cam(5, 3, 15, 1);
-    Model torus("resources/models/torus.obj", "resources/textures/texture.png", 0, 0, 0);
+    Model torus("resources/models/torus.obj", GLuint(0), 0, 0, 0);
     Model teapot("resources/models/teapot.obj", "resources/textures/gold.jpg", 10, 0, 0);
     Animation cyborg("resources/animation/cyborg", "resources/textures/cyborg_diffuse.png", 20, 1);
     
@@ -90,55 +90,61 @@ int main()
     torus.SetMaterial(torm); teapot.SetMaterial(teapotm); cyborg.SetMaterial(cyborgm);
     
     while(w.isOpen()) {
-	sf::Event event;
-	while(w.pollEvent(event)) {
-	    int op = gui.CatchEvent(event, w);
-	    if(op == bt1.ID) {
-		teashininess = stoi(gui.GetTextBoxString(1));
-		teapotm.SetParameters({ teashininess }, GL_SHININESS);
-		teapot.SetMaterial(teapotm);
-	    }
-	    else if(op == bt2.ID) {
-		torshininess = stoi(gui.GetTextBoxString(1));
-		torm.SetParameters({ torshininess }, GL_SHININESS);
-		torus.SetMaterial(torm);
-	    }
-	    else if(op == bt3.ID) {
-		cyborgshininess = stoi(gui.GetTextBoxString(1));
-		cyborgm.SetParameters({ cyborgshininess }, GL_SHININESS);
-		cyborg.SetMaterial(cyborgm);
-	    }
-	    if(event.type == sf::Event::Closed) w.close();
-	}
 	
-	float time = clock.getElapsedTime().asMilliseconds();
-	clock.restart();
-	time = time / 40;
-	if (time > 5) time = 5;
-
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+        sf::Event event;
 	
-	if(sf::Mouse::isButtonPressed(sf::Mouse::Right)) a = !a;
-			    
-	if(a) cam.Mouse(w);
-	cam.Move(time);
-	cam.Look();
-			    
-	l.Update();
+        while(w.pollEvent(event)) {
+            
+            int op = gui.CatchEvent(event, w);
+            
+            if(op == bt1.ID) 
+            {
+                teashininess = stoi(gui.GetTextBoxString(1));
+                teapotm.SetParameters({ teashininess }, GL_SHININESS);
+                teapot.SetMaterial(teapotm);
+            }
+            else if(op == bt2.ID) {
+            torshininess = stoi(gui.GetTextBoxString(1));
+            torm.SetParameters({ torshininess }, GL_SHININESS);
+            torus.SetMaterial(torm);
+            }
+            else if(op == bt3.ID) {
+            cyborgshininess = stoi(gui.GetTextBoxString(1));
+            cyborgm.SetParameters({ cyborgshininess }, GL_SHININESS);
+            cyborg.SetMaterial(cyborgm);
+            }
+            if(event.type == sf::Event::Closed) w.close();
+        }
+	
+        float time = clock.getElapsedTime().asMilliseconds();
+        clock.restart();
+        time = time / 40;
+        if (time > 5) time = 5;
 
-	torus.Draw();
-	teapot.AddRotation(0, 0.4, 0);
-	teapot.Draw();
-	cyborg.DrawAnimation(time);
+        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        
+        if(sf::Mouse::isButtonPressed(sf::Mouse::Right)) a = !a;
+        w.setMouseCursorVisible(!a);
+        
+        if(a) cam.Mouse(w);
+        cam.Move(time);
+        cam.Look();
+                    
+        l.Update();
 
-	glDisable(GL_LIGHTING);
-	Shape::Draw(skybox, cam.x, cam.y, cam.z, 1000, 1000, 1000);
-	glEnable(GL_LIGHTING);
-				
-	gui.Draw(w);
-				
-	w.display();
+        torus.Draw();
+        teapot.AddRotation(0, 0.4, 0);
+        teapot.Draw();
+        cyborg.DrawAnimation(time);
+
+        glDisable(GL_LIGHTING);
+        Shape::Draw(skybox, cam.x, cam.y, cam.z, 1000, 1000, 1000);
+        glEnable(GL_LIGHTING);
+                    
+        gui.Draw(w);
+                    
+        w.display();
     }
 }
