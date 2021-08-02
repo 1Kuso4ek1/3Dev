@@ -1,12 +1,14 @@
 #include "Light.h"
 
-Light::Light(GLenum lightNum, float x, float y, float z, std::string ID) : lightNum(lightNum), ID(ID) {
-	glEnable(lightNum);
+Light::Light(GLenum lightNum, float x, float y, float z, std::string ID) : lightNum(lightNum), ID(ID) 
+{
+	Enable();
 	SetPosition(x, y, z);
 }
 
-Light::Light(GLenum lightNum, float x, float y, float z) : lightNum(lightNum) {
-	glEnable(lightNum);
+Light::Light(GLenum lightNum, float x, float y, float z) : lightNum(lightNum) 
+{
+	Enable();
 	SetPosition(x, y, z);
 }
 
@@ -38,6 +40,26 @@ void Light::AddPosition(float x, float y, float z)
 void Light::Update() 
 {
 	SetParameters({ position.x, position.y, position.z, 1 }, GL_POSITION);
+}
+
+void Light::Enable()
+{
+	glEnable(lightNum);
+}
+
+void Light::Disable()
+{
+	glDisable(lightNum);
+}
+
+void Light::EnableLighting()
+{
+	glEnable(GL_LIGHTING);
+}
+
+void Light::DisableLighting()
+{
+	glDisable(GL_LIGHTING);
 }
 
 std::vector<float> Light::GetParameters(GLenum type)
