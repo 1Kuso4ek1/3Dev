@@ -17,6 +17,12 @@ public:
 	
 	void Update();
 	
+	void Enable();
+	void Disable();
+
+	static void EnableLighting();
+	static void DisableLighting();
+
 	std::vector<float> GetParameters(GLenum type);
 	
 	GLenum GetLightNum();
