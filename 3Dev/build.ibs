@@ -2,7 +2,7 @@ flags {
 Iinclude/
 }
 files {
-game.cpp
+test.cpp
 src/Animation.cpp
 src/Button.cpp
 src/Camera.cpp
@@ -13,6 +13,7 @@ src/Shader.cpp
 src/Shape.cpp
 src/TextBox.cpp
 src/Material.cpp
+src/Engine.cpp
 }
 libs {
 GL
@@ -26,5 +27,5 @@ sfml-audio
 sfml-network
 }
 name {
-game
+test
 }
