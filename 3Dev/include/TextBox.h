@@ -31,6 +31,7 @@ namespace gui {
 		void TextEntered(sf::Event& event);
 		
 		std::string GetText();
+		sf::String GetSfString();
 	private:
 		float x, y, w, h;
 		bool inFocus = false;

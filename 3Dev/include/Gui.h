@@ -2,6 +2,7 @@
 #include "3Dev.h"
 #include "Button.h"
 #include "TextBox.h"
+
 namespace gui {
 	class Gui
 	{
@@ -30,6 +31,7 @@ namespace gui {
 		void Draw(sf::RenderWindow& w);
 		
 		std::string GetTextBoxString(int id);
+		sf::String GetTextBoxSfString(int id);
 	private:
 		template<class T>
 		void Find(int ID, std::function<void(gui::Button&, T)> f1, std::function<void(gui::TextBox&, T)> f2, T a);

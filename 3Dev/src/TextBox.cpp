@@ -135,3 +135,8 @@ std::string gui::TextBox::GetText()
 {
 	return enteredText.toAnsiString();
 }
+
+sf::String gui::TextBox::GetSfString()
+{
+	return enteredText;
+}

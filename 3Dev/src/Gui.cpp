@@ -113,6 +113,14 @@ std::string gui::Gui::GetTextBoxString(int id)
 	return "";
 }
 
+sf::String gui::Gui::GetTextBoxSfString(int id)
+{
+	for(auto i : textboxes) {
+		if(i.ID == id) return i.GetSfString();
+	}
+	return "";
+}
+
 template<class T>
 void gui::Gui::Find(int ID, std::function<void(gui::Button&, T)> f1, std::function<void(gui::TextBox&, T)> f2, T a)
 {
