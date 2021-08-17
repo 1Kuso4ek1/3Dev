@@ -24,7 +24,7 @@ std::pair<int, sf::Vector3f> collision(float x, float y, float z, Model& m, floa
 	for (int i = 0; i < m.numVerts * 3; i += 3) {
 		if(std::abs(x - ((m.GetPosition().x + rotvert[i]))) <= p && std::abs(z - ((m.GetPosition().z + rotvert[i + 2]))) <= p)
 		{
-			if (y <= (m.GetPosition().y + rotvert[i + 1]) && y >= (m.GetPosition().y - rotvert[i + 1])) {
+			if (y <= (m.GetPosition().y + rotvert[i + 1])) {
 				return std::make_pair(i, sf::Vector3f(((m.GetPosition().x + rotvert[i])) - x, ((m.GetPosition().y + rotvert[i + 1])) - y, ((m.GetPosition().z + rotvert[i + 2])) - z));
 			}
 		}
