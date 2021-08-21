@@ -44,7 +44,7 @@ void Camera::Mouse(sf::RenderWindow& window)
 {
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
 	sf::Vector2f mousexy = window.mapPixelToCoords(pixelPos, sf::View({ (float)window.getSize().x / 2, (float)window.getSize().y / 2 }, 
-                                        									{ (float)window.getSize().x, (float)window.getSize().y }));
+                                        					{ (float)window.getSize().x, (float)window.getSize().y }));
 	
 	angleX -= (mousexy.x - window.getSize().x / 2) / 8;
 	angleY -= (mousexy.y - window.getSize().y / 2) / 8;
