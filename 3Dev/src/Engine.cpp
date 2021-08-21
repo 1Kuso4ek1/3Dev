@@ -44,6 +44,10 @@ void Engine::Launch()
         while(window.pollEvent(event))
         {
             eloop(event);
+            if(event.type == sf::Event::Resized)
+            {
+                glViewport(0, 0, (float)event.size.width, (float)event.size.height);
+            }
         }
 
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
