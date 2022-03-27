@@ -1,6 +1,0 @@
-linux {
-sudo apt install libglew-dev
-sudo apt install libassimp-dev
-sudo apt install libsfml-dev
-sudo pacman -S assimp sfml
-}

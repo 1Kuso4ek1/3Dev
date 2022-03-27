@@ -1,61 +1,63 @@
 #pragma once
+#include "Shader.h"
 #include "Texture.h"
 #include "Material.h"
+#include "Camera.h"
+#include "Matrices.h"
+#include "Light.h"
+#include "Mesh.h"
+#include "PhysicsManager.h"
 
 class Model
 {
 public:
-	int numVerts;
-	float* vertexArray;
-		
-	Model(std::string filename, std::string texture, std::string ID, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ);
-	Model(std::string filename, GLuint texture, std::string ID, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ);
-	Model(std::string filename, GLuint texture, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ);
-	Model(std::string filename, std::string texture, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ);
-	Model(std::string filename, std::string texture, float x, float y, float z);
-	Model(std::string filename, GLuint texture, float x, float y, float z);
-	Model(std::string filename, float x, float y, float z);
-	
-	Model();
-	~Model();
+	Model(std::string filename, Material* mat, Shader* shader, Matrices* m, PhysicsManager* man, unsigned int flags = 0, rp3d::Vector3 position = rp3d::Vector3(0, 0, 0), rp3d::Quaternion orientation = rp3d::Quaternion::identity(), rp3d::Vector3 size = rp3d::Vector3(1, 1, 1));
 
-	bool Load(std::string filename, std::string texture = "");
+	void Load(std::string filename, unsigned int flags = 0);
 
-	void Draw();
-	void Draw(GLuint texture);
+	void Draw(Camera& cam, std::vector<Light> lights);
 	
-	void SetPosition(float x, float y, float z);
-	void SetSize(float sizeX, float sizeY, float sizeZ);
-	void SetRotation(float rotationX, float rotationY, float rotationZ);
-	void SetID(std::string ID);
-	void SetTexture(GLuint texture);
-	void SetMaterial(Material mat);
+	void SetPosition(rp3d::Vector3 position);
+	void SetOrientation(rp3d::Quaternion orientation);
+	void SetSize(rp3d::Vector3 size);
+	void SetMaterial(Material* mat);
 	
-	void AddPosition(float x, float y, float z);
-	void AddSize(float sizeX, float sizeY, float sizeZ);
-	void AddRotation(float rotationX, float rotationY, float rotationZ);
+	void AddPosition(rp3d::Vector3 position);
+	void AddRotation(rp3d::Quaternion orientation);
+	void AddSize(rp3d::Vector3 size);
+
+	void CreateBoxShape();
+	void CreateSphereShape();
+	void CreateCapsuleShape();
+	void CreateConcaveShape();
+	void CreateConvexShape();
 		
-	sf::Vector3f GetPosition();
-	sf::Vector3f GetRotation();
-	sf::Vector3f GetSize();
+	rp3d::Vector3 GetPosition();
+	rp3d::Quaternion GetOrientation();
+	rp3d::Vector3 GetSize();
 	
-	std::string GetID();
 	std::string GetFilename();
 	std::string GetTextureFilename();
 	
-	Material GetMaterial();
+	Material* GetMaterial();
+
 private:
-	Material mat;
+	void ProcessNode(aiNode* node, const aiScene* scene);
+	void ProcessMesh(aiMesh* mesh);
+	std::vector<Mesh> meshes;
 	
-	std::string ID, filename, texture;
+	Matrices* m;
+	Shader* shader;
+	Material* mat;
 
-	sf::Vector3f position, rotation, size;
+	PhysicsManager* man;
 
-	float* normalArray;
-	float* uvArray;
-
-	GLuint ModelTexture = 0;
+	rp3d::CollisionShape* shape = nullptr;
+	rp3d::RigidBody* body = nullptr;
+	rp3d::Collider* collider = nullptr;
 	
-	aiMesh* mesh;
+	std::string filename;
+
+	rp3d::Vector3 size;
+	rp3d::Transform transform;
 };
-

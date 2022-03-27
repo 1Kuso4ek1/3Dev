@@ -1,39 +1,65 @@
 #include "Shader.h"
 
-Shader::Shader(std::string filename, GLenum shadertype)
+Shader::Shader(std::string vertname, std::string fragname)
 {
-	std::ifstream shaderFile(filename);
+	std::ifstream vertfile(vertname);
+	std::ifstream fragfile(fragname);
 
-	if(!shaderFile.is_open()) {
-		std::cout << "ERROR::SHADER::CAN'T_OPEN_FILE" << std::endl;
-		exit(-1);
+	if(!vertfile.is_open() || !fragfile.is_open()) 
+	{
+		std::cout << "Error: can't open file" << std::endl;
+		return;
 	}
 
-	std::getline(shaderFile, code, '\0');
+	std::getline(vertfile, vertcode, '\0');
+	std::getline(fragfile, fragcode, '\0');
+
 	GLint success;
-	GLuint shader = glCreateShader(shadertype);
-	GLchar infoLog[512];
-	const GLchar* temp = code.c_str();
-	glShaderSource(shader, 1, &temp, NULL);
-	glCompileShader(shader);
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+	GLuint vertshader = glCreateShader(GL_VERTEX_SHADER);
+	GLuint fragshader = glCreateShader(GL_FRAGMENT_SHADER);
+	GLchar log[512];
+
+	const GLchar* verttemp = vertcode.c_str();
+	const GLchar* fragtemp = fragcode.c_str();
+	
+	glShaderSource(vertshader, 1, &verttemp, NULL);
+	glShaderSource(fragshader, 1, &fragtemp, NULL);
+	
+	glCompileShader(vertshader);
+	glCompileShader(fragshader);
+
+	glGetShaderiv(vertshader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
-		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::COMPILATION_FAILED" << std::endl << infoLog << std::endl;
+		glGetShaderInfoLog(vertshader, 512, NULL, log);
+		std::cout << "Error: vertex shader compilation failed. Reason: " << std::endl << log << std::endl;
+		return;
+	}
+
+	glGetShaderiv(fragshader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(fragshader, 512, NULL, log);
+		std::cout << "Error: fragment shader compilation failed. Reason: " << std::endl << log << std::endl;
+		return;
 	}
 
 	program = glCreateProgram();
-	glAttachShader(program, shader);
+	
+	glAttachShader(program, vertshader);
+	glAttachShader(program, fragshader);
+	
 	glLinkProgram(program);
 	glGetProgramiv(program, GL_LINK_STATUS, &success);
+
 	if (!success)
 	{
-		glGetProgramInfoLog(program, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED" << std::endl << infoLog << std::endl;
+		glGetProgramInfoLog(program, 512, NULL, log);
+		std::cout << "Error: shader program linking failed. Reason: " << std::endl << log << std::endl;
 	}
 
-	glDeleteShader(shader);
+	glDeleteShader(vertshader);
+	glDeleteShader(fragshader);
 }
 
 void Shader::Bind() 
@@ -43,15 +69,40 @@ void Shader::Bind()
 
 void Shader::Unbind() 
 {
-	glUseProgram(NULL);
+	glUseProgram(0);
 }
 
-void Shader::SetUniform(std::string name, float val) 
+void Shader::SetUniform1i(std::string name, int val)
 {
-	glUniform1f(glGetUniformLocation(program, name.c_str()), val);
+	glUniform1i(GetUniformLocation(name), val);
 }
 
-void Shader::SetUniform(std::string name, float x, float y, float z)
+void Shader::SetUniform1f(std::string name, float val) 
 {
-	glUniform3f(glGetUniformLocation(program, name.c_str()), x, y, z);
+	glUniform1f(GetUniformLocation(name), val);
+}
+
+void Shader::SetUniform3f(std::string name, float x, float y, float z)
+{
+	glUniform3f(GetUniformLocation(name), x, y, z);
+}
+
+void Shader::SetUniform2f(std::string name, float x, float y)
+{
+	glUniform2f(GetUniformLocation(name), x, y);
+}
+
+void Shader::SetUniformMatrix4(std::string name, glm::mat4 mat)
+{
+	glUniformMatrix4fv(GetUniformLocation(name), 1, 0, glm::value_ptr(mat));
+}
+
+int Shader::GetUniformLocation(std::string name)
+{
+	return glGetUniformLocation(program, name.c_str());
+}
+
+int Shader::GetAttribLocation(std::string name)
+{
+	return glGetAttribLocation(program, name.c_str());
 }

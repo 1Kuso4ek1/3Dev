@@ -1,62 +1,65 @@
 #include "Light.h"
 
-Light::Light(GLenum lightNum, float x, float y, float z, std::string ID) : lightNum(lightNum), ID(ID) {
-	glEnable(lightNum);
-	SetPosition(x, y, z);
-}
+Light::Light(rp3d::Vector3 ambient, rp3d::Vector3 diffuse, rp3d::Vector3 specular, rp3d::Vector3 position) : ambient(ambient), diffuse(diffuse), specular(specular), position(position) {}
 
-Light::Light(GLenum lightNum, float x, float y, float z) : lightNum(lightNum) {
-	glEnable(lightNum);
-	SetPosition(x, y, z);
-}
-
-Light::~Light()
+void Light::SetAmbient(rp3d::Vector3 ambient)
 {
-	glDisable(lightNum);
+	this->ambient = ambient;
 }
 
-void Light::SetParameters(std::vector<float> parameters, GLenum type)
+void Light::SetDiffuse(rp3d::Vector3 diffuse)
 {
-	glLightfv(lightNum, type, &parameters[0]);
+	this->diffuse = diffuse;
 }
 
-void Light::SetPosition(float x, float y, float z)
+void Light::SetSpecular(rp3d::Vector3 specular)
 {
-	position = sf::Vector3f(x, y, z);
+	this->specular = specular;
 }
 
-void Light::SetID(std::string ID) 
+void Light::SetPosition(rp3d::Vector3 position)
 {
-	this->ID = ID;
+	this->position = position;
 }
 
-void Light::AddPosition(float x, float y, float z)
+void Light::SetAttenuation(float constant, float linear, float quadratic)
 {
-	SetPosition(position.x + x, position.y + y, position.z + z);
+	this->constant = constant;
+	this->linear = linear;
+	this->quadratic = quadratic;
 }
 
-void Light::Update() 
+void Light::Update(Shader* shader, int lightnum) 
 {
-	SetParameters({ position.x, position.y, position.z, 1 }, GL_POSITION);
+	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].ambient", ambient.x, ambient.y, ambient.z);
+	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].diffuse", diffuse.x, diffuse.y, diffuse.z);
+	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].specular", specular.x, specular.y, specular.z);
+	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].position", position.x, position.y, position.z);
+	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].attenuation", constant, linear, quadratic);
+	shader->SetUniform1i("lights[" + std::to_string(lightnum) + "].isactive", 1);
 }
 
-std::vector<float> Light::GetParameters(GLenum type)
+rp3d::Vector3 Light::GetAmbient() 
 {
-	float var[] = { 0, 0, 0, 0 };
-	glGetLightfv(lightNum, type, var);
-	return std::vector<float>(var, var + sizeof(var) / sizeof(float));
+	return ambient;
 }
 
-GLenum Light::GetLightNum()
+rp3d::Vector3 Light::GetDiffuse() 
 {
-	return lightNum;
+	return diffuse;
 }
 
-sf::Vector3f Light::GetPosition() 
+rp3d::Vector3 Light::GetSpecular() 
+{
+	return specular;
+}
+
+rp3d::Vector3 Light::GetPosition() 
 {
 	return position;
 }
 
-std::string Light::GetID() {
-	return ID;
+rp3d::Vector3 Light::GetAttenuation()
+{
+	return rp3d::Vector3(constant, linear, quadratic);
 }

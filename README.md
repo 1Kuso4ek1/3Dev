@@ -1,54 +1,60 @@
 # 3Dev
-Simple 3D game engine, that uses SFML, OpenGL, Assimp. 
-## 3Dev Editor
-3Dev Editor's source code is now here!
-## Tutorial
-Check Wiki, if you want to learn how to make games with 3Dev.
+
+## About
+- 3Dev is a simple and lightweight game engine, which uses SFML, OpenGL, ReactPhysics3D, Assimp and ImGui
 ## Features
-Loading many model formats (.obj, .fbx, .dae, etc.)
-
-Loading animations
-
-Loading textures
-
-GUI (Buttons, Text box)
-
-Class for lighting
-
-Class for camera
-
-Class for simple shapes
-
-3Dev Editor
+- Rigit body physics
+- Loading a lot of model formats (.obj, .dae, .fbx and much more...)
+- Framebuffers
+- Post processing support
+- Shaders
+- - Blinn-Phong lighting model
+- - Multiple light sources
+- - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
+- - Cubemap reflections
 ## TODO
-- [x] Make it cross-platform
-- [x] Add lights (3Dev Editor)
-- [x] Add export function (3Dev Editor)
-- [x] Add physics
-- [x] Improve GUI
-- [x] Add text input (Gui) 
-- [x] Animation states
-- [x] Materials
-- [x] Models with materials
-- [x] Animations with materials
-- [ ] Materials in 3Dev Editor
-## Building test game (Linux)
-In 3Dev folder you have model, skybox, code and building files. First you need to download assimp sources in 3Dev folder, execute
+- ADD SKELETAL ANIMATION
+- Add convex and concave shapes to the Model class
+- Fix multiple meshes rendering
+- Add spdlog
+- Finish 3Dev Editor
+- Add shadows
+- Add realtime cubemap reflections
+## Building
+### Dependencies
+1. GLEW
+2. SFML
+3. ReactPhysics3D
+4. ImGui
+5. ImGui-SFML
+6. Assimp
+### Let's build
+First of all, you need to clone this repository
 ```
-git clone https://github.com/assimp/assimp
+git clone https://github.com/1Kuso4ek1/3Dev.git
+cd 3Dev/3Dev
 ```
-in terminal, you don't need to build it. Then download and build https://github.com/1Kuso4ek1/ibs, write
+When done, we can now create a "build" directory and call cmake
 ```
-sudo cp ibs /usr/bin
+mkdir build && cd build
+cmake ..
 ```
-to use ibs everywhere you want, then execute
+This process will not take that much time...  
+Finally, Makefile generated!
 ```
-ibs build.ibs libraries.ibs
+make -j4
+sudo make install # So you can use the library everywhere...
 ```
-in terminal.
-## Building 3Dev Editor (Linux)
-It's really easy. Open terminal in 3Dev Editor forlder, then, if you already build ibs, just write
+You can use 3Dev in your cmake project pretty easily
 ```
-ibs editor.ibs libraries.ibs
+find_package(3Dev REQUIRED)
+target_link_libraries(cool-project PUBLIC 3Dev *3Dev deps* *another stuff*)
+...
+target_include_directories(
+	cool-project
+	PUBLIC
+	${3DEV_INCLUDE_DIR}
+)
 ```
-wait, and enjoy! :)
+## Screenshots
+![](./Screenshots/scr.png)

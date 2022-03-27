@@ -1,0 +1,6 @@
+3Dev-editor
+build
+*.code-workspace
+cmake_test
+.vscode
+physics

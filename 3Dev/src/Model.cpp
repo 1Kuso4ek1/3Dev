@@ -1,239 +1,196 @@
 #include "Model.h"
 
-Model::Model(std::string filename, std::string texture, std::string ID, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ) : ID(ID), filename(filename), texture(texture)
+Model::Model(std::string filename, Material* mat, Shader* shader, Matrices* m, PhysicsManager* man, unsigned int flags, rp3d::Vector3 position, rp3d::Quaternion orientation, rp3d::Vector3 size) : transform(position, orientation), size(size), mat(mat), shader(shader), filename(filename), m(m), man(man)
 {
-	SetPosition(x, y, z);
-	SetRotation(rotationX, rotationY, rotationZ);
-	SetSize(sizeX, sizeY, sizeZ);
-	Load(filename, texture);
-}
-
-Model::Model(std::string filename, GLuint texture, std::string ID, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ) : ID(ID), filename(filename), ModelTexture(texture)
-{
-	SetPosition(x, y, z);
-	SetRotation(rotationX, rotationY, rotationZ);
-	SetSize(sizeX, sizeY, sizeZ);
-	Load(filename);
-}
-
-Model::Model(std::string filename, GLuint texture, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ) : filename(filename), ModelTexture(texture)
-{
-	SetPosition(x, y, z);
-	SetRotation(rotationX, rotationY, rotationZ);
-	SetSize(sizeX, sizeY, sizeZ);
-	Load(filename);
-}
-
-Model::Model(std::string filename, std::string texture, float x, float y, float z, float rotationX, float rotationY, float rotationZ, float sizeX, float sizeY, float sizeZ) : filename(filename), texture(texture)
-{
-	SetPosition(x, y, z);
-	SetRotation(rotationX, rotationY, rotationZ);
-	SetSize(sizeX, sizeY, sizeZ);
-	Load(filename, texture);
-}
-
-Model::Model(std::string filename, std::string texture, float x, float y, float z) : filename(filename), texture(texture)
-{
-	SetPosition(x, y, z);
-	SetSize(1, 1, 1);
-	Load(filename, texture);
-}
-
-Model::Model(std::string filename, GLuint texture, float x, float y, float z) : filename(filename), ModelTexture(texture)
-{
-	SetPosition(x, y, z);
-	SetSize(1, 1, 1);
-	Load(filename);
-}
-
-Model::Model(std::string filename, float x, float y, float z) : filename(filename)
-{
-	SetPosition(x, y, z);
-	SetSize(1, 1, 1);
-	Load(filename);
-}
-
-Model::Model() {}
-
-Model::~Model()
-{
-	delete[] vertexArray;
-	delete[] normalArray;
-	delete[] uvArray;
-}
-
-bool Model::Load(std::string filename, std::string texture)
-{
-	if(ModelTexture == 0) ModelTexture = (texture == "") ? 0 : LoadTexture(texture);
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast);
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
+	if(man != nullptr)
 	{
-		std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
-		return false;
+		body = man->CreateRigidBody(transform);
 	}
-	mesh = scene->mMeshes[0];
-	numVerts = mesh->mNumFaces * 3;
-	vertexArray = new float[mesh->mNumFaces * 3 * 3];
-	normalArray = new float[mesh->mNumFaces * 3 * 3];
-	uvArray = new float[mesh->mNumFaces * 3 * 2];
-	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+
+	Load(filename, flags);
+}
+
+void Model::Load(std::string filename, unsigned int flags)
+{
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(filename, flags);
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		const aiFace& face = mesh->mFaces[i];
+		std::string e = std::string("Error while importing '" + filename + "': " + importer.GetErrorString());
+		std::cout << e << std::endl;
+		throw e;
+	}
+	ProcessNode(scene->mRootNode, scene);
+}
 
-		for (int j = 0; j < 3; j++)
+void Model::Draw(Camera& cam, std::vector<Light> lights)
+{
+	m->PushMatrix();
+
+	if(body != nullptr) transform = body->getTransform();
+	rp3d::Vector3 tmp; float a;
+	transform.getOrientation().getRotationAngleAxis(a, tmp);
+	
+	m->Translate(toglm(transform.getPosition()));
+	m->Rotate(a, glm::axis(toglm(transform.getOrientation()))); // Using toglm(tmp) as second argument breaks everything and gives the matrix of nan
+	m->Scale(toglm(size));
+
+	auto textures = mat->GetTextures();
+	int diff = 0, norm = 0, ao = 0, emiss = 0, metal = 0, rough = 0, opac = 0;
+	bool cubemap = false;
+	shader->Bind();
+	for(int i = 0; i < textures.size(); i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		if(textures[i].second != Material::TexType::Cubemap) glBindTexture(GL_TEXTURE_2D, textures[i].first);
+		else glBindTexture(GL_TEXTURE_CUBE_MAP, textures[i].first);
+
+		switch(textures[i].second)
 		{
-			aiVector3D uv = mesh->mTextureCoords[0][face.mIndices[j]];
-			memcpy(uvArray, &uv, sizeof(float) * 2);
-			uvArray += 2;
-
-			aiVector3D normal = mesh->mNormals[face.mIndices[j]];
-			memcpy(normalArray, &normal, sizeof(float) * 3);
-			normalArray += 3;
-
-			aiVector3D pos = mesh->mVertices[face.mIndices[j]];
-			memcpy(vertexArray, &pos, sizeof(float) * 3);
-			vertexArray += 3;
+		case Material::TexType::Diffuse:
+			shader->SetUniform1i("ndiff", 1);
+			shader->SetUniform1i(std::string("diff")/* + std::to_string(diff)*/, i);
+			diff++;
+			break;
+		case Material::TexType::NormalMap:
+			shader->SetUniform1i("nnormalmap", 1);
+			shader->SetUniform1i(std::string("normalmap")/* + std::to_string(norm)*/, i);
+			norm++;
+			break;
+		case Material::TexType::AmbientOcclusion:
+			shader->SetUniform1i("nao", 1);
+			shader->SetUniform1i(std::string("ao")/* + std::to_string(ao)*/, i);
+			ao++;
+			break;
+		case Material::TexType::Metalness:
+			shader->SetUniform1i("nmetalness", 1);
+			shader->SetUniform1i(std::string("metalness")/* + std::to_string(metal)*/, i);
+			metal++;
+			break;
+		case Material::TexType::Emission:
+			shader->SetUniform1i("nemission", 1);
+			shader->SetUniform1i(std::string("emission")/* + std::to_string(emiss)*/, i);
+			emiss++;
+			break;
+		case Material::TexType::Roughness:
+			shader->SetUniform1i("nroughness", 1);
+			shader->SetUniform1i(std::string("roughness")/* + std::to_string(rough) + "]"*/, i);
+			rough++;
+			break;
+		case Material::TexType::Opacity:
+			shader->SetUniform1i("nopacity", 1);
+			shader->SetUniform1i(std::string("opacity")/* + std::to_string(rough) + "]"*/, i);
+			opac++;
+			break;
+		case Material::TexType::Cubemap:
+			shader->SetUniform1i(std::string("cubemap"), i);
+			cubemap = true;
+			break;
 		}
 	}
+	if(!cubemap)
+	{
+		glActiveTexture(GL_TEXTURE0 + textures.size());
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		shader->SetUniform1i(std::string("cubemap"), textures.size());
+	}
+	for(int i = 0; i < lights.size(); i++)
+		lights[i].Update(shader, i);
+	shader->SetUniform1f("shininess", mat->GetShininess());
+	shader->SetUniform3f("campos", cam.GetPosition().x, cam.GetPosition().y, cam.GetPosition().z);
+	m->UpdateShader(shader);
 
-	uvArray -= mesh->mNumFaces * 3 * 2;
-	normalArray -= mesh->mNumFaces * 3 * 3;
-	vertexArray -= mesh->mNumFaces * 3 * 3;
-	return true;
-}
-
-void Model::Draw()
-{
-	glPushMatrix();
+	for(auto& i : meshes) i.Draw();
 	
-	mat.Activate();
-	
-	glTranslatef(position.x, position.y, position.z);
-	glScalef(size.x, size.y, size.z);
-	
-	glRotatef(rotation.y, 0, 1, 0);
-	glRotatef(rotation.z, 0, 0, 1);
-	glRotatef(rotation.x, 1, 0, 0);
-		
-	glBindTexture(GL_TEXTURE_2D, ModelTexture);
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glVertexPointer(3, GL_FLOAT, 0, vertexArray);
-	glNormalPointer(GL_FLOAT, 0, normalArray);
-
-	glTexCoordPointer(2, GL_FLOAT, 0, uvArray);
-
-	glDrawArrays(GL_TRIANGLES, 0, numVerts);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glPopMatrix();
+	m->PopMatrix();
 }
 
-void Model::Draw(GLuint texture)
+void Model::SetPosition(rp3d::Vector3 position)
 {
-	glPushMatrix();
-	
-	mat.Activate();
-	
-	glTranslatef(position.x, position.y, position.z);
-	glScalef(size.x, size.y, size.z);
-	
-	glRotatef(rotation.y, 0, 1, 0);
-	glRotatef(rotation.z, 0, 0, 1);
-	glRotatef(rotation.x, 1, 0, 0);
-		
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glVertexPointer(3, GL_FLOAT, 0, vertexArray);
-	glNormalPointer(GL_FLOAT, 0, normalArray);
-
-	glTexCoordPointer(2, GL_FLOAT, 0, uvArray);
-
-	glDrawArrays(GL_TRIANGLES, 0, numVerts);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glPopMatrix();
+	transform.setPosition(position);
+	if(body != nullptr) body->setTransform(transform);
 }
 
-void Model::SetPosition(float x, float y, float z)
+void Model::SetOrientation(rp3d::Quaternion orientation)
 {
-	position = sf::Vector3f(x, y, z);
+	transform.setOrientation(orientation);
+	if(body != nullptr) body->setTransform(transform);
 }
 
-void Model::SetSize(float sizeX, float sizeY, float sizeZ)
+void Model::SetSize(rp3d::Vector3 size)
 {
-	size = sf::Vector3f(sizeX, sizeY, sizeZ);
+	this->size = size;
 }
 
-void Model::SetRotation(float rotationX, float rotationY, float rotationZ)
-{
-	rotation = sf::Vector3f(rotationX, rotationY, rotationZ);
-}
-
-void Model::SetID(std::string ID)
-{
-	this->ID = ID;
-}
-
-void Model::SetTexture(GLuint texture)
-{
-	ModelTexture = texture;
-}
-
-void Model::SetMaterial(Material mat)
+void Model::SetMaterial(Material* mat)
 {
 	this->mat = mat;
 }
 
-void Model::AddPosition(float x, float y, float z) 
+void Model::AddPosition(rp3d::Vector3 position) 
 {
-	position.x += x;
-	position.y += y;
-	position.z += z;
+	transform.setPosition(transform.getPosition() + position);
+	if(body != nullptr) body->setTransform(transform);
 }
 
-void Model::AddRotation(float rotationX, float rotationY, float rotationZ) 
+void Model::AddRotation(rp3d::Quaternion orientation) 
 {
-	rotation.x += rotationX;
-	rotation.y += rotationY;
-	rotation.z += rotationZ;
+	transform.setOrientation(orientation * transform.getOrientation());
+	if(body != nullptr) body->setTransform(transform);
 }
 
-void Model::AddSize(float sizeX, float sizeY, float sizeZ) 
+void Model::AddSize(rp3d::Vector3 size) 
 {
-	size.x += sizeX;
-	size.y += sizeY;
-	size.z += sizeZ;
+	this->size += size;
 }
 
-sf::Vector3f Model::GetPosition() 
+void Model::CreateBoxShape()
 {
-	return position;
+	aiAABB aabb = meshes[0].GetAABB();
+	auto v = aabb.mMax - aabb.mMin;
+	shape = man->CreateBoxShape((rp3d::Vector3(v.x, v.y, v.z) / 2) * size);
+	body->addCollider(shape, rp3d::Transform::identity());
 }
 
-sf::Vector3f Model::GetRotation() 
+void Model::CreateSphereShape()
 {
-	return rotation;
+	aiAABB aabb = meshes[0].GetAABB();
+	auto v = aabb.mMax - aabb.mMin;
+	shape = man->CreateSphereShape((v.y / 2) * size.y);
+	body->addCollider(shape, rp3d::Transform::identity());
 }
 
-sf::Vector3f Model::GetSize() 
+void Model::CreateCapsuleShape()
+{
+	aiAABB aabb = meshes[0].GetAABB();
+	auto v = aabb.mMax - aabb.mMin;
+	shape = man->CreateCapsuleShape((glm::max(v.x, v.y) / 2) * size.x, v.y);
+	body->addCollider(shape, rp3d::Transform::identity());
+}
+
+void Model::CreateConcaveShape()
+{
+
+}
+
+void Model::CreateConvexShape()
+{
+
+}
+
+rp3d::Vector3 Model::GetPosition() 
+{
+	return transform.getPosition();
+}
+
+rp3d::Quaternion Model::GetOrientation() 
+{
+	return transform.getOrientation();
+}
+
+rp3d::Vector3 Model::GetSize() 
 {
 	return size;
-}
-
-std::string Model::GetID() 
-{
-	return ID;
 }
 
 std::string Model::GetFilename() 
@@ -241,12 +198,35 @@ std::string Model::GetFilename()
 	return filename;
 }
 
-std::string Model::GetTextureFilename() 
-{
-	return texture;
-}
-
-Material Model::GetMaterial()
+Material* Model::GetMaterial()
 {
 	return mat;
+}
+
+void Model::ProcessNode(aiNode* node, const aiScene* scene)
+{
+	for(int i = 0; i < node->mNumMeshes; i++)
+		ProcessMesh(scene->mMeshes[node->mMeshes[i]]);
+
+	for(int i = 0; i < node->mNumChildren; i++)
+		ProcessNode(node->mChildren[i], scene);
+}
+
+void Model::ProcessMesh(aiMesh* mesh)
+{
+	std::vector<Vertex> data;
+	std::vector<GLuint> indices;
+	
+	for(int i = 0; i < mesh->mNumVertices; i++)
+	{
+		glm::vec3 pos = toglm(mesh->mVertices[i]), norm = toglm(mesh->mNormals[i]);
+		glm::vec2 uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+		data.emplace_back(pos, norm, uv);
+	}
+
+	for(int i = 0; i < mesh->mNumFaces; i++)
+		for(int j = 0; j < 3; j++) 
+			indices.push_back(mesh->mFaces[i].mIndices[j]);
+			
+	meshes.emplace_back(data, indices, mesh->mAABB);
 }
