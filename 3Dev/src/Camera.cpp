@@ -30,15 +30,6 @@ void Camera::Move(float time)
 		pos -= (orient * rp3d::Vector3(1, 0, 0)) * speed * time;
 }
 
-void Camera::ThirdPerson(float centerx, float centery, float centerz, float dist)
-{
-	float horizontald = dist * cos(angleY * pi / 180);
-	float verticald = dist * sin(angleY * pi / 180);
-	pos.x = centerx - (horizontald * sin(angleX * pi / 180));
-	pos.y = verticald + centery;
-	pos.z = centerz - (horizontald * cos(angleX * pi / 180));
-}
-
 void Camera::Mouse()
 {
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
@@ -54,13 +45,11 @@ void Camera::Mouse()
 void Camera::Look()
 {	
 	rp3d::Vector3 v = orient * rp3d::Vector3(0, 0, -1);
-	//glLoadMatrixf(glm::value_ptr(glm::lookAt(toglm(pos), toglm(pos + v), glm::vec3(0, 1, 0))));
 	m->GetView() = glm::lookAt(toglm(pos), toglm(pos + v), glm::vec3(0, 1, 0));
 }
 
 void Camera::Look(const rp3d::Vector3& vec)
 {
-	//glLoadMatrixf(glm::value_ptr(glm::lookAt(toglm(pos), toglm(vec), glm::vec3(0, 1, 0))));
 	m->GetView() = glm::lookAt(toglm(pos), toglm(vec), glm::vec3(0, 1, 0));
 }
 
@@ -86,9 +75,6 @@ void Camera::SetOrientation(const rp3d::Quaternion& quat)
 
 void Camera::UpdateMatrix()
 {
-	//glMatrixMode(GL_PROJECTION);
-    //glLoadMatrixf(glm::value_ptr(glm::perspective(glm::radians(fov), aspect, near, far)));
-	//glMatrixMode(GL_MODELVIEW);
 	m->GetProjection() = glm::perspective(glm::radians(fov), aspect, near, far);
 }
 
