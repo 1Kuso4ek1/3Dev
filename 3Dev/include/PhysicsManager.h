@@ -50,11 +50,29 @@ public:
      */
     rp3d::RigidBody* CreateRigidBody(const rp3d::Transform& transform);
     
+    // Functions for creating various types of joints
+    /*
+     * @param info information about ball and socket joint
+     * @return pointer to the ball and socket joint object
+     */
     rp3d::BallAndSocketJoint* CreateBallAndSocketJoint(rp3d::BallAndSocketJointInfo info);
+
+    /*
+     * @param info information about hinge joint
+     * @return pointer to the hinge joint object
+     */
     rp3d::HingeJoint* CreateHingeJoint(rp3d::HingeJointInfo info);
+
+    /*
+     * @param info information about slider joint
+     * @return pointer to the slider joint object
+     */
     rp3d::SliderJoint* CreateSliderJoint(rp3d::SliderJointInfo info);
 
+    // @return settings of this world
     rp3d::PhysicsWorld::WorldSettings GetSettings();
+
+    // @return pointer to the physics world
     rp3d::PhysicsWorld* GetWorld();
 
 private:
