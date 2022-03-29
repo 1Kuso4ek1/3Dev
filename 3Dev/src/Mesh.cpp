@@ -39,12 +39,12 @@ void Mesh::Draw()
 	glBindVertexArray(0);
 }
 
-std::vector<Vertex> Mesh::GetData()
+std::vector<Vertex>& Mesh::GetData()
 {
     return data;
 }
 
-std::vector<GLuint> Mesh::GetIndices()
+std::vector<GLuint>& Mesh::GetIndices()
 {
     return indices;
 }
