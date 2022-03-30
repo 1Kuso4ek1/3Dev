@@ -22,6 +22,7 @@ TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)
 4. ImGui
 5. ImGui-SFML
 6. Assimp
+7. LightLog
 ### Let's build
 First of all, you need to clone this repository
 ```
