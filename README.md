@@ -13,13 +13,7 @@
 - - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
 - - Cubemap reflections
 ## TODO
-- ADD SKELETAL ANIMATION
-- Add convex and concave shapes to the Model class
-- Fix multiple meshes rendering
-- Add spdlog
-- Finish 3Dev Editor
-- Add shadows
-- Add realtime cubemap reflections
+TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)!
 ## Building
 ### Dependencies
 1. GLEW
