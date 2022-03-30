@@ -32,7 +32,7 @@ static GLuint LoadTexture(std::string name)
 {
 	sf::Image image;
 	if (!image.loadFromFile(name))
-		std::cout << "Error: can't load texture '" << name << "'" << std::endl;
+		Log::Write("Can't load texture '" + name + "'", Log::Type::Warning);
 
 	GLuint texture = 0;
 	glGenTextures(1, &texture);
@@ -62,7 +62,7 @@ static GLuint LoadCubemap(const std::vector<std::string>& filenames)
 	for(int i = 0; i < 6; i++)
 	{
 		if (!image.loadFromFile(filenames[i]))
-			std::cout << "Error: can't load texture '" << filenames[i] << "'" << std::endl;
+			Log::Write("Can't load texture '" + filenames[i] + "'", Log::Type::Warning);
 
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA8, image.getSize().x, image.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getPixelsPtr());
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -85,7 +85,7 @@ static GLuint LoadCubemap(std::string filename)
 {
 	sf::Image image;
 	if (!image.loadFromFile(filename))
-			std::cout << "Error: can't load texture '" << filename << "'" << std::endl;
+		Log::Write("Can't load texture '" + filename + "'", Log::Type::Warning);
 
 	GLuint texture = 0;
 	glGenTextures(1, &texture);

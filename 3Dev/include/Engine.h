@@ -25,12 +25,6 @@ public:
     void Init();
 
     /*
-     * Custom initialization function
-     * @param init your custom function
-     */
-    void Init(std::function<void(void)> init);
-
-    /*
      * Function for creating SFML window
      * @param width width of your window
      * @param height height of your window

@@ -15,11 +15,7 @@ void Model::Load(std::string filename, unsigned int flags)
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filename, flags);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-	{
-		std::string e = std::string("Error while importing '" + filename + "': " + importer.GetErrorString());
-		std::cout << e << std::endl;
-		throw e;
-	}
+		Log::Write("Error while importing '" + filename + "': " + importer.GetErrorString(), Log::Type::Critical);
 	ProcessNode(scene->mRootNode, scene);
 }
 

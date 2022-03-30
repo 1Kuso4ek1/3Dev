@@ -5,11 +5,10 @@ Shader::Shader(std::string vertname, std::string fragname)
 	std::ifstream vertfile(vertname);
 	std::ifstream fragfile(fragname);
 
-	if(!vertfile.is_open() || !fragfile.is_open()) 
-	{
-		std::cout << "Error: can't open file" << std::endl;
-		return;
-	}
+	if(!vertfile.is_open())
+		Log::Write("Can't open file '" + vertname + "'!", Log::Type::Critical);
+	if(!fragfile.is_open())
+		Log::Write("Can't open file '" + fragname + "'!", Log::Type::Critical);
 
 	std::getline(vertfile, vertcode, '\0');
 	std::getline(fragfile, fragcode, '\0');
@@ -32,16 +31,14 @@ Shader::Shader(std::string vertname, std::string fragname)
 	if (!success)
 	{
 		glGetShaderInfoLog(vertshader, 512, NULL, log);
-		std::cout << "Error: vertex shader compilation failed. Reason: " << std::endl << log << std::endl;
-		return;
+		Log::Write("Vertex shader compilation failed! Reason: " + std::string(log), Log::Type::Critical);
 	}
 
 	glGetShaderiv(fragshader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
 		glGetShaderInfoLog(fragshader, 512, NULL, log);
-		std::cout << "Error: fragment shader compilation failed. Reason: " << std::endl << log << std::endl;
-		return;
+		Log::Write("Fragment shader compilation failed! Reason: " + std::string(log), Log::Type::Critical);
 	}
 
 	program = glCreateProgram();
@@ -55,7 +52,7 @@ Shader::Shader(std::string vertname, std::string fragname)
 	if (!success)
 	{
 		glGetProgramInfoLog(program, 512, NULL, log);
-		std::cout << "Error: shader program linking failed. Reason: " << std::endl << log << std::endl;
+		Log::Write("Program linking failed! Reason: " + std::string(log), Log::Type::Critical);
 	}
 
 	glDeleteShader(vertshader);

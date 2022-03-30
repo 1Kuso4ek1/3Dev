@@ -11,16 +11,14 @@ void Engine::Init()
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_NORMALIZE);
     glewInit();
-}
-
-void Engine::Init(std::function<void(void)> init)
-{
-    init();
+    Log::Write("Engine successfully initialized", Log::Type::Info);
 }
 
 void Engine::CreateWindow(float width, float height, std::string title, sf::Uint32 style)
 {
+    Log::Init("3Dev_log.txt", false);
     window.create(sf::VideoMode(width, height), title, style, settings);
+    Log::Write("Window successfully created", Log::Type::Info);
 }
 
 void Engine::EventLoop(std::function<void(sf::Event&)> eloop)
@@ -35,6 +33,8 @@ void Engine::Loop(std::function<void(void)> loop)
 
 void Engine::Launch()
 {
+    Log::Write("Engine launched", Log::Type::Info);
+
     running = true;
 
     while(running)
@@ -43,17 +43,28 @@ void Engine::Launch()
         {
             eloop(event);
             if(event.type == sf::Event::Resized)
-            {
                 glViewport(0, 0, (float)event.size.width, (float)event.size.height);
-            }
         }
 
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-        loop();
+        try
+        {
+            loop();
+        }
+        catch(std::exception& e)
+        {
+            Log::Write("Exception catched! e.what():" + std::string(e.what()), Log::Type::Critical);
+        }
+        catch(...)
+        {
+            Log::Write("Unknown exception catched!", Log::Type::Critical);
+        }
 
         window.display();
     }
+
+    Log::Write("Engine closed", Log::Type::Info);
 }
 
 void Engine::Close()
