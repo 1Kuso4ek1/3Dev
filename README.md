@@ -16,7 +16,7 @@
 - ADD SKELETAL ANIMATION
 - Add convex and concave shapes to the Model class
 - Fix multiple meshes rendering
-- Add spdlog
+- Add LightLog
 - Finish 3Dev Editor
 - Add shadows
 - Add realtime cubemap reflections
