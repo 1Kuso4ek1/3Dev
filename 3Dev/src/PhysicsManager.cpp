@@ -5,6 +5,11 @@ PhysicsManager::PhysicsManager(rp3d::PhysicsWorld::WorldSettings settings) : set
     world = common.createPhysicsWorld(settings);
 }
 
+PhysicsManager::~PhysicsManager()
+{
+    common.destroyPhysicsWorld(world);
+}
+
 void PhysicsManager::Update(float t)
 {
     world->update(t);

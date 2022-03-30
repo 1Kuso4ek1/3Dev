@@ -12,7 +12,7 @@ public:
      * @param settings settings of your physics world
      */
     PhysicsManager(rp3d::PhysicsWorld::WorldSettings settings);
-
+    ~PhysicsManager();
     /*
      * Updates the physics
      * @param t time step
