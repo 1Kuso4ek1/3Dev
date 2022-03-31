@@ -160,7 +160,7 @@ void Model::CreateCapsuleShape()
 {
 	aiAABB aabb = meshes[0].GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
-	shape = man->CreateCapsuleShape((glm::max(v.x, v.y) / 2) * size.x, v.y);
+	shape = man->CreateCapsuleShape((glm::max(v.x, v.z) / 2) * size.x, v.y / 2);
 	body->addCollider(shape, rp3d::Transform::identity());
 }
 
