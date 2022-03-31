@@ -7,6 +7,7 @@ void Engine::Init()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_NOTEQUAL, 0);
+    glEnable(GL_MULTISAMPLE);
     glDepthMask(GL_TRUE);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_NORMALIZE);

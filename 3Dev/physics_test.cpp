@@ -5,6 +5,7 @@ int main()
     Engine engine; // Engine class is responsible for creating a window
     
     engine.GetSettings().depthBits = 24; // Optional
+    engine.GetSettings().antialiasingLevel = 4;
     engine.CreateWindow(1280, 720, "test"); // Creating a 1280x720 window with title "test"
     engine.Init(); // Initializing OpenGL
     
