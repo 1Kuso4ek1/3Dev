@@ -56,38 +56,31 @@ int main()
     
     // All the shapes
     Shape s({ 10, 30, 10 }, { 3, 3, 3 }, rp3d::Quaternion::identity(), &man, &shader, &material, &m);
-    Shape s1({ 0, -10, 0 }, { 10, 2, 30 }, rp3d::Quaternion::fromEulerAngles(0.348, 0, 0), &man, &shader, &material, &m);
-    Shape s2({ 60, -100, 60 }, { 100, 10, 100 }, rp3d::Quaternion::identity(), &man, &shader, &material, &m);
+    //Shape s1({ 0, -10, 0 }, { 10, 2, 30 }, rp3d::Quaternion::fromEulerAngles(0.348, 0, 0), &man, &shader, &material, &m);
+    //Shape s2({ 60, -100, 60 }, { 100, 10, 100 }, rp3d::Quaternion::identity(), &man, &shader, &material, &m);
     Shape s3({ 10, 36, 10 }, { 3, 3, 3 }, rp3d::Quaternion::identity(), &man, &shader, &material, &m);
     Shape s4({ 10, 13, 10 }, { 1.5, 1.5, 3 }, rp3d::Quaternion::fromEulerAngles(0.0, 0.0, 0.0), &man, &shader, &material, &m);
     // Specific shape for skybox
     Shape skybox({ 0, 0, 0 }, { 1000, 1000, 1000 }, rp3d::Quaternion::identity(), nullptr, &skyboxshader, nullptr, &m, cubemap);
     
     // Loading a sphere model
-    Model sphere("../sphere.obj", &material, &shader, &m, &man, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, { 10.f, 20.f, 10.f });
+    Model sphere("../sphere.obj", &material, &shader, &m, &man, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, { 10.f, 10.f, 10.f });
     sphere.CreateSphereShape(); // Creating sphere collision shape for a model
 
+    Model terrain("../terrain.obj", &material, &shader, &m, &man, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, { 10.f, -30.f, 10.f });
+    terrain.CreateConcaveShape();
+
     // Some shapes should be static
-    s1.GetRigidBody()->setType(rp3d::BodyType::STATIC);
-    s2.GetRigidBody()->setType(rp3d::BodyType::STATIC);
+    //s1.GetRigidBody()->setType(rp3d::BodyType::STATIC);
+    //s2.GetRigidBody()->setType(rp3d::BodyType::STATIC);
 
     bool launched = false; // If true, physics simulation is started
-    int fps = 60;
-    int frames = 0;
     sf::Clock clock;
     
     // Main game loop
     engine.Loop([&]() 
     {
-        // Fps counter stuff
-        frames++;
-		if(clock.getElapsedTime().asSeconds() >= 1)
-        {
-            clock.restart();
-            fps = frames;
-            frames = 0;
-        }
-        ////////////////////
+        float delta_time = clock.restart().asSeconds();
 
         // Launching physics simulation when Q key is pressed
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) launched = true;
@@ -100,7 +93,12 @@ int main()
         //////////////////////////////////////
 
         // Updating simulation
-        if(launched) man.Update(1.0 / fps);
+        if(launched)
+            do
+            {
+                man.Update(1.0 / 60.0);
+                delta_time -= 1.0 / 60.0;
+            } while (delta_time >= 1.0 / 60.0);
 
         // Skybox is moving with the camera
         skybox.SetPosition(cam.GetPosition());
@@ -110,14 +108,15 @@ int main()
 
         // Rendering all shapes
         s.Draw(cam, { l });
-        s1.Draw(cam, { l });
-        s2.Draw(cam, { l });
+        //s1.Draw(cam, { l });
+        //s2.Draw(cam, { l });
         s3.Draw(cam, { l });
         s4.Draw(cam, { l });
         /////////////////////
 
         // Rendering sphere model
         sphere.Draw(cam, { l });
+        terrain.Draw(cam, { l });
 
         // Rendering skybox
         skybox.DrawSkybox();

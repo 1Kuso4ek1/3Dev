@@ -2,10 +2,7 @@
 
 Model::Model(std::string filename, Material* mat, Shader* shader, Matrices* m, PhysicsManager* man, unsigned int flags, rp3d::Vector3 position, rp3d::Quaternion orientation, rp3d::Vector3 size) : transform(position, orientation), size(size), mat(mat), shader(shader), filename(filename), m(m), man(man)
 {
-	if(man != nullptr)
-	{
-		body = man->CreateRigidBody(transform);
-	}
+	if(man != nullptr) body = man->CreateRigidBody(transform);
 
 	Load(filename, flags);
 }
@@ -166,7 +163,19 @@ void Model::CreateCapsuleShape()
 
 void Model::CreateConcaveShape()
 {
+	triangles = new rp3d::TriangleVertexArray(
+	(meshes[0].GetData().size() / 8) * 3, &meshes[0].GetData()[0], 8 * sizeof(float),
+	&meshes[0].GetData()[3], 8 * sizeof(float),
+	meshes[0].GetIndices().size(), &meshes[0].GetIndices()[0], 3 * sizeof(GLuint),
+	rp3d::TriangleVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
+	rp3d::TriangleVertexArray::NormalDataType::NORMAL_FLOAT_TYPE,
+	rp3d::TriangleVertexArray::IndexDataType::INDEX_SHORT_TYPE);
 
+	mesh = man->CreateTriangleMesh();
+	mesh->addSubpart(triangles);
+	shape = man->CreateConcaveMeshShape(mesh);
+	body->addCollider(shape, rp3d::Transform::identity());
+	body->setType(rp3d::BodyType::STATIC);
 }
 
 void Model::CreateConvexShape()

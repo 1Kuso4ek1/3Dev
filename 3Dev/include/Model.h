@@ -56,6 +56,9 @@ private:
 	rp3d::CollisionShape* shape = nullptr;
 	rp3d::RigidBody* body = nullptr;
 	rp3d::Collider* collider = nullptr;
+
+	rp3d::TriangleVertexArray* triangles;
+	rp3d::TriangleMesh* mesh;
 	
 	std::string filename;
 

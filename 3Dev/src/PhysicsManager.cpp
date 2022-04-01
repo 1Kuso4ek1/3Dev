@@ -30,6 +30,11 @@ rp3d::CapsuleShape* PhysicsManager::CreateCapsuleShape(float radius, float heigh
     return common.createCapsuleShape(radius, height);
 }
 
+rp3d::ConcaveMeshShape* PhysicsManager::CreateConcaveMeshShape(rp3d::TriangleMesh* mesh)
+{
+    return common.createConcaveMeshShape(mesh);
+}
+
 rp3d::RigidBody* PhysicsManager::CreateRigidBody(const rp3d::Transform& transform)
 {
     return world->createRigidBody(transform);
@@ -48,6 +53,11 @@ rp3d::HingeJoint* PhysicsManager::CreateHingeJoint(rp3d::HingeJointInfo info)
 rp3d::SliderJoint* PhysicsManager::CreateSliderJoint(rp3d::SliderJointInfo info)
 {
     return dynamic_cast<rp3d::SliderJoint*>(world->createJoint(info));
+}
+
+rp3d::TriangleMesh* PhysicsManager::CreateTriangleMesh()
+{
+    return common.createTriangleMesh();
 }
 
 rp3d::PhysicsWorld::WorldSettings PhysicsManager::GetSettings()

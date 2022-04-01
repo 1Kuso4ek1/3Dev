@@ -42,6 +42,12 @@ public:
      * @return pointer to the capsule shape object
      */
     rp3d::CapsuleShape* CreateCapsuleShape(float radius, float height);
+
+    /*
+     * Create a concave mesh collision shape
+     * @param mesh a pointer to the TriangleMesh object
+     */
+    rp3d::ConcaveMeshShape* CreateConcaveMeshShape(rp3d::TriangleMesh* mesh);
     
     /*
      * Create a rigid body
@@ -68,6 +74,9 @@ public:
      * @return pointer to the slider joint object
      */
     rp3d::SliderJoint* CreateSliderJoint(rp3d::SliderJointInfo info);
+
+    // @return a pointer to TriangleMesh object
+    rp3d::TriangleMesh* CreateTriangleMesh();
 
     // @return settings of this world
     rp3d::PhysicsWorld::WorldSettings GetSettings();
