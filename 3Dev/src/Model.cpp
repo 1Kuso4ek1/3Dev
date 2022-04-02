@@ -164,7 +164,7 @@ void Model::CreateCapsuleShape()
 void Model::CreateConcaveShape()
 {
 	triangles = new rp3d::TriangleVertexArray(
-	(meshes[0].GetData().size() * 8), &meshes[0].GetData()[0], sizeof(Vertex),
+	meshes[0].GetData().size(), &meshes[0].GetData()[0], sizeof(Vertex),
 	&meshes[0].GetData()[0].normal.x, sizeof(Vertex),
 	meshes[0].GetIndices().size() / 3, &meshes[0].GetIndices()[0], 3 * sizeof(GLuint),
 	rp3d::TriangleVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
@@ -187,8 +187,8 @@ void Model::CreateConvexShape()
 		faces[i].nbVertices = 3;
 	}
 	polygons = new rp3d::PolygonVertexArray(
-	(meshes[0].GetData().size() * 8), &meshes[0].GetData()[0], sizeof(Vertex),
-	&meshes[0].GetIndices()[0], 1 * sizeof(GLuint), meshes[0].GetIndices().size() / 3, faces,
+	meshes[0].GetData().size(), &meshes[0].GetData()[0], sizeof(Vertex),
+	&meshes[0].GetIndices()[0], 3 * sizeof(GLuint), meshes[0].GetIndices().size() / 3, faces,
 	rp3d::PolygonVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
 	rp3d::PolygonVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
 
@@ -242,10 +242,12 @@ void Model::ProcessMesh(aiMesh* mesh)
 		glm::vec2 uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 		data.emplace_back(pos, norm, uv);
 	}
-
 	for(int i = 0; i < mesh->mNumFaces; i++)
 		for(int j = 0; j < 3; j++) 
 			indices.push_back(mesh->mFaces[i].mIndices[j]);
 			
+	Log::Write("Mesh vertices: " + std::to_string(mesh->mNumVertices), Log::Type::Info);
+	Log::Write("Mesh faces: " + std::to_string(mesh->mNumFaces), Log::Type::Info);
+	
 	meshes.emplace_back(data, indices, mesh->mAABB);
 }

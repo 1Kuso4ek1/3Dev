@@ -57,12 +57,12 @@ private:
 	rp3d::RigidBody* body = nullptr;
 	rp3d::Collider* collider = nullptr;
 
-	rp3d::TriangleVertexArray* triangles;
-	rp3d::TriangleMesh* mesh;
+	rp3d::TriangleVertexArray* triangles = nullptr;
+	rp3d::TriangleMesh* mesh = nullptr;
 
-	rp3d::PolygonVertexArray::PolygonFace* faces;
-	rp3d::PolygonVertexArray* polygons;
-	rp3d::PolyhedronMesh* pmesh;
+	rp3d::PolygonVertexArray::PolygonFace* faces = nullptr;
+	rp3d::PolygonVertexArray* polygons = nullptr;
+	rp3d::PolyhedronMesh* pmesh = nullptr;
 	
 	std::string filename;
 

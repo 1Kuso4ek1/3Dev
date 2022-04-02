@@ -64,8 +64,8 @@ int main()
     Shape skybox({ 0, 0, 0 }, { 1000, 1000, 1000 }, rp3d::Quaternion::identity(), nullptr, &skyboxshader, nullptr, &m, cubemap);
     
     // Loading a sphere model
-    Model sphere("../sphere.obj", &material, &shader, &m, &man, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes | aiProcess_JoinIdenticalVertices, { 10.f, 10.f, 10.f });
-    sphere.CreateConvexShape(); // Creating sphere collision shape for a model
+    Model sphere("../sphere.obj", &material, &shader, &m, &man, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, { 10.f, 10.f, 10.f });
+    sphere.CreateSphereShape(); // Creating sphere collision shape for a model
 
     Model terrain("../terrain.obj", &material, &shader, &m, &man, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, { 10.f, -30.f, 10.f });
     terrain.CreateConcaveShape();
