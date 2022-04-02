@@ -49,7 +49,8 @@ int main()
     });
 
     // Main light
-    Light l({ 0.1, 0.1, 0.1 }, { 0.4, 0.4, 0.4 }, { 1.5, 1.5, 1.5 }, { 0.0, 50.0, 0.0 });
+    Light l({ 0.1, 0.1, 0.1 }, { 1, 1, 1 }, { 25, 25, 25 }, { 0.0, 50.0, 0.0 });
+    l.SetAttenuation(0.0, 0.1, 0.0);
 
     // Main material
     Material material(32, { { texture, Material::TexType::Diffuse }, { normalmap, Material::TexType::NormalMap }, { metalness, Material::TexType::Metalness }, { ao, Material::TexType::AmbientOcclusion }, { cubemap, Material::TexType::Cubemap } });
@@ -75,7 +76,7 @@ int main()
     //s2.GetRigidBody()->setType(rp3d::BodyType::STATIC);
 
     bool launched = false; // If true, physics simulation is started
-    sf::Clock clock;
+    sf::Clock clock, global;
     
     // Main game loop
     engine.Loop([&]() 
@@ -123,6 +124,8 @@ int main()
 
         // Unbinding framebuffer
         buf.Unbind();
+        post.Bind();
+        post.SetUniform1f("exposure", 3.0/* * cos(global.getElapsedTime().asSeconds())*/);
         // Drawing framebuffer texture on the screen
         buf.Draw();
     });
