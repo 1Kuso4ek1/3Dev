@@ -1,6 +1,6 @@
 #pragma once
 #include <3Dev.h>
-#include <unordered_map>
+#include <Shader.h>
 
 /*
  * This class contains ids of various texture maps
@@ -35,6 +35,10 @@ public:
 	 * @param type type of a new texture
 	 */
 	void AddTexture(GLuint texture, TexType type);
+
+	void UpdateShader(Shader* shader);
+
+	void ResetShader(Shader* shader);
 	
 	// @return shininess of this material
 	float GetShininess();

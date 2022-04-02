@@ -11,7 +11,7 @@
 class Model
 {
 public:
-	Model(std::string filename, Material* mat, Shader* shader, Matrices* m, PhysicsManager* man, unsigned int flags = 0, rp3d::Vector3 position = rp3d::Vector3(0, 0, 0), rp3d::Quaternion orientation = rp3d::Quaternion::identity(), rp3d::Vector3 size = rp3d::Vector3(1, 1, 1));
+	Model(std::string filename, std::vector<Material> mat, Shader* shader, Matrices* m, PhysicsManager* man, unsigned int flags = 0, rp3d::Vector3 position = rp3d::Vector3(0, 0, 0), rp3d::Quaternion orientation = rp3d::Quaternion::identity(), rp3d::Vector3 size = rp3d::Vector3(1, 1, 1));
 
 	void Load(std::string filename, unsigned int flags = 0);
 
@@ -20,7 +20,7 @@ public:
 	void SetPosition(rp3d::Vector3 position);
 	void SetOrientation(rp3d::Quaternion orientation);
 	void SetSize(rp3d::Vector3 size);
-	void SetMaterial(Material* mat);
+	void SetMaterial(std::vector<Material> mat);
 	
 	void AddPosition(rp3d::Vector3 position);
 	void AddRotation(rp3d::Quaternion orientation);
@@ -39,7 +39,7 @@ public:
 	std::string GetFilename();
 	std::string GetTextureFilename();
 	
-	Material* GetMaterial();
+	std::vector<Material> GetMaterial();
 
 private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
@@ -49,7 +49,7 @@ private:
 	
 	Matrices* m;
 	Shader* shader;
-	Material* mat;
+	std::vector<Material> mat;
 
 	PhysicsManager* man;
 

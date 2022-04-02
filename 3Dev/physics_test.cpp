@@ -31,6 +31,16 @@ int main()
     GLuint texture = LoadTexture("../textures/metal_color.jpg"), normalmap = LoadTexture("../textures/metal_normal.jpg"),
     ao = LoadTexture("../textures/metal_ao.jpg"), metalness = LoadTexture("../textures/metal_metalness.jpg");
 
+    /*GLuint cmakarov = LoadTexture("textures/makarov_color.png"), nmakarov = LoadTexture("textures/makarov_normal.png"),
+    rmakarov = LoadTexture("textures/makarov_roughness.png"), mmakarov = LoadTexture("textures/makarov_metalness.png");
+
+    GLuint csight = LoadTexture("textures/sight_color.png"), nsight = LoadTexture("textures/sight_normal.png"),
+    rsight = LoadTexture("textures/sight_roughness.png"), msight = LoadTexture("textures/sight_metalness.png"),
+    osight = LoadTexture("textures/sight_opacity.png");
+
+    GLuint csuppressor = LoadTexture("textures/suppressor_color.jpg"), nsuppressor = LoadTexture("textures/suppressor_normal.jpg"),
+    rsuppressor = LoadTexture("textures/suppressor_roughness.jpg"), msuppressor = LoadTexture("textures/suppressor_metalness.jpg");*/
+
     rp3d::PhysicsWorld::WorldSettings st; // Default physics world settings
     PhysicsManager man(st); // Main physics manager
 
@@ -54,6 +64,10 @@ int main()
 
     // Main material
     Material material(32, { { texture, Material::TexType::Diffuse }, { normalmap, Material::TexType::NormalMap }, { metalness, Material::TexType::Metalness }, { ao, Material::TexType::AmbientOcclusion }, { cubemap, Material::TexType::Cubemap } });
+
+    /*Material makarov_material(32, { { cmakarov, Material::TexType::Diffuse }, { nmakarov, Material::TexType::NormalMap }, { mmakarov, Material::TexType::Metalness }, { rmakarov, Material::TexType::Roughness }, { cubemap, Material::TexType::Cubemap } });
+    Material sight_material(32, { { csight, Material::TexType::Diffuse }, { nsight, Material::TexType::NormalMap }, { msight, Material::TexType::Metalness }, { rsight, Material::TexType::Roughness }, { osight, Material::TexType::Opacity }, { cubemap, Material::TexType::Cubemap } });
+    Material suppressor_material(32, { { csuppressor, Material::TexType::Diffuse }, { nsuppressor, Material::TexType::NormalMap }, { msuppressor, Material::TexType::Metalness }, { rsuppressor, Material::TexType::Roughness }, { cubemap, Material::TexType::Cubemap } });*/
     
     // All the shapes
     Shape s({ 10, 30, 10 }, { 3, 3, 3 }, rp3d::Quaternion::identity(), &man, &shader, &material, &m);
@@ -65,11 +79,13 @@ int main()
     Shape skybox({ 0, 0, 0 }, { 1000, 1000, 1000 }, rp3d::Quaternion::identity(), nullptr, &skyboxshader, nullptr, &m, cubemap);
     
     // Loading a sphere model
-    Model sphere("../sphere.obj", &material, &shader, &m, &man, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, { 10.f, 10.f, 10.f });
+    Model sphere("../sphere.obj", { material }, &shader, &m, &man, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, { 10.f, 10.f, 10.f });
     sphere.CreateSphereShape(); // Creating sphere collision shape for a model
 
-    Model terrain("../terrain.obj", &material, &shader, &m, &man, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, { 10.f, -30.f, 10.f });
+    Model terrain("../terrain.obj", { material }, &shader, &m, &man, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, { 10.f, -30.f, 10.f });
     terrain.CreateConcaveShape();
+
+    //Model makarov("makarov.obj", { makarov_material, suppressor_material, sight_material, }, &shader, &m, nullptr, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, { 10.f, 50.f, 10.f });
 
     // Some shapes should be static
     //s1.GetRigidBody()->setType(rp3d::BodyType::STATIC);
@@ -118,6 +134,7 @@ int main()
         // Rendering sphere model
         sphere.Draw(cam, { l });
         terrain.Draw(cam, { l });
+        //makarov.Draw(cam, { l });
 
         // Rendering skybox
         skybox.DrawSkybox();
