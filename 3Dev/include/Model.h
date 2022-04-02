@@ -45,7 +45,7 @@ private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
 	void ProcessMesh(aiMesh* mesh);
 	
-	std::vector<Mesh> meshes;
+	std::vector<std::shared_ptr<Mesh>> meshes;
 	
 	Matrices* m;
 	Shader* shader;

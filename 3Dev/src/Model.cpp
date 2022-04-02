@@ -93,7 +93,7 @@ void Model::Draw(Camera& cam, std::vector<Light> lights)
 	shader->SetUniform3f("campos", cam.GetPosition().x, cam.GetPosition().y, cam.GetPosition().z);
 	m->UpdateShader(shader);
 
-	for(auto& i : meshes) i.Draw();
+	for(auto& i : meshes) i->Draw();
 	
 	m->PopMatrix();
 }
@@ -139,7 +139,7 @@ void Model::AddSize(rp3d::Vector3 size)
 
 void Model::CreateBoxShape()
 {
-	aiAABB aabb = meshes[0].GetAABB();
+	aiAABB aabb = meshes[0]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
 	shape = man->CreateBoxShape((rp3d::Vector3(v.x, v.y, v.z) / 2) * size);
 	body->addCollider(shape, rp3d::Transform::identity());
@@ -147,7 +147,7 @@ void Model::CreateBoxShape()
 
 void Model::CreateSphereShape()
 {
-	aiAABB aabb = meshes[0].GetAABB();
+	aiAABB aabb = meshes[0]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
 	shape = man->CreateSphereShape((v.y / 2) * size.y);
 	body->addCollider(shape, rp3d::Transform::identity());
@@ -155,7 +155,7 @@ void Model::CreateSphereShape()
 
 void Model::CreateCapsuleShape()
 {
-	aiAABB aabb = meshes[0].GetAABB();
+	aiAABB aabb = meshes[0]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
 	shape = man->CreateCapsuleShape((glm::max(v.x, v.z) / 2) * size.x, v.y / 2);
 	body->addCollider(shape, rp3d::Transform::identity());
@@ -164,9 +164,9 @@ void Model::CreateCapsuleShape()
 void Model::CreateConcaveShape()
 {
 	triangles = new rp3d::TriangleVertexArray(
-	meshes[0].GetData().size(), &meshes[0].GetData()[0], sizeof(Vertex),
-	&meshes[0].GetData()[0].normal.x, sizeof(Vertex),
-	meshes[0].GetIndices().size() / 3, &meshes[0].GetIndices()[0], 3 * sizeof(GLuint),
+	meshes[0]->GetData().size(), &meshes[0]->GetData()[0], sizeof(Vertex),
+	&meshes[0]->GetData()[0].normal.x, sizeof(Vertex),
+	meshes[0]->GetIndices().size() / 3, &meshes[0]->GetIndices()[0], 3 * sizeof(GLuint),
 	rp3d::TriangleVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
 	rp3d::TriangleVertexArray::NormalDataType::NORMAL_FLOAT_TYPE,
 	rp3d::TriangleVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
@@ -180,15 +180,15 @@ void Model::CreateConcaveShape()
 
 void Model::CreateConvexShape()
 {
-	faces = new rp3d::PolygonVertexArray::PolygonFace[meshes[0].GetIndices().size() / 3];
-	for (int i = 0; i < meshes[0].GetIndices().size() / 3; i++)
+	faces = new rp3d::PolygonVertexArray::PolygonFace[meshes[0]->GetIndices().size() / 3];
+	for (int i = 0; i < meshes[0]->GetIndices().size() / 3; i++)
 	{
 		faces[i].indexBase = i * 3;
 		faces[i].nbVertices = 3;
 	}
 	polygons = new rp3d::PolygonVertexArray(
-	meshes[0].GetData().size(), &meshes[0].GetData()[0], sizeof(Vertex),
-	&meshes[0].GetIndices()[0], 3 * sizeof(GLuint), meshes[0].GetIndices().size() / 3, faces,
+	meshes[0]->GetData().size(), &meshes[0]->GetData()[0], sizeof(Vertex),
+	&meshes[0]->GetIndices()[0], 3 * sizeof(GLuint), meshes[0]->GetIndices().size() / 3, faces,
 	rp3d::PolygonVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
 	rp3d::PolygonVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
 
@@ -249,5 +249,5 @@ void Model::ProcessMesh(aiMesh* mesh)
 	Log::Write("Mesh vertices: " + std::to_string(mesh->mNumVertices), Log::Type::Info);
 	Log::Write("Mesh faces: " + std::to_string(mesh->mNumFaces), Log::Type::Info);
 	
-	meshes.emplace_back(data, indices, mesh->mAABB);
+	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB));
 }
