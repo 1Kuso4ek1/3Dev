@@ -76,8 +76,5 @@ private:
 	GLuint vao, vbo, ebo, cubemap = 0;
 
 	rp3d::Vector3 size;
-	/*rp3d::Vector3 position;
-	rp3d::Quaternion orientation;*/
-
 	rp3d::Transform tr;
 };
