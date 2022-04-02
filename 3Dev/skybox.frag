@@ -10,5 +10,4 @@ out vec4 color;
 void main()
 {
     color = textureCube(cubemap, vertex);
-    color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
 }

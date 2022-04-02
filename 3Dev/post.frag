@@ -12,4 +12,5 @@ void main()
 {
     vec2 pos = gl_FragCoord.xy * pixelsize;
     color = texture(frame, coord);
+    color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
 }

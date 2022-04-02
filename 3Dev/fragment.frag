@@ -80,5 +80,4 @@ void main()
         i++;
     }
     color = vec4(emission + (reflection * totallight) + totallight, (nopacity ? texture(opacity, coord).x : 1.0)) * (nao ? texture(ao, coord) : vec4(1.0));
-    color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
 }
