@@ -164,23 +164,37 @@ void Model::CreateCapsuleShape()
 void Model::CreateConcaveShape()
 {
 	triangles = new rp3d::TriangleVertexArray(
-	(meshes[0].GetData().size() / 8) * 3, &meshes[0].GetData()[0], 8 * sizeof(float),
-	&meshes[0].GetData()[3], 8 * sizeof(float),
-	meshes[0].GetIndices().size(), &meshes[0].GetIndices()[0], 3 * sizeof(GLuint),
+	(meshes[0].GetData().size() * 8), &meshes[0].GetData()[0], sizeof(Vertex),
+	&meshes[0].GetData()[0].normal.x, sizeof(Vertex),
+	meshes[0].GetIndices().size() / 3, &meshes[0].GetIndices()[0], 3 * sizeof(GLuint),
 	rp3d::TriangleVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
 	rp3d::TriangleVertexArray::NormalDataType::NORMAL_FLOAT_TYPE,
-	rp3d::TriangleVertexArray::IndexDataType::INDEX_SHORT_TYPE);
+	rp3d::TriangleVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
 
 	mesh = man->CreateTriangleMesh();
 	mesh->addSubpart(triangles);
-	shape = man->CreateConcaveMeshShape(mesh);
+	shape = man->CreateConcaveMeshShape(mesh, size);
 	body->addCollider(shape, rp3d::Transform::identity());
 	body->setType(rp3d::BodyType::STATIC);
 }
 
 void Model::CreateConvexShape()
 {
+	faces = new rp3d::PolygonVertexArray::PolygonFace[meshes[0].GetIndices().size() / 3];
+	for (int i = 0; i < meshes[0].GetIndices().size() / 3; i++)
+	{
+		faces[i].indexBase = i * 3;
+		faces[i].nbVertices = 3;
+	}
+	polygons = new rp3d::PolygonVertexArray(
+	(meshes[0].GetData().size() * 8), &meshes[0].GetData()[0], sizeof(Vertex),
+	&meshes[0].GetIndices()[0], 1 * sizeof(GLuint), meshes[0].GetIndices().size() / 3, faces,
+	rp3d::PolygonVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
+	rp3d::PolygonVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
 
+	pmesh = man->CreatePolyhedronMesh(polygons);
+	shape = man->CreateConvexMeshShape(pmesh, size);
+	body->addCollider(shape, rp3d::Transform::identity());
 }
 
 rp3d::Vector3 Model::GetPosition() 

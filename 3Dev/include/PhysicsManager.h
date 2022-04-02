@@ -44,10 +44,20 @@ public:
     rp3d::CapsuleShape* CreateCapsuleShape(float radius, float height);
 
     /*
+     * Create a convex mesh collision shape
+     * @param mesh a pointer to the ConvexMesh object
+     * @param size the size of the shape
+     * @return pointer to the ConvexMeshShape object
+     */
+    rp3d::ConvexMeshShape* CreateConvexMeshShape(rp3d::PolyhedronMesh* mesh, rp3d::Vector3 size);
+
+    /*
      * Create a concave mesh collision shape
      * @param mesh a pointer to the TriangleMesh object
+     * @param size the size of the shape
+     * @return pointer to the ConcaveMeshShape object
      */
-    rp3d::ConcaveMeshShape* CreateConcaveMeshShape(rp3d::TriangleMesh* mesh);
+    rp3d::ConcaveMeshShape* CreateConcaveMeshShape(rp3d::TriangleMesh* mesh, rp3d::Vector3 size);
     
     /*
      * Create a rigid body
@@ -77,6 +87,12 @@ public:
 
     // @return a pointer to TriangleMesh object
     rp3d::TriangleMesh* CreateTriangleMesh();
+
+    /*
+     * @param array a pointer to the array of vertices and another info
+     * @return a pointer to PolyhedronMesh object
+     */
+    rp3d::PolyhedronMesh* CreatePolyhedronMesh(rp3d::PolygonVertexArray* array);
 
     // @return settings of this world
     rp3d::PhysicsWorld::WorldSettings GetSettings();

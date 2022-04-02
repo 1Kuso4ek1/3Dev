@@ -59,6 +59,10 @@ private:
 
 	rp3d::TriangleVertexArray* triangles;
 	rp3d::TriangleMesh* mesh;
+
+	rp3d::PolygonVertexArray::PolygonFace* faces;
+	rp3d::PolygonVertexArray* polygons;
+	rp3d::PolyhedronMesh* pmesh;
 	
 	std::string filename;
 

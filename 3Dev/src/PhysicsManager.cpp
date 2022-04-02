@@ -30,9 +30,14 @@ rp3d::CapsuleShape* PhysicsManager::CreateCapsuleShape(float radius, float heigh
     return common.createCapsuleShape(radius, height);
 }
 
-rp3d::ConcaveMeshShape* PhysicsManager::CreateConcaveMeshShape(rp3d::TriangleMesh* mesh)
+rp3d::ConvexMeshShape* PhysicsManager::CreateConvexMeshShape(rp3d::PolyhedronMesh* mesh, rp3d::Vector3 size)
 {
-    return common.createConcaveMeshShape(mesh);
+    return common.createConvexMeshShape(mesh, size);
+}
+
+rp3d::ConcaveMeshShape* PhysicsManager::CreateConcaveMeshShape(rp3d::TriangleMesh* mesh, rp3d::Vector3 size)
+{
+    return common.createConcaveMeshShape(mesh, size);
 }
 
 rp3d::RigidBody* PhysicsManager::CreateRigidBody(const rp3d::Transform& transform)
@@ -58,6 +63,11 @@ rp3d::SliderJoint* PhysicsManager::CreateSliderJoint(rp3d::SliderJointInfo info)
 rp3d::TriangleMesh* PhysicsManager::CreateTriangleMesh()
 {
     return common.createTriangleMesh();
+}
+
+rp3d::PolyhedronMesh* PhysicsManager::CreatePolyhedronMesh(rp3d::PolygonVertexArray* array)
+{
+    return common.createPolyhedronMesh(array);
 }
 
 rp3d::PhysicsWorld::WorldSettings PhysicsManager::GetSettings()
