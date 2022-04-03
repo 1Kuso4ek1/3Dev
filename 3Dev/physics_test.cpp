@@ -44,9 +44,9 @@ int main()
     rp3d::PhysicsWorld::WorldSettings st; // Default physics world settings
     PhysicsManager man(st); // Main physics manager
 
-    Shader skyboxshader("../skybox.vs", "../skybox.frag"); // Shader for skybox rendering
-    Shader shader("../vertex.vs", "../fragment.frag"); // Main shader
-    Shader post("../post.vs", "../post.frag"); // Post-processing shader
+    Shader skyboxshader("../shaders/skybox.vs", "../shaders/skybox.frag"); // Shader for skybox rendering
+    Shader shader("../shaders/vertex.vs", "../shaders/fragment.frag"); // Main shader
+    Shader post("../shaders/post.vs", "../shaders/post.frag"); // Post-processing shader
     Framebuffer buf(&post, 1280, 720); // Main framebuffer
 
     // Function for handling SFML window events
