@@ -3,6 +3,11 @@
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 uv;
+layout (location = 3) in vec4 ids;
+layout (location = 4) in vec4 weights;
+
+uniform mat4 pose[64];
+uniform bool bones;
 
 uniform vec3 campos;
 
@@ -18,16 +23,30 @@ out mat3 tbn;
 
 void main()
 {
-    mpos = (model * vec4(position, 1.0)).xyz;
-    mnormal = normalize(mat3(model) * normal);
+    vec4 pos = vec4(position, 1.0);
+    mat4 transform = mat4(1.0);
+
+    if(bones)
+    {
+        transform = mat4(0.0);
+        vec4 w = normalize(weights);
+        transform += pose[int(ids.x)] * w.x;
+        transform += pose[int(ids.y)] * w.y;
+        transform += pose[int(ids.z)] * w.z;
+        transform += pose[int(ids.w)] * w.w;
+        pos = transform * vec4(position, 1.0);
+    }
+
+    mpos = (model * transform * pos).xyz;
+    mnormal = normalize(mat3(model * transform) * normal);
     coord = uv;
     camposout = campos;
 
     vec3 tangent = cross(mnormal, vec3(0.5, 0.5, 0.5));
-    vec3 t = normalize(mat3(model) * tangent);
+    vec3 t = normalize(mat3(model * transform) * tangent);
     vec3 n = mnormal;
     vec3 b = cross(n, t);
     tbn = mat3(t, b, n);
 
-    gl_Position = (projection * view * model) * vec4(position, 1.0);
+    gl_Position = (projection * view * model) * pos;
 }

@@ -94,6 +94,11 @@ void Shader::SetUniformMatrix4(std::string name, glm::mat4 mat)
 	glUniformMatrix4fv(GetUniformLocation(name), 1, 0, glm::value_ptr(mat));
 }
 
+void Shader::SetVectorOfUniformMatrix4(std::string name, int count, std::vector<glm::mat4>& mat)
+{
+	glUniformMatrix4fv(GetUniformLocation(name), count, 0, glm::value_ptr(mat[0]));
+}
+
 int Shader::GetUniformLocation(std::string name)
 {
 	return glGetUniformLocation(program, name.c_str());

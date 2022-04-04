@@ -13,8 +13,19 @@ void Model::Load(std::string filename, unsigned int flags)
 	const aiScene* scene = importer.ReadFile(filename, flags);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		Log::Write("Error while importing '" + filename + "': " + importer.GetErrorString(), Log::Type::Critical);
+
+	globalTransform = toglm(scene->mRootNode->mTransformation);
+	globalInverseTransform = toglm(scene->mRootNode->mTransformation.Inverse());
+
 	ProcessNode(scene->mRootNode, scene);
+	LoadAnimations(scene);
+	/*for(auto i : meshes)
+		i->GetPose().resize(i->GetBones().size(), glm::mat4(1.0));*/
+
 	Log::Write("Meshes loaded: " + std::to_string(meshes.size()), Log::Type::Info);
+	Log::Write("Bones loaded: " + std::to_string(meshes[0]->GetBones().size()), Log::Type::Info);
+	Log::Write("Animations loaded: " + std::to_string(anims.size()), Log::Type::Info);
+	
 	if(mat.empty()) Log::Write("Empty material array passed", Log::Type::Critical);
 	if(mat.size() != meshes.size())
 	{
@@ -41,8 +52,14 @@ void Model::Draw(Camera& cam, std::vector<Light> lights)
 		mat[mesh].UpdateShader(shader);
 		for(int i = 0; i < lights.size(); i++)
 			lights[i].Update(shader, i);
+		for(auto i : meshes[mesh]->GetBones())
+			CalculatePose(i, meshes[mesh]);
+				
 		shader->SetUniform1f("shininess", mat[mesh].GetShininess());
 		shader->SetUniform3f("campos", cam.GetPosition().x, cam.GetPosition().y, cam.GetPosition().z);
+		shader->SetVectorOfUniformMatrix4("pose", meshes[mesh]->GetPose().size(), meshes[mesh]->GetPose());
+		shader->SetUniform1i("bones", !meshes[mesh]->GetBones().empty());
+
 		m->UpdateShader(shader);
 
 		meshes[mesh]->Draw();
@@ -180,16 +197,18 @@ std::vector<Material> Model::GetMaterial()
 void Model::ProcessNode(aiNode* node, const aiScene* scene)
 {
 	for(int i = 0; i < node->mNumMeshes; i++)
-		ProcessMesh(scene->mMeshes[node->mMeshes[i]]);
+		ProcessMesh(scene->mMeshes[node->mMeshes[i]], scene->mRootNode);
 
 	for(int i = 0; i < node->mNumChildren; i++)
 		ProcessNode(node->mChildren[i], scene);
 }
 
-void Model::ProcessMesh(aiMesh* mesh)
+void Model::ProcessMesh(aiMesh* mesh, aiNode* node)
 {
 	std::vector<Vertex> data;
 	std::vector<GLuint> indices;
+
+	std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap;
 	
 	for(int i = 0; i < mesh->mNumVertices; i++)
 	{
@@ -200,9 +219,150 @@ void Model::ProcessMesh(aiMesh* mesh)
 	for(int i = 0; i < mesh->mNumFaces; i++)
 		for(int j = 0; j < 3; j++) 
 			indices.push_back(mesh->mFaces[i].mIndices[j]);
+	
+	std::string a;
+	if(mesh->mNumBones)
+	{
+		a = std::string(mesh->mBones[0]->mName.C_Str());
+		size_t tmp = a.find_first_of('_');
+		a.erase(a.begin() + tmp + 1, a.end());
+	}
+
+	for(int i = 0; i < mesh->mNumBones; i++)
+	{
+		auto bone = mesh->mBones[i];
+		boneMap[std::string(i == 0 ? "" : a) + std::string(bone->mName.C_Str())] = { i, toglm(bone->mOffsetMatrix) };
+		std::cout << bone->mNumWeights << std::endl;
+		std::vector<int> nbones;
+		nbones.resize(mesh->mNumVertices, 0);
+		for(int j = 0; j < bone->mNumWeights; j++)
+		{
+			int id = bone->mWeights[j].mVertexId;
+			float weight = bone->mWeights[j].mWeight;
+			nbones[id]++;
+			if(nbones[id] <= 4) 
+			{
+				data[id].ids[nbones[id]] = i;
+				data[id].weights[nbones[id]] = bone->mWeights[j].mWeight;
+			}
+		}
+	}
+
+	for (int i = 0; i < data.size(); i++) 
+	{
+		glm::vec4 & weights = data[i].weights;
+		float total = weights.x + weights.y + weights.z + weights.w;
+		if (total > 0.0f)
+			data[i].weights /= total;
+	}
 			
 	Log::Write("Mesh vertices: " + std::to_string(mesh->mNumVertices), Log::Type::Info);
 	Log::Write("Mesh faces: " + std::to_string(mesh->mNumFaces), Log::Type::Info);
+	Log::Write("Mesh bones: " + std::to_string(mesh->mNumBones), Log::Type::Info);
 	
-	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB));
+	std::vector<Bone> bones;
+	FindBoneNodes(node, boneMap, bones);
+	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB, bones));
+}
+
+void Model::LoadAnimations(const aiScene* scene)
+{
+	for(int i = 0; i < scene->mNumAnimations; i++)
+	{
+		Animation tmp;
+		auto anim = scene->mAnimations[i];
+		float tps = anim->mTicksPerSecond;
+		tmp.tps = (tps > 0 ? tps : 1000.0);
+		tmp.duration = anim->mDuration * tmp.tps;
+
+		for (int j = 0; j < anim->mNumChannels; j++)
+		{
+			auto channel = anim->mChannels[j];
+			Keyframe kf;
+			for (int k = 0; k < channel->mNumPositionKeys; k++)
+			{
+				kf.posStamps.push_back(channel->mPositionKeys[k].mTime);
+				kf.positions.push_back(toglm(channel->mPositionKeys[k].mValue));
+			}
+			for (int k = 0; k < channel->mNumRotationKeys; k++)
+			{
+				kf.rotStamps.push_back(channel->mRotationKeys[k].mTime);
+				kf.rotations.push_back(toglm(channel->mRotationKeys[k].mValue));
+			}
+			for (int k = 0; k < channel->mNumScalingKeys; k++)
+			{
+				kf.scaleStamps.push_back(channel->mScalingKeys[k].mTime);
+				kf.scales.push_back(toglm(channel->mScalingKeys[k].mValue));
+			}
+			tmp.keyframes[channel->mNodeName.C_Str()] = kf;
+		}
+		anims.push_back(tmp);
+	}
+}
+
+void Model::FindBoneNodes(aiNode* node, std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap, std::vector<Bone>& bones)
+{
+	Bone tmp;
+	if(ProcessBone(node, boneMap, tmp))
+	{
+		bones.push_back(tmp);
+		return;
+	}
+
+	for(int i = 0; i < node->mNumChildren; i++)
+		FindBoneNodes(node->mChildren[i], boneMap, bones);
+}
+
+void Model::CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 parent)
+{
+	if(anims[0].keyframes.find(bone.name) != anims[0].keyframes.end())
+	{
+		Keyframe kf = anims[0].keyframes[bone.name];
+		if(time.getElapsedTime().asSeconds() * 1000 >= anims[0].duration / 1000) time.restart();
+		float dt = fmod(time.getElapsedTime().asSeconds() * 1000, anims[0].duration / 1000);
+		auto fraction = TimeFraction(kf.rotStamps, dt);
+
+		glm::vec3 pos = glm::mix(kf.positions[fraction.first - 1], kf.positions[fraction.first], fraction.second);
+		glm::quat rot = glm::slerp(kf.rotations[fraction.first - 1], kf.rotations[fraction.first], fraction.second);
+		glm::vec3 scale = glm::mix(kf.scales[fraction.first - 1], kf.scales[fraction.first], fraction.second);
+
+		glm::mat4 mpos(1.0), mscale(glm::scale(glm::mat4(1.0), toglm(size))), mrot = glm::toMat4(rot);
+		mpos = glm::translate(mpos, pos);
+		mscale = glm::scale(mscale, scale);
+
+		glm::mat4 localTransform = mpos * mrot * mscale;
+		glm::mat4 globalTransform = parent * localTransform;
+
+		mesh->GetPose()[bone.id] = globalInverseTransform * globalTransform * bone.offset;
+		
+		for(Bone& child : bone.children)
+			CalculatePose(child, mesh, globalTransform);
+	}
+	else
+	{
+		glm::mat4 globalTransform = parent * glm::mat4(1.0);
+
+		mesh->GetPose()[bone.id] = globalInverseTransform * globalTransform * bone.offset;
+		
+		for(Bone& child : bone.children)
+			CalculatePose(child, mesh, globalTransform);
+	}
+}
+
+bool Model::ProcessBone(aiNode* node, std::unordered_map<std::string, std::pair<int, glm::mat4>> bonemap, Bone& out)
+{
+	if(bonemap.find(node->mName.C_Str()) != bonemap.end())
+	{
+		out.name = node->mName.C_Str();
+		out.id = bonemap[out.name].first;
+		out.offset = bonemap[out.name].second;
+		for (int i = 0; i < node->mNumChildren; i++)
+		{
+			Bone child;
+			if(ProcessBone(node->mChildren[i], bonemap, child))
+				out.children.push_back(child);
+		}
+		return true;
+	}
+	return false;
 }

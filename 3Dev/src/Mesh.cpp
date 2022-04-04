@@ -1,6 +1,6 @@
 #include <Mesh.h>
 
-Mesh::Mesh(std::vector<Vertex> data, std::vector<GLuint> indices, aiAABB aabb) : data(data), indices(indices), aabb(aabb)
+Mesh::Mesh(std::vector<Vertex> data, std::vector<GLuint> indices, aiAABB aabb, std::vector<Bone> bones) : data(data), indices(indices), aabb(aabb), bones(bones)
 {
     glGenBuffers(1, &vbo);
 	glGenBuffers(1, &ebo);
@@ -17,12 +17,21 @@ Mesh::Mesh(std::vector<Vertex> data, std::vector<GLuint> indices, aiAABB aabb) :
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)12);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)24);
+	glVertexAttribPointer(3, 4, GL_INT, GL_FALSE, sizeof(Vertex), (void*)32);
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)48);
 	
 	glBindVertexArray(0);
+
+	int nbones = 0;
+	for(auto i : bones)
+		nbones += BonesCount(i);
+	pose.resize(nbones, glm::mat4(1.0));
 }
 
 Mesh::~Mesh()
@@ -49,7 +58,25 @@ std::vector<GLuint>& Mesh::GetIndices()
     return indices;
 }
 
+std::vector<Bone>& Mesh::GetBones()
+{
+	return bones;
+}
+
+std::vector<glm::mat4>& Mesh::GetPose()
+{
+	return pose;
+}
+
 aiAABB Mesh::GetAABB()
 {
 	return aabb;
+}
+
+int Mesh::BonesCount(Bone& b)
+{
+	int n = 0; n++;
+	for(auto i : b.children)
+		n += BonesCount(i);
+	return n;
 }

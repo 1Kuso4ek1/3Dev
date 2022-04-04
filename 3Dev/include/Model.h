@@ -8,6 +8,25 @@
 #include "Mesh.h"
 #include "PhysicsManager.h"
 
+struct Keyframe
+{
+	std::vector<float> posStamps;
+	std::vector<float> rotStamps;
+	std::vector<float> scaleStamps;
+
+	std::vector<glm::vec3> positions;
+	std::vector<glm::quat> rotations;
+	std::vector<glm::vec3> scales;
+};
+
+struct Animation
+{
+	float duration = 0.0;
+	float tps = 25.0;
+
+	std::unordered_map<std::string, Keyframe> keyframes;
+};
+
 class Model
 {
 public:
@@ -43,15 +62,26 @@ public:
 
 private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
-	void ProcessMesh(aiMesh* mesh);
+	void ProcessMesh(aiMesh* mesh, aiNode* node);
+	void LoadAnimations(const aiScene* scene);
+	void FindBoneNodes(aiNode* node, std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap, std::vector<Bone>& bones);
+	void CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 parent = glm::mat4(1.0));
+
+	bool ProcessBone(aiNode* node, std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap, Bone& out);
+
+	sf::Clock time;
 	
 	std::vector<std::shared_ptr<Mesh>> meshes;
 	
 	Matrices* m;
 	Shader* shader;
 	std::vector<Material> mat;
+	std::vector<Animation> anims;
 
 	PhysicsManager* man;
+
+	glm::mat4 globalTransform;
+	glm::mat4 globalInverseTransform;
 
 	rp3d::CollisionShape* shape = nullptr;
 	rp3d::RigidBody* body = nullptr;

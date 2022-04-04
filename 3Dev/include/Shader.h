@@ -14,6 +14,7 @@ public:
 	void SetUniform3f(std::string name, float x, float y, float z);
 
 	void SetUniformMatrix4(std::string name, glm::mat4 mat);
+	void SetVectorOfUniformMatrix4(std::string name, int count, std::vector<glm::mat4>& mat);
 
 	int GetUniformLocation(std::string name);
 	int GetAttribLocation(std::string name);

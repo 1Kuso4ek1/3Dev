@@ -27,8 +27,6 @@ public:
 	rp3d::Vector3 GetSize();
 
 private:
-	//TODO: Add Mesh object
-
 	Material* mat;
 	Matrices* m;
 	Shader* shader;
