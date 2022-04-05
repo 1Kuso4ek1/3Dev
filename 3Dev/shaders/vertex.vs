@@ -1,5 +1,4 @@
 #version 330
-
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 uv;
@@ -26,6 +25,9 @@ void main()
 {
     vec4 pos = vec4(position, 1.0);
     mat4 transform = mat4(1.0);
+    mat4 tmp = transformation;
+    for(int i = 0; i < 4; i++)
+        tmp[i] = normalize(tmp[i]);
 
     if(bones)
     {
@@ -35,16 +37,16 @@ void main()
         transform += pose[int(ids.y)] * w.y;
         transform += pose[int(ids.z)] * w.z;
         transform += pose[int(ids.w)] * w.w;
-        pos = transformation * transform * vec4(position, 1.0);
+        pos = tmp * transform * vec4(position, 1.0);
     }
 
     mpos = (model * pos).xyz;
-    mnormal = normalize(mat3(model * transformation * transform) * normal);
+    mnormal = normalize(mat3(model * tmp * transform) * normal);
     coord = uv;
     camposout = campos;
 
     vec3 tangent = cross(mnormal, vec3(0.5, 0.5, 0.5));
-    vec3 t = normalize(mat3(model * transformation * transform) * tangent);
+    vec3 t = normalize(mat3(model * tmp * transform) * tangent);
     vec3 n = mnormal;
     vec3 b = cross(n, t);
     tbn = mat3(t, b, n);

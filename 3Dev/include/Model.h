@@ -89,7 +89,7 @@ public:
 
 private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
-	void ProcessMesh(aiMesh* mesh, aiNode* node);
+	void ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode);
 	void LoadAnimations(const aiScene* scene);
 	void FindBoneNodes(aiNode* node, std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap, std::vector<Bone>& bones);
 	void CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 parent = glm::mat4(1.0));

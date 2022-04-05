@@ -260,13 +260,13 @@ std::vector<Material>& Model::GetMaterial()
 void Model::ProcessNode(aiNode* node, const aiScene* scene)
 {
 	for(int i = 0; i < node->mNumMeshes; i++)
-		ProcessMesh(scene->mMeshes[node->mMeshes[i]], scene->mRootNode);
+		ProcessMesh(scene->mMeshes[node->mMeshes[i]], scene->mRootNode, node);
 
 	for(int i = 0; i < node->mNumChildren; i++)
 		ProcessNode(node->mChildren[i], scene);
 }
 
-void Model::ProcessMesh(aiMesh* mesh, aiNode* node)
+void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 {
 	std::vector<Vertex> data;
 	std::vector<GLuint> indices;
@@ -329,7 +329,7 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node)
 	
 	std::vector<Bone> bones;
 	FindBoneNodes(node, boneMap, bones);
-	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB, bones, globalInverseTransform * toglm(node->mTransformation)));
+	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB, bones, globalInverseTransform * toglm(mnode->mTransformation)));
 }
 
 void Model::LoadAnimations(const aiScene* scene)
