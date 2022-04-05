@@ -1,6 +1,7 @@
 #include <Mesh.h>
 
-Mesh::Mesh(std::vector<Vertex> data, std::vector<GLuint> indices, aiAABB aabb, std::vector<Bone> bones) : data(data), indices(indices), aabb(aabb), bones(bones)
+Mesh::Mesh(std::vector<Vertex> data, std::vector<GLuint> indices, aiAABB aabb, std::vector<Bone> bones, glm::mat4 transformation)
+		   : data(data), indices(indices), aabb(aabb), bones(bones), transformation(transformation)
 {
     glGenBuffers(1, &vbo);
 	glGenBuffers(1, &ebo);
@@ -66,6 +67,11 @@ std::vector<Bone>& Mesh::GetBones()
 std::vector<glm::mat4>& Mesh::GetPose()
 {
 	return pose;
+}
+
+glm::mat4 Mesh::GetTransformation()
+{
+	return transformation;
 }
 
 aiAABB Mesh::GetAABB()

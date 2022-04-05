@@ -8,10 +8,8 @@ public:
 
 	void Update();
 
-	void Move(float time);
+	rp3d::Vector3 Move(float time);
 	void Mouse();
-
-	void ThirdPerson(float centerx, float centery, float centerz, float dist);
 
 	void Look();
 	void Look(const rp3d::Vector3& vec);
@@ -22,6 +20,7 @@ public:
 	void SetFOV(const float& fov);
 	void SetNear(const float& near);
 	void SetFar(const float& far);
+	void AlwaysUp(bool a);
 
 	rp3d::Vector3 GetPosition();
 	rp3d::Quaternion GetOrientation();
@@ -39,6 +38,7 @@ private:
 
 	float speed, fov, near, far, aspect;
 	float angleX = 0, angleY = 0;
+	bool alwaysUp = true;
 
 	rp3d::Vector3 pos;
 	rp3d::Quaternion orient = rp3d::Quaternion::identity();

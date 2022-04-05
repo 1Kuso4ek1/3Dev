@@ -64,7 +64,6 @@ int main()
 
     // Main material
     Material material(32, { { texture, Material::TexType::Diffuse }, { normalmap, Material::TexType::NormalMap }, { metalness, Material::TexType::Metalness }, { ao, Material::TexType::AmbientOcclusion }, { cubemap, Material::TexType::Cubemap } });
-
     /*Material makarov_material(32, { { cmakarov, Material::TexType::Diffuse }, { nmakarov, Material::TexType::NormalMap }, { mmakarov, Material::TexType::Metalness }, { rmakarov, Material::TexType::Roughness }, { cubemap, Material::TexType::Cubemap } });
     Material sight_material(32, { { csight, Material::TexType::Diffuse }, { nsight, Material::TexType::NormalMap }, { msight, Material::TexType::Metalness }, { rsight, Material::TexType::Roughness }, { osight, Material::TexType::Opacity }, { cubemap, Material::TexType::Cubemap } });
     Material suppressor_material(32, { { csuppressor, Material::TexType::Diffuse }, { nsuppressor, Material::TexType::NormalMap }, { msuppressor, Material::TexType::Metalness }, { rsuppressor, Material::TexType::Roughness }, { cubemap, Material::TexType::Cubemap } });*/
@@ -101,7 +100,6 @@ int main()
 
         // Launching physics simulation when Q key is pressed
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) launched = true;
-
         // Camera movement, rotation and so on
         cam.Update();
         cam.Move(1);
@@ -142,7 +140,7 @@ int main()
         // Unbinding framebuffer
         buf.Unbind();
         post.Bind();
-        post.SetUniform1f("exposure", 3.0/* * cos(global.getElapsedTime().asSeconds())*/);
+        post.SetUniform1f("exposure", 2.0);
         // Drawing framebuffer texture on the screen
         buf.Draw();
     });

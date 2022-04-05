@@ -57,6 +57,7 @@ void Shape::Draw(Camera& cam, std::vector<Light> lights)
 		lights[i].Update(shader, i);
 	shader->SetUniform1f("shininess", mat->GetShininess());
 	shader->SetUniform3f("campos", cam.GetPosition().x, cam.GetPosition().y, cam.GetPosition().z);
+	shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
 	shader->SetUniform1i("bones", 0);
 	m->UpdateShader(shader);
 	

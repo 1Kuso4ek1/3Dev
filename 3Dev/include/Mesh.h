@@ -34,7 +34,7 @@ public:
      * @param indices array of mesh indices
      * @param aabb bounding box of the mesh
      */
-    Mesh(std::vector<Vertex> data, std::vector<GLuint> indices, aiAABB aabb, std::vector<Bone> bones = {});
+    Mesh(std::vector<Vertex> data, std::vector<GLuint> indices, aiAABB aabb, std::vector<Bone> bones = {}, glm::mat4 transformation = glm::mat4(1.0));
     ~Mesh();
 
     // Simple draw fucntion without any shaders
@@ -50,6 +50,8 @@ public:
 
     std::vector<glm::mat4>& GetPose();
 
+    glm::mat4 GetTransformation();
+
     // @return bounding box of this mesh
     aiAABB GetAABB();
 
@@ -59,6 +61,8 @@ private:
     aiAABB aabb;
 
     GLuint vao, vbo, ebo;
+
+    glm::mat4 transformation;
 
     std::vector<Vertex> data;
 	std::vector<GLuint> indices;

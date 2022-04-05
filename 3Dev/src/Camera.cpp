@@ -15,8 +15,10 @@ void Camera::Update()
 	}
 }
 
-void Camera::Move(float time)
+rp3d::Vector3 Camera::Move(float time)
 {
+	auto vec = pos;
+
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		pos += (orient * rp3d::Vector3(0, 0, -1)) * speed * time;
 
@@ -28,6 +30,8 @@ void Camera::Move(float time)
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 		pos -= (orient * rp3d::Vector3(1, 0, 0)) * speed * time;
+
+	return pos - vec;
 }
 
 void Camera::Mouse()
@@ -44,8 +48,10 @@ void Camera::Mouse()
 
 void Camera::Look()
 {	
-	rp3d::Vector3 v = orient * rp3d::Vector3(0, 0, -1);
-	m->GetView() = glm::lookAt(toglm(pos), toglm(pos + v), glm::vec3(0, 1, 0));
+	rp3d::Vector3 v = orient * rp3d::Vector3(0, 0, -1), tmpv;
+	float tmp;
+	if(!alwaysUp) orient.getRotationAngleAxis(tmp, tmpv);
+	m->GetView() = glm::lookAt(toglm(pos), toglm(pos + v), alwaysUp ? glm::vec3(0.0, 1.0, 0.0) : toglm(tmpv));
 }
 
 void Camera::Look(const rp3d::Vector3& vec)
@@ -53,19 +59,9 @@ void Camera::Look(const rp3d::Vector3& vec)
 	m->GetView() = glm::lookAt(toglm(pos), toglm(vec), glm::vec3(0, 1, 0));
 }
 
-rp3d::Vector3 Camera::GetPosition()
-{
-	return pos;
-}
-
 void Camera::SetPosition(const rp3d::Vector3& vec)
 {
 	pos = vec;
-}
-
-rp3d::Quaternion Camera::GetOrientation()
-{
-	return orient;
 }
 
 void Camera::SetOrientation(const rp3d::Quaternion& quat)
@@ -73,19 +69,9 @@ void Camera::SetOrientation(const rp3d::Quaternion& quat)
 	orient = quat;
 }
 
-void Camera::UpdateMatrix()
-{
-	m->GetProjection() = glm::perspective(glm::radians(fov), aspect, near, far);
-}
-
 void Camera::SetSpeed(const float& speed)
 {
 	this->speed = speed;
-}
-
-float Camera::GetSpeed()
-{
-	return speed;
 }
 
 void Camera::SetFOV(const float& fov)
@@ -94,20 +80,10 @@ void Camera::SetFOV(const float& fov)
 	UpdateMatrix();
 }
 
-float Camera::GetFOV()
-{
-	return fov;
-}
-
 void Camera::SetNear(const float& near)
 {
 	this->near = near;
 	UpdateMatrix();
-}
-
-float Camera::GetNear()
-{
-	return near;
 }
 
 void Camera::SetFar(const float& far)
@@ -116,7 +92,42 @@ void Camera::SetFar(const float& far)
 	UpdateMatrix();
 }
 
+void Camera::AlwaysUp(bool a)
+{
+	alwaysUp = a;
+}
+
+rp3d::Vector3 Camera::GetPosition()
+{
+	return pos;
+}
+
+rp3d::Quaternion Camera::GetOrientation()
+{
+	return orient;
+}
+
+float Camera::GetSpeed()
+{
+	return speed;
+}
+
+float Camera::GetFOV()
+{
+	return fov;
+}
+
+float Camera::GetNear()
+{
+	return near;
+}
+
 float Camera::GetFar()
 {
 	return far;
+}
+
+void Camera::UpdateMatrix()
+{
+	m->GetProjection() = glm::perspective(glm::radians(fov), aspect, near, far);
 }

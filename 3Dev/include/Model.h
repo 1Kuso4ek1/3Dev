@@ -21,10 +21,28 @@ struct Keyframe
 
 struct Animation
 {
+	enum class State
+	{
+		Stopped,
+		Playing,
+		Paused
+	};
+
+	float GetTime()
+	{
+		return time.getElapsedTime().asSeconds() * tps;
+	}
+
+	State state = State::Stopped;
+	bool repeat = true;
+
 	float duration = 0.0;
-	float tps = 25.0;
+	float tps = 1000.0;
+	float lastTime = 0.0;
 
 	std::unordered_map<std::string, Keyframe> keyframes;
+
+	sf::Clock time;
 };
 
 class Model
@@ -45,20 +63,29 @@ public:
 	void AddRotation(rp3d::Quaternion orientation);
 	void AddSize(rp3d::Vector3 size);
 
-	void CreateBoxShape();
-	void CreateSphereShape();
-	void CreateCapsuleShape();
-	void CreateConcaveShape();
-	void CreateConvexShape();
+	void CreateBoxShape(int mesh = 0);
+	void CreateSphereShape(int mesh = 0);
+	void CreateCapsuleShape(int mesh = 0);
+	void CreateConcaveShape(int mesh = 0);
+	void CreateConvexShape(int mesh = 0);
+
+	void PlayAnimation(int anim = 0);
+	void StopAnimation(int anim = 0);
+	void PauseAnimation(int anim = 0);
 		
 	rp3d::Vector3 GetPosition();
 	rp3d::Quaternion GetOrientation();
 	rp3d::Vector3 GetSize();
+
+	rp3d::RigidBody* GetRigidBody();
+
+	std::vector<Bone>& GetBones(int mesh = 0);
+	std::vector<glm::mat4>& GetPose(int mesh = 0);
 	
 	std::string GetFilename();
 	std::string GetTextureFilename();
 	
-	std::vector<Material> GetMaterial();
+	std::vector<Material>& GetMaterial();
 
 private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
@@ -68,8 +95,6 @@ private:
 	void CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 parent = glm::mat4(1.0));
 
 	bool ProcessBone(aiNode* node, std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap, Bone& out);
-
-	sf::Clock time;
 	
 	std::vector<std::shared_ptr<Mesh>> meshes;
 	
@@ -83,12 +108,11 @@ private:
 	glm::mat4 globalTransform;
 	glm::mat4 globalInverseTransform;
 
-	rp3d::CollisionShape* shape = nullptr;
+	std::vector<rp3d::CollisionShape*> shapes;
 	rp3d::RigidBody* body = nullptr;
-	rp3d::Collider* collider = nullptr;
 
 	rp3d::TriangleVertexArray* triangles = nullptr;
-	rp3d::TriangleMesh* mesh = nullptr;
+	rp3d::TriangleMesh* tmesh = nullptr;
 
 	rp3d::PolygonVertexArray::PolygonFace* faces = nullptr;
 	rp3d::PolygonVertexArray* polygons = nullptr;

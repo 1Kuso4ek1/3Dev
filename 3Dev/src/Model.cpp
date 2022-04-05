@@ -19,8 +19,8 @@ void Model::Load(std::string filename, unsigned int flags)
 
 	ProcessNode(scene->mRootNode, scene);
 	LoadAnimations(scene);
-	/*for(auto i : meshes)
-		i->GetPose().resize(i->GetBones().size(), glm::mat4(1.0));*/
+	if(man != nullptr)
+		shapes.resize(meshes.size(), nullptr);
 
 	Log::Write("Meshes loaded: " + std::to_string(meshes.size()), Log::Type::Info);
 	Log::Write("Bones loaded: " + std::to_string(meshes[0]->GetBones().size()), Log::Type::Info);
@@ -57,6 +57,7 @@ void Model::Draw(Camera& cam, std::vector<Light> lights)
 				
 		shader->SetUniform1f("shininess", mat[mesh].GetShininess());
 		shader->SetUniform3f("campos", cam.GetPosition().x, cam.GetPosition().y, cam.GetPosition().z);
+		shader->SetUniformMatrix4("transformation", meshes[mesh]->GetTransformation());
 		shader->SetVectorOfUniformMatrix4("pose", meshes[mesh]->GetPose().size(), meshes[mesh]->GetPose());
 		shader->SetUniform1i("bones", !meshes[mesh]->GetBones().empty());
 
@@ -109,64 +110,105 @@ void Model::AddSize(rp3d::Vector3 size)
 	this->size += size;
 }
 
-void Model::CreateBoxShape()
+void Model::CreateBoxShape(int mesh)
 {
-	aiAABB aabb = meshes[0]->GetAABB();
+	if(mesh >= meshes.size())
+		Log::Write("int mesh is out of meshes array bounds!", Log::Type::Critical);
+
+	aiAABB aabb = meshes[mesh]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
-	shape = man->CreateBoxShape((rp3d::Vector3(v.x, v.y, v.z) / 2) * size);
-	body->addCollider(shape, rp3d::Transform::identity());
+	shapes[mesh] = man->CreateBoxShape((rp3d::Vector3(v.x, v.y, v.z) / 2) * size);
+	body->addCollider(shapes[mesh], rp3d::Transform::identity());
 }
 
-void Model::CreateSphereShape()
+void Model::CreateSphereShape(int mesh)
 {
-	aiAABB aabb = meshes[0]->GetAABB();
+	if(mesh >= meshes.size())
+		Log::Write("int mesh is out of meshes array bounds!", Log::Type::Critical);
+
+	aiAABB aabb = meshes[mesh]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
-	shape = man->CreateSphereShape((v.y / 2) * size.y);
-	body->addCollider(shape, rp3d::Transform::identity());
+	shapes[mesh] = man->CreateSphereShape((v.y / 2) * size.y);
+	body->addCollider(shapes[mesh], rp3d::Transform::identity());
 }
 
-void Model::CreateCapsuleShape()
+void Model::CreateCapsuleShape(int mesh)
 {
-	aiAABB aabb = meshes[0]->GetAABB();
+	if(mesh >= meshes.size())
+		Log::Write("int mesh is out of meshes array bounds!", Log::Type::Critical);
+
+	aiAABB aabb = meshes[mesh]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
-	shape = man->CreateCapsuleShape((glm::max(v.x, v.z) / 2) * size.x, v.y / 2);
-	body->addCollider(shape, rp3d::Transform::identity());
+	shapes[mesh] = man->CreateCapsuleShape((glm::max(v.x, v.z) / 2) * size.x, v.y / 2);
+	body->addCollider(shapes[mesh], rp3d::Transform::identity());
 }
 
-void Model::CreateConcaveShape()
+void Model::CreateConcaveShape(int mesh)
 {
+	if(mesh >= meshes.size())
+		Log::Write("int mesh is out of meshes array bounds!", Log::Type::Critical);
+
 	triangles = new rp3d::TriangleVertexArray(
-	meshes[0]->GetData().size(), &meshes[0]->GetData()[0], sizeof(Vertex),
-	&meshes[0]->GetData()[0].normal.x, sizeof(Vertex),
-	meshes[0]->GetIndices().size() / 3, &meshes[0]->GetIndices()[0], 3 * sizeof(GLuint),
+	meshes[mesh]->GetData().size(), &meshes[mesh]->GetData()[0], sizeof(Vertex),
+	&meshes[mesh]->GetData()[0].normal.x, sizeof(Vertex),
+	meshes[mesh]->GetIndices().size() / 3, &meshes[mesh]->GetIndices()[0], 3 * sizeof(GLuint),
 	rp3d::TriangleVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
 	rp3d::TriangleVertexArray::NormalDataType::NORMAL_FLOAT_TYPE,
 	rp3d::TriangleVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
 
-	mesh = man->CreateTriangleMesh();
-	mesh->addSubpart(triangles);
-	shape = man->CreateConcaveMeshShape(mesh, size);
-	body->addCollider(shape, rp3d::Transform::identity());
+	tmesh = man->CreateTriangleMesh();
+	tmesh->addSubpart(triangles);
+	shapes[mesh] = man->CreateConcaveMeshShape(tmesh, size);
+	body->addCollider(shapes[mesh], rp3d::Transform::identity());
 	body->setType(rp3d::BodyType::STATIC);
 }
 
-void Model::CreateConvexShape()
+void Model::CreateConvexShape(int mesh)
 {
-	faces = new rp3d::PolygonVertexArray::PolygonFace[meshes[0]->GetIndices().size() / 3];
-	for (int i = 0; i < meshes[0]->GetIndices().size() / 3; i++)
+	faces = new rp3d::PolygonVertexArray::PolygonFace[meshes[mesh]->GetIndices().size() / 3];
+	for (int i = 0; i < meshes[mesh]->GetIndices().size() / 3; i++)
 	{
 		faces[i].indexBase = i * 3;
 		faces[i].nbVertices = 3;
 	}
 	polygons = new rp3d::PolygonVertexArray(
-	meshes[0]->GetData().size(), &meshes[0]->GetData()[0], sizeof(Vertex),
-	&meshes[0]->GetIndices()[0], 3 * sizeof(GLuint), meshes[0]->GetIndices().size() / 3, faces,
+	meshes[mesh]->GetData().size(), &meshes[mesh]->GetData()[0], sizeof(Vertex),
+	&meshes[mesh]->GetIndices()[0], 3 * sizeof(GLuint), meshes[mesh]->GetIndices().size() / 3, faces,
 	rp3d::PolygonVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
 	rp3d::PolygonVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
 
 	pmesh = man->CreatePolyhedronMesh(polygons);
-	shape = man->CreateConvexMeshShape(pmesh, size);
-	body->addCollider(shape, rp3d::Transform::identity());
+	shapes[mesh] = man->CreateConvexMeshShape(pmesh, size);
+	body->addCollider(shapes[mesh], rp3d::Transform::identity());
+}
+
+void Model::PlayAnimation(int anim)
+{
+	if(anim >= anims.size())
+		Log::Write("int anim is out of anims array bounds!", Log::Type::Critical);
+
+	anims[anim].state = Animation::State::Playing;
+	anims[anim].time.restart();
+}
+
+void Model::StopAnimation(int anim)
+{
+	if(anim >= anims.size())
+		Log::Write("int anim is out of anims array bounds!", Log::Type::Critical);
+
+	anims[anim].state = Animation::State::Stopped;
+	for(auto& i : meshes)
+		for(auto& j : i->GetPose())
+			j = glm::mat4(1.0);
+}
+
+void Model::PauseAnimation(int anim)
+{
+	if(anim >= anims.size())
+		Log::Write("int anim is out of anims array bounds!", Log::Type::Critical);
+
+	anims[anim].state = Animation::State::Paused;
+	anims[anim].lastTime = anims[anim].GetTime();
 }
 
 rp3d::Vector3 Model::GetPosition() 
@@ -184,12 +226,33 @@ rp3d::Vector3 Model::GetSize()
 	return size;
 }
 
+rp3d::RigidBody* Model::GetRigidBody()
+{
+	return body;
+}
+
+std::vector<Bone>& Model::GetBones(int mesh)
+{
+	if(mesh >= meshes.size())
+		Log::Write("int mesh is out of meshes array bounds!", Log::Type::Critical);
+	
+	return meshes[mesh]->GetBones();
+}
+
+std::vector<glm::mat4>& Model::GetPose(int mesh)
+{
+	if(mesh >= meshes.size())
+		Log::Write("int mesh is out of meshes array bounds!", Log::Type::Critical);
+	
+	return meshes[mesh]->GetPose();
+}
+
 std::string Model::GetFilename() 
 {
 	return filename;
 }
 
-std::vector<Material> Model::GetMaterial()
+std::vector<Material>& Model::GetMaterial()
 {
 	return mat;
 }
@@ -231,8 +294,12 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node)
 	for(int i = 0; i < mesh->mNumBones; i++)
 	{
 		auto bone = mesh->mBones[i];
-		boneMap[std::string(i == 0 ? "" : a) + std::string(bone->mName.C_Str())] = { i, toglm(bone->mOffsetMatrix) };
-		std::cout << bone->mNumWeights << std::endl;
+		std::string tmp;
+		if(std::string(bone->mName.C_Str()).find(a) == std::string::npos)
+			tmp = a + bone->mName.C_Str();
+		else tmp = bone->mName.C_Str();
+
+		boneMap[tmp] = { i, toglm(bone->mOffsetMatrix) };
 		std::vector<int> nbones;
 		nbones.resize(mesh->mNumVertices, 0);
 		for(int j = 0; j < bone->mNumWeights; j++)
@@ -262,7 +329,7 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node)
 	
 	std::vector<Bone> bones;
 	FindBoneNodes(node, boneMap, bones);
-	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB, bones));
+	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB, bones, globalInverseTransform * toglm(node->mTransformation)));
 }
 
 void Model::LoadAnimations(const aiScene* scene)
@@ -273,7 +340,7 @@ void Model::LoadAnimations(const aiScene* scene)
 		auto anim = scene->mAnimations[i];
 		float tps = anim->mTicksPerSecond;
 		tmp.tps = (tps > 0 ? tps : 1000.0);
-		tmp.duration = anim->mDuration * tmp.tps;
+		tmp.duration = anim->mDuration;
 
 		for (int j = 0; j < anim->mNumChannels; j++)
 		{
@@ -315,38 +382,55 @@ void Model::FindBoneNodes(aiNode* node, std::unordered_map<std::string, std::pai
 
 void Model::CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 parent)
 {
-	if(anims[0].keyframes.find(bone.name) != anims[0].keyframes.end())
-	{
-		Keyframe kf = anims[0].keyframes[bone.name];
-		if(time.getElapsedTime().asSeconds() * 1000 >= anims[0].duration / 1000) time.restart();
-		float dt = fmod(time.getElapsedTime().asSeconds() * 1000, anims[0].duration / 1000);
-		auto fraction = TimeFraction(kf.rotStamps, dt);
+	for(auto i : anims)
+		if(i.state == Animation::State::Playing || i.state == Animation::State::Paused)
+			if(i.keyframes.find(bone.name) != i.keyframes.end())
+			{
+				Keyframe kf = i.keyframes[bone.name];
 
-		glm::vec3 pos = glm::mix(kf.positions[fraction.first - 1], kf.positions[fraction.first], fraction.second);
-		glm::quat rot = glm::slerp(kf.rotations[fraction.first - 1], kf.rotations[fraction.first], fraction.second);
-		glm::vec3 scale = glm::mix(kf.scales[fraction.first - 1], kf.scales[fraction.first], fraction.second);
+				float time = 0;
+				if(i.state == Animation::State::Playing)
+				{
+					time = i.GetTime();
+					if(i.lastTime != 0)
+						time += i.lastTime;
+				}
+				else time = i.lastTime;
 
-		glm::mat4 mpos(1.0), mscale(glm::scale(glm::mat4(1.0), toglm(size))), mrot = glm::toMat4(rot);
-		mpos = glm::translate(mpos, pos);
-		mscale = glm::scale(mscale, scale);
+				if(i.state == Animation::State::Playing && time >= i.duration)
+				{
+					time = i.time.restart().asSeconds() * i.tps;
+					if(i.lastTime != 0) i.lastTime = 0;
+				}
 
-		glm::mat4 localTransform = mpos * mrot * mscale;
-		glm::mat4 globalTransform = parent * localTransform;
+				float dt = fmod(time, i.duration);
+				auto fraction = TimeFraction(kf.rotStamps, dt);
 
-		mesh->GetPose()[bone.id] = globalInverseTransform * globalTransform * bone.offset;
-		
-		for(Bone& child : bone.children)
-			CalculatePose(child, mesh, globalTransform);
-	}
-	else
-	{
-		glm::mat4 globalTransform = parent * glm::mat4(1.0);
+				glm::vec3 pos = glm::mix(kf.positions[fraction.first - 1], kf.positions[fraction.first], fraction.second);
+				glm::quat rot = glm::slerp(kf.rotations[fraction.first - 1], kf.rotations[fraction.first], fraction.second);
+				glm::vec3 scale = glm::mix(kf.scales[fraction.first - 1], kf.scales[fraction.first], fraction.second);
 
-		mesh->GetPose()[bone.id] = globalInverseTransform * globalTransform * bone.offset;
-		
-		for(Bone& child : bone.children)
-			CalculatePose(child, mesh, globalTransform);
-	}
+				glm::mat4 mpos(1.0), mscale(glm::scale(glm::mat4(1.0), toglm(size))), mrot = glm::toMat4(rot);
+				mpos = glm::translate(mpos, pos);
+				mscale = glm::scale(mscale, scale);
+
+				glm::mat4 localTransform = mpos * mrot * mscale;
+				glm::mat4 globalTransform = parent * localTransform;
+
+				mesh->GetPose()[bone.id] = globalInverseTransform * globalTransform * bone.offset;
+				
+				for(Bone& child : bone.children)
+					CalculatePose(child, mesh, globalTransform);
+			}
+			else
+			{
+				glm::mat4 globalTransform = parent * glm::mat4(1.0);
+
+				mesh->GetPose()[bone.id] = globalInverseTransform * globalTransform * bone.offset;
+				
+				for(Bone& child : bone.children)
+					CalculatePose(child, mesh, globalTransform);
+			}
 }
 
 bool Model::ProcessBone(aiNode* node, std::unordered_map<std::string, std::pair<int, glm::mat4>> bonemap, Bone& out)

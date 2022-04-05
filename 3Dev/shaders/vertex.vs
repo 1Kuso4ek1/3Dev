@@ -8,6 +8,7 @@ layout (location = 4) in vec4 weights;
 
 uniform mat4 pose[64];
 uniform bool bones;
+uniform mat4 transformation;
 
 uniform vec3 campos;
 
@@ -34,16 +35,16 @@ void main()
         transform += pose[int(ids.y)] * w.y;
         transform += pose[int(ids.z)] * w.z;
         transform += pose[int(ids.w)] * w.w;
-        pos = transform * vec4(position, 1.0);
+        pos = transformation * transform * vec4(position, 1.0);
     }
 
-    mpos = (model * transform * pos).xyz;
-    mnormal = normalize(mat3(model * transform) * normal);
+    mpos = (model * pos).xyz;
+    mnormal = normalize(mat3(model * transformation * transform) * normal);
     coord = uv;
     camposout = campos;
 
     vec3 tangent = cross(mnormal, vec3(0.5, 0.5, 0.5));
-    vec3 t = normalize(mat3(model * transform) * tangent);
+    vec3 t = normalize(mat3(model * transformation * transform) * tangent);
     vec3 n = mnormal;
     vec3 b = cross(n, t);
     tbn = mat3(t, b, n);
