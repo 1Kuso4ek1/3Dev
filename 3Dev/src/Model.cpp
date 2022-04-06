@@ -211,6 +211,16 @@ void Model::PauseAnimation(int anim)
 	anims[anim].lastTime = anims[anim].GetTime();
 }
 
+int Model::GetMeshesCount()
+{
+	return meshes.size();
+}
+
+int Model::GetAnimationsCount()
+{
+	return anims.size();
+}
+
 rp3d::Vector3 Model::GetPosition() 
 {
 	return transform.getPosition();

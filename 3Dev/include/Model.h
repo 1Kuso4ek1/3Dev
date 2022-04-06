@@ -72,6 +72,9 @@ public:
 	void PlayAnimation(int anim = 0);
 	void StopAnimation(int anim = 0);
 	void PauseAnimation(int anim = 0);
+
+	int GetMeshesCount();
+	int GetAnimationsCount();
 		
 	rp3d::Vector3 GetPosition();
 	rp3d::Quaternion GetOrientation();
