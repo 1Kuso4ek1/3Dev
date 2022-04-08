@@ -20,7 +20,7 @@ TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)
 2. SFML
 3. ReactPhysics3D
 4. ImGui
-5. ImGui-SFML
+5. ImGui-SFML (optional)
 6. Assimp
 7. LightLog
 ### Let's build

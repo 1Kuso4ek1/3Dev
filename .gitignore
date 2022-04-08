@@ -1,6 +1,6 @@
 3Dev-Editor
 build
 *.code-workspace
-cmake_test
 .vscode
 physics
+*.backup
