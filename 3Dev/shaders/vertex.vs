@@ -25,9 +25,6 @@ void main()
 {
     vec4 pos = vec4(position, 1.0);
     mat4 transform = mat4(1.0);
-    mat4 tmp = transformation;
-    for(int i = 0; i < 4; i++)
-        tmp[i] = normalize(tmp[i]);
 
     if(bones)
     {
@@ -37,16 +34,17 @@ void main()
         transform += pose[int(ids.y)] * w.y;
         transform += pose[int(ids.z)] * w.z;
         transform += pose[int(ids.w)] * w.w;
-        pos = tmp * transform * vec4(position, 1.0);
+        pos = transform * (inverse(transformation) * pos);
+        pos = transformation * pos;
     }
 
     mpos = (model * pos).xyz;
-    mnormal = normalize(mat3(model * tmp * transform) * normal);
+    mnormal = normalize(mat3(model * transform) * normal);
     coord = uv;
     camposout = campos;
 
     vec3 tangent = cross(mnormal, vec3(0.5, 0.5, 0.5));
-    vec3 t = normalize(mat3(model * tmp * transform) * tangent);
+    vec3 t = normalize(mat3(model * transform) * tangent);
     vec3 n = mnormal;
     vec3 b = cross(n, t);
     tbn = mat3(t, b, n);

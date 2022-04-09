@@ -281,11 +281,17 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 	std::vector<Vertex> data;
 	std::vector<GLuint> indices;
 
+	glm::mat4 tr = globalInverseTransform * toglm(mnode->mTransformation);
+	for(int i = 0; i < 4; i++)
+		//if(tr[i].x > 1.0 || tr[i].y > 1.0 || tr[i].z > 1.0 || tr[i].w > 1.0)
+			tr[i] = glm::normalize(tr[i]);
+
 	std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap;
 	
 	for(int i = 0; i < mesh->mNumVertices; i++)
 	{
-		glm::vec3 pos = toglm(mesh->mVertices[i]), norm = toglm(mesh->mNormals[i]);
+		glm::vec3 pos = glm::mat3(tr) * toglm(mesh->mVertices[i]),
+				  norm = glm::mat3(tr) * toglm(mesh->mNormals[i]);
 		glm::vec2 uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 		data.emplace_back(pos, norm, uv);
 	}
@@ -327,9 +333,9 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 
 	for (int i = 0; i < data.size(); i++) 
 	{
-		glm::vec4 & weights = data[i].weights;
+		glm::vec4& weights = data[i].weights;
 		float total = weights.x + weights.y + weights.z + weights.w;
-		if (total > 0.0f)
+		if(total > 0.0f)
 			data[i].weights /= total;
 	}
 			
@@ -339,7 +345,7 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 	
 	std::vector<Bone> bones;
 	FindBoneNodes(node, boneMap, bones);
-	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB, bones, globalInverseTransform * toglm(mnode->mTransformation)));
+	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB, bones, tr));
 }
 
 void Model::LoadAnimations(const aiScene* scene)
