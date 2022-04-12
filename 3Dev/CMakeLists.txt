@@ -4,12 +4,10 @@ project(3Dev VERSION 0.1.0 LANGUAGES CXX)
 
 find_package(SFML 2.5.1 COMPONENTS graphics system window network audio REQUIRED)
 find_package(assimp REQUIRED)
-find_package(GLEW 2.2.0 REQUIRED)
+find_package(GLEW 2.1.0 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(ReactPhysics3D REQUIRED)
 find_package(LightLog REQUIRED)
-
-find_package(ImGui-SFML)
 
 add_library(3Dev 
 	src/Matrices.cpp
@@ -27,12 +25,8 @@ add_library(3Dev
 
 add_executable(physics physics_test.cpp)
 					
-target_link_libraries(3Dev PUBLIC LightLog reactphysics3d GL GLEW GLU assimp pthread sfml-graphics sfml-window sfml-system sfml-audio sfml-network)
-target_link_libraries(physics PUBLIC LightLog 3Dev reactphysics3d GL GLU GLEW assimp pthread sfml-graphics sfml-window sfml-system sfml-audio sfml-network)
-
-if(IMGUI_FOUND)
-	target_link_libraries(3Dev PUBLIC ImGui-SFML)
-endif()
+target_link_libraries(3Dev PUBLIC LightLog reactphysics3d GL GLEW GLU assimp sfml-graphics sfml-window sfml-system sfml-audio sfml-network)
+target_link_libraries(physics PUBLIC LightLog 3Dev reactphysics3d GL GLU GLEW assimp sfml-graphics sfml-window sfml-system sfml-audio sfml-network)
 
 set_target_properties(3Dev PROPERTIES C_STANDARD 17 C_STANDARD_REQUIRED ON)
 
@@ -40,6 +34,11 @@ target_include_directories(3Dev
 	PUBLIC
 	/usr/include
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+	$<BUILD_INTERFACE:${SFML_INCLUDE_DIR}>
+	$<BUILD_INTERFACE:${LIGHTLOG_INCLUDE_DIR}>
+	$<BUILD_INTERFACE:${RP3D_INCLUDE_DIR}>
+	$<BUILD_INTERFACE:${GLEW_INCLUDE_DIR}>
+	$<BUILD_INTERFACE:${ASSIMP_INCLUDE_DIR}>
 	$<INSTALL_INTERFACE:include>
 )
 

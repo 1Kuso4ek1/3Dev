@@ -1,7 +1,7 @@
 # 3Dev
 
 ## About
-- 3Dev is a simple and lightweight game engine, which uses SFML, OpenGL, ReactPhysics3D, Assimp and ImGui
+- 3Dev is a simple and lightweight game engine, which uses SFML, OpenGL, ReactPhysics3D and Assimp
 ## Features
 - Rigit body physics
 - Loading a lot of model formats (.obj, .dae, .fbx and much more...)
@@ -42,7 +42,7 @@ sudo make install # So you can use the library everywhere...
 You can use 3Dev in your cmake project pretty easily
 ```
 find_package(3Dev REQUIRED)
-target_link_libraries(cool-project PUBLIC 3Dev *3Dev deps* *another stuff*)
+target_link_libraries(cool-project PUBLIC 3Dev ${3DEV_DEPS} *another stuff*)
 ...
 target_include_directories(
 	cool-project
