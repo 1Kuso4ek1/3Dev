@@ -63,11 +63,11 @@ public:
 	void AddRotation(rp3d::Quaternion orientation);
 	void AddSize(rp3d::Vector3 size);
 
-	void CreateBoxShape(int mesh = 0);
-	void CreateSphereShape(int mesh = 0);
-	void CreateCapsuleShape(int mesh = 0);
-	void CreateConcaveShape(int mesh = 0);
-	void CreateConvexShape(int mesh = 0);
+	void CreateBoxShape(int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
+	void CreateSphereShape(int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
+	void CreateCapsuleShape(int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
+	void CreateConcaveShape(int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
+	void CreateConvexShape(int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
 
 	void PlayAnimation(int anim = 0);
 	void StopAnimation(int anim = 0);
