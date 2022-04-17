@@ -22,19 +22,19 @@ TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)
 4. ImGui-SFML (optional)
 5. Assimp
 6. LightLog
-### Let's build
+### Let's build it
 First of all, you need to clone this repository
 ```
 git clone https://github.com/1Kuso4ek1/3Dev.git
 cd 3Dev/3Dev
 ```
-When done, we can now create a "build" directory and call cmake
+When this is done, we can create a "build" directory and call cmake
 ```
 mkdir build && cd build
 cmake ..
 ```
-This process will not take that much time...  
-Finally, Makefile generated!
+This process won't take much time...  
+A Makefile has finally been generated!
 ```
 make -j4
 sudo make install # So you can use the library everywhere...
