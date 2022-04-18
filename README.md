@@ -34,7 +34,7 @@ mkdir build && cd build
 cmake ..
 ```
 This process won't take much time...  
-Makefile is finally generated!
+Finally, the genereted makefile.
 ```
 make -j4
 sudo make install # So you can use the library everywhere...
