@@ -28,13 +28,13 @@ First of all, you need to clone this repository
 git clone https://github.com/1Kuso4ek1/3Dev.git
 cd 3Dev/3Dev
 ```
-When this is done, we can create a "build" directory and call cmake
+When it's done, we can create a "build" directory and call cmake
 ```
 mkdir build && cd build
 cmake ..
 ```
 This process won't take much time...  
-A Makefile has finally been generated!
+Makefile is finally generated!
 ```
 make -j4
 sudo make install # So you can use the library everywhere...
