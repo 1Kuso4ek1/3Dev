@@ -37,7 +37,6 @@ get_target_property(RP3D_INCLUDE_DIR ReactPhysics3D::ReactPhysics3D INTERFACE_IN
 
 target_include_directories(3Dev 
   	PUBLIC
-	/usr/include
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<BUILD_INTERFACE:${SFML_INCLUDE_DIR}>
 	$<BUILD_INTERFACE:${LIGHTLOG_INCLUDE_DIR}>
@@ -85,5 +84,5 @@ install(FILES
   	include/Framebuffer.h
   	include/Mesh.h
   	include/PhysicsManager.h
-	DESTINATION  include/3Dev
+	DESTINATION include/3Dev
 )

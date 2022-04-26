@@ -53,7 +53,7 @@ void Model::Draw(Camera& cam, std::vector<Light> lights)
 		for(int i = 0; i < lights.size(); i++)
 			lights[i].Update(shader, i);
 		for(auto i : meshes[mesh]->GetBones())
-			CalculatePose(i, meshes[mesh]);
+			CalculatePose(i, meshes[mesh], meshes[mesh]->GetTransformation());
 				
 		shader->SetUniform1f("shininess", mat[mesh].GetShininess());
 		shader->SetUniform3f("campos", cam.GetPosition().x, cam.GetPosition().y, cam.GetPosition().z);
@@ -283,15 +283,14 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 
 	glm::mat4 tr = globalInverseTransform * toglm(mnode->mTransformation);
 	for(int i = 0; i < 4; i++)
-		//if(tr[i].x > 1.0 || tr[i].y > 1.0 || tr[i].z > 1.0 || tr[i].w > 1.0)
-			tr[i] = glm::normalize(tr[i]);
+		tr[i] = glm::normalize(tr[i]);
 
 	std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap;
 	
 	for(int i = 0; i < mesh->mNumVertices; i++)
 	{
-		glm::vec3 pos = glm::mat3(tr) * toglm(mesh->mVertices[i]),
-				  norm = glm::mat3(tr) * toglm(mesh->mNormals[i]);
+		glm::vec3 pos = toglm(mesh->mVertices[i]),
+				  norm = toglm(mesh->mNormals[i]);
 		glm::vec2 uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 		data.emplace_back(pos, norm, uv);
 	}
@@ -322,12 +321,12 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 		{
 			int id = bone->mWeights[j].mVertexId;
 			float weight = bone->mWeights[j].mWeight;
-			nbones[id]++;
-			if(nbones[id] <= 4) 
+			if(nbones[id] < 4) 
 			{
 				data[id].ids[nbones[id]] = i;
-				data[id].weights[nbones[id]] = bone->mWeights[j].mWeight;
+				data[id].weights[nbones[id]] = weight;
 			}
+			nbones[id]++;
 		}
 	}
 
@@ -426,7 +425,7 @@ void Model::CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 par
 				glm::quat rot = glm::slerp(kf.rotations[fraction.first - 1], kf.rotations[fraction.first], fraction.second);
 				glm::vec3 scale = glm::mix(kf.scales[fraction.first - 1], kf.scales[fraction.first], fraction.second);
 
-				glm::mat4 mpos(1.0), mscale(glm::scale(glm::mat4(1.0), toglm(size))), mrot = glm::toMat4(rot);
+				glm::mat4 mpos(1.0), mscale(1.0), mrot = glm::toMat4(rot);
 				mpos = glm::translate(mpos, pos);
 				mscale = glm::scale(mscale, scale);
 
@@ -440,8 +439,7 @@ void Model::CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 par
 			}
 			else
 			{
-				glm::mat4 globalTransform = parent * glm::mat4(1.0);
-
+				glm::mat4 globalTransform = parent;
 				mesh->GetPose()[bone.id] = globalInverseTransform * globalTransform * bone.offset;
 				
 				for(Bone& child : bone.children)

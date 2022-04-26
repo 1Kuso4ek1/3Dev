@@ -29,13 +29,11 @@ void main()
     if(bones)
     {
         transform = mat4(0.0);
-        vec4 w = normalize(weights);
-        transform += pose[int(ids.x)] * w.x;
-        transform += pose[int(ids.y)] * w.y;
-        transform += pose[int(ids.z)] * w.z;
-        transform += pose[int(ids.w)] * w.w;
-        pos = transform * (inverse(transformation) * pos);
-        pos = transformation * pos;
+        transform += pose[int(ids.x)] * weights.x;
+        transform += pose[int(ids.y)] * weights.y;
+        transform += pose[int(ids.z)] * weights.z;
+        transform += pose[int(ids.w)] * weights.w;
+        pos = transform * pos;
     }
 
     mpos = (model * pos).xyz;
