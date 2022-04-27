@@ -24,7 +24,7 @@ out mat3 tbn;
 void main()
 {
     vec4 pos = vec4(position, 1.0);
-    mat4 transform = mat4(1.0);
+    mat4 transform = transformation;
 
     if(bones)
     {
@@ -33,8 +33,8 @@ void main()
         transform += pose[int(ids.y)] * weights.y;
         transform += pose[int(ids.z)] * weights.z;
         transform += pose[int(ids.w)] * weights.w;
-        pos = transform * pos;
     }
+    pos = transform * pos;
 
     mpos = (model * pos).xyz;
     mnormal = normalize(mat3(model * transform) * normal);
