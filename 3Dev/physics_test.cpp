@@ -29,7 +29,8 @@ int main()
 
     // Textures for a material
     GLuint texture = LoadTexture("../textures/metal_color.jpg"), normalmap = LoadTexture("../textures/metal_normal.jpg"),
-    ao = LoadTexture("../textures/metal_ao.jpg"), metalness = LoadTexture("../textures/metal_metalness.jpg");
+    ao = LoadTexture("../textures/metal_ao.jpg"), metalness = LoadTexture("../textures/metal_metalness.jpg"),
+    roughness = LoadTexture("../textures/metal_roughness.jpg");
 
     /*GLuint cmakarov = LoadTexture("textures/makarov_color.png"), nmakarov = LoadTexture("textures/makarov_normal.png"),
     rmakarov = LoadTexture("textures/makarov_roughness.png"), mmakarov = LoadTexture("textures/makarov_metalness.png");
@@ -63,7 +64,15 @@ int main()
     l.SetAttenuation(0.0, 0.1, 0.0);
 
     // Main material
-    Material material(32, { { texture, Material::TexType::Diffuse }, { normalmap, Material::TexType::NormalMap }, { metalness, Material::TexType::Metalness }, { ao, Material::TexType::AmbientOcclusion }, { cubemap, Material::TexType::Cubemap } });
+    Material material(32,
+    { 
+    	{ texture, Material::TexType::Diffuse },
+    	{ normalmap, Material::TexType::NormalMap },
+    	{ metalness, Material::TexType::Metalness },
+    	{ ao, Material::TexType::AmbientOcclusion },
+    	{ roughness, Material::TexType::Roughness },
+    	{ cubemap, Material::TexType::Cubemap }
+    });
     /*Material makarov_material(32, { { cmakarov, Material::TexType::Diffuse }, { nmakarov, Material::TexType::NormalMap }, { mmakarov, Material::TexType::Metalness }, { rmakarov, Material::TexType::Roughness }, { cubemap, Material::TexType::Cubemap } });
     Material sight_material(32, { { csight, Material::TexType::Diffuse }, { nsight, Material::TexType::NormalMap }, { msight, Material::TexType::Metalness }, { rsight, Material::TexType::Roughness }, { osight, Material::TexType::Opacity }, { cubemap, Material::TexType::Cubemap } });
     Material suppressor_material(32, { { csuppressor, Material::TexType::Diffuse }, { nsuppressor, Material::TexType::NormalMap }, { msuppressor, Material::TexType::Metalness }, { rsuppressor, Material::TexType::Roughness }, { cubemap, Material::TexType::Cubemap } });*/

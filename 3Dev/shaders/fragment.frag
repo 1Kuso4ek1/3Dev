@@ -57,7 +57,7 @@ vec3 CalcLight(Light l, vec3 norm)
     
     vec3 halfway = normalize(normalize(l.position - mpos) + normalize(camposout - mpos));
     float scontrib = pow(max(0.0, dot(norm, halfway)), shininess * (nroughness ? 1.0 - texture(roughness, coord).x : 1.0));
-    vec3 totalspc = dcolor * l.specular * scontrib * (nmetalness ? texture(metalness, coord).xyz : vec3(1.0));
+    vec3 totalspc = dcolor * l.specular * scontrib * (nmetalness ? texture(metalness, coord).xyz : vec3(1.0)) * (nroughness ? 1.0 - texture(roughness, coord).x : 1.0);
     
     return (totalamb + totaldif + totalspc) * attenuation;
 }
@@ -79,5 +79,5 @@ void main()
         totallight += CalcLight(lights[i], norm);
         i++;
     }
-    color = vec4(emission + (reflection * totallight) + totallight, (nopacity ? texture(opacity, coord).x : 1.0)) * (nao ? texture(ao, coord) : vec4(1.0));
+    color = vec4(emission + (reflection * totallight * vec3(1.5)) + totallight, (nopacity ? texture(opacity, coord).x : 1.0)) * (nao ? texture(ao, coord) : vec4(1.0));
 }
