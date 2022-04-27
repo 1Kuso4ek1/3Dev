@@ -11,6 +11,7 @@ out vec4 color;
 
 void main()
 {
+    color = color / (color + vec4(1.0));
     color = vec4(1.0) - exp(-texture(frame, coord) * exposure);
     color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
 }
