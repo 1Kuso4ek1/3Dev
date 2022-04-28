@@ -8,7 +8,7 @@
 - Framebuffers
 - Post processing support
 - Shaders
-- - Blinn-Phong lighting model
+- - Physics Based Rendering
 - - Multiple light sources
 - - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
 - - Cubemap reflections
