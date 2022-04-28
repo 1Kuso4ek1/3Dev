@@ -5,13 +5,13 @@
 ## Features
 - Rigit body physics
 - Loading a lot of model formats (.obj, .dae, .fbx and much more...)
+- Skeletal animation
 - Framebuffers
 - Post processing support
-- Shaders
-- - Physics Based Rendering
-- - Multiple light sources
-- - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
-- - Cubemap reflections
+- HDR, tone mapping and gamma-correction
+- Physics Based Rendering
+- Multiple light sources
+- Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
 ## TODO
 TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)!
 ## Building
