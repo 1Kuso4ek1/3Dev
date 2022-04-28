@@ -11,7 +11,13 @@ out vec4 color;
 
 void main()
 {
-    color = color / (color + vec4(1.0));
-    color = vec4(1.0) - exp(-texture(frame, coord) * exposure);
+    color = texture(frame, coord);
+    color.rgb = color.rgb / (color.rgb + vec3(1.0));
+    color.rgb *= exposure;
+    
+    float lum = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
+    float mlum = (lum * (1.0 + lum)) / (1.0 + lum);
+
+    color.rgb = (mlum / lum) * color.rgb;
     color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
 }
