@@ -48,7 +48,9 @@ struct Animation
 class Model
 {
 public:
-	Model(std::string filename, std::vector<Material> mat, Shader* shader, Matrices* m, PhysicsManager* man, unsigned int flags = 0, rp3d::Vector3 position = rp3d::Vector3(0, 0, 0), rp3d::Quaternion orientation = rp3d::Quaternion::identity(), rp3d::Vector3 size = rp3d::Vector3(1, 1, 1));
+	Model(Shader* shader);
+	Model(std::vector<std::shared_ptr<Mesh>> meshes, Shader* shader);
+	Model(std::string filename, std::vector<Material> mat, Shader* shader, Matrices* m, PhysicsManager* man, unsigned int flags = 0);
 
 	void Load(std::string filename, unsigned int flags = 0);
 

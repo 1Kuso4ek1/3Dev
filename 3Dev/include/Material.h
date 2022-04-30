@@ -1,17 +1,18 @@
 #pragma once
 #include <3Dev.h>
 #include <Shader.h>
+#include <variant>
 
 /*
- * This class contains ids of various texture maps
+ * This class contains various material parameters
  */
 class Material
 {
 public:
-	enum class TexType
+	enum class Type
 	{
-		Diffuse,
-		NormalMap,
+		Color,
+		Normal,
 		AmbientOcclusion,
 		Metalness,
 		Emission,
@@ -20,34 +21,35 @@ public:
 		Cubemap
 	};
 
+	// Default constructor
+	Material();
+
 	/*
 	 * Basic constructor
-	 * @param shininess material shininess
-	 * @param textures vector with all texture maps
+	 * @param textures vector with all parameters
 	 */
-	Material(float shininess, std::vector<std::pair<GLuint, Material::TexType>> textures);
-
-	// @param shininess new shininess value
-	void SetShininess(float shininess);
+	Material(std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>> parameters);
 
 	/*
-	 * @param texture new texture id
-	 * @param type type of a new texture
+	 * @param parameter new parameter
+	 * @param type type of a new parameter
 	 */
-	void AddTexture(GLuint texture, TexType type);
+	void AddParameter(std::variant<glm::vec3, GLuint> parameter, Type type);
 
 	void UpdateShader(Shader* shader);
 
 	void ResetShader(Shader* shader);
-	
-	// @return shininess of this material
-	float GetShininess();
 
-	// @return reference to all texture maps
-	std::vector<std::pair<GLuint, TexType>>& GetTextures();
+	// @return reference to all parameters
+	std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>>& GetParameters();
 
 private:
-	float shininess;
-
-	std::vector<std::pair<GLuint, TexType>> textures;
+	std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>> parameters = 
+	{
+		{ glm::vec3(1.0), Type::Color },
+		{ glm::vec3(0.5), Type::Metalness },
+		{ glm::vec3(0.0), Type::Emission },
+		{ glm::vec3(0.5), Type::Roughness },
+		{ glm::vec3(1.0), Type::Opacity }
+	};
 };

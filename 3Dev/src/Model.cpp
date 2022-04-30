@@ -1,6 +1,13 @@
 #include "Model.h"
 
-Model::Model(std::string filename, std::vector<Material> mat, Shader* shader, Matrices* m, PhysicsManager* man, unsigned int flags, rp3d::Vector3 position, rp3d::Quaternion orientation, rp3d::Vector3 size) : transform(position, orientation), size(size), mat(mat), shader(shader), filename(filename), m(m), man(man)
+Model::Model(Shader* shader)
+			: transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), shader(shader) {}
+
+Model::Model(std::vector<std::shared_ptr<Mesh>> meshes, Shader* shader)
+			: transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), meshes(meshes), shader(shader) {}
+
+Model::Model(std::string filename, std::vector<Material> mat, Shader* shader, Matrices* m, PhysicsManager* man, unsigned int flags)
+			: transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), mat(mat), shader(shader), filename(filename), m(m), man(man)
 {
 	if(man != nullptr) body = man->CreateRigidBody(transform);
 
@@ -55,7 +62,6 @@ void Model::Draw(Camera& cam, std::vector<Light> lights)
 		for(auto i : meshes[mesh]->GetBones())
 			CalculatePose(i, meshes[mesh], meshes[mesh]->GetTransformation());
 				
-		shader->SetUniform1f("shininess", mat[mesh].GetShininess());
 		shader->SetUniform3f("campos", cam.GetPosition().x, cam.GetPosition().y, cam.GetPosition().z);
 		shader->SetUniformMatrix4("transformation", meshes[mesh]->GetTransformation());
 		shader->SetVectorOfUniformMatrix4("pose", meshes[mesh]->GetPose().size(), meshes[mesh]->GetPose());

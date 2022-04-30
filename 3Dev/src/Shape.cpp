@@ -1,6 +1,7 @@
 #include "Shape.h"
 
-Shape::Shape(const rp3d::Vector3& position, const rp3d::Vector3& size, const rp3d::Quaternion& orient, PhysicsManager* man, Shader* shader, Material* mat, Matrices* m, GLuint cubemap) : size(size), tr(position, orient), shader(shader), mat(mat), cubemap(cubemap), m(m)
+Shape::Shape(const rp3d::Vector3& size, Material* mat, Shader* shader, Matrices* m, PhysicsManager* man)
+			: size(size), tr({ 0, 0, 0 }, { 0, 0, 0, 1 }), shader(shader), mat(mat), m(m)
 {
 	glGenBuffers(1, &vbo);
 	glGenBuffers(1, &ebo);
@@ -51,11 +52,11 @@ void Shape::Draw(Camera& cam, std::vector<Light> lights)
 	m->Rotate(a, glm::axis(toglm(tr.getOrientation()))); // Using toglm(tmp) as second argument breaks everything and gives the matrix of nan
 	m->Scale(toglm(size));
 	
+	//Shader* shader = mat->GetShader();
 	shader->Bind();
 	mat->UpdateShader(shader);
 	for(int i = 0; i < lights.size(); i++)
 		lights[i].Update(shader, i);
-	shader->SetUniform1f("shininess", mat->GetShininess());
 	shader->SetUniform3f("campos", cam.GetPosition().x, cam.GetPosition().y, cam.GetPosition().z);
 	shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
 	shader->SetUniform1i("bones", 0);
@@ -72,7 +73,10 @@ void Shape::Draw(Camera& cam, std::vector<Light> lights)
 
 void Shape::DrawSkybox()
 {
-	if(cubemap == 0) return; // There's no cubemap!
+	auto tex = mat->GetParameters();
+	auto it = std::find_if(tex.begin(), tex.end(), [](auto& a) { return a.second == Material::Type::Cubemap; });
+	
+	if(it == tex.end()) return;
 
 	m->PushMatrix();
 	
@@ -81,10 +85,9 @@ void Shape::DrawSkybox()
 
 	shader->Bind();
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, std::get<1>(it->first));
 	
 	shader->SetUniform1i("cubemap", 0);
-	//std::cout << "skybox" << std::endl;
 	m->UpdateShader(shader);
 
 	glBindVertexArray(vao);

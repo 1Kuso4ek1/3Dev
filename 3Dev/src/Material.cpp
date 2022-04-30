@@ -1,95 +1,103 @@
 #include <Material.h>
 
-Material::Material(float shininess, std::vector<std::pair<GLuint, Material::TexType>> textures) : shininess(shininess), textures(textures) {}
+Material::Material() {}
 
-void Material::SetShininess(float shininess)
-{
-	this->shininess = shininess;
-}
+Material::Material(std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>> parameters) : parameters(parameters) {}
 
-void Material::AddTexture(GLuint texture, TexType type)
+void Material::AddParameter(std::variant<glm::vec3, GLuint> parameter, Type type)
 {
-	textures.emplace_back(texture, type);
+	parameters.emplace_back(parameter, type);
 }
 
 void Material::UpdateShader(Shader* shader)
 {
 	bool cubemap = false;
-	for(int i = 0; i < textures.size(); i++)
+	for(int i = 0; i < parameters.size(); i++)
 	{
-		glActiveTexture(GL_TEXTURE0 + i);
-		if(textures[i].second != Material::TexType::Cubemap) glBindTexture(GL_TEXTURE_2D, textures[i].first);
-		else glBindTexture(GL_TEXTURE_CUBE_MAP, textures[i].first);
+		glm::vec3 param0(-1.0);
+		GLuint param1 = 0;
 
-		switch(textures[i].second)
+		if(std::holds_alternative<glm::vec3>(parameters[i].first))
+			param0 = std::get<0>(parameters[i].first);
+		else
+			param1 = std::get<1>(parameters[i].first);
+			
+		if(param1 != 0)
 		{
-		case Material::TexType::Diffuse:
-			shader->SetUniform1i("ndiff", 1);
-			shader->SetUniform1i(std::string("diff"), i);
+			glActiveTexture(GL_TEXTURE0 + i);
+			if(parameters[i].second != Material::Type::Cubemap) glBindTexture(GL_TEXTURE_2D, param1);
+			else glBindTexture(GL_TEXTURE_CUBE_MAP, param1);
+		}
+
+		switch(parameters[i].second)
+		{
+		case Material::Type::Color:
+			if(param1 != 0)
+				shader->SetUniform1i("albedo", i);
+			shader->SetUniform3f("nalbedo", (param1 == 0 ? param0.x : -1), param0.y, param0.z);
 			break;
-		case Material::TexType::NormalMap:
+		case Material::Type::Normal:
 			shader->SetUniform1i("nnormalmap", 1);
-			shader->SetUniform1i(std::string("normalmap"), i);
+			shader->SetUniform1i("normalmap", i);
 			break;
-		case Material::TexType::AmbientOcclusion:
+		case Material::Type::AmbientOcclusion:
 			shader->SetUniform1i("nao", 1);
-			shader->SetUniform1i(std::string("ao"), i);
+			shader->SetUniform1i("ao", i);
 			break;
-		case Material::TexType::Metalness:
-			shader->SetUniform1i("nmetalness", 1);
-			shader->SetUniform1i(std::string("metalness"), i);
+		case Material::Type::Metalness:
+			if(param1 != 0)
+				shader->SetUniform1i("metalness", i);
+			shader->SetUniform1f("nmetalness", param1 == 0 ? param0.x : -1);
 			break;
-		case Material::TexType::Emission:
-			shader->SetUniform1i("nemission", 1);
-			shader->SetUniform1i(std::string("emission"), i);
+		case Material::Type::Emission:
+			if(param1 != 0)
+				shader->SetUniform1i("emission", i);
+			shader->SetUniform1f("nemission", param1 == 0 ? param0.x : -1);
 			break;
-		case Material::TexType::Roughness:
-			shader->SetUniform1i("nroughness", 1);
-			shader->SetUniform1i(std::string("roughness"), i);
+		case Material::Type::Roughness:
+			if(param1 != 0)
+				shader->SetUniform1i("roughness", i);
+			shader->SetUniform1f("nroughness", param1 == 0 ? param0.x : -1);
 			break;
-		case Material::TexType::Opacity:
-			shader->SetUniform1i("nopacity", 1);
-			shader->SetUniform1i(std::string("opacity"), i);
+		case Material::Type::Opacity:
+			if(param1 != 0)
+				shader->SetUniform1i("opacity", i);
+			shader->SetUniform1f("nopacity", param1 == 0 ? param0.x : -1);
 			break;
-		case Material::TexType::Cubemap:
-			shader->SetUniform1i(std::string("cubemap"), i);
+		case Material::Type::Cubemap:
+			shader->SetUniform1i("cubemap", i);
 			cubemap = true;
 			break;
 		}
 	}
 	if(!cubemap)
 	{
-		glActiveTexture(GL_TEXTURE0 + textures.size());
+		glActiveTexture(GL_TEXTURE0 + parameters.size());
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-		shader->SetUniform1i(std::string("cubemap"), textures.size());
+		shader->SetUniform1i(std::string("cubemap"), parameters.size());
 	}
 }
 
 void Material::ResetShader(Shader* shader)
 {
-	shader->SetUniform1i("ndiff", 0);
-	shader->SetUniform1i("diff", 0);
+	shader->SetUniform3f("nalbedo", -1, -1, -1);
+	shader->SetUniform1i("albedo", 0);
 	shader->SetUniform1i("nnormalmap", 0);
 	shader->SetUniform1i("normalmap", 0);
 	shader->SetUniform1i("nao", 0);
 	shader->SetUniform1i("ao", 0);
-	shader->SetUniform1i("nmetalness", 0);
+	shader->SetUniform1f("nmetalness", -1);
 	shader->SetUniform1i("metalness", 0);
-	shader->SetUniform1i("nemission", 0);
+	shader->SetUniform1f("nemission", -1);
 	shader->SetUniform1i("emission", 0);
-	shader->SetUniform1i("nroughness", 0);
+	shader->SetUniform1f("nroughness", -1);
 	shader->SetUniform1i("roughness", 0);
-	shader->SetUniform1i("nopacity", 0);
+	shader->SetUniform1f("nopacity", 1);
 	shader->SetUniform1i("opacity", 0);
 	shader->SetUniform1i("cubemap", 0);
 }
 
-float Material::GetShininess()
+std::vector<std::pair<std::variant<glm::vec3, GLuint>, Material::Type>>& Material::GetParameters()
 {
-	return shininess;
-}
-
-std::vector<std::pair<GLuint, Material::TexType>>& Material::GetTextures()
-{
-	return textures;
+	return parameters;
 }

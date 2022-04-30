@@ -10,15 +10,16 @@
 
 class Shape {
 public:
-	Shape(const rp3d::Vector3& position, const rp3d::Vector3& size, const rp3d::Quaternion& orient, PhysicsManager* man, Shader* shader, Material* mat, Matrices* m, GLuint cubemap = 0);
+	Shape(const rp3d::Vector3& size, Material* mat, Shader* shader, Matrices* m, PhysicsManager* man);
 	~Shape();
 
 	void Draw(Camera& cam, std::vector<Light> lights);
 	void DrawSkybox();
-		
+
 	void SetPosition(const rp3d::Vector3& position);
 	void SetOrientation(const rp3d::Quaternion& orientation);
 	void SetSize(const rp3d::Vector3& size);
+	void SetCubemap(GLuint cubemap);
 
 	rp3d::RigidBody* GetRigidBody();
 	
