@@ -31,11 +31,13 @@ out vec4 color;
 
 struct Light
 {
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
+    vec3 color;
     vec3 position;
+    vec3 direction;
     vec3 attenuation;
+
+    float cutoff;
+    float outerCutoff;
 
     bool isactive;
 };
@@ -72,6 +74,12 @@ vec3 FresnelShlick(float cosTh, vec3 f0, float rough)
 
 vec3 CalcLight(Light light, vec3 norm)
 {
+    float theta = dot(normalize(light.position - mpos), normalize(-light.direction));
+    float intensity = 1.0;
+    if(light.cutoff != 1.0)
+        intensity = clamp((theta - light.outerCutoff) / (light.cutoff - light.outerCutoff), 0.0, 1.0);
+    if(theta < light.cutoff && intensity <= 0.0) return vec3(0.0);
+
     vec3 v = normalize(camposout - mpos);
 
     float rough = (nroughness < 0.0 ? texture(roughness, coord).x : nroughness);
@@ -80,7 +88,7 @@ vec3 CalcLight(Light light, vec3 norm)
 
     vec3 f0 = mix(vec3(0.04), albedo, vec3(metal));
 
-    vec3 l = normalize(light.position - mpos);
+    vec3 l = (light.cutoff == 1.0 ? normalize(light.position - mpos) : normalize(-light.direction));
     vec3 h = normalize(v + l);
 
     float attenuation/* = 1.0 / (light.attenuation.x + light.attenuation.y * length(l) + light.attenuation.z * pow(length(l), 2))*/;
@@ -91,8 +99,7 @@ vec3 CalcLight(Light light, vec3 norm)
 
     attenuation = 1.0 / pow(length(l), 2);
 
-    vec3 lcolor = light.diffuse;
-    vec3 rad = lcolor * attenuation;
+    vec3 rad = light.color * attenuation * intensity;
 
     float ndf = GGX(ndoth, rough);
     float g = GeometrySmith(ndotv, ndotl, rough);

@@ -10,26 +10,21 @@ class Light
 public:
 	/*
 	 * Basic constructor
-	 * @param ambient ambient color of the light
-	 * @param diffuse diffuse color of the light
-	 * @param specular specular color of the light
+	 * @param color color of the light
 	 * @param position position of the light
 	 */
-	Light(rp3d::Vector3 ambient, rp3d::Vector3 diffuse, rp3d::Vector3 specular, rp3d::Vector3 position);
+	Light(rp3d::Vector3 color, rp3d::Vector3 position);
 	
-	// @param ambient ambient color of the light
-	void SetAmbient(rp3d::Vector3 ambient);
-
-	// @param diffuse diffuse color of the light
-	void SetDiffuse(rp3d::Vector3 diffuse);
-
-	// @param specular specular color of the light
-	void SetSpecular(rp3d::Vector3 specular);
+	// @param color color of the light
+	void SetColor(rp3d::Vector3 color);
 
 	// @param position position of the light
 	void SetPosition(rp3d::Vector3 position);
 
-	/* 
+	// @param direction direction of the light
+	void SetDirection(rp3d::Vector3 direction);
+
+	/*
 	 * Set light attenuation, calculated with formula "1.0 / (x + y * dist + z * dist * dist)"
 	 * where: 
 	 * x - constant attenuation
@@ -37,6 +32,12 @@ public:
 	 * z - quadratic attenuation
 	 */
 	void SetAttenuation(float constant, float linear, float quadratic);
+
+	// @param cutoff new light cutoff value
+	void SetCutoff(float cutoff);
+
+	// @param outerCutoff new light outerCutoff value
+	void SetOuterCutoff(float outerCutoff);
 	
 	/*
 	 * Used to update the shader (used only in Model and Shape classes)
@@ -45,23 +46,27 @@ public:
 	 */
 	void Update(Shader* shader, int lightnum);
 
-	// @return ambient color of the light
-	rp3d::Vector3 GetAmbient();
-
-	// @return diffuse color of the light
-	rp3d::Vector3 GetDiffuse();
-
-	// @return specular color of the light
-	rp3d::Vector3 GetSpecular();
+	// @return color of the light
+	rp3d::Vector3 GetColor();
 
 	// @return position of the light
 	rp3d::Vector3 GetPosition();
 
+	// @return direction of the light
+	rp3d::Vector3 GetDirection();
+
 	// @return vector that contains (constant, linear, quadratic)
 	rp3d::Vector3 GetAttenuation();
 
+	// @return light cutoff
+	float GetCutoff();
+
+	// @return light outerCutoff
+	float GetOuterCutoff();
+
 private:
-	rp3d::Vector3 position, ambient, diffuse, specular;
+	rp3d::Vector3 position, direction, color;
 	float constant = 1.0, linear = 0.0, quadratic = 0.0;
+	float cutoff = 360.0, outerCutoff = 0.0;
 };
 

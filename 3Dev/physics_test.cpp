@@ -50,8 +50,10 @@ int main()
     });
 
     // Main light
-    Light l({ 0.1, 0.1, 0.1 }, { 1, 1, 1 }, { 25, 25, 25 }, { 0.0, 50.0, 0.0 });
-    l.SetAttenuation(0.0, 0.1, 0.0);
+    Light l({ 3, 3, 3 }, { 0.0, 50.0, 0.0 });
+    /*l.SetCutoff(30);
+    l.SetOuterCutoff(33);*/
+    //l.SetAttenuation(0.0, 0.1, 0.0);
 
     // Main material
     Material material(
@@ -118,6 +120,9 @@ int main()
 
         // Skybox is moving with the camera
         skybox.SetPosition(cam.GetPosition());
+
+        /*l.SetPosition(cam.GetPosition());
+        l.SetDirection(cam.GetOrientation() * rp3d::Vector3(0, 0, -1));*/
 
         // Binding framebuffer
         buf.Bind();
