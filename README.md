@@ -9,7 +9,7 @@
 - Framebuffers
 - Post processing support
 - HDR, tone mapping and gamma-correction
-- Physics Based Rendering
+- Physically Based Rendering
 - Multiple light sources
 - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
 ## TODO
