@@ -54,16 +54,17 @@ public:
 
 	void Load(std::string filename, unsigned int flags = 0);
 
-	void Draw(Camera& cam, std::vector<Light> lights);
+	void Draw(Camera* cam, std::vector<Light*> lights);
 	
 	void SetPosition(rp3d::Vector3 position);
 	void SetOrientation(rp3d::Quaternion orientation);
 	void SetSize(rp3d::Vector3 size);
 	void SetMaterial(std::vector<Material> mat);
+	void SetShader(Shader* shader);
 	
-	void AddPosition(rp3d::Vector3 position);
-	void AddRotation(rp3d::Quaternion orientation);
-	void AddSize(rp3d::Vector3 size);
+	void Move(rp3d::Vector3 position);
+	void Rotate(rp3d::Quaternion orientation);
+	void Expand(rp3d::Vector3 size);
 
 	void CreateBoxShape(int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
 	void CreateSphereShape(int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());

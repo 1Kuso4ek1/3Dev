@@ -13,11 +13,15 @@ public:
      */
     PhysicsManager(rp3d::PhysicsWorld::WorldSettings settings);
     ~PhysicsManager();
+    
     /*
      * Updates the physics
-     * @param t time step
+     * @param time time elapsed from the last frame (in seconds)
      */
-    void Update(float t);
+    void Update(float time);
+
+    // @param timeStep new time step
+    void SetTimeStep(float timeStep);
     
     /*
      * Create a box collision shape
@@ -101,6 +105,8 @@ public:
     rp3d::PhysicsWorld* GetWorld();
 
 private:
+    float timeStep = 1.0 / 60.0;
+
     rp3d::PhysicsCommon common;
     rp3d::PhysicsWorld::WorldSettings settings;
     rp3d::PhysicsWorld* world;

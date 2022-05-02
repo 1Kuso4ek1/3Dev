@@ -13,13 +13,14 @@ public:
 	Shape(const rp3d::Vector3& size, Material* mat, Shader* shader, Matrices* m, PhysicsManager* man);
 	~Shape();
 
-	void Draw(Camera& cam, std::vector<Light> lights);
+	void Draw(Camera* cam, std::vector<Light*> lights);
 	void DrawSkybox();
 
 	void SetPosition(const rp3d::Vector3& position);
 	void SetOrientation(const rp3d::Quaternion& orientation);
 	void SetSize(const rp3d::Vector3& size);
-	void SetCubemap(GLuint cubemap);
+	void SetMaterial(Material* mat);
+	void SetShader(Shader* shader);
 
 	rp3d::RigidBody* GetRigidBody();
 	
@@ -72,7 +73,7 @@ private:
 		16, 18, 19, 20, 21, 22, 20, 22, 23
 	};
 
-	GLuint vao, vbo, ebo, cubemap = 0;
+	GLuint vao, vbo, ebo;
 
 	rp3d::Vector3 size;
 	rp3d::Transform tr;

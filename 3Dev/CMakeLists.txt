@@ -22,6 +22,7 @@ add_library(3Dev
 	src/Framebuffer.cpp
 	src/Mesh.cpp
 	src/PhysicsManager.cpp
+	src/SceneManager.cpp
 )
 
 add_executable(physics physics_test.cpp)

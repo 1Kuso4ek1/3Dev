@@ -16,7 +16,7 @@ public:
      * @param w width of the framebuffer texture
      * @param h height of the framebuffer texture
      */
-    Framebuffer(Shader* shader, int w, int h);
+    Framebuffer(Shader* shader, int w, int h, bool isDepth = false);
     ~Framebuffer();
 
     /*
@@ -39,7 +39,7 @@ public:
     static void Unbind();
 
     // Draw the buffer texture on the screen
-    void Draw();
+    void Draw(bool depth = false);
 
     /*
      * Returns the buffer texture
@@ -47,10 +47,13 @@ public:
      */
     GLuint GetTexture(bool depth = false);
 
+    glm::ivec2 GetSize();
+
 private:
     Shader* shader;
 
     glm::vec2 pixelsize;
+    glm::ivec2 size;
 
     float data[20] = 
     {
@@ -61,5 +64,5 @@ private:
     };
 
     GLuint indices[6] = { 0, 1, 2, 0, 2, 3 };
-    GLuint vao, vbo, fbo, ebo, texture, depth;
+    GLuint vao, vbo, fbo, ebo, texture = 0, depth = 0;
 };

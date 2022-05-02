@@ -11,6 +11,7 @@ uniform mat4 transformation;
 
 uniform vec3 campos;
 
+uniform mat4 lspace;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
@@ -20,6 +21,7 @@ out vec3 camposout;
 out vec3 mnormal;
 out vec3 mpos;
 out mat3 tbn;
+out vec4 lspaceout;
 
 void main()
 {
@@ -37,6 +39,7 @@ void main()
     pos = transform * pos;
 
     mpos = (model * pos).xyz;
+    lspaceout = lspace * vec4(mpos, 1.0);
     mnormal = normalize(mat3(model * transform) * normal);
     coord = uv;
     camposout = campos;

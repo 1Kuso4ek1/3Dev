@@ -40,7 +40,7 @@ Shape::~Shape()
 	glDeleteVertexArrays(1, &vao);
 }
 
-void Shape::Draw(Camera& cam, std::vector<Light> lights) 
+void Shape::Draw(Camera* cam, std::vector<Light*> lights)
 {
 	m->PushMatrix();
 
@@ -56,8 +56,8 @@ void Shape::Draw(Camera& cam, std::vector<Light> lights)
 	shader->Bind();
 	mat->UpdateShader(shader);
 	for(int i = 0; i < lights.size(); i++)
-		lights[i].Update(shader, i);
-	shader->SetUniform3f("campos", cam.GetPosition().x, cam.GetPosition().y, cam.GetPosition().z);
+		lights[i]->Update(shader, i);
+	shader->SetUniform3f("campos", cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
 	shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
 	shader->SetUniform1i("bones", 0);
 	m->UpdateShader(shader);
@@ -112,6 +112,16 @@ void Shape::SetOrientation(const rp3d::Quaternion& orientation)
 void Shape::SetSize(const rp3d::Vector3& size)
 {
 	this->size = size;
+}
+
+void Shape::SetMaterial(Material* mat)
+{
+	this->mat = mat;
+}
+
+void Shape::SetShader(Shader* shader)
+{
+	this->shader = shader;
 }
 
 rp3d::RigidBody* Shape::GetRigidBody()

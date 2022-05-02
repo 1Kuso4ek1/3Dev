@@ -4,6 +4,8 @@ precision mediump float;
 const int maxlights = 16;
 const float pi = 3.14159265;
 
+uniform sampler2D shadowmap;
+
 uniform sampler2D albedo;
 uniform sampler2D normalmap;
 uniform sampler2D ao;
@@ -26,6 +28,7 @@ in vec3 camposout;
 in vec3 mnormal;
 in vec3 mpos;
 in mat3 tbn;
+in vec4 lspaceout;
 
 out vec4 color;
 
@@ -43,6 +46,34 @@ struct Light
 };
 
 uniform Light lights[maxlights];
+
+float LinearizeDepth(float depth)
+{
+    float z = depth * 2.0 - 1.0;
+    return (2.0 * 0.01 * 500.0) / (500.0 + 0.01 - z * (500.0 - 0.01));
+}
+
+float CalcShadow()
+{
+    vec3 pcoord = lspaceout.xyz / lspaceout.w;
+    pcoord = pcoord * 0.5 + 0.5;
+    if(pcoord.z > 1.0)
+        return 0.0;
+    //float closest = LinearizeDepth(texture(shadowmap, pcoord.xy).x);
+    float current = LinearizeDepth(pcoord.z);
+    float shadow = 0.0;
+    vec2 pixelsize = 1.0 / textureSize(shadowmap, 0);
+	for(int x = -1; x <= 1; ++x)
+	{
+		for(int y = -1; y <= 1; ++y)
+		{
+		    float pcf = LinearizeDepth(texture(shadowmap, pcoord.xy + vec2(x, y) * pixelsize).x);
+		    shadow += float(current > pcf);
+		}
+	}
+	shadow /= 9.0;
+    return shadow;
+}
 
 float GGX(float ndoth, float rough)
 {
@@ -136,6 +167,6 @@ void main()
         total += CalcLight(lights[i], norm);
         i++;
     }
-
-    color = vec4(emission + total, (nopacity < 0.0 ? texture(opacity, coord).x : abs(nopacity)));
+    float shadow = CalcShadow();
+    color = vec4((emission + total) * (1.0 - shadow + 0.1), (nopacity < 0.0 ? texture(opacity, coord).x : abs(nopacity)));
 }

@@ -41,7 +41,7 @@ void Model::Load(std::string filename, unsigned int flags)
 	}
 }
 
-void Model::Draw(Camera& cam, std::vector<Light> lights)
+void Model::Draw(Camera* cam, std::vector<Light*> lights)
 {
 	m->PushMatrix();
 
@@ -58,11 +58,11 @@ void Model::Draw(Camera& cam, std::vector<Light> lights)
 		shader->Bind();
 		mat[mesh].UpdateShader(shader);
 		for(int i = 0; i < lights.size(); i++)
-			lights[i].Update(shader, i);
+			lights[i]->Update(shader, i);
 		for(auto i : meshes[mesh]->GetBones())
 			CalculatePose(i, meshes[mesh], meshes[mesh]->GetTransformation());
 				
-		shader->SetUniform3f("campos", cam.GetPosition().x, cam.GetPosition().y, cam.GetPosition().z);
+		shader->SetUniform3f("campos", cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
 		shader->SetUniformMatrix4("transformation", meshes[mesh]->GetTransformation());
 		shader->SetVectorOfUniformMatrix4("pose", meshes[mesh]->GetPose().size(), meshes[mesh]->GetPose());
 		shader->SetUniform1i("bones", !meshes[mesh]->GetBones().empty());
@@ -99,19 +99,24 @@ void Model::SetMaterial(std::vector<Material> mat)
 	this->mat = mat;
 }
 
-void Model::AddPosition(rp3d::Vector3 position) 
+void Model::SetShader(Shader* shader)
+{
+	this->shader = shader;
+}
+
+void Model::Move(rp3d::Vector3 position) 
 {
 	transform.setPosition(transform.getPosition() + position);
 	if(body != nullptr) body->setTransform(transform);
 }
 
-void Model::AddRotation(rp3d::Quaternion orientation) 
+void Model::Rotate(rp3d::Quaternion orientation) 
 {
 	transform.setOrientation(orientation * transform.getOrientation());
 	if(body != nullptr) body->setTransform(transform);
 }
 
-void Model::AddSize(rp3d::Vector3 size) 
+void Model::Expand(rp3d::Vector3 size) 
 {
 	this->size += size;
 }

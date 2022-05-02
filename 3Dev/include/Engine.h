@@ -1,3 +1,4 @@
+#pragma once
 #include "3Dev.h"
 #include "Camera.h"
 #include "Model.h"
@@ -7,6 +8,7 @@
 #include "Matrices.h"
 #include "Framebuffer.h"
 #include "PhysicsManager.h"
+#include "SceneManager.h"
 #include <functional>
 
 /*

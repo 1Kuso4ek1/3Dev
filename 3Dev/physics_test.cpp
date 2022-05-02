@@ -33,12 +33,15 @@ int main()
     roughness = LoadTexture("../textures/metal_roughness.jpg");
 
     rp3d::PhysicsWorld::WorldSettings st; // Default physics world settings
-    PhysicsManager man(st); // Main physics manager
+    auto man = std::make_shared<PhysicsManager>(st); // Main physics manager
 
     Shader skyboxshader("../shaders/skybox.vs", "../shaders/skybox.frag"); // Shader for skybox rendering
     Shader shader("../shaders/vertex.vs", "../shaders/fragment.frag"); // Main shader
+    Shader depth("../shaders/depth.vs", "../shaders/depth.frag"); // Depth shader
     Shader post("../shaders/post.vs", "../shaders/post.frag"); // Post-processing shader
+
     Framebuffer buf(&post, 1280, 720); // Main framebuffer
+    Framebuffer depth_buf(nullptr, 1024, 1024, true); // Depth framebuffer
 
     // Function for handling SFML window events
     engine.EventLoop([&](sf::Event& event)
@@ -73,36 +76,53 @@ int main()
     });
     
     // All the shapes
-    Shape s({ 3, 3, 3 }, &material, &shader, &m, &man);
-    s.SetPosition({ 10, 30, 10 });
+    auto s = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, &shader, &m, man.get());
+    s->SetPosition({ 10, 30, 10 });
 
-    Shape s1({ 3, 3, 3 }, &material, &shader, &m, &man);
-    s1.SetPosition({ 10, 36, 10 });
+    auto s1 = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, &shader, &m, man.get());
+    s1->SetPosition({ 10, 36, 10 });
 
-    Shape s2({ 1.5, 1.5, 3 }, &material, &shader, &m, &man);
-    s2.SetPosition({ 10, 13, 10 });
+    auto s2 = std::make_shared<Shape>(rp3d::Vector3{ 1.5, 1.5, 3 }, &material, &shader, &m, man.get());
+    s2->SetPosition({ 10, 13, 10 });
     // Specific shape for skybox
-    Shape skybox({ 1000, 1000, 1000 }, &skybox_mat, &skyboxshader, &m, nullptr);
+    auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 1000, 1000, 1000 }, &skybox_mat, &skyboxshader, &m, nullptr);
     
     // Loading a sphere model
-    Model sphere("../sphere.obj", { material }, &shader, &m, &man, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
-    sphere.CreateSphereShape(); // Creating sphere collision shape for a model
-    sphere.SetPosition({ 10.f, 10.f, 10.f });
+    auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material>{ material }, &shader, &m, man.get(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
+    sphere->CreateSphereShape(); // Creating sphere collision shape for a model
+    sphere->SetPosition({ 10.f, 10.f, 10.f });
 
-    Model terrain("../terrain.obj", { material }, &shader, &m, &man, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
-    terrain.CreateConcaveShape();
-    terrain.SetPosition({ 10.f, -30.f, 10.f });
+    auto terrain = std::make_shared<Model>("../terrain.obj", std::vector<Material>{ material }, &shader, &m, man.get(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
+    terrain->CreateConcaveShape();
+    terrain->SetPosition({ 10.f, -30.f, 10.f });
+
+    SceneManager scene;
+    scene.AddShape(s);
+    scene.AddShape(s1);
+    scene.AddShape(s2);
+
+    scene.AddModel(sphere);
+    scene.AddModel(terrain);
+
+    scene.AddPhysicsManager(man);
+
+    scene.AddLight(&l);
+    
+    scene.SetCamera(&cam);
+
+    scene.SetSkybox(skybox);
 
     bool launched = false; // If true, physics simulation is started
-    sf::Clock clock, global;
-    
+    //sf::Clock clock, global;
+
+    glm::mat4 lprojection = glm::perspective(glm::radians(70.0), 1280.0 / 720.0, 0.01, 500.0);
+    glm::mat4 lview = glm::lookAt(glm::vec3(0.1, 50.0, 0.1), glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+    glm::mat4 lspace = lprojection * lview;
+    glEnable(GL_CULL_FACE);
     // Main game loop
     engine.Loop([&]() 
     {
-        float delta_time = clock.restart().asSeconds();
-
-        // Launching physics simulation when Q key is pressed
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) launched = true;
+   	    	
         // Camera movement, rotation and so on
         cam.Update();
         cam.Move(1);
@@ -110,42 +130,27 @@ int main()
         cam.Look();
         //////////////////////////////////////
 
-        // Updating simulation
-        if(launched)
-            do
-            {
-                man.Update(1.0 / 60.0);
-                delta_time -= 1.0 / 60.0;
-            } while (delta_time >= 1.0 / 60.0);
+        skybox->SetPosition(cam.GetPosition());
 
-        // Skybox is moving with the camera
-        skybox.SetPosition(cam.GetPosition());
+        scene.SetMainShader(&depth);
+        
+        glCullFace(GL_FRONT);
+        depth.Bind();
+        depth.SetUniformMatrix4("light", lspace);
+        scene.Draw(&depth_buf);
 
-        /*l.SetPosition(cam.GetPosition());
-        l.SetDirection(cam.GetOrientation() * rp3d::Vector3(0, 0, -1));*/
-
-        // Binding framebuffer
-        buf.Bind();
-
-        // Rendering all shapes
-        s.Draw(cam, { l });
-        s1.Draw(cam, { l });
-        s2.Draw(cam, { l });
-        /////////////////////
-
-        // Rendering sphere and terrain models
-        sphere.Draw(cam, { l });
-        terrain.Draw(cam, { l });
-        ///////////////////////////
-
-        // Rendering skybox
-        skybox.DrawSkybox();
-
-        // Unbinding framebuffer
-        buf.Unbind();
+        scene.SetMainShader(&shader);
+        
+        shader.Bind();
+        shader.SetUniformMatrix4("lspace", lspace);
+        glActiveTexture(GL_TEXTURE8);
+        glBindTexture(GL_TEXTURE_2D, depth_buf.GetTexture(true));
+        shader.SetUniform1i("shadowmap", 8);
+		glCullFace(GL_BACK);
+        scene.Draw(&buf);
         post.Bind();
         post.SetUniform1f("exposure", 2.0);
-        // Drawing framebuffer texture on the screen
+
         buf.Draw();
     });
 

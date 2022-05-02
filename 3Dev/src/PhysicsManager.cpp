@@ -10,9 +10,18 @@ PhysicsManager::~PhysicsManager()
     common.destroyPhysicsWorld(world);
 }
 
-void PhysicsManager::Update(float t)
+void PhysicsManager::Update(float time)
 {
-    world->update(t);
+    do
+    {
+        world->update(timeStep);
+        time -= timeStep;
+    } while (time >= timeStep);
+}
+
+void PhysicsManager::SetTimeStep(float timeStep)
+{
+    this->timeStep = timeStep;
 }
 
 rp3d::BoxShape* PhysicsManager::CreateBoxShape(rp3d::Vector3 size)

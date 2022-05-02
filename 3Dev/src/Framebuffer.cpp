@@ -1,16 +1,22 @@
 #include <Framebuffer.h>
 
-Framebuffer::Framebuffer(Shader* shader, int w, int h) : shader(shader)
+Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth) : shader(shader), size(w, h)
 {
 	CalcPixelSize(glm::vec2(w, h));
-    texture = CreateTexture(w, h);
-	depth = CreateTexture(w, h, true);
+    if(!isDepth) texture = CreateTexture(w, h);
+	depth = CreateTexture(w, h, true, isDepth ? GL_LINEAR : GL_NEAREST);
     glGenFramebuffers(1, &fbo);
     Bind();
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "Error: framebuffer status isn't GL_FRAMEBUFFER_COMPLETE" << std::endl;
+    if(!isDepth) glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+	else
+	{
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+	}
+	int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if(status != GL_FRAMEBUFFER_COMPLETE)
+        Log::Write("framebuffer status isn't GL_FRAMEBUFFER_COMPLETE", Log::Type::Error);
     Unbind();
     
 	glGenBuffers(1, &vbo);
@@ -42,13 +48,13 @@ Framebuffer::~Framebuffer()
 void Framebuffer::RecreateTexture(int w, int h)
 {
 	CalcPixelSize(glm::vec2(w, h));
-    texture = CreateTexture(w, h);
+    if(texture != 0) texture = CreateTexture(w, h);
 	depth = CreateTexture(w, h, true);
     Bind();
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+    if(texture != 0) glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "Error: framebuffer status isn't GL_FRAMEBUFFER_COMPLETE" << std::endl;
+        Log::Write("framebuffer status isn't GL_FRAMEBUFFER_COMPLETE", Log::Type::Error);
     Unbind();
 }
 
@@ -68,11 +74,11 @@ void Framebuffer::Unbind()
     glBindFramebuffer(GL_FRAMEBUFFER, GLuint(0));
 }
 
-void Framebuffer::Draw()
+void Framebuffer::Draw(bool depth)
 {
 	shader->Bind();
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, depth ? this->depth : texture);
 	shader->SetUniform1i("frame", 0);
 	shader->SetUniform2f("pixelsize", pixelsize.x, pixelsize.y);
 	glBindVertexArray(vao);
@@ -84,4 +90,9 @@ void Framebuffer::Draw()
 GLuint Framebuffer::GetTexture(bool depth)
 {
 	return (depth ? this->depth : texture);
+}
+
+glm::ivec2 Framebuffer::GetSize()
+{
+	return size;
 }
