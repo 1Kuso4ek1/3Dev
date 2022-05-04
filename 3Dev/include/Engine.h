@@ -9,6 +9,7 @@
 #include "Framebuffer.h"
 #include "PhysicsManager.h"
 #include "SceneManager.h"
+#include "ShadowManager.h"
 #include <functional>
 
 /*

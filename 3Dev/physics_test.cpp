@@ -53,7 +53,8 @@ int main()
     });
 
     // Main light
-    Light l({ 3, 3, 3 }, { 0.0, 50.0, 0.0 });
+    Light l({ 3, 3, 3 }, { 0.1, 50.0, 0.1 });
+    l.SetDirection({ 0.0, -1.0, 0.0 });
     /*l.SetCutoff(30);
     l.SetOuterCutoff(33);*/
     //l.SetAttenuation(0.0, 0.1, 0.0);
@@ -112,13 +113,9 @@ int main()
 
     scene.SetSkybox(skybox);
 
-    bool launched = false; // If true, physics simulation is started
-    //sf::Clock clock, global;
-
-    glm::mat4 lprojection = glm::perspective(glm::radians(70.0), 1280.0 / 720.0, 0.01, 500.0);
-    glm::mat4 lview = glm::lookAt(glm::vec3(0.1, 50.0, 0.1), glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-    glm::mat4 lspace = lprojection * lview;
+    ShadowManager shadows(&scene, { &l }, &shader, &depth, glm::ivec2(2048, 2048));
     glEnable(GL_CULL_FACE);
+
     // Main game loop
     engine.Loop([&]() 
     {
@@ -132,22 +129,10 @@ int main()
 
         skybox->SetPosition(cam.GetPosition());
 
-        scene.SetMainShader(&depth);
-        
-        glCullFace(GL_FRONT);
-        depth.Bind();
-        depth.SetUniformMatrix4("light", lspace);
-        scene.Draw(&depth_buf);
-
-        scene.SetMainShader(&shader);
-        
-        shader.Bind();
-        shader.SetUniformMatrix4("lspace", lspace);
-        glActiveTexture(GL_TEXTURE8);
-        glBindTexture(GL_TEXTURE_2D, depth_buf.GetTexture(true));
-        shader.SetUniform1i("shadowmap", 8);
-		glCullFace(GL_BACK);
+        shadows.Update();
+		
         scene.Draw(&buf);
+        
         post.Bind();
         post.SetUniform1f("exposure", 2.0);
 
