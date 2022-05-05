@@ -18,7 +18,8 @@ public:
 		Emission,
 		Roughness,
 		Opacity,
-		Cubemap
+		Cubemap,
+		Environment
 	};
 
 	// Default constructor

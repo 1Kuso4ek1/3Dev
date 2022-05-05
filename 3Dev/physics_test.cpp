@@ -16,7 +16,7 @@ int main()
     Camera cam(&engine.GetWindow(), &m, { 0, 10, 0 }, 0.5, 70, 0.001, 5000); // Main camera
     
     // Filenames for a cubemap
-    std::vector<std::string> skybox_textures = 
+    /*std::vector<std::string> skybox_textures = 
     {
         "../textures/skybox_right.bmp",
         "../textures/skybox_left.bmp",
@@ -25,7 +25,8 @@ int main()
         "../textures/skybox_front.bmp",
         "../textures/skybox_back.bmp"
     };
-    GLuint cubemap = LoadCubemap(skybox_textures);
+    GLuint cubemap = LoadCubemap(skybox_textures);*/
+    GLuint hdrmap = LoadHDRTexture("../textures/outdoor.hdr");
 
     // Textures for a material
     GLuint texture = LoadTexture("../textures/metal_color.jpg"), normalmap = LoadTexture("../textures/metal_normal.jpg"),
@@ -39,9 +40,9 @@ int main()
     Shader shader("../shaders/vertex.vs", "../shaders/fragment.frag"); // Main shader
     Shader depth("../shaders/depth.vs", "../shaders/depth.frag"); // Depth shader
     Shader post("../shaders/post.vs", "../shaders/post.frag"); // Post-processing shader
+    Shader irradiance("../shaders/environment.vs", "../shaders/environment.frag"); // 
 
     Framebuffer buf(&post, 1280, 720); // Main framebuffer
-    Framebuffer depth_buf(nullptr, 1024, 1024, true); // Depth framebuffer
 
     // Function for handling SFML window events
     engine.EventLoop([&](sf::Event& event)
@@ -66,17 +67,24 @@ int main()
     	{ normalmap, Material::Type::Normal },
     	{ metalness, Material::Type::Metalness },
     	{ ao, Material::Type::AmbientOcclusion },
-    	{ roughness, Material::Type::Roughness },
-    	{ cubemap, Material::Type::Cubemap }
+    	{ roughness, Material::Type::Roughness }
     });
 
     // Material for the skybox
-    Material skybox_mat(
+    /*Material skybox_mat(
     {
         { cubemap, Material::Type::Cubemap }
+    });*/
+
+    Material env_mat(
+    {
+        { hdrmap, Material::Type::Environment }
     });
     
     // All the shapes
+    auto env = std::make_shared<Shape>(rp3d::Vector3{ 1000, 1000, 1000 }, &env_mat, &irradiance, &m, nullptr);
+    env->SetPosition({ 10, 40, 10 });
+
     auto s = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, &shader, &m, man.get());
     s->SetPosition({ 10, 30, 10 });
 
@@ -86,7 +94,7 @@ int main()
     auto s2 = std::make_shared<Shape>(rp3d::Vector3{ 1.5, 1.5, 3 }, &material, &shader, &m, man.get());
     s2->SetPosition({ 10, 13, 10 });
     // Specific shape for skybox
-    auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 1000, 1000, 1000 }, &skybox_mat, &skyboxshader, &m, nullptr);
+    //auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 1000, 1000, 1000 }, &skybox_mat, &skyboxshader, &m, nullptr);
     
     // Loading a sphere model
     auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material>{ material }, &shader, &m, man.get(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
@@ -111,7 +119,8 @@ int main()
     
     scene.SetCamera(&cam);
 
-    scene.SetSkybox(skybox);
+    //scene.SetSkybox(skybox);
+    scene.SetEnvironment(env);
 
     ShadowManager shadows(&scene, { &l }, &shader, &depth, glm::ivec2(2048, 2048));
     glEnable(GL_CULL_FACE);
@@ -127,7 +136,7 @@ int main()
         cam.Look();
         //////////////////////////////////////
 
-        skybox->SetPosition(cam.GetPosition());
+        //skybox->SetPosition(cam.GetPosition());
 
         shadows.Update();
 		

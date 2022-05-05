@@ -1,5 +1,6 @@
 #pragma once
 #include "3Dev.h"
+#include <stb_image.h>
 
 /*
  * Used to create an empty texture
@@ -22,6 +23,35 @@ static GLuint CreateTexture(int w, int h, bool depth = false, GLint filter = GL_
 
 	return texture;
 }
+
+/*
+ * Used to load an HDR texture from a file
+ * @param name texture filename
+ * @return id of the texture
+ */
+static GLuint LoadHDRTexture(std::string name)
+{
+	// I'm using stb_image here because SFML can give only sf::Uint8, not float :(
+	int w, h, comp;
+	float *data = stbi_loadf(name.c_str(), &w, &h, &comp, 0);
+	if (!data)
+		Log::Write("Can't load texture '" + name + "'", Log::Type::Critical);
+
+	GLuint texture = 0;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, w, h, 0, GL_RGB, GL_FLOAT, data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	stbi_image_free(data);
+
+	return texture;
+}
+
 
 /*
  * Used to load a texture from a file

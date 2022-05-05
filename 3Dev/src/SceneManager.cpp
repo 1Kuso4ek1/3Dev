@@ -2,7 +2,7 @@
 
 void SceneManager::Draw(Framebuffer* fbo)
 {
-    if(fbo != nullptr)
+    if(fbo)
     {
         fbo->Bind();
         auto size = fbo->GetSize();
@@ -15,9 +15,18 @@ void SceneManager::Draw(Framebuffer* fbo)
     std::for_each(models.begin(), models.end(), [&](auto p) { p->Draw(camera, lights); });
     std::for_each(shapes.begin(), shapes.end(), [&](auto p) { p->Draw(camera, lights); });
 
-    glDisable(GL_CULL_FACE);
-    skybox->DrawSkybox();
-    glEnable(GL_CULL_FACE);
+    if(skybox)
+    {
+        glDisable(GL_CULL_FACE);
+        skybox->DrawSkybox();
+        glEnable(GL_CULL_FACE);
+    }
+    else if(environment)
+    {
+        glDisable(GL_CULL_FACE);
+        environment->DrawEnvironment();
+        glEnable(GL_CULL_FACE);
+    }
 
     if(fbo != nullptr) fbo->Unbind();
 }
@@ -56,4 +65,9 @@ void SceneManager::SetCamera(Camera* camera)
 void SceneManager::SetSkybox(std::shared_ptr<Shape> skybox)
 {
     this->skybox = skybox;
+}
+
+void SceneManager::SetEnvironment(std::shared_ptr<Shape> environment)
+{
+    this->environment = environment;
 }

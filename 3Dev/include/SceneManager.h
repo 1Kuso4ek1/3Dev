@@ -20,6 +20,7 @@ public:
     void SetMainShader(Shader* shader);
     void SetCamera(Camera* camera);
     void SetSkybox(std::shared_ptr<Shape> skybox);
+    void SetEnvironment(std::shared_ptr<Shape> environment);
 
 private:
     sf::Clock clock;
@@ -27,6 +28,7 @@ private:
     Camera* camera;
 
     std::shared_ptr<Shape> skybox;
+    std::shared_ptr<Shape> environment;
 
     std::vector<std::shared_ptr<Model>> models;
     std::vector<std::shared_ptr<Shape>> shapes;

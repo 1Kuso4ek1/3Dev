@@ -97,6 +97,32 @@ void Shape::DrawSkybox()
 	m->PopMatrix();
 }
 
+void Shape::DrawEnvironment()
+{
+	auto tex = mat->GetParameters();
+	auto it = std::find_if(tex.begin(), tex.end(), [](auto& a) { return a.second == Material::Type::Environment; });
+	
+	if(it == tex.end()) return;
+
+	m->PushMatrix();
+	
+	m->Translate(toglm(tr.getPosition()));
+	m->Scale(toglm(size));
+
+	shader->Bind();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, std::get<1>(it->first));
+	
+	shader->SetUniform1i("environment", 0);
+	m->UpdateShader(shader);
+
+	glBindVertexArray(vao);
+	glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
+	m->PopMatrix();
+}
+
 void Shape::SetPosition(const rp3d::Vector3& position)
 {
 	tr.setPosition(position);

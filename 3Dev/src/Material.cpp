@@ -1,4 +1,6 @@
 #include <Material.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 Material::Material() {}
 
@@ -64,6 +66,9 @@ void Material::UpdateShader(Shader* shader)
 				shader->SetUniform1i("opacity", i);
 			shader->SetUniform1f("nopacity", param1 == 0 ? param0.x : -1);
 			break;
+		case Material::Type::Environment:
+			shader->SetUniform1i("environment", i);
+			break;
 		case Material::Type::Cubemap:
 			shader->SetUniform1i("cubemap", i);
 			cubemap = true;
@@ -95,6 +100,7 @@ void Material::ResetShader(Shader* shader)
 	shader->SetUniform1f("nopacity", 1);
 	shader->SetUniform1i("opacity", 0);
 	shader->SetUniform1i("cubemap", 0);
+	shader->SetUniform1i("environment", 0);
 }
 
 std::vector<std::pair<std::variant<glm::vec3, GLuint>, Material::Type>>& Material::GetParameters()
