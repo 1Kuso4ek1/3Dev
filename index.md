@@ -1,37 +1,48 @@
-## Welcome to GitHub Pages
-
-You can use the [editor on GitHub](https://github.com/1Kuso4ek1/3Dev/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+# Hello, 3Dev!
+Learn how to create your first project using 3Dev engine
+## Setup
+### Building on Debian
+Almost everything we need can be obtained through apt
 ```
-
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/1Kuso4ek1/3Dev/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+sudo apt install build-essential cmake git g++ libsfml-dev libassimp-dev libglew-dev libglm-dev
+```
+There are 2 libraries that we must build from source: ReactPhysics3D and LightLog
+### ReactPhysics3D
+```
+git clone https://github.com/DanielChappuis/reactphysics3d.git
+cd reactphysics3d
+mkdir build && cd build
+cmake ..
+make -j4
+sudo make install
+```
+### LightLog
+```
+git clone https://github.com/1Kuso4ek1/LightLog.git
+cd LightLog
+mkdir build && cd build
+cmake ..
+make -j4
+sudo make install
+```
+### 3Dev
+Now, when we have all the dependencies, we can build 3Dev
+```
+git clone https://github.com/1Kuso4ek1/3Dev.git
+cd 3Dev/3Dev
+mkdir build && cd build
+cmake ..
+make -j4
+sudo make install
+```
+There also a small demo scene, you can launch it with
+```
+./physics
+```
+> INFO: On a Raspberry Pi you will probably get an error when compiling shaders.  
+> This is because 3Dev uses GLSL 3.30, that RPI does not support.
+> The only solution is to launch it with
+> ```
+> MESA_GL_VERSION_OVERRIDE=3.3 ./physics
+> ```  
+If you haven't got any errors, congrats!
