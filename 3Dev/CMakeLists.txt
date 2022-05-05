@@ -86,5 +86,8 @@ install(FILES
   	include/Framebuffer.hpp
   	include/Mesh.hpp
   	include/PhysicsManager.hpp
+	include/SceneManager.hpp
+	include/ShadowManager.hpp
+	include/stb_image.h
 	DESTINATION include/3Dev
 )
