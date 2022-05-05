@@ -44,5 +44,5 @@ There also a small demo scene, you can launch it with
 > The only solution is to launch it with
 > ```
 > MESA_GL_VERSION_OVERRIDE=3.3 ./physics
-> ```  
+> ```
 If you haven't got any errors, congrats!
