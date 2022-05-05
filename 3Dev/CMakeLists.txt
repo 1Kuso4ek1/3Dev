@@ -31,7 +31,7 @@ add_executable(physics physics_test.cpp)
 target_link_libraries(3Dev PUBLIC LightLog reactphysics3d GL GLEW assimp sfml-graphics sfml-window sfml-system sfml-audio sfml-network)
 target_link_libraries(physics PUBLIC 3Dev)
 
-set_target_properties(3Dev PROPERTIES C_STANDARD 17 C_STANDARD_REQUIRED ON)
+set_target_properties(3Dev PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 
 get_target_property(ASSIMP_INCLUDE_DIR assimp::assimp INTERFACE_INCLUDE_DIRECTORIES )
 get_target_property(GLM_INCLUDE_DIR glm::glm INTERFACE_INCLUDE_DIRECTORIES )
