@@ -1,4 +1,4 @@
-#include <Framebuffer.h>
+#include <Framebuffer.hpp>
 
 Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth) : shader(shader), size(w, h)
 {

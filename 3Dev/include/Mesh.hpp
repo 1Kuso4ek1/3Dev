@@ -1,5 +1,5 @@
 #pragma once
-#include "3Dev.h"
+#include "3Dev.hpp"
 
 struct Vertex
 {

@@ -73,18 +73,18 @@ install(FILES 3DevConfig.cmake
 )
 
 install(FILES 
-  	include/3Dev.h
-  	include/Matrices.h
-  	include/Camera.h
-  	include/Engine.h
-  	include/Light.h
-  	include/Material.h
-  	include/Model.h
-  	include/Shader.h
-  	include/Shape.h
-  	include/Texture.h
-  	include/Framebuffer.h
-  	include/Mesh.h
-  	include/PhysicsManager.h
+  	include/3Dev.hpp
+  	include/Matrices.hpp
+  	include/Camera.hpp
+  	include/Engine.hpp
+  	include/Light.hpp
+  	include/Material.hpp
+  	include/Model.hpp
+  	include/Shader.hpp
+  	include/Shape.hpp
+  	include/Texture.hpp
+  	include/Framebuffer.hpp
+  	include/Mesh.hpp
+  	include/PhysicsManager.hpp
 	DESTINATION include/3Dev
 )

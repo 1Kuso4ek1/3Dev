@@ -1,4 +1,4 @@
-#include <ShadowManager.h>
+#include <ShadowManager.hpp>
 
 ShadowManager::ShadowManager(SceneManager* scene, std::vector<Light*> lights, Shader* mainShader, Shader* depthShader, glm::ivec2 size)
                             : scene(scene), lights(lights), mainShader(mainShader), depthShader(depthShader), shadowSize(size)

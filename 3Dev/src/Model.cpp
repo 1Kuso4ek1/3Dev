@@ -1,4 +1,4 @@
-#include "Model.h"
+#include "Model.hpp"
 
 Model::Model(Shader* shader)
 			: transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), shader(shader) {}

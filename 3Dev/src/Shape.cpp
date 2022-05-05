@@ -1,4 +1,4 @@
-#include "Shape.h"
+#include "Shape.hpp"
 
 Shape::Shape(const rp3d::Vector3& size, Material* mat, Shader* shader, Matrices* m, PhysicsManager* man)
 			: size(size), tr({ 0, 0, 0 }, { 0, 0, 0, 1 }), shader(shader), mat(mat), m(m)

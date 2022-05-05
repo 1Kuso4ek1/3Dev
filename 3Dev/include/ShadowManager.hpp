@@ -1,5 +1,5 @@
 #pragma once
-#include <SceneManager.h>
+#include <SceneManager.hpp>
 
 class ShadowManager
 {

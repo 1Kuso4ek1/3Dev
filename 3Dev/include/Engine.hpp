@@ -1,15 +1,15 @@
 #pragma once
-#include "3Dev.h"
-#include "Camera.h"
-#include "Model.h"
-#include "Light.h"
-#include "Shape.h"
-#include "Shader.h"
-#include "Matrices.h"
-#include "Framebuffer.h"
-#include "PhysicsManager.h"
-#include "SceneManager.h"
-#include "ShadowManager.h"
+#include "3Dev.hpp"
+#include "Camera.hpp"
+#include "Model.hpp"
+#include "Light.hpp"
+#include "Shape.hpp"
+#include "Shader.hpp"
+#include "Matrices.hpp"
+#include "Framebuffer.hpp"
+#include "PhysicsManager.hpp"
+#include "SceneManager.hpp"
+#include "ShadowManager.hpp"
 #include <functional>
 
 /*

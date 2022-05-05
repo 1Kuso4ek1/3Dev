@@ -1,8 +1,8 @@
 #pragma once
-#include "3Dev.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "Matrices.h"
+#include "3Dev.hpp"
+#include "Shader.hpp"
+#include "Texture.hpp"
+#include "Matrices.hpp"
 
 /*
  * This class is used to create a framebuffer and provides basic functionality for writing, reading, and rendering buffer data.

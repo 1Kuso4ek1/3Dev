@@ -1,11 +1,11 @@
 #pragma once
-#include <Model.h>
-#include <Shape.h>
-#include <Light.h>
-#include <Camera.h>
-#include <Shader.h>
-#include <Framebuffer.h>
-#include <PhysicsManager.h>
+#include <Model.hpp>
+#include <Shape.hpp>
+#include <Light.hpp>
+#include <Camera.hpp>
+#include <Shader.hpp>
+#include <Framebuffer.hpp>
+#include <PhysicsManager.hpp>
 
 class SceneManager
 {

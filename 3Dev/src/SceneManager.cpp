@@ -1,4 +1,4 @@
-#include <SceneManager.h>
+#include <SceneManager.hpp>
 
 void SceneManager::Draw(Framebuffer* fbo)
 {

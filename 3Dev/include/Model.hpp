@@ -1,12 +1,12 @@
 #pragma once
-#include "Shader.h"
-#include "Texture.h"
-#include "Material.h"
-#include "Camera.h"
-#include "Matrices.h"
-#include "Light.h"
-#include "Mesh.h"
-#include "PhysicsManager.h"
+#include "Shader.hpp"
+#include "Texture.hpp"
+#include "Material.hpp"
+#include "Camera.hpp"
+#include "Matrices.hpp"
+#include "Light.hpp"
+#include "Mesh.hpp"
+#include "PhysicsManager.hpp"
 
 struct Keyframe
 {

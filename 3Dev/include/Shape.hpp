@@ -1,12 +1,12 @@
 #pragma once
-#include "3Dev.h"
-#include "Shader.h"
-#include "Material.h"
-#include "Matrices.h"
-#include "Camera.h"
-#include "Light.h"
-#include "Mesh.h"
-#include "PhysicsManager.h"
+#include "3Dev.hpp"
+#include "Shader.hpp"
+#include "Material.hpp"
+#include "Matrices.hpp"
+#include "Camera.hpp"
+#include "Light.hpp"
+#include "Mesh.hpp"
+#include "PhysicsManager.hpp"
 
 class Shape {
 public:

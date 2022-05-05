@@ -1,4 +1,4 @@
-#include <Mesh.h>
+#include <Mesh.hpp>
 
 Mesh::Mesh(std::vector<Vertex> data, std::vector<GLuint> indices, aiAABB aabb, std::vector<Bone> bones, glm::mat4 transformation)
 		   : data(data), indices(indices), aabb(aabb), bones(bones), transformation(transformation)

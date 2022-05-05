@@ -1,6 +1,6 @@
 #pragma once
-#include "3Dev.h"
-#include "Matrices.h"
+#include "3Dev.hpp"
+#include "Matrices.hpp"
 
 class Camera {
 public:

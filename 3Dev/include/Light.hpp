@@ -1,6 +1,6 @@
 #pragma once
-#include "3Dev.h"
-#include "Shader.h"
+#include "3Dev.hpp"
+#include "Shader.hpp"
 
 /*
  * This class is used to create, modify and use a light.

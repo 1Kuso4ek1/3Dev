@@ -1,4 +1,4 @@
-#include <PhysicsManager.h>
+#include <PhysicsManager.hpp>
 
 PhysicsManager::PhysicsManager(rp3d::PhysicsWorld::WorldSettings settings) : settings(settings)
 {

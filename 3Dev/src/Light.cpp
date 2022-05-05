@@ -1,4 +1,4 @@
-#include "Light.h"
+#include "Light.hpp"
 
 Light::Light(rp3d::Vector3 color, rp3d::Vector3 position) : color(color), position(position) {}
 
