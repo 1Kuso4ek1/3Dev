@@ -1,9 +1,9 @@
 #include <Framebuffer.hpp>
 
-Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth) : shader(shader), size(w, h)
+Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, GLint filter) : shader(shader), size(w, h)
 {
 	CalcPixelSize(glm::vec2(w, h));
-    if(!isDepth) texture = CreateTexture(w, h);
+    if(!isDepth) texture = CreateTexture(w, h, false, filter);
 	depth = CreateTexture(w, h, true, isDepth ? GL_LINEAR : GL_NEAREST);
     glGenFramebuffers(1, &fbo);
     Bind();
@@ -70,17 +70,32 @@ void Framebuffer::Unbind()
     glBindFramebuffer(GL_FRAMEBUFFER, GLuint(0));
 }
 
-void Framebuffer::Draw(bool depth)
+void Framebuffer::Draw()
 {
 	shader->Bind();
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, depth ? this->depth : texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	shader->SetUniform1i("frame", 0);
 	shader->SetUniform2f("pixelsize", pixelsize.x, pixelsize.y);
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 	shader->Unbind();
+}
+
+void Framebuffer::Capture(GLuint texture)
+{
+	Bind();
+	shader->Bind();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	shader->SetUniform1i("frame", 0);
+	shader->SetUniform2f("pixelsize", pixelsize.x, pixelsize.y);
+	glBindVertexArray(vao);
+	glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+	shader->Unbind();
+	Unbind();
 }
 
 GLuint Framebuffer::GetTexture(bool depth)

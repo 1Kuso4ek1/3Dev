@@ -4,6 +4,7 @@ precision mediump float;
 const int maxlights = 16;
 const int maxshadows = 8;
 const float pi = 3.14159265;
+const vec2 invatan = vec2(0.1591, 0.3183);
 
 uniform sampler2D shadowmap;
 
@@ -14,7 +15,7 @@ uniform sampler2D metalness;
 uniform sampler2D emission;
 uniform sampler2D roughness;
 uniform sampler2D opacity;
-uniform samplerCube cubemap;
+uniform sampler2D irradiance;
 
 uniform vec3 nalbedo;
 uniform bool nnormalmap;
@@ -54,6 +55,14 @@ struct Light
 
 uniform Light lights[maxlights];
 uniform Shadow shadows[maxshadows];
+
+vec2 SampleMap(vec3 vec)
+{
+    vec2 uv = -vec2(atan(vec.z, vec.x), asin(vec.y));
+    uv *= invatan;
+    uv += 0.5;
+    return uv;
+}
 
 float LinearizeDepth(float depth)
 {
@@ -143,9 +152,10 @@ vec3 CalcLight(Light light, vec3 norm)
     float g = GeometrySmith(ndotv, ndotl, rough);
     vec3 f = FresnelShlick(max(dot(h, v), 0.0), f0, rough);
 
+    vec3 irr = texture(irradiance, SampleMap(norm)).xyz;
     vec3 kspc = f;
     vec3 kdif = (vec3(1.0) - kspc) * (1.0 - metal);
-    vec3 amb = (kdif * albedo) * (nao ? texture(ao, coord).xyz : vec3(1.0));
+    vec3 amb = (kdif * albedo * irr) * (nao ? texture(ao, coord).xyz : vec3(1.0));
 
     vec3 nm = ndf * g * f;
     float dn = 4.0 * ndotv * ndotl;

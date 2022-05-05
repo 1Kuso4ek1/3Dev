@@ -16,7 +16,7 @@ public:
      * @param w width of the framebuffer texture
      * @param h height of the framebuffer texture
      */
-    Framebuffer(Shader* shader, int w, int h, bool isDepth = false);
+    Framebuffer(Shader* shader, int w, int h, bool isDepth = false, GLint filter = GL_NEAREST);
     ~Framebuffer();
 
     /*
@@ -39,7 +39,9 @@ public:
     static void Unbind();
 
     // Draw the buffer texture on the screen
-    void Draw(bool depth = false);
+    void Draw();
+
+    void Capture(GLuint texture);
 
     /*
      * Returns the buffer texture

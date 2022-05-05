@@ -19,7 +19,8 @@ public:
 		Roughness,
 		Opacity,
 		Cubemap,
-		Environment
+		Environment,
+		Irradiance
 	};
 
 	// Default constructor

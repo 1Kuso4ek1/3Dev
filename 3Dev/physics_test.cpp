@@ -1,5 +1,14 @@
 #include <Engine.hpp>
 
+/*GLuint GenerateIrradiance(GLuint texture)
+{
+    Shader shader("../shaders/irradiance.vs", "../shaders/irradiance.frag");
+    Framebuffer buf(&shader, 1024, 512, false, GL_LINEAR);
+    glViewport(0, 0, 1024, 512);
+    buf.Capture(texture);
+    return buf.GetTexture();
+}*/
+
 int main()
 {
     Engine engine; // Engine class is responsible for creating a window
@@ -26,7 +35,8 @@ int main()
         "../textures/skybox_back.bmp"
     };
     GLuint cubemap = LoadCubemap(skybox_textures);*/
-    GLuint hdrmap = LoadHDRTexture("../textures/outdoor.hdr");
+    GLuint hdrmap = LoadHDRTexture("ref.hdr");
+    GLuint irradiance = LoadHDRTexture("env.hdr");
 
     // Textures for a material
     GLuint texture = LoadTexture("../textures/metal_color.jpg"), normalmap = LoadTexture("../textures/metal_normal.jpg"),
@@ -40,7 +50,7 @@ int main()
     Shader shader("../shaders/vertex.vs", "../shaders/fragment.frag"); // Main shader
     Shader depth("../shaders/depth.vs", "../shaders/depth.frag"); // Depth shader
     Shader post("../shaders/post.vs", "../shaders/post.frag"); // Post-processing shader
-    Shader irradiance("../shaders/environment.vs", "../shaders/environment.frag"); // 
+    Shader environment("../shaders/environment.vs", "../shaders/environment.frag");
 
     Framebuffer buf(&post, 1280, 720); // Main framebuffer
 
@@ -63,11 +73,12 @@ int main()
     // Main material
     Material material(
     { 
-    	{ texture, Material::Type::Color },
-    	{ normalmap, Material::Type::Normal },
-    	{ metalness, Material::Type::Metalness },
-    	{ ao, Material::Type::AmbientOcclusion },
-    	{ roughness, Material::Type::Roughness }
+    	{ glm::vec3(1.0, 0.0, 0.0), Material::Type::Color },
+    	//{ normalmap, Material::Type::Normal },
+    	{ glm::vec3(0.2), Material::Type::Metalness },
+    	//{ ao, Material::Type::AmbientOcclusion },
+    	{ glm::vec3(0.7), Material::Type::Roughness },
+        { irradiance, Material::Type::Irradiance }
     });
 
     // Material for the skybox
@@ -82,7 +93,7 @@ int main()
     });
     
     // All the shapes
-    auto env = std::make_shared<Shape>(rp3d::Vector3{ 1000, 1000, 1000 }, &env_mat, &irradiance, &m, nullptr);
+    auto env = std::make_shared<Shape>(rp3d::Vector3{ 1000, 1000, 1000 }, &env_mat, &environment, &m, nullptr);
     env->SetPosition({ 10, 40, 10 });
 
     auto s = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, &shader, &m, man.get());
