@@ -117,12 +117,12 @@ int main()
     terrain->SetPosition({ 10.f, -30.f, 10.f });
 
     SceneManager scene;
-    scene.AddShape(s);
-    scene.AddShape(s1);
-    scene.AddShape(s2);
+    scene.AddObject(s);
+    scene.AddObject(s1);
+    scene.AddObject(s2);
 
-    scene.AddModel(sphere);
-    scene.AddModel(terrain);
+    scene.AddObject(sphere);
+    scene.AddObject(terrain);
 
     scene.AddPhysicsManager(man);
 

@@ -12,8 +12,8 @@ class SceneManager
 public:
     void Draw(Framebuffer* fbo = nullptr);
 
-    void AddModel(std::shared_ptr<Model> model);
-    void AddShape(std::shared_ptr<Shape> shape);
+    void AddObject(std::shared_ptr<Model> model);
+    void AddObject(std::shared_ptr<Shape> shape);
     void AddPhysicsManager(std::shared_ptr<PhysicsManager> manager);
     void AddLight(Light* light);
 

@@ -31,12 +31,12 @@ void SceneManager::Draw(Framebuffer* fbo)
     if(fbo != nullptr) fbo->Unbind();
 }
 
-void SceneManager::AddModel(std::shared_ptr<Model> model)
+void SceneManager::AddObject(std::shared_ptr<Model> model)
 {
     models.emplace_back(model);
 }
 
-void SceneManager::AddShape(std::shared_ptr<Shape> shape)
+void SceneManager::AddObject(std::shared_ptr<Shape> shape)
 {
     shapes.emplace_back(shape);
 }
