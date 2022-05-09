@@ -89,7 +89,7 @@ int main()
 
     Material env_mat(
     {
-        { LoadTexture("../textures/outdoor.hdr"), Material::Type::Environment }
+        { LoadHDRTexture("../textures/outdoor.hdr"), Material::Type::Environment }
     });
     
     // All the shapes
