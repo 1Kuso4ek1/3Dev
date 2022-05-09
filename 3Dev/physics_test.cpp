@@ -35,8 +35,8 @@ int main()
         "../textures/skybox_back.bmp"
     };
     GLuint cubemap = LoadCubemap(skybox_textures);*/
-    GLuint hdrmap = LoadHDRTexture("ref.hdr");
-    GLuint irradiance = LoadHDRTexture("env.hdr");
+    /*GLuint hdrmap = LoadHDRTexture("ref.hdr");
+    GLuint irradiance = LoadHDRTexture("env.hdr");*/
 
     // Textures for a material
     GLuint texture = LoadTexture("../textures/metal_color.jpg"), normalmap = LoadTexture("../textures/metal_normal.jpg"),
@@ -77,8 +77,8 @@ int main()
     	//{ normalmap, Material::Type::Normal },
     	{ glm::vec3(0.2), Material::Type::Metalness },
     	//{ ao, Material::Type::AmbientOcclusion },
-    	{ glm::vec3(0.7), Material::Type::Roughness },
-        { irradiance, Material::Type::Irradiance }
+    	{ glm::vec3(0.7), Material::Type::Roughness }
+        //{ irradiance, Material::Type::Irradiance }
     });
 
     // Material for the skybox
@@ -89,7 +89,7 @@ int main()
 
     Material env_mat(
     {
-        { hdrmap, Material::Type::Environment }
+        { LoadTexture("../textures/outdoor.hdr"), Material::Type::Environment }
     });
     
     // All the shapes
