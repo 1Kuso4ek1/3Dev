@@ -43,8 +43,12 @@ Framebuffer::~Framebuffer()
 
 void Framebuffer::RecreateTexture(int w, int h)
 {
+	size = glm::ivec2(w, h);
 	CalcPixelSize(glm::vec2(w, h));
-    if(texture != 0) texture = CreateTexture(w, h);
+    if(texture != 0)
+	{
+		texture = CreateTexture(w, h);
+	}
 	depth = CreateTexture(w, h, true);
     Bind();
     if(texture != 0) glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
@@ -67,7 +71,7 @@ void Framebuffer::Bind()
 
 void Framebuffer::Unbind()
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, GLuint(0));
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Framebuffer::Draw()
@@ -83,19 +87,84 @@ void Framebuffer::Draw()
 	shader->Unbind();
 }
 
-void Framebuffer::Capture(GLuint texture)
+GLuint Framebuffer::Capture(GLuint texture)
 {
+	GLuint out = CreateTexture(size.x, size.y);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, out, 0);
 	Bind();
+	glViewport(0, 0, size.x, size.y);
 	shader->Bind();
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	shader->SetUniform1i("frame", 0);
-	shader->SetUniform2f("pixelsize", pixelsize.x, pixelsize.y);
+	if(texture != 0)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		shader->SetUniform1i("frame", 0);
+		shader->SetUniform2f("pixelsize", pixelsize.x, pixelsize.y);
+	}
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 	shader->Unbind();
 	Unbind();
+	return out;
+}
+
+GLuint Framebuffer::CaptureCubemap(Shape& shape, Matrices& m, bool isSkybox)
+{
+	GLuint cubemap = CreateCubemap(size.x);
+	m.PushMatrix();
+	m.GetProjection() = glm::perspective(glm::radians(90.0), 1.0, 0.1, 1000.0);
+	Bind();
+	glViewport(0, 0, size.x, size.x);
+	for(int i = 0; i < 6; i++)
+	{
+		m.GetView() = views[i];
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap, 0);
+    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		if(isSkybox)
+		{
+			glDepthFunc(GL_LEQUAL);
+			glDisable(GL_CULL_FACE);
+			shape.DrawSkybox();
+			glEnable(GL_CULL_FACE);
+			glDepthFunc(GL_LESS);
+		}
+		else shape.Draw(nullptr, {});
+	}
+	Unbind();
+	m.PopMatrix();
+	return cubemap;
+}
+
+GLuint Framebuffer::CaptureCubemapMipmaps(Shape& shape, Matrices& m, int maxLevel, int samples)
+{
+	GLuint cubemap = CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
+	m.PushMatrix();
+	m.GetProjection() = glm::perspective(glm::radians(90.0), 1.0, 0.1, 1000.0);
+	Bind();
+	shape.GetShader()->Bind();
+	shape.GetShader()->SetUniform1i("samples", samples);
+	for(int i = 0; i < maxLevel; i++)
+	{
+		shape.GetShader()->SetUniform1f("roughness", (float)i / (float)(maxLevel - 1));
+		glm::ivec2 msize = size / (int)std::pow(2, i);
+		glViewport(0, 0, msize.x, msize.x);
+		for(int j = 0; j < 6; j++)
+		{
+			m.GetView() = views[j];
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, cubemap, i);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			glDepthFunc(GL_LEQUAL);
+			glDisable(GL_CULL_FACE);
+			shape.DrawSkybox();
+			glEnable(GL_CULL_FACE);
+			glDepthFunc(GL_LESS);
+		}
+	}
+	Unbind();
+	m.PopMatrix();
+	return cubemap;
 }
 
 GLuint Framebuffer::GetTexture(bool depth)

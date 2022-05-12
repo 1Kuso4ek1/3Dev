@@ -52,12 +52,12 @@ void Shape::Draw(Camera* cam, std::vector<Light*> lights)
 	m->Rotate(a, glm::axis(toglm(tr.getOrientation()))); // Using toglm(tmp) as second argument breaks everything and gives the matrix of nan
 	m->Scale(toglm(size));
 	
-	//Shader* shader = mat->GetShader();
 	shader->Bind();
 	mat->UpdateShader(shader);
 	for(int i = 0; i < lights.size(); i++)
 		lights[i]->Update(shader, i);
-	shader->SetUniform3f("campos", cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
+	if(cam)
+		shader->SetUniform3f("campos", cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
 	shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
 	shader->SetUniform1i("bones", 0);
 	m->UpdateShader(shader);
@@ -79,41 +79,12 @@ void Shape::DrawSkybox()
 	if(it == tex.end()) return;
 
 	m->PushMatrix();
-	
-	m->Translate(toglm(tr.getPosition()));
-	m->Scale(toglm(size));
 
 	shader->Bind();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, std::get<1>(it->first));
 	
 	shader->SetUniform1i("cubemap", 0);
-	m->UpdateShader(shader);
-
-	glBindVertexArray(vao);
-	glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-
-	m->PopMatrix();
-}
-
-void Shape::DrawEnvironment()
-{
-	auto tex = mat->GetParameters();
-	auto it = std::find_if(tex.begin(), tex.end(), [](auto& a) { return a.second == Material::Type::Environment; });
-	
-	if(it == tex.end()) return;
-
-	m->PushMatrix();
-	
-	m->Translate(toglm(tr.getPosition()));
-	m->Scale(toglm(size));
-
-	shader->Bind();
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, std::get<1>(it->first));
-	
-	shader->SetUniform1i("environment", 0);
 	m->UpdateShader(shader);
 
 	glBindVertexArray(vao);
@@ -148,6 +119,11 @@ void Shape::SetMaterial(Material* mat)
 void Shape::SetShader(Shader* shader)
 {
 	this->shader = shader;
+}
+
+Shader* Shape::GetShader()
+{
+	return shader;
 }
 
 rp3d::RigidBody* Shape::GetRigidBody()

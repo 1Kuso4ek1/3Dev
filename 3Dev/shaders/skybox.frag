@@ -9,5 +9,5 @@ out vec4 color;
 
 void main()
 {
-    color = textureCube(cubemap, vertex);
+    color = texture(cubemap, vertex);
 }

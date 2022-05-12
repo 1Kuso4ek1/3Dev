@@ -17,15 +17,11 @@ void SceneManager::Draw(Framebuffer* fbo)
 
     if(skybox)
     {
+        glDepthFunc(GL_LEQUAL);
         glDisable(GL_CULL_FACE);
         skybox->DrawSkybox();
         glEnable(GL_CULL_FACE);
-    }
-    else if(environment)
-    {
-        glDisable(GL_CULL_FACE);
-        environment->DrawEnvironment();
-        glEnable(GL_CULL_FACE);
+        glDepthFunc(GL_LESS);
     }
 
     if(fbo != nullptr) fbo->Unbind();
@@ -65,9 +61,4 @@ void SceneManager::SetCamera(Camera* camera)
 void SceneManager::SetSkybox(std::shared_ptr<Shape> skybox)
 {
     this->skybox = skybox;
-}
-
-void SceneManager::SetEnvironment(std::shared_ptr<Shape> environment)
-{
-    this->environment = environment;
 }

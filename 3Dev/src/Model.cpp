@@ -247,6 +247,11 @@ rp3d::Vector3 Model::GetSize()
 	return size;
 }
 
+Shader* Model::GetShader()
+{
+	return shader;
+}
+
 rp3d::RigidBody* Model::GetRigidBody()
 {
 	return body;

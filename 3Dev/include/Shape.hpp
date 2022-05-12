@@ -15,14 +15,14 @@ public:
 
 	void Draw(Camera* cam, std::vector<Light*> lights);
 	void DrawSkybox();
-	void DrawEnvironment();
 
 	void SetPosition(const rp3d::Vector3& position);
 	void SetOrientation(const rp3d::Quaternion& orientation);
 	void SetSize(const rp3d::Vector3& size);
 	void SetMaterial(Material* mat);
 	void SetShader(Shader* shader);
-
+	
+	Shader* GetShader();
 	rp3d::RigidBody* GetRigidBody();
 	
 	rp3d::Vector3 GetPosition();

@@ -2,6 +2,7 @@
 #include "3Dev.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
+#include "Shape.hpp"
 #include "Matrices.hpp"
 
 /*
@@ -41,7 +42,11 @@ public:
     // Draw the buffer texture on the screen
     void Draw();
 
-    void Capture(GLuint texture);
+    GLuint Capture(GLuint texture = 0);
+
+    GLuint CaptureCubemap(Shape& shape, Matrices& m, bool isSkybox = false);
+
+    GLuint CaptureCubemapMipmaps(Shape& shape, Matrices& m, int maxLevel, int samples);
 
     /*
      * Returns the buffer texture
@@ -64,6 +69,16 @@ private:
         1, -1, 0, 1, 0,
         1, 1, 0, 1, 1
     };
+
+    std::vector<glm::mat4> views = 
+	{
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+	};
 
     GLuint indices[6] = { 0, 1, 2, 0, 2, 3 };
     GLuint vao, vbo, fbo, ebo, texture = 0, depth = 0;

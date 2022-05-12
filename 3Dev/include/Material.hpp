@@ -20,7 +20,9 @@ public:
 		Opacity,
 		Cubemap,
 		Environment,
-		Irradiance
+		Irradiance,
+		PrefilteredMap,
+		LUT
 	};
 
 	// Default constructor
@@ -52,6 +54,7 @@ private:
 		{ glm::vec3(0.5), Type::Metalness },
 		{ glm::vec3(0.0), Type::Emission },
 		{ glm::vec3(0.5), Type::Roughness },
-		{ glm::vec3(1.0), Type::Opacity }
+		{ glm::vec3(1.0), Type::Opacity },
+		{ glm::vec3(0.0), Type::Irradiance }
 	};
 };

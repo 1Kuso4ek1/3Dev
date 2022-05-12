@@ -5,7 +5,7 @@ layout (location = 2) in vec2 uv;
 layout (location = 3) in vec4 ids;
 layout (location = 4) in vec4 weights;
 
-const int maxshadows = 8;
+const int maxshadows = 4;
 
 uniform mat4 pose[64];
 uniform bool bones;

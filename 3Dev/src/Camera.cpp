@@ -6,9 +6,9 @@ Camera::Camera(sf::RenderWindow* window, Matrices* m, rp3d::Vector3 pos, float s
 	UpdateMatrix();
 }
 
-void Camera::Update()
+void Camera::Update(bool force)
 {
-	if(((float)window->getSize().x / (float)window->getSize().y) != aspect)
+	if(((float)window->getSize().x / (float)window->getSize().y) != aspect || force)
 	{
 		aspect = (float)window->getSize().x / (float)window->getSize().y;
 		UpdateMatrix();

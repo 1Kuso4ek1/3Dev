@@ -83,6 +83,7 @@ public:
 	rp3d::Quaternion GetOrientation();
 	rp3d::Vector3 GetSize();
 
+	Shader* GetShader();
 	rp3d::RigidBody* GetRigidBody();
 
 	std::vector<Bone>& GetBones(int mesh = 0);

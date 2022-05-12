@@ -4,5 +4,3 @@ build
 .vscode
 physics
 *.backup
-3Dev/shaders/irradiance.vs
-3Dev/shaders/irradiance.frag

@@ -34,7 +34,7 @@ int main()
         "../textures/skybox_front.bmp",
         "../textures/skybox_back.bmp"
     };
-    GLuint cubemap = LoadCubemap(skybox_textures);*/
+    GLuint skyboxMap = LoadCubemap(skybox_textures);*/
     /*GLuint hdrmap = LoadHDRTexture("ref.hdr");
     GLuint irradiance = LoadHDRTexture("env.hdr");*/
 
@@ -51,8 +51,13 @@ int main()
     Shader depth("../shaders/depth.vs", "../shaders/depth.frag"); // Depth shader
     Shader post("../shaders/post.vs", "../shaders/post.frag"); // Post-processing shader
     Shader environment("../shaders/environment.vs", "../shaders/environment.frag");
+    Shader irradiance("../shaders/irradiance.vs", "../shaders/irradiance.frag");
+    Shader spcfiltering("../shaders/spcfiltering.vs", "../shaders/spcfiltering.frag");
+    Shader brdf("../shaders/brdf.vs", "../shaders/brdf.frag");
 
-    Framebuffer buf(&post, 1280, 720); // Main framebuffer
+    Framebuffer buf(&post, 1280, 720), capture(nullptr, 256, 256),
+                captureIrr(nullptr, 32, 32), captureSpc(nullptr, 256, 256),
+                captureBRDF(&brdf, 512, 512);
 
     // Function for handling SFML window events
     engine.EventLoop([&](sf::Event& event)
@@ -70,32 +75,36 @@ int main()
     l.SetOuterCutoff(33);*/
     //l.SetAttenuation(0.0, 0.1, 0.0);
 
-    // Main material
-    Material material(
-    { 
-    	{ glm::vec3(1.0, 0.0, 0.0), Material::Type::Color },
-    	//{ normalmap, Material::Type::Normal },
-    	{ glm::vec3(0.2), Material::Type::Metalness },
-    	//{ ao, Material::Type::AmbientOcclusion },
-    	{ glm::vec3(0.7), Material::Type::Roughness }
-        //{ irradiance, Material::Type::Irradiance }
-    });
-
-    // Material for the skybox
-    /*Material skybox_mat(
-    {
-        { cubemap, Material::Type::Cubemap }
-    });*/
-
-    Material env_mat(
+    Material envMat(
     {
         { LoadHDRTexture("../textures/outdoor.hdr"), Material::Type::Environment }
     });
+
+    Shape captureCube({ 500, 500, 500 }, &envMat, &environment, &m, nullptr);
+    GLuint cubemap = capture.CaptureCubemap(captureCube, m);
+    envMat.GetParameters().clear();
+    envMat.AddParameter(cubemap, Material::Type::Cubemap);
+    captureCube.SetShader(&irradiance);
+    GLuint irr = captureIrr.CaptureCubemap(captureCube, m, true);
+    captureCube.SetShader(&spcfiltering);
+    GLuint filtered = captureSpc.CaptureCubemapMipmaps(captureCube, m, 8, 1024);
+    captureBRDF.Capture(0);
+    GLuint BRDF = captureBRDF.GetTexture();
+    cam.Update(true);
+
+    Material material(
+    {
+    	{ texture, Material::Type::Color },
+    	{ normalmap, Material::Type::Normal },
+    	{ metalness, Material::Type::Metalness },
+    	{ ao, Material::Type::AmbientOcclusion },
+    	{ roughness, Material::Type::Roughness },
+        { irr, Material::Type::Irradiance },
+        { filtered, Material::Type::PrefilteredMap },
+        { BRDF, Material::Type::LUT }
+    });
     
     // All the shapes
-    auto env = std::make_shared<Shape>(rp3d::Vector3{ 1000, 1000, 1000 }, &env_mat, &environment, &m, nullptr);
-    env->SetPosition({ 10, 40, 10 });
-
     auto s = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, &shader, &m, man.get());
     s->SetPosition({ 10, 30, 10 });
 
@@ -104,8 +113,8 @@ int main()
 
     auto s2 = std::make_shared<Shape>(rp3d::Vector3{ 1.5, 1.5, 3 }, &material, &shader, &m, man.get());
     s2->SetPosition({ 10, 13, 10 });
-    // Specific shape for skybox
-    //auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 1000, 1000, 1000 }, &skybox_mat, &skyboxshader, &m, nullptr);
+    
+    auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 500, 500, 500 }, &envMat, &skyboxshader, &m, nullptr);
     
     // Loading a sphere model
     auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material>{ material }, &shader, &m, man.get(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
@@ -130,8 +139,7 @@ int main()
     
     scene.SetCamera(&cam);
 
-    //scene.SetSkybox(skybox);
-    scene.SetEnvironment(env);
+    scene.SetSkybox(skybox);
 
     ShadowManager shadows(&scene, { &l }, &shader, &depth, glm::ivec2(2048, 2048));
     glEnable(GL_CULL_FACE);
@@ -146,8 +154,6 @@ int main()
         cam.Mouse();
         cam.Look();
         //////////////////////////////////////
-
-        //skybox->SetPosition(cam.GetPosition());
 
         shadows.Update();
 		

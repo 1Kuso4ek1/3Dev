@@ -6,7 +6,7 @@ class Camera {
 public:
 	Camera(sf::RenderWindow* window, Matrices* m, rp3d::Vector3 pos, float speed, float fov, float near, float far);
 
-	void Update();
+	void Update(bool force = false);
 
 	rp3d::Vector3 Move(float time);
 	void Mouse();

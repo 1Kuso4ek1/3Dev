@@ -13,7 +13,7 @@ void Material::AddParameter(std::variant<glm::vec3, GLuint> parameter, Type type
 
 void Material::UpdateShader(Shader* shader)
 {
-	bool cubemap = false;
+	bool prefilteredMap = false, irradiance = false;
 	for(int i = 0; i < parameters.size(); i++)
 	{
 		glm::vec3 param0(-1.0);
@@ -27,8 +27,10 @@ void Material::UpdateShader(Shader* shader)
 		if(param1 != 0)
 		{
 			glActiveTexture(GL_TEXTURE0 + i);
-			if(parameters[i].second != Material::Type::Cubemap) glBindTexture(GL_TEXTURE_2D, param1);
-			else glBindTexture(GL_TEXTURE_CUBE_MAP, param1);
+			if(parameters[i].second == Material::Type::Irradiance ||
+			   parameters[i].second == Material::Type::PrefilteredMap)
+				glBindTexture(GL_TEXTURE_CUBE_MAP, param1);
+			else glBindTexture(GL_TEXTURE_2D, param1);
 		}
 
 		switch(parameters[i].second)
@@ -70,19 +72,28 @@ void Material::UpdateShader(Shader* shader)
 			shader->SetUniform1i("environment", i);
 			break;
 		case Material::Type::Irradiance:
-			shader->SetUniform1i("irradiance", i);
+			if(param1 != 0)
+			{
+				shader->SetUniform1i("irradiance", i);
+				irradiance = true;
+			}
+			shader->SetUniform3f("nirradiance", (param1 == 0 ? param0.x : -1), param0.y, param0.z);
 			break;
-		case Material::Type::Cubemap:
-			shader->SetUniform1i("cubemap", i);
-			cubemap = true;
+		case Material::Type::PrefilteredMap:
+			shader->SetUniform1i("prefilteredMap", i);
+			prefilteredMap = true;
+			break;
+		case Material::Type::LUT:
+			shader->SetUniform1i("lut", i);
 			break;
 		}
 	}
-	if(!cubemap)
+	if(!irradiance || !prefilteredMap)
 	{
 		glActiveTexture(GL_TEXTURE0 + parameters.size());
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-		shader->SetUniform1i(std::string("cubemap"), parameters.size());
+		if(!irradiance) shader->SetUniform1i("irradiance", parameters.size());
+		if(!prefilteredMap) shader->SetUniform1i("prefilteredMap", parameters.size());
 	}
 }
 
@@ -105,6 +116,9 @@ void Material::ResetShader(Shader* shader)
 	shader->SetUniform1i("cubemap", 0);
 	shader->SetUniform1i("environment", 0);
 	shader->SetUniform1i("irradiance", 0);
+	shader->SetUniform3f("nirradiance", -1, -1, -1);
+	shader->SetUniform1i("prefilteredMap", 0);
+	shader->SetUniform1i("lut", 0);
 }
 
 std::vector<std::pair<std::variant<glm::vec3, GLuint>, Material::Type>>& Material::GetParameters()
