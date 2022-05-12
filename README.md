@@ -10,6 +10,7 @@
 - Post processing support
 - HDR, tone mapping and gamma-correction
 - Physically Based Rendering
+- Image Based Lighting
 - Multiple light sources
 - Shadow mapping
 - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
