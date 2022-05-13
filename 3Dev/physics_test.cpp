@@ -1,14 +1,5 @@
 #include <Engine.hpp>
 
-/*GLuint GenerateIrradiance(GLuint texture)
-{
-    Shader shader("../shaders/irradiance.vs", "../shaders/irradiance.frag");
-    Framebuffer buf(&shader, 1024, 512, false, GL_LINEAR);
-    glViewport(0, 0, 1024, 512);
-    buf.Capture(texture);
-    return buf.GetTexture();
-}*/
-
 int main()
 {
     Engine engine; // Engine class is responsible for creating a window
@@ -23,20 +14,6 @@ int main()
 
     Matrices m; 
     Camera cam(&engine.GetWindow(), &m, { 0, 10, 0 }, 0.5, 70, 0.001, 5000); // Main camera
-    
-    // Filenames for a cubemap
-    /*std::vector<std::string> skybox_textures = 
-    {
-        "../textures/skybox_right.bmp",
-        "../textures/skybox_left.bmp",
-        "../textures/skybox_top.bmp",
-        "../textures/skybox_bottom.bmp",
-        "../textures/skybox_front.bmp",
-        "../textures/skybox_back.bmp"
-    };
-    GLuint skyboxMap = LoadCubemap(skybox_textures);*/
-    /*GLuint hdrmap = LoadHDRTexture("ref.hdr");
-    GLuint irradiance = LoadHDRTexture("env.hdr");*/
 
     // Textures for a material
     GLuint texture = LoadTexture("../textures/metal_color.jpg"), normalmap = LoadTexture("../textures/metal_normal.jpg"),
@@ -160,7 +137,7 @@ int main()
         scene.Draw(&buf);
         
         post.Bind();
-        post.SetUniform1f("exposure", 2.0);
+        post.SetUniform1f("exposure", 1.0);
 
         buf.Draw();
     });
