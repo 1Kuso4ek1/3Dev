@@ -9,6 +9,7 @@
 - Framebuffers
 - Post processing support
 - HDR, tone mapping and gamma-correction
+- FXAA
 - Physically Based Rendering
 - Image Based Lighting
 - Multiple light sources
