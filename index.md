@@ -44,7 +44,7 @@ There also a small demo scene, you can launch it with
 > The only solution is to launch it with
 > ```
 > MESA_GL_VERSION_OVERRIDE=3.3 ./physics
-> ```
+> ```  
 ## Setting up a new project
 First, let's create a new folder and `CMakeLists.txt` in it
 ```
