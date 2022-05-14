@@ -3,7 +3,7 @@
 ## About
 - 3Dev is a simple and lightweight game engine, which uses SFML, OpenGL, ReactPhysics3D and Assimp
 ## Features
-- Rigit body physics
+- Rigid body physics
 - Loading a lot of model formats (.obj, .dae, .fbx and much more...)
 - Skeletal animation
 - Framebuffers
