@@ -20,6 +20,13 @@ float RadicalInverse(uint bits)
     return float(bits) * 2.3283064365386963e-10;
 }
 
+float GGX(float ndoth)
+{
+    float dn = pi * pow(pow(ndoth, 2) * (pow(roughness, 4) - 1.0) + 1.0, 2);
+    
+    return pow(roughness, 4) / dn;
+}
+
 vec2 Hammersley(uint i, uint n)
 {
     return vec2(float(i) / float(n), RadicalInverse(i));
@@ -51,16 +58,26 @@ void main()
 
     float w = 0.0;
 
+    float size = float(textureSize(cubemap, 0));
+
     for(uint i = 0u; i < samples; i++)
     {
         vec2 xi = Hammersley(i, samples);
         vec3 h  = ImportanceSample(xi, n);
         vec3 l  = normalize(2.0 * dot(v, h) * h - v);
+
+        float ggx = GGX(dot(n, h));
+        float pdf = (ggx * dot(n, h) / (4.0 * dot(h, v))) + 0.0001;
+
+        float t = 4.0 * pi / (6.0 * pow(size, 2));
+        float s = 1.0 / (float(samples) * pdf + 0.0001);
+
+        float level = (roughness == 0.0 ? 0.0 : 0.5 * log2(s / t)); 
         
         float ndotl = max(dot(n, l), 0.0);
         if(ndotl > 0.0)
         {
-            color += texture(cubemap, l) * ndotl;
+            color += textureLod(cubemap, l, level) * ndotl;
             w += ndotl;
         }
     }

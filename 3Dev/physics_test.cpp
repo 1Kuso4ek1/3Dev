@@ -94,8 +94,8 @@ int main()
     auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 500, 500, 500 }, &envMat, &skyboxshader, &m, nullptr);
     
     // Loading a sphere model
-    auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material>{ material }, &shader, &m, man.get(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
-    sphere->CreateSphereShape(); // Creating sphere collision shape for a model
+    auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material>{ material }, &shader, &m, nullptr, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
+    //sphere->CreateSphereShape(); // Creating sphere collision shape for a model
     sphere->SetPosition({ 10.f, 10.f, 10.f });
 
     auto terrain = std::make_shared<Model>("../terrain.obj", std::vector<Material>{ material }, &shader, &m, man.get(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);

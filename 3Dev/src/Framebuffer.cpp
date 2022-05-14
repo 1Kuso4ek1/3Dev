@@ -111,7 +111,7 @@ GLuint Framebuffer::Capture(GLuint texture)
 
 GLuint Framebuffer::CaptureCubemap(Shape& shape, Matrices& m, bool isSkybox)
 {
-	GLuint cubemap = CreateCubemap(size.x);
+	GLuint cubemap = CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
 	m.PushMatrix();
 	m.GetProjection() = glm::perspective(glm::radians(90.0), 1.0, 0.1, 1000.0);
 	Bind();
@@ -133,6 +133,9 @@ GLuint Framebuffer::CaptureCubemap(Shape& shape, Matrices& m, bool isSkybox)
 	}
 	Unbind();
 	m.PopMatrix();
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	return cubemap;
 }
 

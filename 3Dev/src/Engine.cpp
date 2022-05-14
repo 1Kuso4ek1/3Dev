@@ -11,6 +11,7 @@ void Engine::Init()
     glDepthMask(GL_TRUE);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_NORMALIZE);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glewInit();
     Log::Write("Engine successfully initialized", Log::Type::Info);
 }
