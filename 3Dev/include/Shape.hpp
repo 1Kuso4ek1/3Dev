@@ -24,6 +24,7 @@ public:
 	
 	Shader* GetShader();
 	rp3d::RigidBody* GetRigidBody();
+	Material* GetMaterial();
 	
 	rp3d::Vector3 GetPosition();
 	rp3d::Quaternion GetOrientation();

@@ -34,13 +34,16 @@ int main()
 
     Framebuffer buf(&post, 1280, 720), capture(nullptr, 256, 256),
                 captureIrr(nullptr, 32, 32), captureSpc(nullptr, 256, 256),
-                captureBRDF(&brdf, 512, 512);
+                captureBRDF(&brdf, 512, 512), transparency(&post, 1280, 720);
 
     // Function for handling SFML window events
     engine.EventLoop([&](sf::Event& event)
     {
         if(event.type == sf::Event::Resized) // If the window is resized
+        {
             buf.RecreateTexture(event.size.width, event.size.height); // Resizing framebuffer texture
+            transparency.RecreateTexture(event.size.width, event.size.height);
+        }
 
         if(event.type == sf::Event::Closed) engine.Close(); // Closing the window
     });
@@ -80,6 +83,17 @@ int main()
         { filtered, Material::Type::PrefilteredMap },
         { BRDF, Material::Type::LUT }
     });
+    Material sphereMaterial(
+    {
+    	{ glm::vec3(1.0, 1.0, 1.0), Material::Type::Color },
+    	//{ normalmap, Material::Type::Normal },
+    	{ glm::vec3(0.2), Material::Type::Metalness },
+    	//{ ao, Material::Type::AmbientOcclusion },
+    	{ glm::vec3(1.0), Material::Type::Roughness },
+        { irr, Material::Type::Irradiance },
+        { filtered, Material::Type::PrefilteredMap },
+        { BRDF, Material::Type::LUT }
+    });
     
     // All the shapes
     auto s = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, &shader, &m, man.get());
@@ -94,7 +108,7 @@ int main()
     auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 500, 500, 500 }, &envMat, &skyboxshader, &m, nullptr);
     
     // Loading a sphere model
-    auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material>{ material }, &shader, &m, nullptr, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
+    auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material>{ sphereMaterial }, &shader, &m, nullptr, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
     //sphere->CreateSphereShape(); // Creating sphere collision shape for a model
     sphere->SetPosition({ 10.f, 10.f, 10.f });
 
@@ -118,6 +132,8 @@ int main()
 
     scene.SetSkybox(skybox);
 
+    scene.Save("hello.json");
+
     ShadowManager shadows(&scene, { &l }, &shader, &depth, glm::ivec2(2048, 2048));
     glEnable(GL_CULL_FACE);
 
@@ -139,9 +155,14 @@ int main()
         post.Bind();
         post.SetUniform1f("exposure", 1.0);
 
+        //glDisable(GL_DEPTH_TEST);
         buf.Draw();
+        //glEnable(GL_DEPTH_TEST);
+        //transparency.Draw();
     });
 
     // Launching the game!!!
     engine.Launch();
+    //scene.RemoveAllObjects();
+    //engine.Launch();
 }

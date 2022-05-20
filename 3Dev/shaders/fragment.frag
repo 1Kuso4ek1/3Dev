@@ -27,6 +27,8 @@ uniform bool nao;
 uniform float nopacity;
 uniform vec3 nirradiance;
 
+uniform bool drawTransparency = false;
+
 in vec2 coord;
 in vec3 camposout;
 in vec3 mnormal;
@@ -162,17 +164,17 @@ void main()
     float rough = (nroughness < 0.0 ? texture(roughness, coord).x : nroughness);
     float metal = (nmetalness < 0.0 ? texture(metalness, coord).x : nmetalness);
     float ao = (nao ? texture(ao, coord).x : 1.0);
-    vec3 albedo = (nalbedo.x < 0.0 ? texture(albedo, coord).xyz : nalbedo);
+    vec3 alb = (nalbedo.x < 0.0 ? texture(albedo, coord).xyz : nalbedo);
     vec3 irr = (nirradiance.x < 0.0 ? texture(irradiance, norm).xyz : nirradiance);
     vec3 prefiltered = textureLod(prefilteredMap, reflect(-normalize(camposout - mpos), norm), rough * maxLodLevel).xyz;
 
     vec3 total = vec3(0.0);
     float shadow = 0.0;
-    vec3 f0 = mix(vec3(0.04), albedo, metal);
+    vec3 f0 = mix(vec3(0.04), alb, metal);
     int i = 0;
     while(lights[i].isactive)
     {
-        total += CalcLight(lights[i], norm, rough, metal, albedo, irr, f0);
+        total += CalcLight(lights[i], norm, rough, metal, alb, irr, f0);
         i++;
     }
     for(i = 0; i < maxShadows && shadows[i].isactive; i++)
@@ -185,9 +187,14 @@ void main()
     vec2 brdf = texture(lut, vec2(max(dot(norm, normalize(camposout - mpos)), 0.0), rough)).xy;
     vec3 spc = prefiltered * (f * brdf.x + brdf.y);
 
-    vec3 diffuse = irr * albedo;
+    vec3 diffuse = irr * alb;
     vec3 ambient = ((kdif * diffuse) + spc) * ao;
 
+    float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity);
+    float w = texture(albedo, coord).w;
+    if(w != alpha && w != 1.0)
+    	alpha = w;
+
     total += ambient;
-    color = vec4((emission + total) * (1.0 - shadow + ambient), (nopacity < 0.0 ? texture(opacity, coord).x : abs(nopacity)));
+    color = vec4((emission + total) * (1.0 - shadow + ambient), alpha + ((total.x + total.y, + total.z) / 3.0));
 }

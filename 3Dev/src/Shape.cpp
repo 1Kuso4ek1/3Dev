@@ -131,6 +131,11 @@ rp3d::RigidBody* Shape::GetRigidBody()
 	return body;
 }
 
+Material* Shape::GetMaterial()
+{
+	return mat;
+}
+
 rp3d::Vector3 Shape::GetPosition() 
 {
 	return tr.getPosition();

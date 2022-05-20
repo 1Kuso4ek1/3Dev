@@ -44,8 +44,13 @@ public:
 
 	void ResetShader(Shader* shader);
 
+	bool Contains(Type type);
+
 	// @return reference to all parameters
 	std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>>& GetParameters();
+
+	bool operator==(Material& r);
+	bool operator!=(Material& r);
 
 private:
 	std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>> parameters = 

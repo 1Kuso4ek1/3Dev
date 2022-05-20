@@ -90,7 +90,6 @@ public:
 	std::vector<glm::mat4>& GetPose(int mesh = 0);
 	
 	std::string GetFilename();
-	std::string GetTextureFilename();
 	
 	std::vector<Material>& GetMaterial();
 

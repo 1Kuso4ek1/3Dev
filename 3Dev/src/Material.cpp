@@ -121,7 +121,31 @@ void Material::ResetShader(Shader* shader)
 	shader->SetUniform1i("lut", 0);
 }
 
+bool Material::Contains(Type type)
+{
+	return std::find_if(parameters.begin(), parameters.end(), [&](auto& a)
+				{
+					return a.second == type;
+				}) != parameters.end();
+}
+
 std::vector<std::pair<std::variant<glm::vec3, GLuint>, Material::Type>>& Material::GetParameters()
 {
 	return parameters;
+}
+
+bool Material::operator==(Material& r)
+{
+	if(parameters.size() != r.GetParameters().size()) return false;
+	for(int i = 0; i < parameters.size(); i++)
+	{
+		if(parameters[i] != r.GetParameters()[i])
+			return false;
+	}
+	return true;
+}
+
+bool Material::operator!=(Material& r)
+{
+	return !(*this == r);
 }
