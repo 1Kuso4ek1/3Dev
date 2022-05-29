@@ -157,7 +157,7 @@ vec3 CalcLight(Light light, vec3 norm, float rough, float metal, vec3 albedo, ve
 void main()
 {
     vec3 norm;
-    if(nnormalMap) norm = tbn * normalize(texture(normalMap, coord).xyz * 2.0 - 1.0);
+    if(nnormalMap) norm = nomralize(tbn * normalize(texture(normalMap, coord).xyz * 2.0 - 1.0));
     else norm = normalize(mnormal);
 
     vec3 emission = (nemission.x < 0.0 ? texture(emission, coord).xyz : nemission.xyz);
