@@ -99,24 +99,24 @@ void Material::UpdateShader(Shader* shader)
 
 void Material::ResetShader(Shader* shader)
 {
-	shader->SetUniform3f("nalbedo", -1, -1, -1);
+	shader->SetUniform3f("nalbedo", 0, 0, 0);
 	shader->SetUniform1i("albedo", 0);
 	shader->SetUniform1i("nnormalMap", 0);
 	shader->SetUniform1i("normalMap", 0);
 	shader->SetUniform1i("nao", 0);
 	shader->SetUniform1i("ao", 0);
-	shader->SetUniform1f("nmetalness", -1);
+	shader->SetUniform1f("nmetalness", 0);
 	shader->SetUniform1i("metalness", 0);
-	shader->SetUniform1f("nemission", -1);
+	shader->SetUniform1f("nemission", 0);
 	shader->SetUniform1i("emission", 0);
-	shader->SetUniform1f("nroughness", -1);
+	shader->SetUniform1f("nroughness", 0);
 	shader->SetUniform1i("roughness", 0);
 	shader->SetUniform1f("nopacity", 1);
 	shader->SetUniform1i("opacity", 0);
 	shader->SetUniform1i("cubemap", 0);
 	shader->SetUniform1i("environment", 0);
 	shader->SetUniform1i("irradiance", 0);
-	shader->SetUniform3f("nirradiance", -1, -1, -1);
+	shader->SetUniform3f("nirradiance", 0, 0, 0);
 	shader->SetUniform1i("prefilteredMap", 0);
 	shader->SetUniform1i("lut", 0);
 }
