@@ -85,11 +85,11 @@ int main()
     });
     Material sphereMaterial(
     {
-    	{ glm::vec3(1.0, 1.0, 1.0), Material::Type::Color },
+    	{ glm::vec3(0.2, 0.4, 0.3), Material::Type::Color },
     	//{ normalmap, Material::Type::Normal },
-    	{ glm::vec3(0.2), Material::Type::Metalness },
+    	{ glm::vec3(0.3), Material::Type::Metalness },
     	//{ ao, Material::Type::AmbientOcclusion },
-    	{ glm::vec3(1.0), Material::Type::Roughness },
+    	{ glm::vec3(0.0), Material::Type::Roughness },
         { irr, Material::Type::Irradiance },
         { filtered, Material::Type::PrefilteredMap },
         { BRDF, Material::Type::LUT }
@@ -134,7 +134,7 @@ int main()
 
     scene.Save("hello.json");
 
-    ShadowManager shadows(&scene, { &l }, &shader, &depth, glm::ivec2(2048, 2048));
+    ShadowManager shadows(&scene, { &l }, &shader, &depth, glm::ivec2(1024, 1024));
     glEnable(GL_CULL_FACE);
 
     // Main game loop

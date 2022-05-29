@@ -41,8 +41,8 @@ void Material::UpdateShader(Shader* shader)
 			shader->SetUniform3f("nalbedo", (param1 == 0 ? param0.x : -1), param0.y, param0.z);
 			break;
 		case Material::Type::Normal:
-			shader->SetUniform1i("nnormalmap", 1);
-			shader->SetUniform1i("normalmap", i);
+			shader->SetUniform1i("nnormalMap", 1);
+			shader->SetUniform1i("normalMap", i);
 			break;
 		case Material::Type::AmbientOcclusion:
 			shader->SetUniform1i("nao", 1);
@@ -101,8 +101,8 @@ void Material::ResetShader(Shader* shader)
 {
 	shader->SetUniform3f("nalbedo", -1, -1, -1);
 	shader->SetUniform1i("albedo", 0);
-	shader->SetUniform1i("nnormalmap", 0);
-	shader->SetUniform1i("normalmap", 0);
+	shader->SetUniform1i("nnormalMap", 0);
+	shader->SetUniform1i("normalMap", 0);
 	shader->SetUniform1i("nao", 0);
 	shader->SetUniform1i("ao", 0);
 	shader->SetUniform1f("nmetalness", -1);

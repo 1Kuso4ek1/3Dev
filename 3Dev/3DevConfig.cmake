@@ -13,4 +13,5 @@ set(3DEV_DEPS
     sfml-system
     sfml-audio
     sfml-network
+    jsoncpp
 )
