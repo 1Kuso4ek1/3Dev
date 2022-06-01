@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.17)
 
 project(3Dev VERSION 1.1.0 LANGUAGES CXX)
 
-find_package(SFML 2.5.1 COMPONENTS graphics system window network audio REQUIRED)
+find_package(SFML 2.5.1 COMPONENTS system window network audio REQUIRED)
 find_package(assimp REQUIRED)
 find_package(GLEW 2.1.0 REQUIRED)
 find_package(OpenGL REQUIRED)

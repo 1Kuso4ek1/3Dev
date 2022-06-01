@@ -7,8 +7,8 @@
 #include <string>
 #include <unordered_map>
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/Graphics/Image.hpp>
 
 #include <assimp/BaseImporter.h>
 #include <assimp/Importer.hpp>
@@ -29,10 +29,6 @@
 #include <reactphysics3d/reactphysics3d.h>
 
 #include <Log.h>
-
-#define GL_CLAMP_TO_EDGE 0x812F
-
-const double pi = 3.141592653;
 
 constexpr glm::vec3 toglm(const rp3d::Vector3& vec) { return glm::vec3(vec.x, vec.y, vec.z); }
 constexpr glm::vec3 toglm(const aiVector3D& vec) { return glm::vec3(vec.x, vec.y, vec.z); }

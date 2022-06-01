@@ -4,7 +4,7 @@
 
 class Camera {
 public:
-	Camera(sf::RenderWindow* window, Matrices* m, rp3d::Vector3 pos, float speed, float fov, float near, float far);
+	Camera(sf::Window* window, Matrices* m, rp3d::Vector3 pos, float speed, float fov, float near, float far);
 
 	void Update(bool force = false);
 
@@ -33,7 +33,7 @@ public:
 private:
 	void UpdateMatrix();
 
-	sf::RenderWindow* window;
+	sf::Window* window;
 	Matrices* m;
 
 	float speed, fov, near, far, aspect;

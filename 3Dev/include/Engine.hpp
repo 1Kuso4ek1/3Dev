@@ -54,7 +54,7 @@ public:
     // Close your game
     void Close();
 
-    sf::RenderWindow& GetWindow();
+    sf::Window& GetWindow();
     sf::ContextSettings& GetSettings();
 
 private:
@@ -64,6 +64,6 @@ private:
     std::function<void(sf::Event&)> eloop;
 
     sf::ContextSettings settings;
-    sf::RenderWindow window;
+    sf::Window window;
     sf::Event event;
 };

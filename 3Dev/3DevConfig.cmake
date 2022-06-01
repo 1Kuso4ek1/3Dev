@@ -6,7 +6,6 @@ set(3DEV_DEPS
     reactphysics3d
     GL
     GLEW
-    GLU
     assimp
     sfml-graphics
     sfml-window

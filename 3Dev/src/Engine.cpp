@@ -74,7 +74,7 @@ void Engine::Close()
     running = false;
 }
 
-sf::RenderWindow& Engine::GetWindow()
+sf::Window& Engine::GetWindow()
 {
     return window;
 }

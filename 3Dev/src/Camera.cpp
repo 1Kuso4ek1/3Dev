@@ -1,6 +1,6 @@
 #include "Camera.hpp"
 
-Camera::Camera(sf::RenderWindow* window, Matrices* m, rp3d::Vector3 pos, float speed, float fov, float near, float far) : window(window), pos(pos), speed(speed), fov(fov), near(near), far(far), m(m)
+Camera::Camera(sf::Window* window, Matrices* m, rp3d::Vector3 pos, float speed, float fov, float near, float far) : window(window), pos(pos), speed(speed), fov(fov), near(near), far(far), m(m)
 {
 	aspect = (float)window->getSize().x / (float)window->getSize().y;
 	UpdateMatrix();
@@ -37,7 +37,7 @@ rp3d::Vector3 Camera::Move(float time)
 void Camera::Mouse()
 {
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
-	sf::Vector2f mousexy = window->mapPixelToCoords(pixelPos, sf::View({ (float)window->getSize().x / 2, (float)window->getSize().y / 2 }, { (float)window->getSize().x, (float)window->getSize().y }));
+	sf::Vector2f mousexy = sf::Vector2f((float)pixelPos.x, (float)pixelPos.y);
 	
 	orient = rp3d::Quaternion::fromEulerAngles(0, -glm::radians((mousexy.x - window->getSize().x / 2) / 8), 0) * orient;
 	auto tmp = orient * rp3d::Quaternion::fromEulerAngles(-glm::radians((mousexy.y - window->getSize().y / 2) / 8), 0, 0);
