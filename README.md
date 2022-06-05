@@ -22,9 +22,9 @@ TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)
 1. GLEW
 2. SFML
 3. ReactPhysics3D
-4. ImGui-SFML (optional)
-5. Assimp
-6. LightLog
+4. Assimp
+5. LightLog
+6. jsoncpp
 ### Let's build it
 First of all, you need to clone this repository
 ```
