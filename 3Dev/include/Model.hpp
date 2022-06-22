@@ -61,6 +61,9 @@ public:
 	void SetSize(rp3d::Vector3 size);
 	void SetMaterial(std::vector<Material> mat);
 	void SetShader(Shader* shader);
+	void SetPhysicsManager(PhysicsManager* man);
+	
+	void CreateRigidBody();
 	
 	void Move(rp3d::Vector3 position);
 	void Rotate(rp3d::Quaternion orientation);

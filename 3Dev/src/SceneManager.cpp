@@ -74,24 +74,38 @@ void SceneManager::AddLight(Light* light)
 
 void SceneManager::RemoveObject(std::shared_ptr<Model> model)
 {
-    models.erase(std::find(models.begin(), models.end(), model));
-    transparentModels.erase(std::find(transparentModels.begin(), transparentModels.end(), model));
+    auto it = std::find(models.begin(), models.end(), model);
+    if(it != models.end())
+        models.erase(it);
+
+    auto it1 = std::find(transparentModels.begin(), transparentModels.end(), model);
+    if(it1 != transparentModels.end())
+        transparentModels.erase(it1);
 }
 
 void SceneManager::RemoveObject(std::shared_ptr<Shape> shape)
 {
-    shapes.erase(std::find(shapes.begin(), shapes.end(), shape));
-    transparentShapes.erase(std::find(transparentShapes.begin(), transparentShapes.end(), shape));
+    auto it = std::find(shapes.begin(), shapes.end(), shape);
+    if(it != shapes.end())
+        shapes.erase(it);
+
+    auto it1 = std::find(transparentShapes.begin(), transparentShapes.end(), shape);
+    if(it1 != transparentShapes.end())
+        transparentShapes.erase(it1);
 }
 
 void SceneManager::RemovePhysicsManager(std::shared_ptr<PhysicsManager> manager)
 {
-    pManagers.erase(std::find(pManagers.begin(), pManagers.end(), manager));
+    auto it = std::find(pManagers.begin(), pManagers.end(), manager);
+    if(it != pManagers.end())
+        pManagers.erase(it);
 }
 
 void SceneManager::RemoveLight(Light* light)
 {
-    lights.erase(std::find(lights.begin(), lights.end(), light));
+    auto it = std::find(lights.begin(), lights.end(), light);
+    if(it != lights.end())
+        lights.erase(it);
 }
 
 void SceneManager::RemoveAllObjects()

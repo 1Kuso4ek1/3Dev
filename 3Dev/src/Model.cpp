@@ -104,6 +104,16 @@ void Model::SetShader(Shader* shader)
 	this->shader = shader;
 }
 
+void Model::SetPhysicsManager(PhysicsManager* man)
+{
+	this->man = man;
+}
+	
+void Model::CreateRigidBody()
+{
+	if(man != nullptr) body = man->CreateRigidBody(transform);
+}
+
 void Model::Move(rp3d::Vector3 position) 
 {
 	transform.setPosition(transform.getPosition() + position);
