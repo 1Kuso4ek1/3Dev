@@ -21,7 +21,6 @@ void Model::Load(std::string filename, unsigned int flags)
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		Log::Write("Error while importing '" + filename + "': " + importer.GetErrorString(), Log::Type::Critical);
 
-	globalTransform = toglm(scene->mRootNode->mTransformation);
 	globalInverseTransform = toglm(scene->mRootNode->mTransformation.Inverse());
 
 	ProcessNode(scene->mRootNode, scene);
@@ -53,14 +52,15 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights)
 	m->Rotate(a, glm::axis(toglm(transform.getOrientation()))); // Using toglm(tmp) as second argument breaks everything and gives the matrix of nan
 	m->Scale(toglm(size));
 
+	if(autoUpdateAnimation)
+		UpdateAnimation();
+
 	for(int mesh = 0; mesh < meshes.size(); mesh++)
 	{
 		shader->Bind();
 		mat[mesh].UpdateShader(shader);
 		for(int i = 0; i < lights.size(); i++)
 			lights[i]->Update(shader, i);
-		for(auto i : meshes[mesh]->GetBones())
-			CalculatePose(i, meshes[mesh], meshes[mesh]->GetTransformation());
 				
 		shader->SetUniform3f("campos", cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
 		shader->SetUniformMatrix4("transformation", meshes[mesh]->GetTransformation());
@@ -219,8 +219,7 @@ void Model::StopAnimation(int anim)
 
 	anims[anim].state = Animation::State::Stopped;
 	for(auto& i : meshes)
-		for(auto& j : i->GetPose())
-			j = glm::mat4(1.0);
+		std::fill(i->GetPose().begin(), i->GetPose().end(), glm::mat4(1.0));
 }
 
 void Model::PauseAnimation(int anim)
@@ -230,6 +229,18 @@ void Model::PauseAnimation(int anim)
 
 	anims[anim].state = Animation::State::Paused;
 	anims[anim].lastTime = anims[anim].GetTime();
+}
+
+void Model::AutoUpdateAnimation(bool update)
+{
+	autoUpdateAnimation = update;
+}
+
+void Model::UpdateAnimation()
+{
+	for(auto mesh : meshes)
+		for(auto i : mesh->GetBones())
+			CalculatePose(i, mesh, mesh->GetTransformation());
 }
 
 int Model::GetMeshesCount()
@@ -441,7 +452,7 @@ void Model::CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 par
 				if(i.state == Animation::State::Playing && time >= i.duration)
 				{
 					time = i.time.restart().asSeconds() * i.tps;
-					if(i.lastTime != 0) i.lastTime = 0;
+					i.lastTime = 0;
 				}
 
 				float dt = fmod(time, i.duration);
@@ -451,9 +462,9 @@ void Model::CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 par
 				glm::quat rot = glm::slerp(kf.rotations[fraction.first - 1], kf.rotations[fraction.first], fraction.second);
 				glm::vec3 scale = glm::mix(kf.scales[fraction.first - 1], kf.scales[fraction.first], fraction.second);
 
-				glm::mat4 mpos(1.0), mscale(1.0), mrot = glm::toMat4(rot);
-				mpos = glm::translate(mpos, pos);
-				mscale = glm::scale(mscale, scale);
+				glm::mat4 mpos = glm::translate(glm::mat4(1.0), pos),
+						  mscale = glm::scale(glm::mat4(1.0), scale),
+						  mrot = glm::toMat4(rot);
 
 				glm::mat4 localTransform = mpos * mrot * mscale;
 				glm::mat4 globalTransform = parent * localTransform;

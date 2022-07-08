@@ -55,7 +55,7 @@ public:
 	void Load(std::string filename, unsigned int flags = 0);
 
 	void Draw(Camera* cam, std::vector<Light*> lights);
-	
+
 	void SetPosition(rp3d::Vector3 position);
 	void SetOrientation(rp3d::Quaternion orientation);
 	void SetSize(rp3d::Vector3 size);
@@ -78,6 +78,10 @@ public:
 	void PlayAnimation(int anim = 0);
 	void StopAnimation(int anim = 0);
 	void PauseAnimation(int anim = 0);
+
+	void AutoUpdateAnimation(bool update = true);
+
+	void UpdateAnimation();
 
 	int GetMeshesCount();
 	int GetAnimationsCount();
@@ -104,6 +108,8 @@ private:
 	void CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 parent = glm::mat4(1.0));
 
 	bool ProcessBone(aiNode* node, std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap, Bone& out);
+
+	bool autoUpdateAnimation = true;
 	
 	std::vector<std::shared_ptr<Mesh>> meshes;
 	
@@ -114,7 +120,6 @@ private:
 
 	PhysicsManager* man;
 
-	glm::mat4 globalTransform;
 	glm::mat4 globalInverseTransform;
 
 	std::vector<rp3d::CollisionShape*> shapes;
