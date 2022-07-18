@@ -116,7 +116,11 @@ int main()
     terrain->CreateConcaveShape();
     terrain->SetPosition({ 10.f, -30.f, 10.f });
 
+    auto sman = std::make_shared<SoundManager>();
+    sman->LoadSound("../quandale-dingle.ogg", "sound");
+
     SceneManager scene;
+
     scene.AddObject(s);
     scene.AddObject(s1);
     scene.AddObject(s2);
@@ -132,21 +136,33 @@ int main()
 
     scene.SetSkybox(skybox);
 
+    scene.SetSoundManager(sman);
+
     scene.Save("hello.json");
 
     ShadowManager shadows(&scene, { &l }, &shader, &depth, glm::ivec2(1024, 1024));
     glEnable(GL_CULL_FACE);
 
+    ListenerWrapper::SetPosition(cam.GetPosition());
+    ListenerWrapper::SetOrientation(cam.GetOrientation());
+
+    sman->Play("sound", 0, sphere->GetPosition(), false);
+    sman->SetLoop(true, "sound");
+    sman->SetAttenuation(3, "sound");
+    sman->SetMinDistance(5, "sound");
+
     // Main game loop
     engine.Loop([&]() 
     {
-   	    	
         // Camera movement, rotation and so on
         cam.Update();
         cam.Move(1);
         cam.Mouse();
         cam.Look();
         //////////////////////////////////////
+
+        ListenerWrapper::SetPosition(cam.GetPosition());
+        ListenerWrapper::SetOrientation(cam.GetOrientation());
 
         shadows.Update();
 		

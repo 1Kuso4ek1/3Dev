@@ -6,6 +6,7 @@
 #include <Shader.hpp>
 #include <Framebuffer.hpp>
 #include <PhysicsManager.hpp>
+#include <SoundManager.hpp>
 
 #include <json/json.h>
 
@@ -32,6 +33,7 @@ public:
     void SetMainShader(Shader* shader);
     void SetCamera(Camera* camera);
     void SetSkybox(std::shared_ptr<Shape> skybox);
+    void SetSoundManager(std::shared_ptr<SoundManager> manager);
 
 private:
     sf::Clock clock;
@@ -39,6 +41,7 @@ private:
     Camera* camera;
 
     std::shared_ptr<Shape> skybox;
+    std::shared_ptr<SoundManager> sManager;
 
     std::vector<std::shared_ptr<Model>> models;
     std::vector<std::shared_ptr<Shape>> shapes;

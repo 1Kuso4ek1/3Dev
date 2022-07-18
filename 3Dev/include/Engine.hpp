@@ -10,6 +10,7 @@
 #include "PhysicsManager.hpp"
 #include "SceneManager.hpp"
 #include "ShadowManager.hpp"
+#include "SoundManager.hpp"
 #include <functional>
 
 /*

@@ -25,6 +25,7 @@ add_library(3Dev
 	src/PhysicsManager.cpp
 	src/SceneManager.cpp
 	src/ShadowManager.cpp
+	src/SoundManager.cpp
 )
 
 add_executable(physics physics_test.cpp)

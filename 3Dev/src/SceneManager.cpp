@@ -41,6 +41,9 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency)
         glEnable(GL_CULL_FACE);
         glFrontFace(GL_CCW);
     }
+
+    if(sManager != nullptr)
+        sManager->Cleanup();
 }
 
 void SceneManager::AddObject(std::shared_ptr<Model> model)
@@ -225,4 +228,9 @@ void SceneManager::SetCamera(Camera* camera)
 void SceneManager::SetSkybox(std::shared_ptr<Shape> skybox)
 {
     this->skybox = skybox;
+}
+
+void SceneManager::SetSoundManager(std::shared_ptr<SoundManager> manager)
+{
+    sManager = manager;
 }
