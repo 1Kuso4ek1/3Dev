@@ -6,15 +6,14 @@
 - Rigid body physics
 - Loading a lot of model formats (.obj, .dae, .fbx and much more...)
 - Skeletal animation
-- Framebuffers
 - Post processing support
 - HDR, tone mapping and gamma-correction
 - FXAA
 - Physically Based Rendering
 - Image Based Lighting
-- Multiple light sources
 - Shadow mapping
 - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
+- Audio
 ## TODO
 TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)!
 ## Building
