@@ -57,7 +57,7 @@ int main()
 
     Material envMat(
     {
-        { LoadHDRTexture("../textures/outdoor.hdr"), Material::Type::Environment }
+        { LoadHDRTexture("../textures/park.hdr"), Material::Type::Environment }
     });
 
     Shape captureCube({ 500, 500, 500 }, &envMat, &environment, &m, nullptr);
@@ -85,11 +85,11 @@ int main()
     });
     Material sphereMaterial(
     {
-    	{ glm::vec3(0.2, 0.4, 0.3), Material::Type::Color },
+    	{ glm::vec3(0.8, 0.8, 0.8), Material::Type::Color },
     	//{ normalmap, Material::Type::Normal },
-    	{ glm::vec3(0.3), Material::Type::Metalness },
+    	{ glm::vec3(0.8), Material::Type::Metalness },
     	//{ ao, Material::Type::AmbientOcclusion },
-    	{ glm::vec3(0.0), Material::Type::Roughness },
+    	{ glm::vec3(0.4), Material::Type::Roughness },
         { irr, Material::Type::Irradiance },
         { filtered, Material::Type::PrefilteredMap },
         { BRDF, Material::Type::LUT }
@@ -146,10 +146,11 @@ int main()
     ListenerWrapper::SetPosition(cam.GetPosition());
     ListenerWrapper::SetOrientation(cam.GetOrientation());
 
-    sman->Play("sound", 0, sphere->GetPosition(), false);
     sman->SetLoop(true, "sound");
     sman->SetAttenuation(3, "sound");
     sman->SetMinDistance(5, "sound");
+
+    sman->PlayAt("sound", 0, sphere->GetPosition());
 
     // Main game loop
     engine.Loop([&]() 
@@ -169,7 +170,7 @@ int main()
         scene.Draw(&buf);
         
         post.Bind();
-        post.SetUniform1f("exposure", 1.0);
+        post.SetUniform1f("exposure", 1.5);
 
         //glDisable(GL_DEPTH_TEST);
         buf.Draw();

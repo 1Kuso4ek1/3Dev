@@ -23,22 +23,38 @@ void ListenerWrapper::SetGlobalVolume(float volume)
 
 void SoundManager::LoadSound(std::string filename, std::string name)
 {
-    sf::SoundBuffer buffer;
-    buffer.loadFromFile(filename);
-    buffers[name] = buffer;
+    buffers.emplace_back(filename, name);
 }
 
 void SoundManager::LoadSound(sf::SoundBuffer& buffer, std::string name)
 {
-    buffers[name] = buffer;
+    buffers.emplace_back(buffer, name);
 }
 
-void SoundManager::Play(std::string name, int id, rp3d::Vector3 pos, bool relativeToListener)
+void SoundManager::Play(std::string name, int id)
 {
-    sounds.push_back({ name + std::to_string(id), sf::Sound(buffers[name]) });
-    sounds.back().second.setPosition(pos.x, pos.y, pos.z);
-    sounds.back().second.setRelativeToListener(relativeToListener);
+    auto s = std::find_if(sounds.begin(), sounds.end(), [&](auto& s)
+    {
+        return s.first == name + std::to_string(id);
+    });
+    if(s != sounds.end())
+        if(s->second.getStatus() == sf::Sound::Status::Paused)
+        {
+            s->second.play();
+            return;
+        }
+    auto it = std::find(buffers.begin(), buffers.end(), name);
+    sounds.push_back({ name + std::to_string(id), sf::Sound(it->buffer) });
+    it->UpdateActiveSound(sounds, id);
     sounds.back().second.play();
+}
+
+void SoundManager::PlayAt(std::string name, int id, rp3d::Vector3 pos)
+{
+    auto it = std::find(buffers.begin(), buffers.end(), name);
+    it->pos = pos;
+    it->relativeToListener = false;
+    Play(name, id);
 }
 
 void SoundManager::Stop(std::string name, int id)
@@ -60,44 +76,62 @@ void SoundManager::Pause(std::string name, int id)
 
 void SoundManager::SetPosition(rp3d::Vector3 pos, std::string name, int id)
 {
-    auto it = std::find_if(sounds.begin(), sounds.end(), [&](auto& s) { return s.first == name + std::to_string(id); });
-    if(it != sounds.end())
-        it->second.setPosition(pos.x, pos.y, pos.z);
+    auto it = std::find(buffers.begin(), buffers.end(), name);
+    if(it != buffers.end())
+    {
+        it->pos = pos;
+        it->UpdateActiveSound(sounds, id);
+    }
 }
 
 void SoundManager::SetRelativeToListener(bool relative, std::string name, int id)
 {
-    auto it = std::find_if(sounds.begin(), sounds.end(), [&](auto& s) { return s.first == name + std::to_string(id); });
-    if(it != sounds.end())
-        it->second.setRelativeToListener(relative);
+    auto it = std::find(buffers.begin(), buffers.end(), name);
+    if(it != buffers.end())
+    {
+        it->relativeToListener = relative;
+        it->UpdateActiveSound(sounds, id);
+    }
 }
 
 void SoundManager::SetLoop(bool loop, std::string name, int id)
 {
-    auto it = std::find_if(sounds.begin(), sounds.end(), [&](auto& s) { return s.first == name + std::to_string(id); });
-    if(it != sounds.end())
-        it->second.setLoop(loop);
+    auto it = std::find(buffers.begin(), buffers.end(), name);
+    if(it != buffers.end())
+    {
+        it->loop = loop;
+        it->UpdateActiveSound(sounds, id);
+    }
 }
 
 void SoundManager::SetVolume(float volume, std::string name, int id)
 {
-    auto it = std::find_if(sounds.begin(), sounds.end(), [&](auto& s) { return s.first == name + std::to_string(id); });
-    if(it != sounds.end())
-        it->second.setVolume(volume);
+    auto it = std::find(buffers.begin(), buffers.end(), name);
+    if(it != buffers.end())
+    {
+        it->volume = volume;
+        it->UpdateActiveSound(sounds, id);
+    }
 }
 
 void SoundManager::SetMinDistance(float dist, std::string name, int id)
 {
-    auto it = std::find_if(sounds.begin(), sounds.end(), [&](auto& s) { return s.first == name + std::to_string(id); });
-    if(it != sounds.end())
-        it->second.setMinDistance(dist);
+    auto it = std::find(buffers.begin(), buffers.end(), name);
+    if(it != buffers.end())
+    {
+        it->minDistance = dist;
+        it->UpdateActiveSound(sounds, id);
+    }
 }
 
 void SoundManager::SetAttenuation(float attenuation, std::string name, int id)
 {
-    auto it = std::find_if(sounds.begin(), sounds.end(), [&](auto& s) { return s.first == name + std::to_string(id); });
-    if(it != sounds.end())
-        it->second.setAttenuation(attenuation);
+    auto it = std::find(buffers.begin(), buffers.end(), name);
+    if(it != buffers.end())
+    {
+        it->attenuation = attenuation;
+        it->UpdateActiveSound(sounds, id);
+    }
 }
 
 void SoundManager::Cleanup()
