@@ -100,6 +100,7 @@ install(FILES
   	include/PhysicsManager.hpp
 	include/SceneManager.hpp
 	include/ShadowManager.hpp
+	include/SoundManager.hpp
 	include/stb_image.hpp
 	DESTINATION include/3Dev
 )
