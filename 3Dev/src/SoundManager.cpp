@@ -33,45 +33,43 @@ void SoundManager::LoadSound(sf::SoundBuffer& buffer, std::string name)
 
 void SoundManager::Play(std::string name, int id)
 {
-    auto s = std::find_if(sounds.begin(), sounds.end(), [&](auto& s)
-    {
-        return s.first == name + std::to_string(id);
-    });
+    auto s = sounds.find(name + std::to_string(id));
     if(s != sounds.end())
-        if(s->second.getStatus() == sf::Sound::Status::Paused)
+        if(s->second->getStatus() == sf::Sound::Status::Paused)
         {
-            s->second.play();
+            s->second->play();
             return;
         }
+    if(sounds.size() > 254) sounds.erase(sounds.begin());
     auto it = std::find(buffers.begin(), buffers.end(), name);
-    sounds.push_back({ name + std::to_string(id), sf::Sound(it->buffer) });
+    sounds[name + std::to_string(id)] = std::make_shared<sf::Sound>(it->buffer);
+    sounds[name + std::to_string(id)]->play();
     it->UpdateActiveSound(sounds, id);
-    sounds.back().second.play();
 }
 
 void SoundManager::PlayAt(std::string name, int id, rp3d::Vector3 pos)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     it->pos = pos;
-    it->relativeToListener = false;
     Play(name, id);
 }
 
 void SoundManager::Stop(std::string name, int id)
 {
-    auto it = std::find_if(sounds.begin(), sounds.end(), [&](auto& s) { return s.first == name + std::to_string(id); });
+    auto it = sounds.find(name + std::to_string(id));
     if(it != sounds.end())
     {
-        it->second.stop();
+        it->second->stop();
+        it->second->resetBuffer();
         sounds.erase(it);
     }
 }
 
 void SoundManager::Pause(std::string name, int id)
 {
-    auto it = std::find_if(sounds.begin(), sounds.end(), [&](auto& s) { return s.first == name + std::to_string(id); });
+    auto it = sounds.find(name + std::to_string(id));
     if(it != sounds.end())
-        it->second.pause();
+        it->second->pause();
 }
 
 void SoundManager::SetPosition(rp3d::Vector3 pos, std::string name, int id)
@@ -134,9 +132,17 @@ void SoundManager::SetAttenuation(float attenuation, std::string name, int id)
     }
 }
 
-void SoundManager::Cleanup()
+void SoundManager::UpdateAll()
 {
-    for(auto i = sounds.begin(); i < sounds.end(); i++)
-        if(i->second.getStatus() == sf::Sound::Status::Stopped)
-            sounds.erase(i);
+    std::for_each(buffers.begin(), buffers.end(), [&](auto& b)
+    {
+        b.UpdateActiveSounds(sounds);
+    });
+}
+
+void SoundManager::UpdateAll(std::string name)
+{
+    auto it = std::find(buffers.begin(), buffers.end(), name);
+    if(it != buffers.end())
+        it->UpdateActiveSounds(sounds);
 }

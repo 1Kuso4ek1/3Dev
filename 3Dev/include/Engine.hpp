@@ -20,10 +20,7 @@ class Engine
 {
 public:
     // Default constructor
-    Engine() {}
-
-    // @param settings SFML window settings 
-    Engine(sf::ContextSettings& settings) : settings(settings) {}
+    Engine(bool silentLog = false);
 
     // Default OpenGL initialization function
     void Init();

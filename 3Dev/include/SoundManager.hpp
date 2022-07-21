@@ -32,7 +32,8 @@ public:
     void SetMinDistance(float dist, std::string name, int id = 0);
     void SetAttenuation(float attenuation, std::string name, int id = 0);
 
-    void Cleanup();
+    void UpdateAll();
+    void UpdateAll(std::string name);
 
 private:
 
@@ -40,7 +41,9 @@ private:
     {
         Sound(std::string filename, std::string name) : name(name), filename(filename)
         {
-            buffer.loadFromFile(filename);
+            if(buffer.loadFromFile(filename))
+                Log::Write("Sound \"" + filename + "\" successfully loaded", Log::Type::Info);
+            else Log::Write("Failed to load sound \"" + filename + "\"", Log::Type::Error);
         }
 
         Sound(sf::SoundBuffer buffer, std::string name) : name(name), buffer(buffer) {}
@@ -54,20 +57,38 @@ private:
 
         sf::SoundBuffer buffer;
 
-        void UpdateActiveSound(std::vector<std::pair<std::string, sf::Sound>>& sounds, int id)
+        void UpdateActiveSound(std::unordered_map<std::string, std::shared_ptr<sf::Sound>>& sounds, int id)
         {
-            auto it = std::find_if(sounds.begin(), sounds.end(), [&](auto& s)
-            {
-                return s.first == name + std::to_string(id);
-            });
+            auto it = sounds.find(name + std::to_string(id));
             if(it != sounds.end())
             {
-                it->second.setVolume(volume);
-                it->second.setMinDistance(minDistance);
-                it->second.setAttenuation(attenuation);
-                it->second.setLoop(loop);
-                it->second.setRelativeToListener(relativeToListener);
-                it->second.setPosition(pos.x, pos.y, pos.z);
+                it->second->setVolume(volume);
+                it->second->setMinDistance(minDistance);
+                it->second->setAttenuation(attenuation);
+                it->second->setLoop(loop);
+                it->second->setRelativeToListener(relativeToListener);
+                it->second->setPosition(pos.x, pos.y, pos.z);
+            }
+        }
+
+        void UpdateActiveSounds(std::unordered_map<std::string, std::shared_ptr<sf::Sound>>& sounds)
+        {
+            auto it = sounds.begin();
+            while(it != sounds.end())
+            {
+                it = std::find_if(sounds.begin(), sounds.end(), [&](auto& s)
+                {
+                    return s.first.find(name) != std::string::npos;
+                });
+                if(it != sounds.end())
+                {
+                    it->second->setVolume(volume);
+                    it->second->setMinDistance(minDistance);
+                    it->second->setAttenuation(attenuation);
+                    it->second->setLoop(loop);
+                    it->second->setRelativeToListener(relativeToListener);
+                    it->second->setPosition(pos.x, pos.y, pos.z);
+                }
             }
         }
 
@@ -78,5 +99,5 @@ private:
     };
 
     std::vector<Sound> buffers;
-    std::vector<std::pair<std::string, sf::Sound>> sounds;
+    std::unordered_map<std::string, std::shared_ptr<sf::Sound>> sounds;
 };

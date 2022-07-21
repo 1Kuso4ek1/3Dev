@@ -1,5 +1,10 @@
 #include "Engine.hpp"
 
+Engine::Engine(bool silentLog)
+{
+    Log::Init("3Dev_log.txt", silentLog);
+}
+
 void Engine::Init()
 {
     glEnable(GL_BLEND);
@@ -18,7 +23,6 @@ void Engine::Init()
 
 void Engine::CreateWindow(float width, float height, std::string title, sf::Uint32 style)
 {
-    Log::Init("3Dev_log.txt", false);
     window.create(sf::VideoMode(width, height), title, style, settings);
     Log::Write("Window successfully created", Log::Type::Info);
 }

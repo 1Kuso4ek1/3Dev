@@ -41,9 +41,6 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency)
         glEnable(GL_CULL_FACE);
         glFrontFace(GL_CCW);
     }
-
-    if(sManager != nullptr)
-        sManager->Cleanup();
 }
 
 void SceneManager::AddObject(std::shared_ptr<Model> model)

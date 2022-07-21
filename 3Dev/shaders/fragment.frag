@@ -66,7 +66,7 @@ float LinearizeDepth(float depth)
     return (2.0 * 0.01 * 500.0) / (500.0 + 0.01 - z * (500.0 - 0.01));
 }
 
-float CalcShadow(int i)
+float CalcShadow(int i, float bias)
 {
     vec3 pcoord = lspaceout[i].xyz / lspaceout[i].w;
     pcoord = pcoord * 0.5 + 0.5;
@@ -80,7 +80,7 @@ float CalcShadow(int i)
 		for(int y = -1; y <= 1; ++y)
 		{
 		    float pcf = LinearizeDepth(texture(shadows[i].shadowmap, pcoord.xy + vec2(x, y) * pixelsize).x);
-		    shadow += float(current > pcf);
+		    shadow += float(current - bias > pcf);
 		}
 	}
 	shadow /= 9.0;
@@ -178,7 +178,7 @@ void main()
         i++;
     }
     for(i = 0; i < maxShadows && shadows[i].isactive; i++)
-	    shadow += CalcShadow(i);
+        shadow += CalcShadow(i, 0.0 /* use any value you like */);
 
     vec3 f = FresnelSchlick(max(dot(norm, normalize(camposout - mpos)), 0.0), f0, rough);
     vec3 kspc = f;

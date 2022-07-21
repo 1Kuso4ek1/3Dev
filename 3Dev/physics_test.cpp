@@ -130,7 +130,7 @@ int main()
 
     scene.AddPhysicsManager(man);
 
-    scene.AddLight(&l);
+    //scene.AddLight(&l);
     
     scene.SetCamera(&cam);
 
@@ -140,8 +140,7 @@ int main()
 
     scene.Save("hello.json");
 
-    ShadowManager shadows(&scene, { &l }, &shader, &depth, glm::ivec2(1024, 1024));
-    glEnable(GL_CULL_FACE);
+    ShadowManager shadows(&scene, { &l }, &shader, &depth, glm::ivec2(2048, 2048));
 
     ListenerWrapper::SetPosition(cam.GetPosition());
     ListenerWrapper::SetOrientation(cam.GetOrientation());
@@ -149,7 +148,7 @@ int main()
     sman->SetLoop(true, "sound");
     sman->SetAttenuation(3, "sound");
     sman->SetMinDistance(5, "sound");
-
+    
     sman->PlayAt("sound", 0, sphere->GetPosition());
 
     // Main game loop
