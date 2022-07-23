@@ -26,7 +26,10 @@ add_library(3Dev
 	src/SceneManager.cpp
 	src/ShadowManager.cpp
 	src/SoundManager.cpp
+	src/Renderer.cpp
 )
+
+add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/shaders/\"")
 
 add_executable(physics physics_test.cpp)
           
@@ -85,7 +88,7 @@ install(FILES 3DevConfig.cmake
 )
 
 install(FILES 
-  	include/3Dev.hpp
+  	include/Utils.hpp
   	include/Matrices.hpp
   	include/Camera.hpp
   	include/Engine.hpp
@@ -101,6 +104,7 @@ install(FILES
 	include/SceneManager.hpp
 	include/ShadowManager.hpp
 	include/SoundManager.hpp
+	include/Renderer.hpp
 	include/stb_image.hpp
 	DESTINATION include/3Dev
 )

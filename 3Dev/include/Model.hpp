@@ -1,6 +1,5 @@
 #pragma once
 #include "Shader.hpp"
-#include "Texture.hpp"
 #include "Material.hpp"
 #include "Camera.hpp"
 #include "Matrices.hpp"

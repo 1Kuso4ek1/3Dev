@@ -1,6 +1,6 @@
 #pragma once
-#include "3Dev.hpp"
-#include <stb_image.hpp>
+#include "Utils.hpp"
+#include "stb_image.hpp"
 
 /*
  * Used to create an empty texture

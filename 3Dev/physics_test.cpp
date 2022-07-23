@@ -23,6 +23,8 @@ int main()
     rp3d::PhysicsWorld::WorldSettings st; // Default physics world settings
     auto man = std::make_shared<PhysicsManager>(st); // Main physics manager
 
+    Log::Write(SHADERS_DIRECTORY, Log::Type::Info);
+
     Shader skyboxshader("../shaders/skybox.vs", "../shaders/skybox.frag"); // Shader for skybox rendering
     Shader shader("../shaders/vertex.vs", "../shaders/fragment.frag"); // Main shader
     Shader depth("../shaders/depth.vs", "../shaders/depth.frag"); // Depth shader

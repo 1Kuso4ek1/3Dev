@@ -1,11 +1,9 @@
 #pragma once
-#include "3Dev.hpp"
 #include "Shader.hpp"
 #include "Material.hpp"
 #include "Matrices.hpp"
 #include "Camera.hpp"
 #include "Light.hpp"
-#include "Mesh.hpp"
 #include "PhysicsManager.hpp"
 
 class Shape {

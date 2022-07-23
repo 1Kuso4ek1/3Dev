@@ -1,12 +1,12 @@
 #pragma once
-#include <Model.hpp>
-#include <Shape.hpp>
-#include <Light.hpp>
-#include <Camera.hpp>
-#include <Shader.hpp>
-#include <Framebuffer.hpp>
-#include <PhysicsManager.hpp>
-#include <SoundManager.hpp>
+#include "Model.hpp"
+#include "Shape.hpp"
+#include "Light.hpp"
+#include "Camera.hpp"
+#include "Shader.hpp"
+#include "Framebuffer.hpp"
+#include "PhysicsManager.hpp"
+#include "SoundManager.hpp"
 
 #include <json/json.h>
 
