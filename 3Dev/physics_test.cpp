@@ -12,7 +12,11 @@ int main()
     engine.GetWindow().setMouseCursorVisible(false); // Hiding the cursor
     engine.GetWindow().setMouseCursorGrabbed(true); // Grabbing the cursor
 
-    Matrices m; 
+    Matrices m;
+
+    Renderer renderer;
+    renderer.Init(engine.GetWindow(), "../textures/park.hdr", m);
+
     Camera cam(&engine.GetWindow(), &m, { 0, 10, 0 }, 0.5, 70, 0.001, 5000); // Main camera
 
     // Textures for a material
@@ -23,28 +27,12 @@ int main()
     rp3d::PhysicsWorld::WorldSettings st; // Default physics world settings
     auto man = std::make_shared<PhysicsManager>(st); // Main physics manager
 
-    Log::Write(SHADERS_DIRECTORY, Log::Type::Info);
-
-    Shader skyboxshader("../shaders/skybox.vs", "../shaders/skybox.frag"); // Shader for skybox rendering
-    Shader shader("../shaders/vertex.vs", "../shaders/fragment.frag"); // Main shader
-    Shader depth("../shaders/depth.vs", "../shaders/depth.frag"); // Depth shader
-    Shader post("../shaders/post.vs", "../shaders/post.frag"); // Post-processing shader
-    Shader environment("../shaders/environment.vs", "../shaders/environment.frag");
-    Shader irradiance("../shaders/irradiance.vs", "../shaders/irradiance.frag");
-    Shader spcfiltering("../shaders/spcfiltering.vs", "../shaders/spcfiltering.frag");
-    Shader brdf("../shaders/brdf.vs", "../shaders/brdf.frag");
-
-    Framebuffer buf(&post, 1280, 720), capture(nullptr, 256, 256),
-                captureIrr(nullptr, 32, 32), captureSpc(nullptr, 256, 256),
-                captureBRDF(&brdf, 512, 512), transparency(&post, 1280, 720);
-
     // Function for handling SFML window events
     engine.EventLoop([&](sf::Event& event)
     {
         if(event.type == sf::Event::Resized) // If the window is resized
         {
-            buf.RecreateTexture(event.size.width, event.size.height); // Resizing framebuffer texture
-            transparency.RecreateTexture(event.size.width, event.size.height);
+            renderer.GetFramebuffer(Renderer::FramebufferType::Main)->RecreateTexture(event.size.width, event.size.height); // Resizing framebuffer texture
         }
 
         if(event.type == sf::Event::Closed) engine.Close(); // Closing the window
@@ -57,23 +45,6 @@ int main()
     l.SetOuterCutoff(33);*/
     //l.SetAttenuation(0.0, 0.1, 0.0);
 
-    Material envMat(
-    {
-        { LoadHDRTexture("../textures/park.hdr"), Material::Type::Environment }
-    });
-
-    Shape captureCube({ 500, 500, 500 }, &envMat, &environment, &m, nullptr);
-    GLuint cubemap = capture.CaptureCubemap(captureCube, m);
-    envMat.GetParameters().clear();
-    envMat.AddParameter(cubemap, Material::Type::Cubemap);
-    captureCube.SetShader(&irradiance);
-    GLuint irr = captureIrr.CaptureCubemap(captureCube, m, true);
-    captureCube.SetShader(&spcfiltering);
-    GLuint filtered = captureSpc.CaptureCubemapMipmaps(captureCube, m, 8, 1024);
-    captureBRDF.Capture(0);
-    GLuint BRDF = captureBRDF.GetTexture();
-    cam.Update(true);
-
     Material material(
     {
     	{ texture, Material::Type::Color },
@@ -81,10 +52,9 @@ int main()
     	{ metalness, Material::Type::Metalness },
     	{ ao, Material::Type::AmbientOcclusion },
     	{ roughness, Material::Type::Roughness },
-        { irr, Material::Type::Irradiance },
-        { filtered, Material::Type::PrefilteredMap },
-        { BRDF, Material::Type::LUT }
     });
+    renderer.SetupMaterial(material);
+
     Material sphereMaterial(
     {
     	{ glm::vec3(0.8, 0.8, 0.8), Material::Type::Color },
@@ -92,29 +62,32 @@ int main()
     	{ glm::vec3(0.8), Material::Type::Metalness },
     	//{ ao, Material::Type::AmbientOcclusion },
     	{ glm::vec3(0.4), Material::Type::Roughness },
-        { irr, Material::Type::Irradiance },
-        { filtered, Material::Type::PrefilteredMap },
-        { BRDF, Material::Type::LUT }
+    });
+    renderer.SetupMaterial(sphereMaterial);
+
+    Material skyboxMaterial(
+    {
+        { renderer.GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap }
     });
     
     // All the shapes
-    auto s = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, &shader, &m, man.get());
+    auto s = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, renderer.GetShader(Renderer::ShaderType::Main), &m, man.get());
     s->SetPosition({ 10, 30, 10 });
 
-    auto s1 = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, &shader, &m, man.get());
+    auto s1 = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, renderer.GetShader(Renderer::ShaderType::Main), &m, man.get());
     s1->SetPosition({ 10, 36, 10 });
 
-    auto s2 = std::make_shared<Shape>(rp3d::Vector3{ 1.5, 1.5, 3 }, &material, &shader, &m, man.get());
+    auto s2 = std::make_shared<Shape>(rp3d::Vector3{ 1.5, 1.5, 3 }, &material, renderer.GetShader(Renderer::ShaderType::Main), &m, man.get());
     s2->SetPosition({ 10, 13, 10 });
     
-    auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 500, 500, 500 }, &envMat, &skyboxshader, &m, nullptr);
+    auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 500, 500, 500 }, &skyboxMaterial, renderer.GetShader(Renderer::ShaderType::Skybox), &m, nullptr);
     
     // Loading a sphere model
-    auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material>{ sphereMaterial }, &shader, &m, nullptr, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
+    auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material>{ sphereMaterial }, renderer.GetShader(Renderer::ShaderType::Main), &m, nullptr, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
     //sphere->CreateSphereShape(); // Creating sphere collision shape for a model
     sphere->SetPosition({ 10.f, 10.f, 10.f });
 
-    auto terrain = std::make_shared<Model>("../terrain.obj", std::vector<Material>{ material }, &shader, &m, man.get(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
+    auto terrain = std::make_shared<Model>("../terrain.obj", std::vector<Material>{ material }, renderer.GetShader(Renderer::ShaderType::Main), &m, man.get(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
     terrain->CreateConcaveShape();
     terrain->SetPosition({ 10.f, -30.f, 10.f });
 
@@ -142,7 +115,7 @@ int main()
 
     scene.Save("hello.json");
 
-    ShadowManager shadows(&scene, { &l }, &shader, &depth, glm::ivec2(2048, 2048));
+    ShadowManager shadows(&scene, { &l }, renderer.GetShader(Renderer::ShaderType::Main), renderer.GetShader(Renderer::ShaderType::Depth), glm::ivec2(2048, 2048));
 
     ListenerWrapper::SetPosition(cam.GetPosition());
     ListenerWrapper::SetOrientation(cam.GetOrientation());
@@ -168,13 +141,13 @@ int main()
 
         shadows.Update();
 		
-        scene.Draw(&buf);
+        scene.Draw(renderer.GetFramebuffer(Renderer::FramebufferType::Main));
         
-        post.Bind();
-        post.SetUniform1f("exposure", 1.5);
+        renderer.GetShader(Renderer::ShaderType::Post)->Bind();
+        renderer.GetShader(Renderer::ShaderType::Main)->SetUniform1f("exposure", 1.5);
 
         //glDisable(GL_DEPTH_TEST);
-        buf.Draw();
+        renderer.GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
         //glEnable(GL_DEPTH_TEST);
         //transparency.Draw();
     });
