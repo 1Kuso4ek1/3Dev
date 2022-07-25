@@ -32,6 +32,9 @@ public:
         Transparency
     };
 
+    static Renderer* GetInstance();
+    static void DeleteInstance();
+
     void Init(sf::Window& w, std::string environmentMapFilename, Matrices& m, uint skyboxSideSize = 256, uint irradianceSideSize = 32, uint prefilteredSideSize = 256);
 
     GLuint GetTexture(TextureType type);
@@ -41,6 +44,10 @@ public:
     void SetupMaterial(Material& mat);
 
 private:
+    Renderer() {}
+
+    static Renderer* instance;
+
     std::unordered_map<TextureType, GLuint> textures;
     std::unordered_map<ShaderType, std::shared_ptr<Shader>> shaders;
     std::unordered_map<FramebufferType, std::shared_ptr<Framebuffer>> framebuffers;

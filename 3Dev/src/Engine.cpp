@@ -71,6 +71,7 @@ void Engine::Launch()
     }
 
     Log::Write("Engine closed", Log::Type::Info);
+    Renderer::DeleteInstance();
 }
 
 void Engine::Close()

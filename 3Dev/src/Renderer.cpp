@@ -1,5 +1,23 @@
 #include <Renderer.hpp>
 
+Renderer* Renderer::instance = nullptr;
+
+Renderer* Renderer::GetInstance()
+{
+    if(instance) return instance;
+    else
+    {
+        instance = new Renderer;
+        return instance;
+    }
+}
+
+void Renderer::DeleteInstance()
+{
+    if(instance)
+        delete instance;
+}
+
 void Renderer::Init(sf::Window& w, std::string environmentMapFilename, Matrices& m, uint skyboxSideSize, uint irradianceSideSize, uint prefilteredSideSize)
 {
     shaders[ShaderType::Main] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "vertex.vs", std::string(SHADERS_DIRECTORY) + "fragment.frag");
@@ -40,6 +58,8 @@ void Renderer::Init(sf::Window& w, std::string environmentMapFilename, Matrices&
     captureBRDF.Capture(0);
     GLuint BRDF = captureBRDF.GetTexture();
     textures[TextureType::LUT] = BRDF;
+
+    Log::Write("Renderer successfully initialized", Log::Type::Info);
 }
 
 GLuint Renderer::GetTexture(TextureType type)
