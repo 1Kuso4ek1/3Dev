@@ -11,6 +11,7 @@
 #include "SceneManager.hpp"
 #include "ShadowManager.hpp"
 #include "SoundManager.hpp"
+#include "Renderer.hpp"
 #include <functional>
 
 /*

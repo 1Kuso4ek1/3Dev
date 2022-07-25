@@ -31,9 +31,7 @@ int main()
     engine.EventLoop([&](sf::Event& event)
     {
         if(event.type == sf::Event::Resized) // If the window is resized
-        {
             renderer.GetFramebuffer(Renderer::FramebufferType::Main)->RecreateTexture(event.size.width, event.size.height); // Resizing framebuffer texture
-        }
 
         if(event.type == sf::Event::Closed) engine.Close(); // Closing the window
     });
@@ -51,17 +49,15 @@ int main()
     	{ normalmap, Material::Type::Normal },
     	{ metalness, Material::Type::Metalness },
     	{ ao, Material::Type::AmbientOcclusion },
-    	{ roughness, Material::Type::Roughness },
+    	{ roughness, Material::Type::Roughness }
     });
     renderer.SetupMaterial(material);
 
     Material sphereMaterial(
     {
     	{ glm::vec3(0.8, 0.8, 0.8), Material::Type::Color },
-    	//{ normalmap, Material::Type::Normal },
     	{ glm::vec3(0.8), Material::Type::Metalness },
-    	//{ ao, Material::Type::AmbientOcclusion },
-    	{ glm::vec3(0.4), Material::Type::Roughness },
+    	{ glm::vec3(0.4), Material::Type::Roughness }
     });
     renderer.SetupMaterial(sphereMaterial);
 
