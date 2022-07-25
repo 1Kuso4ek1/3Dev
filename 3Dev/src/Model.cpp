@@ -1,15 +1,23 @@
 #include "Model.hpp"
 
 Model::Model(Shader* shader)
-			: transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), shader(shader) {}
+	 : transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), shader(shader)			
+{
+	if(shader) this->shader = shader;
+}
 
 Model::Model(std::vector<std::shared_ptr<Mesh>> meshes, Shader* shader)
-			: transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), meshes(meshes), shader(shader) {}
-
-Model::Model(std::string filename, std::vector<Material> mat, Shader* shader, Matrices* m, PhysicsManager* man, unsigned int flags)
-			: transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), mat(mat), shader(shader), filename(filename), m(m), man(man)
+	 : transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), meshes(meshes), shader(shader)
 {
-	if(man != nullptr) body = man->CreateRigidBody(transform);
+	if(shader) this->shader = shader;
+}
+
+Model::Model(std::string filename, std::vector<Material> mat, unsigned int flags, Shader* shader, Matrices* m, PhysicsManager* man)
+	 : transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), mat(mat), filename(filename), man(man)
+{
+	if(shader) this->shader = shader;
+	if(m) this->m = m;
+	if(man) body = man->CreateRigidBody(transform);
 
 	Load(filename, flags);
 }

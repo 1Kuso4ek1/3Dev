@@ -2,12 +2,11 @@
 
 void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency)
 {
-    if(fbo)
-    {
-        fbo->Bind();
-        auto size = fbo->GetSize();
-        glViewport(0, 0, size.x, size.y);
-    }
+    if(!fbo) fbo = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main);
+    
+    fbo->Bind();
+    auto size = fbo->GetSize();
+    glViewport(0, 0, size.x, size.y);
 
     float time = clock.restart().asSeconds();
     std::for_each(pManagers.begin(), pManagers.end(), [&](auto p) { p->Update(time); });
@@ -24,23 +23,22 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency)
         glDepthFunc(GL_LESS);
     }
 
-    if(fbo) fbo->Unbind();
+    fbo->Unbind();
 
-    if(transparency)
-    {
-        glFrontFace(GL_CW);
-        glDisable(GL_CULL_FACE);
-        transparency->Bind();
-        auto size = transparency->GetSize();
-        glViewport(0, 0, size.x, size.y);
+    if(!transparency) transparency = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency);
 
-        std::for_each(transparentModels.begin(), transparentModels.end(), [&](auto p) { p->Draw(camera, lights); });
-        std::for_each(transparentShapes.begin(), transparentShapes.end(), [&](auto p) { p->Draw(camera, lights); });
+    glFrontFace(GL_CW);
+    glDisable(GL_CULL_FACE);
+    transparency->Bind();
+    size = transparency->GetSize();
+    glViewport(0, 0, size.x, size.y);
 
-        transparency->Unbind();
-        glEnable(GL_CULL_FACE);
-        glFrontFace(GL_CCW);
-    }
+    std::for_each(transparentModels.begin(), transparentModels.end(), [&](auto p) { p->Draw(camera, lights); });
+    std::for_each(transparentShapes.begin(), transparentShapes.end(), [&](auto p) { p->Draw(camera, lights); });
+
+    transparency->Unbind();
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
 }
 
 void SceneManager::AddObject(std::shared_ptr<Model> model)

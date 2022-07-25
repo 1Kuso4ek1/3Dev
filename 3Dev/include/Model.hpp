@@ -6,6 +6,7 @@
 #include "Light.hpp"
 #include "Mesh.hpp"
 #include "PhysicsManager.hpp"
+#include "Renderer.hpp"
 
 struct Keyframe
 {
@@ -47,9 +48,10 @@ struct Animation
 class Model
 {
 public:
-	Model(Shader* shader);
-	Model(std::vector<std::shared_ptr<Mesh>> meshes, Shader* shader);
-	Model(std::string filename, std::vector<Material> mat, Shader* shader, Matrices* m, PhysicsManager* man, unsigned int flags = 0);
+	Model(Shader* shader = nullptr);
+	Model(std::vector<std::shared_ptr<Mesh>> meshes, Shader* shader = nullptr);
+	Model(std::string filename, std::vector<Material> mat, unsigned int flags = aiProcess_Triangulate,
+		  Shader* shader = nullptr, Matrices* m = nullptr, PhysicsManager* man = nullptr);
 
 	void Load(std::string filename, unsigned int flags = 0);
 
@@ -112,8 +114,9 @@ private:
 	
 	std::vector<std::shared_ptr<Mesh>> meshes;
 	
-	Matrices* m;
-	Shader* shader;
+	Matrices* m = Renderer::GetInstance()->GetMatrices();
+	Shader* shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
+	
 	std::vector<Material> mat;
 	std::vector<Animation> anims;
 

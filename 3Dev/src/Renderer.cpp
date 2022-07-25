@@ -18,7 +18,7 @@ void Renderer::DeleteInstance()
         delete instance;
 }
 
-void Renderer::Init(sf::Window& w, std::string environmentMapFilename, Matrices& m, uint skyboxSideSize, uint irradianceSideSize, uint prefilteredSideSize)
+void Renderer::Init(sf::Window& w, std::string environmentMapFilename, uint skyboxSideSize, uint irradianceSideSize, uint prefilteredSideSize)
 {
     shaders[ShaderType::Main] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "vertex.vs", std::string(SHADERS_DIRECTORY) + "fragment.frag");
     shaders[ShaderType::Skybox] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "skybox.vs", std::string(SHADERS_DIRECTORY) + "skybox.frag");
@@ -40,7 +40,7 @@ void Renderer::Init(sf::Window& w, std::string environmentMapFilename, Matrices&
         { LoadHDRTexture(environmentMapFilename), Material::Type::Environment }
     });
 
-    Shape captureCube({ 500, 500, 500 }, &environmentMaterial, shaders[ShaderType::Environment].get(), &m, nullptr);
+    Shape captureCube({ 1, 1, 1 }, &environmentMaterial, shaders[ShaderType::Environment].get(), &m);
     GLuint cubemap = capture.CaptureCubemap(captureCube, m);
     textures[TextureType::Skybox] = cubemap;
 
@@ -77,9 +77,14 @@ Framebuffer* Renderer::GetFramebuffer(FramebufferType type)
     return framebuffers[type].get();
 }
 
+Matrices* Renderer::GetMatrices()
+{
+    return &m;
+}
+
 void Renderer::SetupMaterial(Material& mat)
 {
     if(!mat.Contains(Material::Type::Irradiance)) mat.AddParameter(GetTexture(TextureType::Irradiance), Material::Type::Irradiance);
-	if(!mat.Contains(Material::Type::PrefilteredMap)) mat.AddParameter(GetTexture(TextureType::Prefiltered), Material::Type::PrefilteredMap);
-	if(!mat.Contains(Material::Type::LUT)) mat.AddParameter(GetTexture(TextureType::LUT), Material::Type::LUT);
+    if(!mat.Contains(Material::Type::PrefilteredMap)) mat.AddParameter(GetTexture(TextureType::Prefiltered), Material::Type::PrefilteredMap);
+    if(!mat.Contains(Material::Type::LUT)) mat.AddParameter(GetTexture(TextureType::LUT), Material::Type::LUT);
 }

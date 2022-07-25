@@ -3,6 +3,11 @@
 Shape::Shape(const rp3d::Vector3& size, Material* mat, Shader* shader, Matrices* m, PhysicsManager* man)
 			: size(size), tr({ 0, 0, 0 }, { 0, 0, 0, 1 }), shader(shader), mat(mat), m(m)
 {
+	/*if(!shader)
+		this->shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
+	if(!m)
+		this->m = Renderer::GetInstance()->GetMatrices();*/
+
 	glGenBuffers(1, &vbo);
 	glGenBuffers(1, &ebo);
 	glGenVertexArrays(1, &vao);
@@ -25,7 +30,7 @@ Shape::Shape(const rp3d::Vector3& size, Material* mat, Shader* shader, Matrices*
 	
 	glBindVertexArray(0);
 
-	if(man != nullptr)
+	if(man)
 	{
 		shape = man->CreateBoxShape(size);
 		body = man->CreateRigidBody(tr);

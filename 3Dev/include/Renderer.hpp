@@ -1,6 +1,5 @@
 #pragma once
 #include "Utils.hpp"
-#include "Shape.hpp"
 #include "Framebuffer.hpp"
 
 class Renderer
@@ -35,11 +34,12 @@ public:
     static Renderer* GetInstance();
     static void DeleteInstance();
 
-    void Init(sf::Window& w, std::string environmentMapFilename, Matrices& m, uint skyboxSideSize = 256, uint irradianceSideSize = 32, uint prefilteredSideSize = 256);
+    void Init(sf::Window& w, std::string environmentMapFilename, uint skyboxSideSize = 256, uint irradianceSideSize = 32, uint prefilteredSideSize = 256);
 
     GLuint GetTexture(TextureType type);
     Shader* GetShader(ShaderType type);
     Framebuffer* GetFramebuffer(FramebufferType type);
+    Matrices* GetMatrices();
 
     void SetupMaterial(Material& mat);
 
@@ -47,6 +47,8 @@ private:
     Renderer() {}
 
     static Renderer* instance;
+
+    Matrices m;
 
     std::unordered_map<TextureType, GLuint> textures;
     std::unordered_map<ShaderType, std::shared_ptr<Shader>> shaders;

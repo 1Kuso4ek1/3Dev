@@ -6,9 +6,10 @@
 #include "Light.hpp"
 #include "PhysicsManager.hpp"
 
-class Shape {
+class Shape
+{
 public:
-	Shape(const rp3d::Vector3& size, Material* mat, Shader* shader, Matrices* m, PhysicsManager* man);
+	Shape(const rp3d::Vector3& size, Material* mat, Shader* shader, Matrices* m, PhysicsManager* man = nullptr);
 	~Shape();
 
 	void Draw(Camera* cam, std::vector<Light*> lights);

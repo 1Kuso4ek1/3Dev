@@ -1,8 +1,11 @@
 #include <ShadowManager.hpp>
 
-ShadowManager::ShadowManager(SceneManager* scene, std::vector<Light*> lights, Shader* mainShader, Shader* depthShader, glm::ivec2 size)
-                            : scene(scene), lights(lights), mainShader(mainShader), depthShader(depthShader), shadowSize(size)
+ShadowManager::ShadowManager(SceneManager* scene, std::vector<Light*> lights, glm::ivec2 size, Shader* mainShader, Shader* depthShader)
+                            : scene(scene), lights(lights), shadowSize(size)
 {
+    if(mainShader) this->mainShader = mainShader;
+    if(depthShader) this->depthShader = depthShader;
+
     glEnable(GL_CULL_FACE);
     textures.resize(lights.size(), 0);
     lightSpaces.resize(lights.size(), glm::mat4(1.0));

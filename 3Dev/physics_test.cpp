@@ -12,11 +12,9 @@ int main()
     engine.GetWindow().setMouseCursorVisible(false); // Hiding the cursor
     engine.GetWindow().setMouseCursorGrabbed(true); // Grabbing the cursor
 
-    Matrices m;
+    Renderer::GetInstance()->Init(engine.GetWindow(), "../textures/park.hdr");
 
-    Renderer::GetInstance()->Init(engine.GetWindow(), "../textures/park.hdr", m);
-
-    Camera cam(&engine.GetWindow(), &m, { 0, 10, 0 }, 0.5, 70, 0.001, 5000); // Main camera
+    Camera cam(&engine.GetWindow(), Renderer::GetInstance()->GetMatrices(), { 0, 10, 0 }, 0.5, 70, 0.001, 5000); // Main camera
 
     // Textures for a material
     GLuint texture = LoadTexture("../textures/metal_color.jpg"), normalmap = LoadTexture("../textures/metal_normal.jpg"),
@@ -64,25 +62,29 @@ int main()
     {
         { Renderer::GetInstance()->GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap }
     });
+
+    Shader* mainShader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
+    Shader* skyboxShader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Skybox);
+    Matrices* m = Renderer::GetInstance()->GetMatrices();
     
     // All the shapes
-    auto s = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main), &m, man.get());
+    auto s = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, mainShader, m, man.get());
     s->SetPosition({ 10, 30, 10 });
 
-    auto s1 = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main), &m, man.get());
+    auto s1 = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, mainShader, m, man.get());
     s1->SetPosition({ 10, 36, 10 });
 
-    auto s2 = std::make_shared<Shape>(rp3d::Vector3{ 1.5, 1.5, 3 }, &material, Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main), &m, man.get());
+    auto s2 = std::make_shared<Shape>(rp3d::Vector3{ 1.5, 1.5, 3 }, &material, mainShader, m, man.get());
     s2->SetPosition({ 10, 13, 10 });
     
-    auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 500, 500, 500 }, &skyboxMaterial, Renderer::GetInstance()->GetShader(Renderer::ShaderType::Skybox), &m, nullptr);
+    auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 1, 1, 1 }, &skyboxMaterial, skyboxShader, m);
     
     // Loading a sphere model
-    auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material>{ sphereMaterial }, Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main), &m, nullptr, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
+    auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material>{ sphereMaterial }, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
     //sphere->CreateSphereShape(); // Creating sphere collision shape for a model
     sphere->SetPosition({ 10.f, 10.f, 10.f });
 
-    auto terrain = std::make_shared<Model>("../terrain.obj", std::vector<Material>{ material }, Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main), &m, man.get(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
+    auto terrain = std::make_shared<Model>("../terrain.obj", std::vector<Material>{ material }, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, nullptr, nullptr, man.get());
     terrain->CreateConcaveShape();
     terrain->SetPosition({ 10.f, -30.f, 10.f });
 
@@ -110,7 +112,7 @@ int main()
 
     scene.Save("hello.json");
 
-    ShadowManager shadows(&scene, { &l }, Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main), Renderer::GetInstance()->GetShader(Renderer::ShaderType::Depth), glm::ivec2(2048, 2048));
+    ShadowManager shadows(&scene, { &l }, glm::ivec2(2048, 2048));
 
     ListenerWrapper::SetPosition(cam.GetPosition());
     ListenerWrapper::SetOrientation(cam.GetOrientation());
@@ -139,7 +141,7 @@ int main()
         scene.Draw(Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main));
         
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main)->SetUniform1f("exposure", 1.5);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 1.5);
 
         //glDisable(GL_DEPTH_TEST);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
