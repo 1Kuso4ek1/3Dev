@@ -1,34 +1,13 @@
 #include "Shape.hpp"
 
-Shape::Shape(const rp3d::Vector3& size, Material* mat, Shader* shader, Matrices* m, PhysicsManager* man)
-			: size(size), tr({ 0, 0, 0 }, { 0, 0, 0, 1 }), shader(shader), mat(mat), m(m)
+Shape::Shape(const rp3d::Vector3& size, Material* mat, PhysicsManager* man, Shader* shader, Matrices* m)
+			: size(size), tr({ 0, 0, 0 }, { 0, 0, 0, 1 }), mat(mat)
 {
-	/*if(!shader)
-		this->shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
-	if(!m)
-		this->m = Renderer::GetInstance()->GetMatrices();*/
+	if(shader) this->shader = shader;
+	if(m) this->m = m;
 
-	glGenBuffers(1, &vbo);
-	glGenBuffers(1, &ebo);
-	glGenVertexArrays(1, &vao);
-	
-	glBindVertexArray(vao);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, 0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 32, (void*)12);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 32, (void*)24);
-	
-	glBindVertexArray(0);
+	cube = std::make_shared<Mesh>();
+	cube->CreateCube();
 
 	if(man)
 	{
@@ -36,13 +15,6 @@ Shape::Shape(const rp3d::Vector3& size, Material* mat, Shader* shader, Matrices*
 		body = man->CreateRigidBody(tr);
 		collider = body->addCollider(shape, rp3d::Transform::identity());
 	}
-}
-
-Shape::~Shape()
-{
-	glDeleteBuffers(1, &vbo);
-	glDeleteBuffers(1, &ebo);
-	glDeleteVertexArrays(1, &vao);
 }
 
 void Shape::Draw(Camera* cam, std::vector<Light*> lights)
@@ -67,9 +39,7 @@ void Shape::Draw(Camera* cam, std::vector<Light*> lights)
 	shader->SetUniform1i("bones", 0);
 	m->UpdateShader(shader);
 	
-	glBindVertexArray(vao);
-	glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+	cube->Draw();
 
 	mat->ResetShader(shader);
 	
@@ -80,6 +50,7 @@ void Shape::DrawSkybox()
 {
 	auto tex = mat->GetParameters();
 	auto it = std::find_if(tex.begin(), tex.end(), [](auto& a) { return a.second == Material::Type::Cubemap; });
+	auto shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Skybox);
 	
 	if(it == tex.end()) return;
 
@@ -92,9 +63,7 @@ void Shape::DrawSkybox()
 	shader->SetUniform1i("cubemap", 0);
 	m->UpdateShader(shader);
 
-	glBindVertexArray(vao);
-	glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+	cube->Draw();
 
 	m->PopMatrix();
 }

@@ -41,8 +41,6 @@ public:
     Framebuffer* GetFramebuffer(FramebufferType type);
     Matrices* GetMatrices();
 
-    void SetupMaterial(Material& mat);
-
 private:
     Renderer() {}
 

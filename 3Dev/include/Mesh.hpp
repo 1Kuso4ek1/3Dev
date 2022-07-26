@@ -35,6 +35,7 @@ public:
      * @param aabb bounding box of the mesh
      */
     Mesh(std::vector<Vertex> data, std::vector<GLuint> indices, aiAABB aabb, std::vector<Bone> bones = {}, glm::mat4 transformation = glm::mat4(1.0));
+    Mesh() {}
     ~Mesh();
 
     // Simple draw fucntion without any shaders
@@ -55,8 +56,12 @@ public:
     // @return bounding box of this mesh
     aiAABB GetAABB();
 
+    void CreateCube();
+
 private:
     int BonesCount(Bone& b);
+
+    void SetupBuffers();
 
     aiAABB aabb;
 

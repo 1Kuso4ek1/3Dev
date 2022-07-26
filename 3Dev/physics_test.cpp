@@ -48,7 +48,6 @@ int main()
     	{ ao, Material::Type::AmbientOcclusion },
     	{ roughness, Material::Type::Roughness }
     });
-    Renderer::GetInstance()->SetupMaterial(material);
 
     Material sphereMaterial(
     {
@@ -56,35 +55,30 @@ int main()
     	{ glm::vec3(0.8), Material::Type::Metalness },
     	{ glm::vec3(0.4), Material::Type::Roughness }
     });
-    Renderer::GetInstance()->SetupMaterial(sphereMaterial);
 
     Material skyboxMaterial(
     {
         { Renderer::GetInstance()->GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap }
     });
-
-    Shader* mainShader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
-    Shader* skyboxShader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Skybox);
-    Matrices* m = Renderer::GetInstance()->GetMatrices();
     
     // All the shapes
-    auto s = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, mainShader, m, man.get());
+    auto s = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, man.get());
     s->SetPosition({ 10, 30, 10 });
 
-    auto s1 = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, mainShader, m, man.get());
+    auto s1 = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, man.get());
     s1->SetPosition({ 10, 36, 10 });
 
-    auto s2 = std::make_shared<Shape>(rp3d::Vector3{ 1.5, 1.5, 3 }, &material, mainShader, m, man.get());
+    auto s2 = std::make_shared<Shape>(rp3d::Vector3{ 1.5, 1.5, 3 }, &material, man.get());
     s2->SetPosition({ 10, 13, 10 });
     
-    auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 1, 1, 1 }, &skyboxMaterial, skyboxShader, m);
+    auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 1, 1, 1 }, &skyboxMaterial);
     
     // Loading a sphere model
     auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material>{ sphereMaterial }, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
     //sphere->CreateSphereShape(); // Creating sphere collision shape for a model
     sphere->SetPosition({ 10.f, 10.f, 10.f });
 
-    auto terrain = std::make_shared<Model>("../terrain.obj", std::vector<Material>{ material }, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, nullptr, nullptr, man.get());
+    auto terrain = std::make_shared<Model>("../terrain.obj", std::vector<Material>{ material }, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, man.get());
     terrain->CreateConcaveShape();
     terrain->SetPosition({ 10.f, -30.f, 10.f });
 

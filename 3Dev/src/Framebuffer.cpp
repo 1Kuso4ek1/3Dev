@@ -109,8 +109,10 @@ GLuint Framebuffer::Capture(GLuint texture)
 	return out;
 }
 
-GLuint Framebuffer::CaptureCubemap(Shape& shape, Matrices& m, bool isSkybox)
+GLuint Framebuffer::CaptureCubemap(Shader* shader, GLuint tex, Matrices& m, bool isSkybox)
 {
+	Mesh cube;
+	cube.CreateCube();
 	GLuint cubemap = CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
 	m.PushMatrix();
 	m.GetProjection() = glm::perspective(glm::radians(90.0), 1.0, 0.1, 1000.0);
@@ -125,11 +127,38 @@ GLuint Framebuffer::CaptureCubemap(Shape& shape, Matrices& m, bool isSkybox)
 		{
 			glDepthFunc(GL_LEQUAL);
 			glDisable(GL_CULL_FACE);
-			shape.DrawSkybox();
+
+			m.PushMatrix();
+
+			shader->Bind();
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+			
+			shader->SetUniform1i("cubemap", 0);
+			m.UpdateShader(shader);
+
+			cube.Draw();
+
+			m.PopMatrix();
+			
 			glEnable(GL_CULL_FACE);
 			glDepthFunc(GL_LESS);
 		}
-		else shape.Draw(nullptr, {});
+		else 
+		{
+			m.PushMatrix();
+
+			shader->Bind();
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, tex);
+			
+			shader->SetUniform1i("environment", 0);
+			m.UpdateShader(shader);
+
+			cube.Draw();
+
+			m.PopMatrix();
+		}
 	}
 	Unbind();
 	m.PopMatrix();
@@ -139,17 +168,19 @@ GLuint Framebuffer::CaptureCubemap(Shape& shape, Matrices& m, bool isSkybox)
 	return cubemap;
 }
 
-GLuint Framebuffer::CaptureCubemapMipmaps(Shape& shape, Matrices& m, int maxLevel, int samples)
+GLuint Framebuffer::CaptureCubemapMipmaps(Shader* shader, GLuint tex, Matrices& m, int maxLevel, int samples)
 {
+	Mesh cube;
+	cube.CreateCube();
 	GLuint cubemap = CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
 	m.PushMatrix();
 	m.GetProjection() = glm::perspective(glm::radians(90.0), 1.0, 0.1, 1000.0);
 	Bind();
-	shape.GetShader()->Bind();
-	shape.GetShader()->SetUniform1i("samples", samples);
+	shader->Bind();
+	shader->SetUniform1i("samples", samples);
 	for(int i = 0; i < maxLevel; i++)
 	{
-		shape.GetShader()->SetUniform1f("roughness", (float)i / (float)(maxLevel - 1));
+		shader->SetUniform1f("roughness", (float)i / (float)(maxLevel - 1));
 		glm::ivec2 msize = size / (int)std::pow(2, i);
 		glViewport(0, 0, msize.x, msize.x);
 		for(int j = 0; j < 6; j++)
@@ -160,7 +191,20 @@ GLuint Framebuffer::CaptureCubemapMipmaps(Shape& shape, Matrices& m, int maxLeve
 
 			glDepthFunc(GL_LEQUAL);
 			glDisable(GL_CULL_FACE);
-			shape.DrawSkybox();
+			
+			m.PushMatrix();
+
+			shader->Bind();
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+			
+			shader->SetUniform1i("cubemap", 0);
+			m.UpdateShader(shader);
+
+			cube.Draw();
+
+			m.PopMatrix();
+
 			glEnable(GL_CULL_FACE);
 			glDepthFunc(GL_LESS);
 		}

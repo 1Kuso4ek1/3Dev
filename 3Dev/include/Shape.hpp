@@ -2,6 +2,8 @@
 #include "Shader.hpp"
 #include "Material.hpp"
 #include "Matrices.hpp"
+#include "Mesh.hpp"
+#include "Renderer.hpp"
 #include "Camera.hpp"
 #include "Light.hpp"
 #include "PhysicsManager.hpp"
@@ -9,8 +11,7 @@
 class Shape
 {
 public:
-	Shape(const rp3d::Vector3& size, Material* mat, Shader* shader, Matrices* m, PhysicsManager* man = nullptr);
-	~Shape();
+	Shape(const rp3d::Vector3& size, Material* mat, PhysicsManager* man = nullptr, Shader* shader = nullptr, Matrices* m = nullptr);
 
 	void Draw(Camera* cam, std::vector<Light*> lights);
 	void DrawSkybox();
@@ -31,50 +32,14 @@ public:
 
 private:
 	Material* mat;
-	Matrices* m;
-	Shader* shader;
+	Matrices* m = Renderer::GetInstance()->GetMatrices();
+	Shader* shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
 
 	rp3d::BoxShape* shape = nullptr;
 	rp3d::RigidBody* body = nullptr;
 	rp3d::Collider* collider = nullptr;
 
-	float data[192] = 
-	{
-		1, 1, -1, 0, 1, 0, 0, 0,
-		-1, 1, -1, 0, 1, 0, 1, 0,
-		-1, 1, 1, 0, 1, 0, 1, 1,
-		1, 1, 1, 0, 1, 0, 0, 1,
-		1, -1, 1, 0, 0, 1, 0, 0,
-		1, 1, 1, 0, 0, 1, 1, 0,
-		-1, 1, 1, 0, 0, 1, 1, 1,
-		-1, -1, 1, 0, 0, 1, 0, 1,
-		-1, -1, 1, -1, 0, 0, 0, 0,
-		-1, 1, 1, -1, 0, 0, 1, 0,
-		-1, 1, -1, -1, 0, 0, 1, 1,
-		-1, -1, -1, -1, 0, 0, 0, 1,
-		-1, -1, -1, 0, -1, 0, 0, 0,
-		1, -1, -1, 0, -1, 0, 1, 0,
-		1, -1, 1, 0, -1, 0, 1, 1,
-		-1, -1, 1, 0, -1, 0, 0, 1,
-		1, -1, -1, 1, 0, 0, 0, 0,
-		1, 1, -1, 1, 0, 0, 1, 0,
-		1, 1, 1, 1, 0, 0, 1, 1,
-		1, -1, 1, 1, 0, 0, 0, 1,
-		-1, -1, -1, 0, 0, -1, 0, 0,
-		-1, 1, -1, 0, 0, -1, 1, 0,
-		1, 1, -1, 0, 0, -1, 1, 1,
-		1, -1, -1, 0, 0, -1, 0, 1
-	};
-
-	GLuint indices[36] = 
-	{
-		0, 1, 2, 0, 2, 3, 4, 5, 6,
-		4, 6, 7, 8, 9, 10, 8, 10, 11,
-		12, 13, 14, 12, 14, 15, 16, 17, 18,
-		16, 18, 19, 20, 21, 22, 20, 22, 23
-	};
-
-	GLuint vao, vbo, ebo;
+	std::shared_ptr<Mesh> cube;
 
 	rp3d::Vector3 size;
 	rp3d::Transform tr;

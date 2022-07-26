@@ -51,7 +51,7 @@ public:
 	Model(Shader* shader = nullptr);
 	Model(std::vector<std::shared_ptr<Mesh>> meshes, Shader* shader = nullptr);
 	Model(std::string filename, std::vector<Material> mat, unsigned int flags = aiProcess_Triangulate,
-		  Shader* shader = nullptr, Matrices* m = nullptr, PhysicsManager* man = nullptr);
+		  PhysicsManager* man = nullptr, Shader* shader = nullptr, Matrices* m = nullptr);
 
 	void Load(std::string filename, unsigned int flags = 0);
 

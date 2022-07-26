@@ -116,92 +116,7 @@ void SceneManager::RemoveAllObjects()
 
 void SceneManager::Save(std::string filename)
 {
-	std::vector<std::vector<Material>> materials;
-    std::vector<Material*> shapeMaterials;
-    
-    for(auto& i : models)
-    {
-        if(std::find_if(materials.begin(), materials.end(), [&](auto& a)
-            {
-                if(a.size() != i->GetMaterial().size()) return false;
-                for(int j = 0; j < a.size(); j++)
-                {
-                    for(int k = 0; k < i->GetMaterial().size(); k++)
-                        if(a[j] != i->GetMaterial()[k])
-                            return false;
-                }
-                return true;
-            }) == materials.end())
-        materials.push_back(i->GetMaterial());
-    }
-    for(auto& i : shapes)
-    {
-        if(std::find_if(shapeMaterials.begin(), shapeMaterials.end(), [&](auto& a)
-                {
-                    return *a == *i->GetMaterial();
-                }) == shapeMaterials.end())
-            shapeMaterials.push_back(i->GetMaterial());
-    }
-    for(int i = 0; i < models.size(); i++)
-    {
-        auto pos = models[i]->GetPosition();
-        auto size = models[i]->GetSize();
-        auto orient = models[i]->GetOrientation();
-        auto modelFilename = models[i]->GetFilename();
-
-        root["models"][i]["filename"] = modelFilename;
-        root["models"][i]["material"] = std::find_if(materials.begin(), materials.end(), [&](auto& a)
-                                        {
-                                            if(a.size() != models[i]->GetMaterial().size()) return false;
-                                            for(int j = 0; j < a.size(); j++)
-                                            {
-                                                for(int k = 0; k < models[i]->GetMaterial().size(); k++)
-                                                    if(a[j] != models[i]->GetMaterial()[k])
-                                                        return false;
-                                            }
-                                            return true;
-                                        }) - materials.begin();
-
-        root["models"][i]["position"]["x"] = pos.x;
-        root["models"][i]["position"]["y"] = pos.y;
-        root["models"][i]["position"]["z"] = pos.z;
-
-        root["models"][i]["orientation"]["x"] = orient.x;
-        root["models"][i]["orientation"]["y"] = orient.y;
-        root["models"][i]["orientation"]["z"] = orient.z;
-        root["models"][i]["orientation"]["w"] = orient.w;
-
-        root["models"][i]["size"]["x"] = size.x;
-        root["models"][i]["size"]["y"] = size.y;
-        root["models"][i]["size"]["z"] = size.z;
-    }
-    for(int i = 0; i < shapes.size(); i++)
-    {
-        auto pos = shapes[i]->GetPosition();
-        auto size = shapes[i]->GetSize();
-        auto orient = shapes[i]->GetOrientation();
-
-        root["shapes"][i]["material"] = std::find_if(shapeMaterials.begin(), shapeMaterials.end(), [&](auto& a)
-                                        {
-                                            return *a == *(shapes[i]->GetMaterial());
-                                        }) - shapeMaterials.begin();
-
-        root["shapes"][i]["position"]["x"] = pos.x;
-        root["shapes"][i]["position"]["y"] = pos.y;
-        root["shapes"][i]["position"]["z"] = pos.z;
-
-        root["shapes"][i]["orientation"]["x"] = orient.x;
-        root["shapes"][i]["orientation"]["y"] = orient.y;
-        root["shapes"][i]["orientation"]["z"] = orient.z;
-        root["shapes"][i]["orientation"]["w"] = orient.w;
-
-        root["shapes"][i]["size"]["x"] = size.x;
-        root["shapes"][i]["size"]["y"] = size.y;
-        root["shapes"][i]["size"]["z"] = size.z;
-    }
-    std::ofstream file(filename);
-    file << root.toStyledString();
-    file.close();
+	
 }
 
 void SceneManager::Load(std::string filename)
@@ -213,6 +128,8 @@ void SceneManager::SetMainShader(Shader* shader)
 {
     std::for_each(models.begin(), models.end(), [&](auto p) { p->SetShader(shader); });
     std::for_each(shapes.begin(), shapes.end(), [&](auto p) { p->SetShader(shader); });
+    std::for_each(transparentModels.begin(), transparentModels.end(), [&](auto p) { p->SetShader(shader); });
+    std::for_each(transparentShapes.begin(), transparentShapes.end(), [&](auto p) { p->SetShader(shader); });
 }
 
 void SceneManager::SetCamera(Camera* camera)

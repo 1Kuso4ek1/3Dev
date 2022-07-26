@@ -2,7 +2,7 @@
 #include "Utils.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
-#include "Shape.hpp"
+#include "Mesh.hpp"
 #include "Matrices.hpp"
 
 /*
@@ -44,9 +44,9 @@ public:
 
     GLuint Capture(GLuint texture = 0);
 
-    GLuint CaptureCubemap(Shape& shape, Matrices& m, bool isSkybox = false);
+    GLuint CaptureCubemap(Shader* shader, GLuint tex, Matrices& m, bool isSkybox = false);
 
-    GLuint CaptureCubemapMipmaps(Shape& shape, Matrices& m, int maxLevel, int samples);
+    GLuint CaptureCubemapMipmaps(Shader* shader, GLuint tex, Matrices& m, int maxLevel, int samples);
 
     /*
      * Returns the buffer texture

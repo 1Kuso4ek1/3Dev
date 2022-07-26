@@ -12,7 +12,7 @@ Model::Model(std::vector<std::shared_ptr<Mesh>> meshes, Shader* shader)
 	if(shader) this->shader = shader;
 }
 
-Model::Model(std::string filename, std::vector<Material> mat, unsigned int flags, Shader* shader, Matrices* m, PhysicsManager* man)
+Model::Model(std::string filename, std::vector<Material> mat, unsigned int flags, PhysicsManager* man, Shader* shader, Matrices* m)
 	 : transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), mat(mat), filename(filename), man(man)
 {
 	if(shader) this->shader = shader;

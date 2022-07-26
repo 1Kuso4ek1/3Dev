@@ -4,7 +4,15 @@
 
 Material::Material() {}
 
-Material::Material(std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>> parameters) : parameters(parameters) {}
+Material::Material(std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>> parameters) : parameters(parameters)
+{
+	if(!Contains(Type::Cubemap) && !Contains(Type::Environment))
+	{
+		if(!Contains(Type::Irradiance)) AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
+		if(!Contains(Type::PrefilteredMap)) AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
+		if(!Contains(Type::LUT)) AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::LUT), Type::LUT);
+	}
+}
 
 void Material::AddParameter(std::variant<glm::vec3, GLuint> parameter, Type type)
 {
