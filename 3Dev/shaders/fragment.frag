@@ -196,5 +196,5 @@ void main()
     	alpha = w;
 
     total += ambient;
-    color = vec4((emission + total) * (1.0 - shadow + ambient), alpha + ((total.x + total.y, + total.z) / 3.0));
+    color = vec4((emission + total) * (1.0 - shadow + ambient), (alpha < 1.0 ? alpha + ((total.x + total.y, + total.z) / 3.0) : 1.0));
 }

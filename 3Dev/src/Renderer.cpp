@@ -18,7 +18,7 @@ void Renderer::DeleteInstance()
         delete instance;
 }
 
-void Renderer::Init(sf::Window& w, std::string environmentMapFilename, uint skyboxSideSize, uint irradianceSideSize, uint prefilteredSideSize)
+void Renderer::Init(sf::Window& w, std::string environmentMapFilename, uint32_t skyboxSideSize, uint32_t irradianceSideSize, uint32_t prefilteredSideSize)
 {
     shaders[ShaderType::Main] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "vertex.vs", std::string(SHADERS_DIRECTORY) + "fragment.frag");
     shaders[ShaderType::Skybox] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "skybox.vs", std::string(SHADERS_DIRECTORY) + "skybox.frag");

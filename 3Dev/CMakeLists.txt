@@ -4,12 +4,17 @@ project(3Dev VERSION 1.1.0 LANGUAGES CXX)
 
 find_package(SFML 2.5.1 COMPONENTS system window network audio REQUIRED)
 find_package(assimp REQUIRED)
-find_package(GLEW 2.1.0 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(ReactPhysics3D REQUIRED)
 find_package(LightLog REQUIRED)
 find_package(glm REQUIRED)
 find_package(jsoncpp REQUIRED)
+
+if(UNIX OR APPLE)
+	find_package(GLEW 2.1.0 REQUIRED)
+elseif("${GLEW_INCLUDE_DIR}" STREQUAL "" OR "${GLEW_LIBRARIES}" STREQUAL "")
+	message(FATAL_ERROR "On Windows GLEW couldn't be found automatically, so you have to set GLEW_INCLUDE_DIR and GLEW_LIBRARIES manually")
+endif()
 
 add_library(3Dev 
 	src/Matrices.cpp

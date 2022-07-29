@@ -34,7 +34,7 @@ public:
     static Renderer* GetInstance();
     static void DeleteInstance();
 
-    void Init(sf::Window& w, std::string environmentMapFilename, uint skyboxSideSize = 256, uint irradianceSideSize = 32, uint prefilteredSideSize = 256);
+    void Init(sf::Window& w, std::string environmentMapFilename, uint32_t skyboxSideSize = 256, uint32_t irradianceSideSize = 32, uint32_t prefilteredSideSize = 256);
 
     GLuint GetTexture(TextureType type);
     Shader* GetShader(ShaderType type);
