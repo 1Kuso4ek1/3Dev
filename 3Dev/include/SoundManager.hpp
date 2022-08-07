@@ -22,6 +22,7 @@ public:
 
     void Play(std::string name, int id = 0);
     void PlayAt(std::string name, int id = 0, rp3d::Vector3 pos = { 0, 0, 0 });
+    void PlayMono(std::string name, int id = 0);
     void Stop(std::string name, int id = 0);
     void Pause(std::string name, int id = 0);
 

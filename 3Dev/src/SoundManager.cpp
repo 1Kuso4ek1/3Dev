@@ -49,9 +49,24 @@ void SoundManager::Play(std::string name, int id)
 
 void SoundManager::PlayAt(std::string name, int id, rp3d::Vector3 pos)
 {
+    if(sounds.size() > 254) sounds.erase(sounds.begin());
     auto it = std::find(buffers.begin(), buffers.end(), name);
-    it->pos = pos;
-    Play(name, id);
+    sounds[name + std::to_string(id)] = std::make_shared<sf::Sound>(it->buffer);
+    sounds[name + std::to_string(id)]->play();
+    it->UpdateActiveSound(sounds, id);
+    sounds[name + std::to_string(id)]->setRelativeToListener(false);
+    sounds[name + std::to_string(id)]->setPosition(pos.x, pos.y, pos.z);
+}
+
+void SoundManager::PlayMono(std::string name, int id)
+{
+    if(sounds.size() > 254) sounds.erase(sounds.begin());
+    auto it = std::find(buffers.begin(), buffers.end(), name);
+    sounds[name + std::to_string(id)] = std::make_shared<sf::Sound>(it->buffer);
+    sounds[name + std::to_string(id)]->play();
+    it->UpdateActiveSound(sounds, id);
+    sounds[name + std::to_string(id)]->setRelativeToListener(true);
+    sounds[name + std::to_string(id)]->setPosition(0, 0, 0);
 }
 
 void SoundManager::Stop(std::string name, int id)
