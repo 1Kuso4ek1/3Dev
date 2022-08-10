@@ -161,3 +161,13 @@ void SoundManager::UpdateAll(std::string name)
     if(it != buffers.end())
         it->UpdateActiveSounds(sounds);
 }
+
+std::vector<std::string> SoundManager::GetSounds()
+{
+    std::vector<std::string> ret;
+    std::for_each(buffers.begin(), buffers.end(), [&](auto& b)
+    {
+        ret.push_back(b.name);
+    });
+    return ret;
+}

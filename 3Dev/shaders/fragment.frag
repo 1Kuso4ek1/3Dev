@@ -184,7 +184,7 @@ void main()
     vec3 kspc = f;
     vec3 kdif = (1.0 - kspc) * (1.0 - metal);
     
-    vec2 brdf = texture(lut, vec2(max(dot(norm, normalize(camposout - mpos)), 0.0), rough)).xy;
+    vec2 brdf = normalize(texture(lut, vec2(max(dot(norm, normalize(camposout - mpos)), 0.0), rough)).xy);
     vec3 spc = prefiltered * (f * brdf.x + brdf.y);
 
     vec3 diffuse = irr * alb;

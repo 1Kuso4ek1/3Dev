@@ -36,6 +36,8 @@ public:
     void UpdateAll();
     void UpdateAll(std::string name);
 
+    std::vector<std::string> GetSounds();
+
 private:
 
     struct Sound
