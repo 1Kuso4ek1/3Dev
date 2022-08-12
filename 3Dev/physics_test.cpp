@@ -14,7 +14,7 @@ int main()
 
     Renderer::GetInstance()->Init(engine.GetWindow().getSize(), "../textures/park.hdr");
 
-    Camera cam(&engine.GetWindow(), Renderer::GetInstance()->GetMatrices(), { 0, 10, 0 }, 0.5, 70, 0.001, 5000); // Main camera
+    Camera cam(&engine.GetWindow(), { 0, 10, 0 }); // Main camera
 
     // Textures for a material
     GLuint texture = LoadTexture("../textures/metal_color.jpg"), normalmap = LoadTexture("../textures/metal_normal.jpg"),

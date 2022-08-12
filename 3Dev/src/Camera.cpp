@@ -1,14 +1,15 @@
 #include "Camera.hpp"
 
-Camera::Camera(sf::Window* window, Matrices* m, rp3d::Vector3 pos, float speed, float fov, float near, float far) : window(window), pos(pos), speed(speed), fov(fov), near(near), far(far), m(m)
+Camera::Camera(sf::Window* window, rp3d::Vector3 pos, float speed, float fov, float near, float far, Matrices* m) : window(window), pos(pos), speed(speed), fov(fov), near(near), far(far)
 {
+	if(m) this->m = m;
 	aspect = (float)window->getSize().x / (float)window->getSize().y;
 	UpdateMatrix();
 }
 
 void Camera::Update(bool force)
 {
-	if(((float)window->getSize().x / (float)window->getSize().y) != aspect || force)
+	if((((float)window->getSize().x / (float)window->getSize().y) != aspect || force) && viewportSize == sf::Vector2u(0, 0))
 	{
 		aspect = (float)window->getSize().x / (float)window->getSize().y;
 		UpdateMatrix();
@@ -57,6 +58,13 @@ void Camera::Look()
 void Camera::Look(const rp3d::Vector3& vec)
 {
 	m->GetView() = glm::lookAt(toglm(pos), toglm(vec), glm::vec3(0, 1, 0));
+}
+
+void Camera::SetViewportSize(const sf::Vector2u& size)
+{
+	viewportSize = size;
+	aspect = (float)size.x / (float)size.y;
+	UpdateMatrix();
 }
 
 void Camera::SetPosition(const rp3d::Vector3& vec)
