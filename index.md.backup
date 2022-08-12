@@ -4,7 +4,7 @@ Learn how to create your first project using 3Dev engine
 ### Building on Debian
 Almost everything we need can be obtained through apt
 ```
-sudo apt install build-essential cmake git g++ libsfml-dev libassimp-dev libglew-dev libglm-dev
+sudo apt install build-essential cmake git g++ libsfml-dev libassimp-dev libglew-dev libglm-dev libjsoncpp-dev
 ```
 There are 2 libraries that we must build from source: ReactPhysics3D and LightLog
 ### ReactPhysics3D
@@ -44,7 +44,9 @@ There also a small demo scene, you can launch it with
 > The only solution is to launch it with
 > ```
 > MESA_GL_VERSION_OVERRIDE=3.3 ./physics
-> ```  
+> ```
+
+
 ## Setting up a new project
 First, let's create a new folder and `CMakeLists.txt` in it
 ```
@@ -86,7 +88,6 @@ There's how to create a window...
 ...
     Engine engine;
 	
-    engine.GetSettings().depthBits = 24;
     engine.CreateWindow(1280, 720, "cool game");
     engine.Init();
 ...
@@ -131,4 +132,20 @@ Let's build it
 mkdir build && cd build
 cmake ..
 make
+```
+If you launch your project, you'll see just a blank screen, and... That's kinda boring, right? So let's initialize the most important thing: Renderer.
+Renderer class is a singleton, so we can access the only possible object with
+```
+Renderer::GetInstance()->...;
+```
+The function we need is `Renderer::Init`, which needs at least 2 parameters: size of viewport, and a path to the HDR environment. You can look for cool HDRIs on [polyhaven](https://polyhaven.com/) or [ambientcg](https://ambientcg.com/).  
+Found a good environment? Let's move on and initialize renderer right before event loop
+```
+Renderer::GetInstance()->Init(engine.GetWindow().getSize(), "cool_hdri.hdr");
+```
+Now we're gonna have all the shaders, framebuffers and textures.  
+Let's create a camera objects right after renderer initialization.  
+Camera's constructor needs at least 1 parameter - pointer to the sf::Window object.
+```
+Camera camera(&engine.GetWindow());
 ```
