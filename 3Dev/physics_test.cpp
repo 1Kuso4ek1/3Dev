@@ -12,7 +12,7 @@ int main()
     engine.GetWindow().setMouseCursorVisible(false); // Hiding the cursor
     engine.GetWindow().setMouseCursorGrabbed(true); // Grabbing the cursor
 
-    Renderer::GetInstance()->Init(engine.GetWindow(), "../textures/park.hdr");
+    Renderer::GetInstance()->Init(engine.GetWindow().getSize(), "../textures/park.hdr");
 
     Camera cam(&engine.GetWindow(), Renderer::GetInstance()->GetMatrices(), { 0, 10, 0 }, 0.5, 70, 0.001, 5000); // Main camera
 

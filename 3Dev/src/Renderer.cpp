@@ -18,7 +18,7 @@ void Renderer::DeleteInstance()
         delete instance;
 }
 
-void Renderer::Init(sf::Window& w, std::string environmentMapFilename, uint32_t skyboxSideSize, uint32_t irradianceSideSize, uint32_t prefilteredSideSize)
+void Renderer::Init(sf::Vector2u fbSize, std::string environmentMapFilename, uint32_t skyboxSideSize, uint32_t irradianceSideSize, uint32_t prefilteredSideSize)
 {
     shaders[ShaderType::Main] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "vertex.vs", std::string(SHADERS_DIRECTORY) + "fragment.frag");
     shaders[ShaderType::Skybox] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "skybox.vs", std::string(SHADERS_DIRECTORY) + "skybox.frag");
@@ -29,8 +29,8 @@ void Renderer::Init(sf::Window& w, std::string environmentMapFilename, uint32_t 
     shaders[ShaderType::Filtering] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "spcfiltering.vs", std::string(SHADERS_DIRECTORY) + "spcfiltering.frag");
     shaders[ShaderType::BRDF] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "brdf.vs", std::string(SHADERS_DIRECTORY) + "brdf.frag");
 
-    framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), w.getSize().x, w.getSize().y);
-    framebuffers[FramebufferType::Transparency] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), w.getSize().x, w.getSize().y);
+    framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
+    framebuffers[FramebufferType::Transparency] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
 
     Framebuffer capture(nullptr, skyboxSideSize, skyboxSideSize), captureIrr(nullptr, irradianceSideSize, irradianceSideSize),
                 captureSpc(nullptr, prefilteredSideSize, prefilteredSideSize), captureBRDF(shaders[ShaderType::BRDF].get(), 512, 512);
