@@ -22,6 +22,8 @@ public:
 	void SetMaterial(Material* mat);
 	void SetShader(Shader* shader);
 	
+	bool IsTransparent();
+	
 	Shader* GetShader();
 	rp3d::RigidBody* GetRigidBody();
 	Material* GetMaterial();
@@ -31,6 +33,8 @@ public:
 	rp3d::Vector3 GetSize();
 
 private:
+    bool transparent = false;
+    
 	Material* mat;
 	Matrices* m = Renderer::GetInstance()->GetMatrices();
 	Shader* shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);

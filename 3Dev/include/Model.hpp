@@ -86,6 +86,8 @@ public:
 
 	int GetMeshesCount();
 	int GetAnimationsCount();
+	
+	bool IsTransparent();
 		
 	rp3d::Vector3 GetPosition();
 	rp3d::Quaternion GetOrientation();
@@ -111,6 +113,7 @@ private:
 	bool ProcessBone(aiNode* node, std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap, Bone& out);
 
 	bool autoUpdateAnimation = true;
+	bool transparent = false;
 	
 	std::vector<std::shared_ptr<Mesh>> meshes;
 	

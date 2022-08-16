@@ -11,8 +11,15 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency)
     float time = clock.restart().asSeconds();
     std::for_each(pManagers.begin(), pManagers.end(), [&](auto p) { p->Update(time); });
 
-    std::for_each(models.begin(), models.end(), [&](auto p) { p->Draw(camera, lights); });
-    std::for_each(shapes.begin(), shapes.end(), [&](auto p) { p->Draw(camera, lights); });
+	// needed for materials without textures to render correctly in some cases
+    for(int i = 0; i < 16; i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+    std::for_each(models.begin(), models.end(), [&](auto p) { p.second->Draw(camera, lightsVector); });
+    std::for_each(shapes.begin(), shapes.end(), [&](auto p) { p.second->Draw(camera, lightsVector); });
 
     if(skybox)
     {
@@ -33,31 +40,35 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency)
     size = transparency->GetSize();
     glViewport(0, 0, size.x, size.y);
 
-    std::for_each(transparentModels.begin(), transparentModels.end(), [&](auto p) { p->Draw(camera, lights); });
-    std::for_each(transparentShapes.begin(), transparentShapes.end(), [&](auto p) { p->Draw(camera, lights); });
+    std::for_each(models.begin(), models.end(), [&](auto p) { if(p.second->IsTransparent()) p.second->Draw(camera, lightsVector); });
+    std::for_each(shapes.begin(), shapes.end(), [&](auto p) { if(p.second->IsTransparent()) p.second->Draw(camera, lightsVector); });
 
     transparency->Unbind();
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
 }
 
-void SceneManager::AddObject(std::shared_ptr<Model> model)
+void SceneManager::AddObject(std::shared_ptr<Model> model, std::string name)
 {
-    if(std::find_if(model->GetMaterial().begin(),
-                    model->GetMaterial().end(),
-                    [&](auto& a)
-                    {
-                        return a.Contains(Material::Type::Opacity);
-                    }) != model->GetMaterial().end())
-        transparentModels.emplace_back(model);
-    else models.emplace_back(model);
+    int nameCount = std::count_if(models.begin(), models.end(), [&](auto& p)
+                    { return p.first.find(name) != std::string::npos; });
+    models[name + (nameCount ? std::to_string(nameCount) : "")] = model;
 }
 
-void SceneManager::AddObject(std::shared_ptr<Shape> shape)
+void SceneManager::AddObject(std::shared_ptr<Shape> shape, std::string name)
 {
-    if(shape->GetMaterial()->Contains(Material::Type::Opacity))
-        transparentShapes.emplace_back(shape);
-    else shapes.emplace_back(shape);
+    int nameCount = std::count_if(shapes.begin(), shapes.end(), [&](auto& p)
+                    { return p.first.find(name) != std::string::npos; });
+                    
+    shapes[name + (nameCount ? std::to_string(nameCount) : "")] = shape;
+}
+
+void SceneManager::AddMaterial(Material* material, std::string name)
+{
+    int nameCount = std::count_if(materials.begin(), materials.end(), [&](auto& p)
+                    { return p.first.find(name) != std::string::npos; });
+                    
+    materials[name + (nameCount ? std::to_string(nameCount) : "")] = material;
 }
 
 void SceneManager::AddPhysicsManager(std::shared_ptr<PhysicsManager> manager)
@@ -65,53 +76,53 @@ void SceneManager::AddPhysicsManager(std::shared_ptr<PhysicsManager> manager)
     pManagers.emplace_back(manager);
 }
 
-void SceneManager::AddLight(Light* light)
+void SceneManager::AddLight(Light* light, std::string name)
 {
-    lights.emplace_back(light);
+    int nameCount = std::count_if(lights.begin(), lights.end(), [&](auto& p)
+                    { return p.first.find(name) != std::string::npos; });
+                    
+    lights[name + (nameCount ? std::to_string(nameCount) : "")] = light;
 }
 
 void SceneManager::RemoveObject(std::shared_ptr<Model> model)
 {
-    auto it = std::find(models.begin(), models.end(), model);
-    if(it != models.end())
-        models.erase(it);
-
-    auto it1 = std::find(transparentModels.begin(), transparentModels.end(), model);
-    if(it1 != transparentModels.end())
-        transparentModels.erase(it1);
+    auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second == model; });
+    if(it != models.end()) models.erase(it);
 }
 
 void SceneManager::RemoveObject(std::shared_ptr<Shape> shape)
 {
-    auto it = std::find(shapes.begin(), shapes.end(), shape);
-    if(it != shapes.end())
-        shapes.erase(it);
+    auto it = std::find_if(shapes.begin(), shapes.end(), [&](auto& p) { return p.second == shape; });
+    if(it != shapes.end()) shapes.erase(it);
+}
 
-    auto it1 = std::find(transparentShapes.begin(), transparentShapes.end(), shape);
-    if(it1 != transparentShapes.end())
-        transparentShapes.erase(it1);
+void SceneManager::RemoveMaterial(Material* material)
+{
+    auto it = std::find_if(materials.begin(), materials.end(), [&](auto& p) { return p.second == material; });
+    if(it != materials.end())
+        materials.erase(it);
 }
 
 void SceneManager::RemovePhysicsManager(std::shared_ptr<PhysicsManager> manager)
 {
     auto it = std::find(pManagers.begin(), pManagers.end(), manager);
-    if(it != pManagers.end())
-        pManagers.erase(it);
+    if(it != pManagers.end()) pManagers.erase(it);
 }
 
 void SceneManager::RemoveLight(Light* light)
 {
-    auto it = std::find(lights.begin(), lights.end(), light);
-    if(it != lights.end())
+    auto it = std::find_if(lights.begin(), lights.end(), [&](auto& p) { return p.second == light; });
+    if(it != lights.end()) 
+    {
         lights.erase(it);
+        lightsVector.erase(std::find(lightsVector.begin(), lightsVector.end(), it->second));
+    }
 }
 
 void SceneManager::RemoveAllObjects()
 {
     models.clear();
     shapes.clear();
-    transparentModels.clear();
-    transparentShapes.clear();
 }
 
 void SceneManager::Save(std::string filename)
@@ -126,10 +137,8 @@ void SceneManager::Load(std::string filename)
 
 void SceneManager::SetMainShader(Shader* shader)
 {
-    std::for_each(models.begin(), models.end(), [&](auto p) { p->SetShader(shader); });
-    std::for_each(shapes.begin(), shapes.end(), [&](auto p) { p->SetShader(shader); });
-    std::for_each(transparentModels.begin(), transparentModels.end(), [&](auto p) { p->SetShader(shader); });
-    std::for_each(transparentShapes.begin(), transparentShapes.end(), [&](auto p) { p->SetShader(shader); });
+    std::for_each(models.begin(), models.end(), [&](auto p) { p.second->SetShader(shader); });
+    std::for_each(shapes.begin(), shapes.end(), [&](auto p) { p.second->SetShader(shader); });
 }
 
 void SceneManager::SetCamera(Camera* camera)
@@ -146,3 +155,95 @@ void SceneManager::SetSoundManager(std::shared_ptr<SoundManager> manager)
 {
     sManager = manager;
 }
+
+std::shared_ptr<Model> SceneManager::GetModel(std::string name)
+{
+    if(models.find(name) != models.end())
+        return models[name];
+    return nullptr;
+}
+
+std::shared_ptr<Shape> SceneManager::GetShape(std::string name)
+{
+    if(shapes.find(name) != shapes.end())
+        return shapes[name];
+    return nullptr;
+}
+
+Material* SceneManager::GetMaterial(std::string name)
+{
+    if(materials.find(name) != materials.end())
+        return materials[name];
+    return nullptr;
+}
+
+Light* SceneManager::GetLight(std::string name)
+{
+    if(lights.find(name) != lights.end())
+        return lights[name];
+    return nullptr;
+}
+
+void SceneManager::SetModelName(std::string name, std::string newName)
+{
+	auto it = models.find(name);
+	if(it != models.end())
+	{
+		auto n = models.extract(it);
+		n.key() = newName;
+		models.insert(std::move(n));
+	}
+}
+
+void SceneManager::SetShapeName(std::string name, std::string newName)
+{
+	auto it = shapes.find(name);
+	if(it != shapes.end())
+	{
+		auto n = shapes.extract(it);
+		n.key() = newName;
+		shapes.insert(std::move(n));
+	}
+}
+
+void SceneManager::SetMaterialName(std::string name, std::string newName)
+{
+	auto it = materials.find(name);
+	if(it != materials.end())
+	{
+		auto n = materials.extract(it);
+		n.key() = newName;
+		materials.insert(std::move(n));
+	}
+}
+
+void SceneManager::SetLightName(std::string name, std::string newName)
+{
+	auto it = lights.find(name);
+	if(it != lights.end())
+	{
+		auto n = lights.extract(it);
+		n.key() = newName;
+		lights.insert(std::move(n));
+	}
+}
+
+std::array<std::vector<std::string>, 4> SceneManager::GetNames()
+{
+	std::array<std::vector<std::string>, 4> ret;
+    std::vector<std::string> tmp;
+    for(auto& i : models)
+        tmp.push_back(i.first);
+    ret[0] = tmp; tmp.clear();
+    for(auto& i : shapes)
+        tmp.push_back(i.first);
+    ret[1] = tmp; tmp.clear();
+    for(auto& i : materials)
+        tmp.push_back(i.first);
+    ret[2] = tmp; tmp.clear();
+    for(auto& i : lights)
+        tmp.push_back(i.first);
+    ret[3] = tmp;
+    return ret;
+}
+

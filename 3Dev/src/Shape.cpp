@@ -5,6 +5,8 @@ Shape::Shape(const rp3d::Vector3& size, Material* mat, PhysicsManager* man, Shad
 {
 	if(shader) this->shader = shader;
 	if(m) this->m = m;
+	
+	transparent = mat->Contains(Material::Type::Opacity);
 
 	cube = std::make_shared<Mesh>();
 	cube->CreateCube();
@@ -88,11 +90,17 @@ void Shape::SetSize(const rp3d::Vector3& size)
 void Shape::SetMaterial(Material* mat)
 {
 	this->mat = mat;
+	transparent = mat->Contains(Material::Type::Opacity);	
 }
 
 void Shape::SetShader(Shader* shader)
 {
 	this->shader = shader;
+}
+
+bool Shape::IsTransparent()
+{
+    return transparent;
 }
 
 Shader* Shape::GetShader()

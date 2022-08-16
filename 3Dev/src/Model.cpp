@@ -18,6 +18,11 @@ Model::Model(std::string filename, std::vector<Material> mat, unsigned int flags
 	if(shader) this->shader = shader;
 	if(m) this->m = m;
 	if(man) body = man->CreateRigidBody(transform);
+	
+    transparent = (std::find_if(mat.begin(), mat.end(), [&](auto& a)
+                    {
+                        return a.Contains(Material::Type::Opacity);
+                    }) != mat.end());
 
 	Load(filename, flags);
 }
@@ -105,6 +110,10 @@ void Model::SetSize(rp3d::Vector3 size)
 void Model::SetMaterial(std::vector<Material> mat)
 {
 	this->mat = mat;
+	transparent = (std::find_if(mat.begin(), mat.end(), [&](auto& a)
+                    {
+                        return a.Contains(Material::Type::Opacity);
+                    }) != mat.end());
 }
 
 void Model::SetShader(Shader* shader)
@@ -259,6 +268,11 @@ int Model::GetMeshesCount()
 int Model::GetAnimationsCount()
 {
 	return anims.size();
+}
+
+bool Model::IsTransparent()
+{
+    return transparent;
 }
 
 rp3d::Vector3 Model::GetPosition() 

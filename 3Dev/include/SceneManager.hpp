@@ -15,13 +15,15 @@ class SceneManager
 public:
     void Draw(Framebuffer* fbo = nullptr, Framebuffer* transparency = nullptr);
 
-    void AddObject(std::shared_ptr<Model> model);
-    void AddObject(std::shared_ptr<Shape> shape);
+    void AddObject(std::shared_ptr<Model> model, std::string name = "model");
+    void AddObject(std::shared_ptr<Shape> shape, std::string name = "shape");
+    void AddMaterial(Material* material, std::string name = "material");
     void AddPhysicsManager(std::shared_ptr<PhysicsManager> manager);
-    void AddLight(Light* light);
+    void AddLight(Light* light, std::string name = "light");
 
     void RemoveObject(std::shared_ptr<Model> model);
     void RemoveObject(std::shared_ptr<Shape> shape);
+    void RemoveMaterial(Material* material);
     void RemovePhysicsManager(std::shared_ptr<PhysicsManager> manager);
     void RemoveLight(Light* light);
 
@@ -34,6 +36,19 @@ public:
     void SetCamera(Camera* camera);
     void SetSkybox(std::shared_ptr<Shape> skybox);
     void SetSoundManager(std::shared_ptr<SoundManager> manager);
+    
+    void SetModelName(std::string name, std::string newName);
+    void SetShapeName(std::string name, std::string newName);
+    void SetMaterialName(std::string name, std::string newName);
+    void SetLightName(std::string name, std::string newName);
+
+    std::shared_ptr<Model> GetModel(std::string name);
+    std::shared_ptr<Shape> GetShape(std::string name);
+    Material* GetMaterial(std::string name);
+    Light* GetLight(std::string name);
+
+	// @return array of names, 0 - models, 1 - shapes, 2 - materials, 3 - lights
+    std::array<std::vector<std::string>, 4> GetNames();
 
 private:
     sf::Clock clock;
@@ -43,15 +58,15 @@ private:
     std::shared_ptr<Shape> skybox;
     std::shared_ptr<SoundManager> sManager;
 
-    std::vector<std::shared_ptr<Model>> models;
-    std::vector<std::shared_ptr<Shape>> shapes;
+    std::unordered_map<std::string, std::shared_ptr<Model>> models;
+    std::unordered_map<std::string, std::shared_ptr<Shape>> shapes;
 
-    std::vector<std::shared_ptr<Model>> transparentModels;
-    std::vector<std::shared_ptr<Shape>> transparentShapes;
+    std::unordered_map<std::string, Material*> materials; // for editor and scene saving
 
     std::vector<std::shared_ptr<PhysicsManager>> pManagers;
 
-    std::vector<Light*> lights;
+    std::unordered_map<std::string, Light*> lights;
+    std::vector<Light*> lightsVector; // for drawing
 
     Json::Value root;
 };
