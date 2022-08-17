@@ -12,7 +12,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency)
     std::for_each(pManagers.begin(), pManagers.end(), [&](auto p) { p->Update(time); });
 
 	// needed for materials without textures to render correctly in some cases
-    for(int i = 0; i < 16; i++)
+    for(int i = 0; i < 8; i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
