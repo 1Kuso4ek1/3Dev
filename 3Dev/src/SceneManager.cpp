@@ -63,7 +63,7 @@ void SceneManager::AddObject(std::shared_ptr<Shape> shape, std::string name)
     shapes[name + (nameCount ? std::to_string(nameCount) : "")] = shape;
 }
 
-void SceneManager::AddMaterial(Material* material, std::string name)
+void SceneManager::AddMaterial(std::shared_ptr<Material> material, std::string name)
 {
     int nameCount = std::count_if(materials.begin(), materials.end(), [&](auto& p)
                     { return p.first.find(name) != std::string::npos; });
@@ -96,7 +96,7 @@ void SceneManager::RemoveObject(std::shared_ptr<Shape> shape)
     if(it != shapes.end()) shapes.erase(it);
 }
 
-void SceneManager::RemoveMaterial(Material* material)
+void SceneManager::RemoveMaterial(std::shared_ptr<Material> material)
 {
     auto it = std::find_if(materials.begin(), materials.end(), [&](auto& p) { return p.second == material; });
     if(it != materials.end())
@@ -170,7 +170,7 @@ std::shared_ptr<Shape> SceneManager::GetShape(std::string name)
     return nullptr;
 }
 
-Material* SceneManager::GetMaterial(std::string name)
+std::shared_ptr<Material> SceneManager::GetMaterial(std::string name)
 {
     if(materials.find(name) != materials.end())
         return materials[name];
@@ -247,3 +247,18 @@ std::array<std::vector<std::string>, 4> SceneManager::GetNames()
     return ret;
 }
 
+std::string SceneManager::GetName(std::shared_ptr<Material> mat)
+{
+    return std::find_if(materials.begin(), materials.end(), [&](auto m)
+            {
+                return m.second == mat;
+            })->first;
+}
+
+std::string SceneManager::GetName(Material* mat)
+{
+    return std::find_if(materials.begin(), materials.end(), [&](auto m)
+            {
+                return m.second.get() == mat;
+            })->first;
+}

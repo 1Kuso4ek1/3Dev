@@ -2,7 +2,12 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.hpp>
 
-Material::Material() {}
+Material::Material() 
+{
+    AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
+    AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
+    AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::LUT), Type::LUT);
+}
 
 Material::Material(std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>> parameters) : parameters(parameters)
 {

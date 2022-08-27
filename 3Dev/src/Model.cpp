@@ -12,16 +12,16 @@ Model::Model(std::vector<std::shared_ptr<Mesh>> meshes, Shader* shader)
 	if(shader) this->shader = shader;
 }
 
-Model::Model(std::string filename, std::vector<Material> mat, unsigned int flags, PhysicsManager* man, Shader* shader, Matrices* m)
+Model::Model(std::string filename, std::vector<Material*> mat, unsigned int flags, PhysicsManager* man, Shader* shader, Matrices* m)
 	 : transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), mat(mat), filename(filename), man(man)
 {
 	if(shader) this->shader = shader;
 	if(m) this->m = m;
 	if(man) body = man->CreateRigidBody(transform);
 	
-    transparent = (std::find_if(mat.begin(), mat.end(), [&](auto& a)
+    transparent = (std::find_if(mat.begin(), mat.end(), [&](auto a)
                     {
-                        return a.Contains(Material::Type::Opacity);
+                        return a->Contains(Material::Type::Opacity);
                     }) != mat.end());
 
 	Load(filename, flags);
@@ -71,7 +71,7 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights)
 	for(int mesh = 0; mesh < meshes.size(); mesh++)
 	{
 		shader->Bind();
-		mat[mesh].UpdateShader(shader);
+		mat[mesh]->UpdateShader(shader);
 		for(int i = 0; i < lights.size(); i++)
 			lights[i]->Update(shader, i);
 				
@@ -84,7 +84,7 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights)
 
 		meshes[mesh]->Draw();
 		
-		mat[mesh].ResetShader(shader);
+		mat[mesh]->ResetShader(shader);
 	}
 	
 	m->PopMatrix();
@@ -107,12 +107,12 @@ void Model::SetSize(rp3d::Vector3 size)
 	this->size = size;
 }
 
-void Model::SetMaterial(std::vector<Material> mat)
+void Model::SetMaterial(std::vector<Material*> mat)
 {
 	this->mat = mat;
-	transparent = (std::find_if(mat.begin(), mat.end(), [&](auto& a)
+	transparent = (std::find_if(mat.begin(), mat.end(), [&](auto a)
                     {
-                        return a.Contains(Material::Type::Opacity);
+                        return a->Contains(Material::Type::Opacity);
                     }) != mat.end());
 }
 
@@ -225,6 +225,9 @@ void Model::PlayAnimation(int anim)
 	if(anim >= anims.size())
 		Log::Write("int anim is out of anims array bounds!", Log::Type::Critical);
 
+	for(int i = 0; i < GetAnimationsCount(); i++)
+		StopAnimation(i);
+
 	anims[anim].state = Animation::State::Playing;
 	anims[anim].time.restart();
 }
@@ -290,6 +293,11 @@ rp3d::Vector3 Model::GetSize()
 	return size;
 }
 
+Animation::State Model::GetAnimationState(int anim)
+{
+	return anims[anim].state;
+}
+
 Shader* Model::GetShader()
 {
 	return shader;
@@ -321,7 +329,7 @@ std::string Model::GetFilename()
 	return filename;
 }
 
-std::vector<Material>& Model::GetMaterial()
+std::vector<Material*>& Model::GetMaterial()
 {
 	return mat;
 }

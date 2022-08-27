@@ -17,13 +17,13 @@ public:
 
     void AddObject(std::shared_ptr<Model> model, std::string name = "model");
     void AddObject(std::shared_ptr<Shape> shape, std::string name = "shape");
-    void AddMaterial(Material* material, std::string name = "material");
+    void AddMaterial(std::shared_ptr<Material>, std::string name = "material");
     void AddPhysicsManager(std::shared_ptr<PhysicsManager> manager);
     void AddLight(Light* light, std::string name = "light");
 
     void RemoveObject(std::shared_ptr<Model> model);
     void RemoveObject(std::shared_ptr<Shape> shape);
-    void RemoveMaterial(Material* material);
+    void RemoveMaterial(std::shared_ptr<Material> material);
     void RemovePhysicsManager(std::shared_ptr<PhysicsManager> manager);
     void RemoveLight(Light* light);
 
@@ -44,8 +44,11 @@ public:
 
     std::shared_ptr<Model> GetModel(std::string name);
     std::shared_ptr<Shape> GetShape(std::string name);
-    Material* GetMaterial(std::string name);
+    std::shared_ptr<Material> GetMaterial(std::string name);
     Light* GetLight(std::string name);
+
+    std::string GetName(std::shared_ptr<Material> mat);
+    std::string GetName(Material* mat);
 
 	// @return array of names, 0 - models, 1 - shapes, 2 - materials, 3 - lights
     std::array<std::vector<std::string>, 4> GetNames();
@@ -61,7 +64,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Model>> models;
     std::unordered_map<std::string, std::shared_ptr<Shape>> shapes;
 
-    std::unordered_map<std::string, Material*> materials; // for editor and scene saving
+    std::unordered_map<std::string, std::shared_ptr<Material>> materials; // for editor and scene saving
 
     std::vector<std::shared_ptr<PhysicsManager>> pManagers;
 

@@ -32,6 +32,8 @@ void ShadowManager::Update()
         
         scene->Draw(&depthBuffers[i]);
         
+        //depthShader->SetUniformMatrix4("light", glm::mat4(0.0));
+        
         textures[i] = depthBuffers[i].GetTexture(true);
     }
     

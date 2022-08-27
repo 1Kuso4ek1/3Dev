@@ -50,7 +50,7 @@ class Model
 public:
 	Model(Shader* shader = nullptr);
 	Model(std::vector<std::shared_ptr<Mesh>> meshes, Shader* shader = nullptr);
-	Model(std::string filename, std::vector<Material> mat, unsigned int flags = aiProcess_Triangulate,
+	Model(std::string filename, std::vector<Material*> mat, unsigned int flags = aiProcess_Triangulate,
 		  PhysicsManager* man = nullptr, Shader* shader = nullptr, Matrices* m = nullptr);
 
 	void Load(std::string filename, unsigned int flags = 0);
@@ -60,7 +60,7 @@ public:
 	void SetPosition(rp3d::Vector3 position);
 	void SetOrientation(rp3d::Quaternion orientation);
 	void SetSize(rp3d::Vector3 size);
-	void SetMaterial(std::vector<Material> mat);
+	void SetMaterial(std::vector<Material*> mat);
 	void SetShader(Shader* shader);
 	void SetPhysicsManager(PhysicsManager* man);
 	
@@ -93,6 +93,8 @@ public:
 	rp3d::Quaternion GetOrientation();
 	rp3d::Vector3 GetSize();
 
+	Animation::State GetAnimationState(int anim = 0);
+
 	Shader* GetShader();
 	rp3d::RigidBody* GetRigidBody();
 
@@ -101,7 +103,7 @@ public:
 	
 	std::string GetFilename();
 	
-	std::vector<Material>& GetMaterial();
+	std::vector<Material*>& GetMaterial();
 
 private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
@@ -120,7 +122,7 @@ private:
 	Matrices* m = Renderer::GetInstance()->GetMatrices();
 	Shader* shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
 	
-	std::vector<Material> mat;
+	std::vector<Material*> mat;
 	std::vector<Animation> anims;
 
 	PhysicsManager* man;

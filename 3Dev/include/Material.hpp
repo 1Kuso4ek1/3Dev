@@ -58,9 +58,8 @@ private:
 	{
 		{ glm::vec3(1.0), Type::Color },
 		{ glm::vec3(0.5), Type::Metalness },
-		{ glm::vec3(0.0), Type::Emission },
 		{ glm::vec3(0.5), Type::Roughness },
-		{ glm::vec3(1.0), Type::Opacity },
-		{ glm::vec3(0.0), Type::Irradiance }
+		{ glm::vec3(0.0), Type::Emission },
+		{ glm::vec3(1.0), Type::Opacity }
 	};
 };
