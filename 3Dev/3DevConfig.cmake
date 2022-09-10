@@ -3,7 +3,9 @@ get_filename_component(3DEV_INCLUDE_DIR "${3DEV_DIR}/../../../include/3Dev" ABSO
 
 find_package(SFML 2.5.1 COMPONENTS system window network audio REQUIRED)
 find_package(assimp REQUIRED)
-find_package(GLEW 2.1.0 REQUIRED)
+if(UNIX OR APPLE)
+	find_package(GLEW 2.1.0 REQUIRED)
+endif()
 find_package(OpenGL REQUIRED)
 find_package(ReactPhysics3D REQUIRED)
 find_package(LightLog REQUIRED)
