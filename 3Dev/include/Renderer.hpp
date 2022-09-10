@@ -35,6 +35,7 @@ public:
     static void DeleteInstance();
 
     void Init(sf::Vector2u fbSize, std::string environmentMapFilename, uint32_t skyboxSideSize = 256, uint32_t irradianceSideSize = 32, uint32_t prefilteredSideSize = 256);
+    void LoadEnvironment(std::string environmentMapFilename, uint32_t skyboxSideSize = 256, uint32_t irradianceSideSize = 32, uint32_t prefilteredSideSize = 256);
 
     GLuint GetTexture(TextureType type);
     Shader* GetShader(ShaderType type);

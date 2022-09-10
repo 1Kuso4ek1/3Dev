@@ -32,6 +32,17 @@ void Renderer::Init(sf::Vector2u fbSize, std::string environmentMapFilename, uin
     framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
     framebuffers[FramebufferType::Transparency] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
 
+    LoadEnvironment(environmentMapFilename, skyboxSideSize, irradianceSideSize, prefilteredSideSize);
+
+    Log::Write("Renderer successfully initialized", Log::Type::Info);
+}
+
+void Renderer::LoadEnvironment(std::string environmentMapFilename, uint32_t skyboxSideSize, uint32_t irradianceSideSize, uint32_t prefilteredSideSize)
+{
+    for(auto& i : textures)
+        if(i.second != 0 && i.first != TextureType::LUT)
+            glDeleteTextures(1, &i.second);
+    
     Framebuffer capture(nullptr, skyboxSideSize, skyboxSideSize), captureIrr(nullptr, irradianceSideSize, irradianceSideSize),
                 captureSpc(nullptr, prefilteredSideSize, prefilteredSideSize), captureBRDF(shaders[ShaderType::BRDF].get(), 512, 512);
 
@@ -44,11 +55,12 @@ void Renderer::Init(sf::Vector2u fbSize, std::string environmentMapFilename, uin
     GLuint filtered = captureSpc.CaptureCubemapMipmaps(shaders[ShaderType::Filtering].get(), cubemap, m, 8, 1024);
     textures[TextureType::Prefiltered] = filtered;
 
-    captureBRDF.Capture(0);
-    GLuint BRDF = captureBRDF.GetTexture();
-    textures[TextureType::LUT] = BRDF;
-
-    Log::Write("Renderer successfully initialized", Log::Type::Info);
+    if(textures.find(TextureType::LUT) == textures.end())
+    {
+        captureBRDF.Capture(0);
+        GLuint BRDF = captureBRDF.GetTexture();
+        textures[TextureType::LUT] = BRDF;
+    }
 }
 
 GLuint Renderer::GetTexture(TextureType type)

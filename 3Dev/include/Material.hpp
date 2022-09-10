@@ -45,6 +45,8 @@ public:
 
 	void ResetShader(Shader* shader);
 
+	void GetEnvironmentFromRenderer();
+
 	bool Contains(Type type);
 
 	// @return reference to all parameters

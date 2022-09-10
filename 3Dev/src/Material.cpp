@@ -134,6 +134,17 @@ void Material::ResetShader(Shader* shader)
 	shader->SetUniform1i("lut", 0);
 }
 
+void Material::GetEnvironmentFromRenderer()
+{
+	std::remove_if(parameters.begin(), parameters.end(), [&](auto& a)
+				{
+					return a.second == Type::Irradiance ||
+						   a.second == Type::PrefilteredMap;
+				});
+	AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
+	AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
+}
+
 bool Material::Contains(Type type)
 {
 	return std::find_if(parameters.begin(), parameters.end(), [&](auto& a)
