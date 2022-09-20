@@ -29,10 +29,11 @@ TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)
 4. Assimp
 5. LightLog
 6. jsoncpp
+7. Angelscript
 ### Let's build it
 First of all, you need to clone this repository
 ```
-git clone https://github.com/1Kuso4ek1/3Dev.git
+git clone --recursive https://github.com/1Kuso4ek1/3Dev.git
 cd 3Dev/3Dev
 ```
 When it's done, we can create a "build" directory and call cmake
