@@ -1,0 +1,3 @@
+[submodule "3Dev/libraries/Angelscript"]
+	path = 3Dev/libraries/Angelscript
+	url = https://github.com/codecat/angelscript-mirror.git
