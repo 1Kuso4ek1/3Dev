@@ -117,6 +117,9 @@ int main()
     
     sman->PlayAt("sound", 0, sphere->GetPosition());
 
+    ScriptManager scman;
+    scman.LoadScript("../scripts/test.as");
+
     // Main game loop
     engine.Loop([&]() 
     {
@@ -126,6 +129,8 @@ int main()
         cam.Mouse();
         cam.Look();
         //////////////////////////////////////
+
+        scman.ExecuteFunction("void main()");
 
         ListenerWrapper::SetPosition(cam.GetPosition());
         ListenerWrapper::SetOrientation(cam.GetOrientation());

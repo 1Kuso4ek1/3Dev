@@ -52,6 +52,7 @@ void SceneManager::AddObject(std::shared_ptr<Model> model, std::string name)
 {
     int nameCount = std::count_if(models.begin(), models.end(), [&](auto& p)
                     { return p.first.find(name) != std::string::npos; });
+                    
     models[name + (nameCount ? std::to_string(nameCount) : "")] = model;
 }
 
@@ -160,6 +161,8 @@ std::shared_ptr<Model> SceneManager::GetModel(std::string name)
 {
     if(models.find(name) != models.end())
         return models[name];
+    Log::Write("Could not find a model with name \""
+                + name + "\", function will return nullptr", Log::Type::Warning);
     return nullptr;
 }
 
@@ -167,6 +170,8 @@ std::shared_ptr<Shape> SceneManager::GetShape(std::string name)
 {
     if(shapes.find(name) != shapes.end())
         return shapes[name];
+    Log::Write("Could not find a shape with name \""
+                + name + "\", function will return nullptr", Log::Type::Warning);
     return nullptr;
 }
 
@@ -174,6 +179,8 @@ std::shared_ptr<Material> SceneManager::GetMaterial(std::string name)
 {
     if(materials.find(name) != materials.end())
         return materials[name];
+    Log::Write("Could not find a material with name \""
+                + name + "\", function will return nullptr", Log::Type::Warning);
     return nullptr;
 }
 
@@ -181,6 +188,8 @@ Light* SceneManager::GetLight(std::string name)
 {
     if(lights.find(name) != lights.end())
         return lights[name];
+    Log::Write("Could not find a light with name \""
+                + name + "\", function will return nullptr", Log::Type::Warning);
     return nullptr;
 }
 
@@ -193,6 +202,8 @@ void SceneManager::SetModelName(std::string name, std::string newName)
 		n.key() = newName;
 		models.insert(std::move(n));
 	}
+    else
+        Log::Write("Could not find a model with name \"" + name + "\"", Log::Type::Warning);
 }
 
 void SceneManager::SetShapeName(std::string name, std::string newName)
@@ -204,6 +215,8 @@ void SceneManager::SetShapeName(std::string name, std::string newName)
 		n.key() = newName;
 		shapes.insert(std::move(n));
 	}
+    else
+        Log::Write("Could not find a shape with name \"" + name + "\"", Log::Type::Warning);
 }
 
 void SceneManager::SetMaterialName(std::string name, std::string newName)
@@ -215,6 +228,8 @@ void SceneManager::SetMaterialName(std::string name, std::string newName)
 		n.key() = newName;
 		materials.insert(std::move(n));
 	}
+    else
+        Log::Write("Could not find a material with name \"" + name + "\"", Log::Type::Warning);
 }
 
 void SceneManager::SetLightName(std::string name, std::string newName)
@@ -226,6 +241,8 @@ void SceneManager::SetLightName(std::string name, std::string newName)
 		n.key() = newName;
 		lights.insert(std::move(n));
 	}
+    else
+        Log::Write("Could not find a light with name \"" + name + "\"", Log::Type::Warning);
 }
 
 std::array<std::vector<std::string>, 4> SceneManager::GetNames()

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.17)
 
-project(3Dev VERSION 1.1.0 LANGUAGES CXX)
+project(3Dev VERSION 1.2.0 LANGUAGES CXX)
 
 find_package(SFML 2.5.1 COMPONENTS system window network audio REQUIRED)
 find_package(assimp REQUIRED)
@@ -9,9 +9,16 @@ find_package(ReactPhysics3D REQUIRED)
 find_package(LightLog REQUIRED)
 find_package(glm REQUIRED)
 find_package(jsoncpp REQUIRED)
+find_package(Angelscript REQUIRED)
+find_package(Threads REQUIRED)
 
 if(UNIX OR APPLE)
 	find_package(GLEW 2.1.0 REQUIRED)
+	if(APPLE)
+		set(ANGELSCRIPT_LIBRARY_NAME Angelscript)
+	else()
+		set(ANGELSCRIPT_LIBRARY_NAME angelscript)
+	endif()
 elseif("${GLEW_INCLUDE_DIR}" STREQUAL "" OR "${GLEW_LIBRARIES}" STREQUAL "")
 	message(FATAL_ERROR "On Windows GLEW couldn't be found automatically, so you have to set GLEW_INCLUDE_DIR and GLEW_LIBRARIES manually")
 endif()
@@ -32,13 +39,27 @@ add_library(3Dev
 	src/ShadowManager.cpp
 	src/SoundManager.cpp
 	src/Renderer.cpp
+	src/ScriptManager.cpp
+	libraries/Angelscript/sdk/add_on/scriptbuilder/scriptbuilder.cpp
+	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.cpp
 )
 
 add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/shaders/\"")
 
 add_executable(physics physics_test.cpp)
           
-target_link_libraries(3Dev PUBLIC LightLog ReactPhysics3D::ReactPhysics3D OpenGL::GL GLEW glm::glm assimp::assimp sfml-graphics sfml-window sfml-system sfml-audio sfml-network jsoncpp_lib)
+target_link_libraries(3Dev
+	PUBLIC
+	LightLog
+	ReactPhysics3D::ReactPhysics3D
+	OpenGL::GL
+	GLEW
+	glm::glm
+	assimp::assimp
+	Angelscript::${ANGELSCRIPT_LIBRARY_NAME}
+	sfml-graphics sfml-window sfml-system sfml-audio sfml-network
+	jsoncpp_lib
+)
 
 target_link_libraries(physics PUBLIC 3Dev)
 
@@ -51,6 +72,8 @@ target_include_directories(3Dev
 	$<BUILD_INTERFACE:${SFML_INCLUDE_DIR}>
 	$<BUILD_INTERFACE:${LIGHTLOG_INCLUDE_DIR}>
 	$<BUILD_INTERFACE:${GLEW_INCLUDE_DIR}>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptbuilder>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptstdstring>
 	$<INSTALL_INTERFACE:include>
 )
 
@@ -93,6 +116,9 @@ install(FILES
 	include/ShadowManager.hpp
 	include/SoundManager.hpp
 	include/Renderer.hpp
+	include/ScriptManager.hpp
 	include/stb_image.hpp
+	libraries/Angelscript/sdk/add_on/scriptbuilder/scriptbuilder.h
+	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.h
 	DESTINATION include/3Dev
 )

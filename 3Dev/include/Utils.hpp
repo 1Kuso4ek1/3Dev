@@ -30,6 +30,10 @@
 
 #include <Log.h>
 
+#include <angelscript.h>
+#include <scriptbuilder.h>
+#include <scriptstdstring.h>
+
 constexpr glm::vec3 toglm(const rp3d::Vector3& vec) { return glm::vec3(vec.x, vec.y, vec.z); }
 constexpr glm::vec3 toglm(const aiVector3D& vec) { return glm::vec3(vec.x, vec.y, vec.z); }
 constexpr glm::vec2 toglm(const aiVector2D& vec) { return glm::vec2(vec.x, vec.y); }
