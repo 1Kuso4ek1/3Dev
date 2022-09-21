@@ -50,13 +50,16 @@ sudo make install # So you can use the library everywhere...
 You can use 3Dev in your cmake project pretty easily
 ```
 find_package(3Dev REQUIRED)
-target_link_libraries(cool-project PUBLIC 3Dev ${3DEV_DEPS} *another stuff*)
-...
-target_include_directories(
-	cool-project
-	PUBLIC
-	${3DEV_INCLUDE_DIR}
-)
+
+find_package(assimp REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(ReactPhysics3D REQUIRED)
+find_package(glm REQUIRED)
+find_package(jsoncpp REQUIRED)
+find_package(Angelscript REQUIRED)
+find_package(Threads REQUIRED)
+
+target_link_libraries(cool-project PUBLIC 3Dev::3Dev)
 ```
 ## Projects
 ### Bloodbath

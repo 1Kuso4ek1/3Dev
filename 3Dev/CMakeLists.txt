@@ -23,7 +23,9 @@ elseif("${GLEW_INCLUDE_DIR}" STREQUAL "" OR "${GLEW_LIBRARIES}" STREQUAL "")
 	message(FATAL_ERROR "On Windows GLEW couldn't be found automatically, so you have to set GLEW_INCLUDE_DIR and GLEW_LIBRARIES manually")
 endif()
 
-add_library(3Dev 
+include(CMakePackageConfigHelpers)
+
+add_library(3Dev
 	src/Matrices.cpp
 	src/Camera.cpp
 	src/Light.cpp
@@ -89,13 +91,26 @@ target_include_directories(physics
   	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
+	${CMAKE_CURRENT_BINARY_DIR}/3DevConfig.cmake
+	INSTALL_DESTINATION lib/cmake/3Dev
+)
+
 install(TARGETS 3Dev 
-  	EXPORT 3Dev
-  	DESTINATION lib
+  	EXPORT 3DevTargets
+  	LIBRARY DESTINATION lib
+	INCLUDES DESTINATION include/3Dev
 )
     
-install(FILES 3DevConfig.cmake
+install(EXPORT 3DevTargets
+	FILE 3DevTargets.cmake
+	NAMESPACE 3Dev::
   	DESTINATION lib/cmake/3Dev
+)
+
+install(FILES
+	${CMAKE_CURRENT_BINARY_DIR}/3DevConfig.cmake
+	DESTINATION lib/cmake/3Dev
 )
 
 install(FILES 
