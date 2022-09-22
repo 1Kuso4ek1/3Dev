@@ -118,6 +118,7 @@ int main()
     sman->PlayAt("sound", 0, sphere->GetPosition());
 
     ScriptManager scman;
+    scman.AddProperty("Model sphere", sphere.get());
     scman.LoadScript("../scripts/test.as");
 
     // Main game loop
@@ -131,6 +132,7 @@ int main()
         //////////////////////////////////////
 
         scman.ExecuteFunction("void main()");
+        //std::cout << sphere->GetPosition().to_string() << std::endl;
 
         ListenerWrapper::SetPosition(cam.GetPosition());
         ListenerWrapper::SetOrientation(cam.GetOrientation());

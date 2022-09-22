@@ -1,7 +1,4 @@
 void main()
 {
-    if(sf::IsKeyPressed(22)) // The W key
-    {
-        Write("W key pressed", 3);
-    }
+    sphere.Move(Vector3(0.1, 0.1, 0.1));
 }

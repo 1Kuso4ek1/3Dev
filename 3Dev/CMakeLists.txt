@@ -115,6 +115,7 @@ install(FILES
 
 install(FILES 
   	include/Utils.hpp
+	include/AngelscriptUtils.hpp
   	include/Matrices.hpp
   	include/Camera.hpp
   	include/Engine.hpp
