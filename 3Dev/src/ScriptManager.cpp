@@ -7,13 +7,9 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     
     RegisterStdString(engine);
     RegisterVector3();
-
-    AddType("Model",
-    {
-        { "void SetPosition(Vector3 position)", asMETHOD(Model, SetPosition) },
-        { "void Move(Vector3 vec)", asMETHOD(Model, Move) },
-        { "Vector3& GetPosition()", asMETHOD(Model, GetPosition) }
-    }, {});
+    RegisterModel();
+    RegisterModelPtr();
+    RegisterSceneManager();
 
     AddFunction("string to_string(float)", asFUNCTIONPR(std::to_string, (float), std::string));
     AddFunction("void Write(string, int)", asFUNCTION(Log::Write));
@@ -82,6 +78,10 @@ void ScriptManager::SetDefaultNamespace(std::string name)
 void ScriptManager::LoadScript(std::string filename)
 {
     builder.AddSectionFromFile(filename.c_str());
+}
+
+void ScriptManager::Build()
+{
     int ret = builder.BuildModule();
     buildSucceded = (ret >= 0);
 }
@@ -106,7 +106,13 @@ void ScriptManager::RegisterVector3()
     {
         { "float length()", asMETHOD(rp3d::Vector3, length) },
         { "Vector3& opAssign(Vector3& in)", asFUNCTION(AssignType<rp3d::Vector3>) },
-        { "string to_string()", asMETHOD(rp3d::Vector3, to_string) }
+        { "Vector3& opAddAssign(Vector3& in)", asMETHODPR(rp3d::Vector3, operator+=, (const rp3d::Vector3&), rp3d::Vector3&) },
+        { "Vector3& opSubAssign(Vector3& in)", asMETHODPR(rp3d::Vector3, operator-=, (const rp3d::Vector3&), rp3d::Vector3&) },
+        { "Vector3& opMulAssign(float)", asMETHODPR(rp3d::Vector3, operator*=, (float), rp3d::Vector3&) },
+        { "Vector3& opDivAssign(float)", asMETHODPR(rp3d::Vector3, operator/=, (float), rp3d::Vector3&) },
+        { "bool opEquals(Vector3& in)", asMETHODPR(rp3d::Vector3, operator==, (const rp3d::Vector3&) const, bool) },
+        { "bool opEquals(Vector3& in)", asMETHODPR(rp3d::Vector3, operator!=, (const rp3d::Vector3&) const, bool) },
+        { "bool opCmp(Vector3& in)", asMETHODPR(rp3d::Vector3, operator<, (const rp3d::Vector3&) const, bool) }
     },
     {
         { "float x", asOFFSET(rp3d::Vector3, x) },
@@ -118,4 +124,34 @@ void ScriptManager::RegisterVector3()
     AddTypeConstructor("Vector3", "void f(float x, float y, float z)", asFUNCTION(MakeVector3));
     AddTypeConstructor("Vector3", "void f(const Vector3& in)", asFUNCTION(CopyType<rp3d::Vector3>));
     AddTypeDestructor("Vector3", "void f()", asFUNCTION(DestroyType<rp3d::Vector3>));
+}
+
+void ScriptManager::RegisterModel()
+{
+    AddType("Model",
+    {
+        { "void SetPosition(Vector3 position)", asMETHOD(Model, SetPosition) },
+        { "void Move(Vector3 vec)", asMETHOD(Model, Move) },
+        { "Vector3& GetPosition()", asMETHOD(Model, GetPosition) }
+    }, {});
+}
+
+void ScriptManager::RegisterModelPtr()
+{
+    AddValueType("ModelPtr", sizeof(std::shared_ptr<Model>), asGetTypeTraits<std::shared_ptr<Model>>(),
+    {
+        { "Model@ get()", asMETHOD(std::shared_ptr<Model>, get) },
+        { "ModelPtr& opAssign(ModelPtr& in)", asMETHODPR(std::shared_ptr<Model>, operator=, (std::shared_ptr<Model>&&), std::shared_ptr<Model>&) }
+    }, {});
+
+    AddTypeConstructor("ModelPtr", "void f()", asFUNCTION(MakeType<std::shared_ptr<Model>>));
+    AddTypeDestructor("ModelPtr", "void f()", asFUNCTION(DestroyType<std::shared_ptr<Model>>));
+}
+
+void ScriptManager::RegisterSceneManager()
+{
+    AddType("SceneManager",
+    {
+        { "ModelPtr GetModel(string)", asMETHOD(SceneManager, GetModel) }
+    }, {});
 }

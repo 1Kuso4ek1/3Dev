@@ -91,7 +91,7 @@ int main()
     scene.AddObject(s1);
     scene.AddObject(s2);
 
-    scene.AddObject(sphere);
+    scene.AddObject(sphere, "sphere");
     scene.AddObject(terrain);
 
     scene.AddPhysicsManager(man);
@@ -118,8 +118,11 @@ int main()
     sman->PlayAt("sound", 0, sphere->GetPosition());
 
     ScriptManager scman;
-    scman.AddProperty("Model sphere", sphere.get());
+    scman.AddProperty("SceneManager scene", &scene);
     scman.LoadScript("../scripts/test.as");
+    scman.Build();
+
+    scman.ExecuteFunction("void Start()");
 
     // Main game loop
     engine.Loop([&]() 
@@ -131,8 +134,7 @@ int main()
         cam.Look();
         //////////////////////////////////////
 
-        scman.ExecuteFunction("void main()");
-        //std::cout << sphere->GetPosition().to_string() << std::endl;
+        scman.ExecuteFunction("void Loop()");
 
         ListenerWrapper::SetPosition(cam.GetPosition());
         ListenerWrapper::SetOrientation(cam.GetOrientation());

@@ -20,11 +20,15 @@ public:
     void SetDefaultNamespace(std::string name);
 
     void LoadScript(std::string filename);
+    void Build();
 
     void ExecuteFunction(std::string declaration);
 
 private:
     void RegisterVector3();
+    void RegisterModel();
+    void RegisterModelPtr();
+    void RegisterSceneManager();
 
     bool buildSucceded = false;
 
