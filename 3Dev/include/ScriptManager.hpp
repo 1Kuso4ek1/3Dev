@@ -26,9 +26,13 @@ public:
 
 private:
     void RegisterVector3();
+    void RegisterQuaternion();
     void RegisterModel();
     void RegisterModelPtr();
+    void RegisterShape();
+    void RegisterShapePtr();
     void RegisterSceneManager();
+    void RegisterSfKeyboard();
 
     bool buildSucceded = false;
 

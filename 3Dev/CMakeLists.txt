@@ -44,9 +44,10 @@ add_library(3Dev
 	src/ScriptManager.cpp
 	libraries/Angelscript/sdk/add_on/scriptbuilder/scriptbuilder.cpp
 	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.cpp
+	libraries/Angelscript/sdk/add_on/scriptarray/scriptarray.cpp
 )
 
-add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/shaders/\"")
+add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/shaders/\"" "-DasINT32=int")
 
 add_executable(physics physics_test.cpp)
           
@@ -76,6 +77,7 @@ target_include_directories(3Dev
 	$<BUILD_INTERFACE:${GLEW_INCLUDE_DIR}>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptbuilder>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptstdstring>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptarray>
 	$<INSTALL_INTERFACE:include>
 )
 
@@ -136,5 +138,6 @@ install(FILES
 	include/stb_image.hpp
 	libraries/Angelscript/sdk/add_on/scriptbuilder/scriptbuilder.h
 	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.h
+	libraries/Angelscript/sdk/add_on/scriptarray/scriptarray.h
 	DESTINATION include/3Dev
 )

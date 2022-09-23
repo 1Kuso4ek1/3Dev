@@ -38,7 +38,7 @@ void Model::Load(std::string filename, unsigned int flags)
 
 	ProcessNode(scene->mRootNode, scene);
 	LoadAnimations(scene);
-	if(man != nullptr)
+	if(man)
 		shapes.resize(meshes.size(), nullptr);
 
 	Log::Write("Meshes loaded: " + std::to_string(meshes.size()), Log::Type::Info);
@@ -57,7 +57,7 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights)
 {
 	m->PushMatrix();
 
-	if(body != nullptr) transform = body->getTransform();
+	if(body) transform = body->getTransform();
 	rp3d::Vector3 tmp; float a;
 	transform.getOrientation().getRotationAngleAxis(a, tmp);
 	
@@ -93,13 +93,13 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights)
 void Model::SetPosition(rp3d::Vector3 position)
 {
 	transform.setPosition(position);
-	if(body != nullptr) body->setTransform(transform);
+	if(body) body->setTransform(transform);
 }
 
 void Model::SetOrientation(rp3d::Quaternion orientation)
 {
 	transform.setOrientation(orientation);
-	if(body != nullptr) body->setTransform(transform);
+	if(body) body->setTransform(transform);
 }
 
 void Model::SetSize(rp3d::Vector3 size)
@@ -128,19 +128,19 @@ void Model::SetPhysicsManager(PhysicsManager* man)
 	
 void Model::CreateRigidBody()
 {
-	if(man != nullptr) body = man->CreateRigidBody(transform);
+	if(man) body = man->CreateRigidBody(transform);
 }
 
 void Model::Move(rp3d::Vector3 position) 
 {
 	transform.setPosition(transform.getPosition() + position);
-	if(body != nullptr) body->setTransform(transform);
+	if(body) body->setTransform(transform);
 }
 
 void Model::Rotate(rp3d::Quaternion orientation) 
 {
 	transform.setOrientation(orientation * transform.getOrientation());
-	if(body != nullptr) body->setTransform(transform);
+	if(body) body->setTransform(transform);
 }
 
 void Model::Expand(rp3d::Vector3 size) 

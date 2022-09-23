@@ -6,13 +6,23 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     context = engine->CreateContext();
     
     RegisterStdString(engine);
+    RegisterScriptArray(engine, true);
     RegisterVector3();
+    RegisterQuaternion();
     RegisterModel();
     RegisterModelPtr();
+    RegisterShape();
+    RegisterShapePtr();
     RegisterSceneManager();
+    RegisterSfKeyboard();
 
+    AddFunction("string to_string(int)", asFUNCTIONPR(std::to_string, (int), std::string));
     AddFunction("string to_string(float)", asFUNCTIONPR(std::to_string, (float), std::string));
+    
+    SetDefaultNamespace("Log");
+    AddEnum("Type", { "Critical", "Error", "Warning", "Info" });
     AddFunction("void Write(string, int)", asFUNCTION(Log::Write));
+    SetDefaultNamespace("");
     
     builder.StartNewModule(engine, "module");
 }
@@ -126,13 +136,42 @@ void ScriptManager::RegisterVector3()
     AddTypeDestructor("Vector3", "void f()", asFUNCTION(DestroyType<rp3d::Vector3>));
 }
 
+void ScriptManager::RegisterQuaternion()
+{
+    AddValueType("Quaternion", sizeof(rp3d::Quaternion), asGetTypeTraits<rp3d::Quaternion>(),
+    {
+        { "float length()", asMETHOD(rp3d::Quaternion, length) },
+        { "Quaternion& opAssign(Quaternion& in)", asFUNCTION(AssignType<rp3d::Quaternion>) },
+        { "Quaternion& opAddAssign(Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator+=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
+        { "Quaternion& opSubAssign(Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator-=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
+        //{ "Quaternion& opMul(float)", asMETHODPR(rp3d::Quaternion, operator*, (float), rp3d::Quaternion) },
+        { "bool opEquals(Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator==, (const rp3d::Quaternion&) const, bool) }
+    },
+    {
+        { "float x", asOFFSET(rp3d::Vector3, x) },
+        { "float y", asOFFSET(rp3d::Vector3, y) },
+        { "float z", asOFFSET(rp3d::Vector3, z) }
+    });
+
+    AddTypeConstructor("Quaternion", "void f()", asFUNCTION(MakeType<rp3d::Quaternion>));
+    AddTypeConstructor("Quaternion", "void f(float x, float y, float z, float w)", asFUNCTION(MakeQuaternion));
+    AddTypeConstructor("Quaternion", "void f(const Quaternion& in)", asFUNCTION(CopyType<rp3d::Quaternion>));
+    AddTypeDestructor("Quaternion", "void f()", asFUNCTION(DestroyType<rp3d::Quaternion>));
+}
+
 void ScriptManager::RegisterModel()
 {
     AddType("Model",
     {
-        { "void SetPosition(Vector3 position)", asMETHOD(Model, SetPosition) },
-        { "void Move(Vector3 vec)", asMETHOD(Model, Move) },
-        { "Vector3& GetPosition()", asMETHOD(Model, GetPosition) }
+        { "void SetPosition(Vector3)", asMETHOD(Model, SetPosition) },
+        { "void SetOrientation(Quaternion)", asMETHOD(Model, SetOrientation) },
+        { "void SetSize(Vector3)", asMETHOD(Model, SetSize) },
+        { "void Move(Vector3)", asMETHOD(Model, Move) },
+        { "void Rotate(Quaternion)", asMETHOD(Model, Rotate) },
+        { "void Expand(Vector3)", asMETHOD(Model, Expand) },
+        { "Vector3& GetPosition()", asMETHOD(Model, GetPosition) },
+        { "Quaternion& GetOrientation()", asMETHOD(Model, GetOrientation) },
+        { "Vector3& GetSize()", asMETHOD(Model, GetSize) }
     }, {});
 }
 
@@ -148,10 +187,55 @@ void ScriptManager::RegisterModelPtr()
     AddTypeDestructor("ModelPtr", "void f()", asFUNCTION(DestroyType<std::shared_ptr<Model>>));
 }
 
+void ScriptManager::RegisterShape()
+{
+    AddType("Shape",
+    {
+        { "void SetPosition(Vector3)", asMETHOD(Shape, SetPosition) },
+        { "void SetOrientation(Quaternion)", asMETHOD(Shape, SetOrientation) },
+        { "void SetSize(Vector3)", asMETHOD(Shape, SetSize) },
+        { "void Move(Vector3)", asMETHOD(Shape, Move) },
+        { "void Rotate(Quaternion)", asMETHOD(Shape, Rotate) },
+        { "void Expand(Vector3)", asMETHOD(Shape, Expand) },
+        { "Vector3& GetPosition()", asMETHOD(Shape, GetPosition) },
+        { "Quaternion& GetOrientation()", asMETHOD(Shape, GetOrientation) },
+        { "Vector3& GetSize()", asMETHOD(Shape, GetSize) }
+    }, {});
+}
+
+void ScriptManager::RegisterShapePtr()
+{
+    AddValueType("ShapePtr", sizeof(std::shared_ptr<Shape>), asGetTypeTraits<std::shared_ptr<Shape>>(),
+    {
+        { "Shape@ get()", asMETHOD(std::shared_ptr<Shape>, get) },
+        { "ShapePtr& opAssign(ShapePtr& in)", asMETHODPR(std::shared_ptr<Shape>, operator=, (std::shared_ptr<Shape>&&), std::shared_ptr<Shape>&) }
+    }, {});
+
+    AddTypeConstructor("ShapePtr", "void f()", asFUNCTION(MakeType<std::shared_ptr<Shape>>));
+    AddTypeDestructor("ShapePtr", "void f()", asFUNCTION(DestroyType<std::shared_ptr<Shape>>));
+}
+
 void ScriptManager::RegisterSceneManager()
 {
     AddType("SceneManager",
     {
-        { "ModelPtr GetModel(string)", asMETHOD(SceneManager, GetModel) }
+        { "ModelPtr GetModel(string)", asMETHOD(SceneManager, GetModel) },
+        { "ShapePtr GetShape(string)", asMETHOD(SceneManager, GetShape) }
     }, {});
+}
+
+void ScriptManager::RegisterSfKeyboard()
+{
+    SetDefaultNamespace("Keyboard");
+    AddFunction("bool isKeyPressed(int)", asFUNCTION(sf::Keyboard::isKeyPressed));
+    AddEnum("Key", { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", 
+                     "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Num0", "Num1", "Num2", "Num3", 
+                     "Num4", "Num5", "Num6", "Num7", "Num8", "Num9", "Escape", "LControl", "LShift", "LAlt", "LSystem",
+                     "RControl", "RShift", "RAlt", "RSystem", "Menu", "LBracket", "RBracket", "Semicolon", "Comma",
+                     "Period", "Quote", "Slash", "Backslash", "Tilde", "Equal", "Hyphen", "Space", "Enter", "Backspace",
+                     "Tab", "PageUp", "PageDown", "End", "Home", "Insert", "Delete", "Add", "Substract", "Multiply", "Divide",
+                     "Left", "Right", "Up", "Down", "Numpad0", "Numpad1", "Numpad2", "Numpad3", "Numpad4", "Numpad5",
+                     "Numpad6", "Numpad7", "Numpad8", "Numpad9", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9",
+                     "F10", "F11", "F12", "F13", "F14", "F15", "Pause" });
+    SetDefaultNamespace("");
 }

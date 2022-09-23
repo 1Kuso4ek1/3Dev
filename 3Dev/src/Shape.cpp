@@ -1,7 +1,7 @@
 #include "Shape.hpp"
 
 Shape::Shape(const rp3d::Vector3& size, Material* mat, PhysicsManager* man, Shader* shader, Matrices* m)
-			: size(size), tr({ 0, 0, 0 }, { 0, 0, 0, 1 }), mat(mat)
+			: size(size), tr({ 0, 0, 0 }, { 0, 0, 0, 1 }), mat(mat), man(man)
 {
 	if(shader) this->shader = shader;
 	if(m) this->m = m;
@@ -73,13 +73,13 @@ void Shape::DrawSkybox()
 void Shape::SetPosition(const rp3d::Vector3& position)
 {
 	tr.setPosition(position);
-	if(body != nullptr) body->setTransform(tr);
+	if(body) body->setTransform(tr);
 }
 
 void Shape::SetOrientation(const rp3d::Quaternion& orientation)
 {
 	tr.setOrientation(orientation);
-	if(body != nullptr) body->setTransform(tr);
+	if(body) body->setTransform(tr);
 }
 
 void Shape::SetSize(const rp3d::Vector3& size)
@@ -96,6 +96,33 @@ void Shape::SetMaterial(Material* mat)
 void Shape::SetShader(Shader* shader)
 {
 	this->shader = shader;
+}
+
+void Shape::SetPhysicsManager(PhysicsManager* man)
+{
+	this->man = man;
+}
+	
+void Shape::CreateRigidBody()
+{
+	if(man) body = man->CreateRigidBody(tr);
+}
+
+void Shape::Move(rp3d::Vector3 position) 
+{
+	tr.setPosition(tr.getPosition() + position);
+	if(body) body->setTransform(tr);
+}
+
+void Shape::Rotate(rp3d::Quaternion orientation) 
+{
+	tr.setOrientation(orientation * tr.getOrientation());
+	if(body) body->setTransform(tr);
+}
+
+void Shape::Expand(rp3d::Vector3 size) 
+{
+	this->size += size;
 }
 
 bool Shape::IsTransparent()

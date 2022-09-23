@@ -21,6 +21,13 @@ public:
 	void SetSize(const rp3d::Vector3& size);
 	void SetMaterial(Material* mat);
 	void SetShader(Shader* shader);
+	void SetPhysicsManager(PhysicsManager* man);
+	
+	void CreateRigidBody();
+
+	void Move(rp3d::Vector3 position);
+	void Rotate(rp3d::Quaternion orientation);
+	void Expand(rp3d::Vector3 size);
 	
 	bool IsTransparent();
 	
@@ -38,6 +45,8 @@ private:
 	Material* mat;
 	Matrices* m = Renderer::GetInstance()->GetMatrices();
 	Shader* shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
+
+	PhysicsManager* man = nullptr;
 
 	rp3d::BoxShape* shape = nullptr;
 	rp3d::RigidBody* body = nullptr;

@@ -1,5 +1,8 @@
 #pragma once
 #include "Utils.hpp"
+#include <scriptbuilder.h>
+#include <scriptstdstring.h>
+#include <scriptarray.h>
 
 static void MessageCallback(const asSMessageInfo *msg, void *param)
 {
@@ -33,3 +36,4 @@ template<class T>
 static T& AssignType(T* dst, T* src) { return *dst = *src; }
 
 static void MakeVector3(float x, float y, float z, rp3d::Vector3* vec) { new(vec) rp3d::Vector3(x, y, z); }
+static void MakeQuaternion(float x, float y, float z, float w, rp3d::Quaternion* q) { new(q) rp3d::Quaternion(x, y, z, w); }
