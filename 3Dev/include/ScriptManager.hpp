@@ -35,6 +35,8 @@ private:
     void RegisterCamera();
     void RegisterSceneManager();
     void RegisterSfKeyboard();
+    void RegisterPhysicsManager();
+    void RegisterTransform();
 
     bool buildSucceded = false;
 

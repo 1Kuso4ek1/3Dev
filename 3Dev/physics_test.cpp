@@ -74,9 +74,10 @@ int main()
     auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 1, 1, 1 }, &skyboxMaterial);
     
     // Loading a sphere model
-    auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material*>{ &sphereMaterial }, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
-    //sphere->CreateSphereShape(); // Creating sphere collision shape for a model
+    auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material*>{ &sphereMaterial }, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, man.get());
+    sphere->CreateSphereShape(); // Creating sphere collision shape for a model
     sphere->SetPosition({ 10.f, 10.f, 10.f });
+    sphere->GetRigidBody()->setIsActive(false);
 
     auto terrain = std::make_shared<Model>("../terrain.obj", std::vector<Material*>{ &material }, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, man.get());
     terrain->CreateConcaveShape();
@@ -124,6 +125,7 @@ int main()
     scman.AddProperty("SceneManager scene", &scene);
     scman.AddProperty("Camera camera", &cam);
     scman.AddProperty("bool manageCameraMovement", &manageCameraMovement);
+    scman.AddProperty("PhysicsManager@ physicsManager", man.get());
     scman.SetDefaultNamespace("");
     scman.LoadScript("../scripts/test.as");
     scman.Build();

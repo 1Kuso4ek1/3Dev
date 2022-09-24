@@ -9,6 +9,8 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterScriptArray(engine, true);
     RegisterVector3();
     RegisterQuaternion();
+    RegisterTransform();
+    RegisterPhysicsManager();
     RegisterRigidBody();
     RegisterModel();
     RegisterModelPtr();
@@ -170,13 +172,16 @@ void ScriptManager::RegisterModel()
         { "void SetPosition(Vector3)", asMETHOD(Model, SetPosition) },
         { "void SetOrientation(Quaternion)", asMETHOD(Model, SetOrientation) },
         { "void SetSize(Vector3)", asMETHOD(Model, SetSize) },
+        { "void SetPhysicsManager(PhysicsManager@)", asMETHOD(Model, SetPhysicsManager) },
+        { "void CreateRigidBody()", asMETHOD(Model, CreateRigidBody) },
         { "void Move(Vector3)", asMETHOD(Model, Move) },
         { "void Rotate(Quaternion)", asMETHOD(Model, Rotate) },
         { "void Expand(Vector3)", asMETHOD(Model, Expand) },
         { "Vector3& GetPosition()", asMETHOD(Model, GetPosition) },
         { "Quaternion& GetOrientation()", asMETHOD(Model, GetOrientation) },
         { "Vector3& GetSize()", asMETHOD(Model, GetSize) },
-        { "RigidBody@ GetRigidBody()", asMETHOD(Model, GetRigidBody) }
+        { "RigidBody@ GetRigidBody()", asMETHOD(Model, GetRigidBody) },
+        { "int GetMeshesCount()", asMETHOD(Model, GetMeshesCount) }
     }, {});
 }
 
@@ -199,6 +204,8 @@ void ScriptManager::RegisterShape()
         { "void SetPosition(Vector3)", asMETHOD(Shape, SetPosition) },
         { "void SetOrientation(Quaternion)", asMETHOD(Shape, SetOrientation) },
         { "void SetSize(Vector3)", asMETHOD(Shape, SetSize) },
+        { "void SetPhysicsManager(PhysicsManager@)", asMETHOD(Shape, SetPhysicsManager) },
+        { "void CreateRigidBody()", asMETHOD(Shape, CreateRigidBody) },
         { "void Move(Vector3)", asMETHOD(Shape, Move) },
         { "void Rotate(Quaternion)", asMETHOD(Shape, Rotate) },
         { "void Expand(Vector3)", asMETHOD(Shape, Expand) },
@@ -230,7 +237,9 @@ void ScriptManager::RegisterRigidBody()
         { "Vector3 getLinearVelocity()", asMETHOD(rp3d::RigidBody, getLinearVelocity) },
         { "void setLinearVelocity(const Vector3& in)", asMETHOD(rp3d::RigidBody, setLinearVelocity) },
         { "Vector3 getAngularVelocity()", asMETHOD(rp3d::RigidBody, getAngularVelocity) },
-        { "void setAngularVelocity(const Vector3& in)", asMETHOD(rp3d::RigidBody, setAngularVelocity) }
+        { "void setAngularVelocity(const Vector3& in)", asMETHOD(rp3d::RigidBody, setAngularVelocity) },
+        { "bool isActive()", asMETHOD(rp3d::RigidBody, isActive) },
+        { "void setIsActive(bool)", asMETHOD(rp3d::RigidBody, setIsActive) }
     }, {});
 }
 
@@ -272,4 +281,18 @@ void ScriptManager::RegisterSfKeyboard()
                      "Numpad6", "Numpad7", "Numpad8", "Numpad9", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9",
                      "F10", "F11", "F12", "F13", "F14", "F15", "Pause" });
     SetDefaultNamespace("");
+}
+
+void ScriptManager::RegisterPhysicsManager()
+{
+    AddType("PhysicsManager", {}, {});
+}
+
+void ScriptManager::RegisterTransform()
+{
+    rp3d::Transform::identity();
+    AddValueType("Transform", sizeof(rp3d::Transform), asGetTypeTraits<rp3d::Transform>(), {}, {});
+    AddTypeConstructor("Transform", "void f()", asFUNCTION(MakeType<rp3d::Transform>));
+    AddTypeConstructor("Transform", "void f(const Transform& in)", asFUNCTION(CopyType<rp3d::Transform>));
+    AddTypeDestructor("Transform", "void f()", asFUNCTION(DestroyType<rp3d::Transform>));
 }
