@@ -31,6 +31,8 @@ private:
     void RegisterModelPtr();
     void RegisterShape();
     void RegisterShapePtr();
+    void RegisterRigidBody();
+    void RegisterCamera();
     void RegisterSceneManager();
     void RegisterSfKeyboard();
 

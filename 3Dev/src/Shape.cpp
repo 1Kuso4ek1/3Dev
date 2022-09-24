@@ -70,19 +70,19 @@ void Shape::DrawSkybox()
 	m->PopMatrix();
 }
 
-void Shape::SetPosition(const rp3d::Vector3& position)
+void Shape::SetPosition(rp3d::Vector3 position)
 {
 	tr.setPosition(position);
 	if(body) body->setTransform(tr);
 }
 
-void Shape::SetOrientation(const rp3d::Quaternion& orientation)
+void Shape::SetOrientation(rp3d::Quaternion orientation)
 {
 	tr.setOrientation(orientation);
 	if(body) body->setTransform(tr);
 }
 
-void Shape::SetSize(const rp3d::Vector3& size)
+void Shape::SetSize(rp3d::Vector3 size)
 {
 	this->size = size;
 }

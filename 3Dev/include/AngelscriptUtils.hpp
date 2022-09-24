@@ -37,3 +37,5 @@ static T& AssignType(T* dst, T* src) { return *dst = *src; }
 
 static void MakeVector3(float x, float y, float z, rp3d::Vector3* vec) { new(vec) rp3d::Vector3(x, y, z); }
 static void MakeQuaternion(float x, float y, float z, float w, rp3d::Quaternion* q) { new(q) rp3d::Quaternion(x, y, z, w); }
+
+static rp3d::Vector3 AddVector3(rp3d::Vector3& l, rp3d::Vector3& r) { return rp3d::Vector3(l.x + r.x, l.y + r.y, l.z + r.z); }

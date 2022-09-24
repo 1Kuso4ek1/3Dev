@@ -16,9 +16,9 @@ public:
 	void Draw(Camera* cam, std::vector<Light*> lights);
 	void DrawSkybox();
 
-	void SetPosition(const rp3d::Vector3& position);
-	void SetOrientation(const rp3d::Quaternion& orientation);
-	void SetSize(const rp3d::Vector3& size);
+	void SetPosition(rp3d::Vector3 position);
+	void SetOrientation(rp3d::Quaternion orientation);
+	void SetSize(rp3d::Vector3 size);
 	void SetMaterial(Material* mat);
 	void SetShader(Shader* shader);
 	void SetPhysicsManager(PhysicsManager* man);

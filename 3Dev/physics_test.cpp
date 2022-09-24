@@ -117,8 +117,14 @@ int main()
     
     sman->PlayAt("sound", 0, sphere->GetPosition());
 
+    bool manageCameraMovement = true;
+
     ScriptManager scman;
+    scman.SetDefaultNamespace("Game");
     scman.AddProperty("SceneManager scene", &scene);
+    scman.AddProperty("Camera camera", &cam);
+    scman.AddProperty("bool manageCameraMovement", &manageCameraMovement);
+    scman.SetDefaultNamespace("");
     scman.LoadScript("../scripts/test.as");
     scman.Build();
 
@@ -129,7 +135,7 @@ int main()
     {
         // Camera movement, rotation and so on
         cam.Update();
-        cam.Move(1);
+        if(manageCameraMovement) cam.Move(1);
         cam.Mouse();
         cam.Look();
         //////////////////////////////////////

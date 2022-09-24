@@ -12,16 +12,16 @@ public:
 	void Mouse();
 
 	void Look();
-	void Look(const rp3d::Vector3& vec);
+	void Look(rp3d::Vector3 vec);
 
-	void SetViewportSize(const sf::Vector2u& size);
+	void SetViewportSize(sf::Vector2u size);
 
-	void SetPosition(const rp3d::Vector3& vec);
-	void SetOrientation(const rp3d::Quaternion& quat);
-	void SetSpeed(const float& speed);
-	void SetFOV(const float& fov);
-	void SetNear(const float& near);
-	void SetFar(const float& far);
+	void SetPosition(rp3d::Vector3 vec);
+	void SetOrientation(rp3d::Quaternion quat);
+	void SetSpeed(float speed);
+	void SetFOV(float fov);
+	void SetNear(float near);
+	void SetFar(float far);
 	void AlwaysUp(bool a);
 
 	rp3d::Vector3 GetPosition();

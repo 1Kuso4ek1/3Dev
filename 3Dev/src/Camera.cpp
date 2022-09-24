@@ -55,46 +55,46 @@ void Camera::Look()
 	m->GetView() = glm::lookAt(toglm(pos), toglm(pos + v), alwaysUp ? glm::vec3(0.0, 1.0, 0.0) : toglm(tmpv));
 }
 
-void Camera::Look(const rp3d::Vector3& vec)
+void Camera::Look(rp3d::Vector3 vec)
 {
 	m->GetView() = glm::lookAt(toglm(pos), toglm(vec), glm::vec3(0, 1, 0));
 }
 
-void Camera::SetViewportSize(const sf::Vector2u& size)
+void Camera::SetViewportSize(sf::Vector2u size)
 {
 	viewportSize = size;
 	aspect = (float)size.x / (float)size.y;
 	UpdateMatrix();
 }
 
-void Camera::SetPosition(const rp3d::Vector3& vec)
+void Camera::SetPosition(rp3d::Vector3 vec)
 {
 	pos = vec;
 }
 
-void Camera::SetOrientation(const rp3d::Quaternion& quat)
+void Camera::SetOrientation(rp3d::Quaternion quat)
 {
 	orient = quat;
 }
 
-void Camera::SetSpeed(const float& speed)
+void Camera::SetSpeed(float speed)
 {
 	this->speed = speed;
 }
 
-void Camera::SetFOV(const float& fov)
+void Camera::SetFOV(float fov)
 {
 	this->fov = fov;
 	UpdateMatrix();
 }
 
-void Camera::SetNear(const float& near)
+void Camera::SetNear(float near)
 {
 	this->near = near;
 	UpdateMatrix();
 }
 
-void Camera::SetFar(const float& far)
+void Camera::SetFar(float far)
 {
 	this->far = far;
 	UpdateMatrix();
