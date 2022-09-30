@@ -1,4 +1,4 @@
-#include "Shape.hpp"
+#include <Shape.hpp>
 
 Shape::Shape(const rp3d::Vector3& size, Material* mat, PhysicsManager* man, Shader* shader, Matrices* m)
 			: size(size), tr({ 0, 0, 0 }, { 0, 0, 0, 1 }), mat(mat), man(man)
@@ -85,6 +85,7 @@ void Shape::SetOrientation(rp3d::Quaternion orientation)
 void Shape::SetSize(rp3d::Vector3 size)
 {
 	this->size = size;
+	if(body) shape->setHalfExtents(this->size);
 }
 
 void Shape::SetMaterial(Material* mat)
@@ -123,6 +124,7 @@ void Shape::Rotate(rp3d::Quaternion orientation)
 void Shape::Expand(rp3d::Vector3 size) 
 {
 	this->size += size;
+	if(body) shape->setHalfExtents(this->size);
 }
 
 bool Shape::IsTransparent()
@@ -158,4 +160,55 @@ rp3d::Quaternion Shape::GetOrientation()
 rp3d::Vector3 Shape::GetSize() 
 {
 	return size;
+}
+
+Json::Value Shape::Serialize()
+{
+	Json::Value data;
+	
+	auto pos = GetPosition();
+	auto orient = GetOrientation();
+	auto size = GetSize();
+
+	data["position"]["x"] = pos.x;
+	data["position"]["y"] = pos.y;
+	data["position"]["z"] = pos.z;
+
+	data["orientation"]["x"] = orient.x;
+	data["orientation"]["y"] = orient.y;
+	data["orientation"]["z"] = orient.z;
+	data["orientation"]["w"] = orient.w;
+
+	data["size"]["x"] = size.x;
+	data["size"]["y"] = size.y;
+	data["size"]["z"] = size.z;
+
+	data["rigidBody"]["active"] = body ? body->isActive() : false;
+
+	return data;
+}
+
+void Shape::Deserialize(Json::Value data)
+{
+	rp3d::Vector3 pos, size;
+	rp3d::Quaternion orient;
+
+	pos.x = data["position"]["x"].asFloat();
+	pos.y = data["position"]["y"].asFloat();
+	pos.z = data["position"]["z"].asFloat();
+
+	orient.x = data["orientation"]["x"].asFloat();
+	orient.y = data["orientation"]["y"].asFloat();
+	orient.z = data["orientation"]["z"].asFloat();
+	orient.w = data["orientation"]["w"].asFloat();
+
+	size.x = data["size"]["x"].asFloat();
+	size.y = data["size"]["y"].asFloat();
+	size.z = data["size"]["z"].asFloat();
+
+	if(body) body->setIsActive(data["rigidBody"]["active"].asBool());
+
+	SetPosition(pos);
+	SetOrientation(orient);
+	SetSize(size);
 }

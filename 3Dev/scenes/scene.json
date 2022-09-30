@@ -1,0 +1,86 @@
+{
+	"objects" : 
+	{
+		"shapes" : 
+		[
+			{
+				"name" : "shape2",
+				"orientation" : 
+				{
+					"w" : 1.0,
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"position" : 
+				{
+					"x" : 10.0,
+					"y" : 13.0,
+					"z" : 10.0
+				},
+				"rigidBody" : 
+				{
+					"active" : true
+				},
+				"size" : 
+				{
+					"x" : 1.5,
+					"y" : 1.5,
+					"z" : 3.0
+				}
+			},
+			{
+				"name" : "shape1",
+				"orientation" : 
+				{
+					"w" : 1.0,
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"position" : 
+				{
+					"x" : 10.0,
+					"y" : 36.0,
+					"z" : 10.0
+				},
+				"rigidBody" : 
+				{
+					"active" : true
+				},
+				"size" : 
+				{
+					"x" : 3.0,
+					"y" : 3.0,
+					"z" : 3.0
+				}
+			},
+			{
+				"name" : "shape",
+				"orientation" : 
+				{
+					"w" : 1.0,
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"position" : 
+				{
+					"x" : 10.0,
+					"y" : 30.0,
+					"z" : 10.0
+				},
+				"rigidBody" : 
+				{
+					"active" : true
+				},
+				"size" : 
+				{
+					"x" : 3.0,
+					"y" : 3.0,
+					"z" : 3.0
+				}
+			}
+		]
+	}
+}

@@ -17,9 +17,11 @@ int main()
     Camera cam(&engine.GetWindow(), { 0, 10, 0 }); // Main camera
 
     // Textures for a material
-    GLuint texture = LoadTexture("../textures/metal_color.jpg"), normalmap = LoadTexture("../textures/metal_normal.jpg"),
-    ao = LoadTexture("../textures/metal_ao.jpg"), metalness = LoadTexture("../textures/metal_metalness.jpg"),
-    roughness = LoadTexture("../textures/metal_roughness.jpg");
+    GLuint texture = TextureManager::GetInstance()->LoadTexture("../textures/metal_color.jpg"),
+           normalmap = TextureManager::GetInstance()->LoadTexture("../textures/metal_normal.jpg"),
+           ao = TextureManager::GetInstance()->LoadTexture("../textures/metal_ao.jpg"),
+           metalness = TextureManager::GetInstance()->LoadTexture("../textures/metal_metalness.jpg"),
+           roughness = TextureManager::GetInstance()->LoadTexture("../textures/metal_roughness.jpg");
 
     rp3d::PhysicsWorld::WorldSettings st; // Default physics world settings
     auto man = std::make_shared<PhysicsManager>(st); // Main physics manager
@@ -29,7 +31,7 @@ int main()
     {
         if(event.type == sf::Event::Resized) // If the window is resized
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->RecreateTexture(event.size.width, event.size.height); // Resizing framebuffer texture
-
+        
         if(event.type == sf::Event::Closed) engine.Close(); // Closing the window
     });
 
@@ -105,7 +107,7 @@ int main()
 
     scene.SetSoundManager(sman);
 
-    scene.Save("hello.json");
+    scene.Save("../scenes/scene.json");
 
     ShadowManager shadows(&scene, { &l }, glm::ivec2(2048, 2048));
 
@@ -120,17 +122,17 @@ int main()
 
     bool manageCameraMovement = true;
 
-    ScriptManager scman;
-    scman.SetDefaultNamespace("Game");
-    scman.AddProperty("SceneManager scene", &scene);
-    scman.AddProperty("Camera camera", &cam);
-    scman.AddProperty("bool manageCameraMovement", &manageCameraMovement);
-    scman.AddProperty("PhysicsManager@ physicsManager", man.get());
-    scman.SetDefaultNamespace("");
-    scman.LoadScript("../scripts/test.as");
-    scman.Build();
+    std::shared_ptr<ScriptManager> scman = std::make_shared<ScriptManager>();
+    scman->SetDefaultNamespace("Game");
+    scman->AddProperty("SceneManager scene", &scene);
+    scman->AddProperty("Camera camera", &cam);
+    scman->AddProperty("bool manageCameraMovement", &manageCameraMovement);
+    scman->AddProperty("PhysicsManager@ physicsManager", man.get());
+    scman->SetDefaultNamespace("");
+    scman->LoadScript("../scripts/test.as");
+    scman->Build();
 
-    scman.ExecuteFunction("void Start()");
+    scman->ExecuteFunction("void Start()");
 
     // Main game loop
     engine.Loop([&]() 
@@ -142,7 +144,7 @@ int main()
         cam.Look();
         //////////////////////////////////////
 
-        scman.ExecuteFunction("void Loop()");
+        scman->ExecuteFunction("void Loop()");
 
         ListenerWrapper::SetPosition(cam.GetPosition());
         ListenerWrapper::SetOrientation(cam.GetOrientation());

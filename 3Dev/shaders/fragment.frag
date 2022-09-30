@@ -178,7 +178,7 @@ void main()
         i++;
     }
     for(i = 0; i < maxShadows && shadows[i].isactive; i++)
-        shadow += CalcShadow(i, 0.7 /* use any value you like */);
+        shadow += CalcShadow(i, 0.3 /* use any value you like */);
 
     vec3 f = FresnelSchlick(max(dot(norm, normalize(camposout - mpos)), 0.0), f0, rough);
     vec3 kspc = f;

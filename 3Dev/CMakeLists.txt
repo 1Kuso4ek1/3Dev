@@ -42,6 +42,7 @@ add_library(3Dev
 	src/SoundManager.cpp
 	src/Renderer.cpp
 	src/ScriptManager.cpp
+	src/TextureManager.cpp
 	libraries/Angelscript/sdk/add_on/scriptbuilder/scriptbuilder.cpp
 	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.cpp
 	libraries/Angelscript/sdk/add_on/scriptarray/scriptarray.cpp
@@ -135,6 +136,7 @@ install(FILES
 	include/SoundManager.hpp
 	include/Renderer.hpp
 	include/ScriptManager.hpp
+	include/TextureManager.hpp
 	include/stb_image.hpp
 	libraries/Angelscript/sdk/add_on/scriptbuilder/scriptbuilder.h
 	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.h

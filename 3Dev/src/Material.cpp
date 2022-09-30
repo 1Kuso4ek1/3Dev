@@ -1,6 +1,4 @@
 #include <Material.hpp>
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.hpp>
 
 Material::Material() 
 {

@@ -19,10 +19,15 @@ public:
     void AddEnum(std::string name, std::vector<std::string> values);
     void SetDefaultNamespace(std::string name);
 
-    void LoadScript(std::string filename);
+    bool LoadScript(std::string filename);
     void Build();
+    bool IsBuildSucceded();
 
     void ExecuteFunction(std::string declaration);
+
+    void RemoveScript(std::string filename);
+
+    std::vector<std::string> GetScripts();
 
 private:
     void RegisterVector3();
@@ -45,4 +50,6 @@ private:
     std::pair<asIScriptFunction*, std::string> function = { nullptr, "" };
 
     CScriptBuilder builder;
+
+    std::vector<std::string> scripts;
 };

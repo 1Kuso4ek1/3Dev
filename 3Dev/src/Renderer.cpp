@@ -46,7 +46,7 @@ void Renderer::LoadEnvironment(std::string environmentMapFilename, uint32_t skyb
     Framebuffer capture(nullptr, skyboxSideSize, skyboxSideSize), captureIrr(nullptr, irradianceSideSize, irradianceSideSize),
                 captureSpc(nullptr, prefilteredSideSize, prefilteredSideSize), captureBRDF(shaders[ShaderType::BRDF].get(), 512, 512);
 
-    GLuint cubemap = capture.CaptureCubemap(shaders[ShaderType::Environment].get(), LoadHDRTexture(environmentMapFilename), m);
+    GLuint cubemap = capture.CaptureCubemap(shaders[ShaderType::Environment].get(), TextureManager::GetInstance()->LoadTexture(environmentMapFilename), m);
     textures[TextureType::Skybox] = cubemap;
 
     GLuint irr = captureIrr.CaptureCubemap(shaders[ShaderType::Irradiance].get(), cubemap, m, true);

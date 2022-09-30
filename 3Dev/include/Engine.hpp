@@ -13,6 +13,7 @@
 #include "SoundManager.hpp"
 #include "Renderer.hpp"
 #include "ScriptManager.hpp"
+#include "TextureManager.hpp"
 
 #include <functional>
 

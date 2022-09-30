@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <filesystem>
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics/Image.hpp>
@@ -29,6 +30,8 @@
 #include <reactphysics3d/reactphysics3d.h>
 
 #include <Log.h>
+
+#include <json/json.h>
 
 #include <angelscript.h>
 

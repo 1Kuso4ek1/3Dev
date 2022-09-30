@@ -3,8 +3,8 @@
 Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, GLint filter) : shader(shader), size(w, h)
 {
 	CalcPixelSize(glm::vec2(w, h));
-    if(!isDepth) texture = CreateTexture(w, h, false, filter);
-	depth = CreateTexture(w, h, true, isDepth ? GL_LINEAR : GL_NEAREST);
+    if(!isDepth) texture = TextureManager::GetInstance()->CreateTexture(w, h, false, filter);
+	depth = TextureManager::GetInstance()->CreateTexture(w, h, true, isDepth ? GL_LINEAR : GL_NEAREST);
     glGenFramebuffers(1, &fbo);
     Bind();
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
@@ -45,11 +45,17 @@ void Framebuffer::RecreateTexture(int w, int h)
 {
 	size = glm::ivec2(w, h);
 	CalcPixelSize(glm::vec2(w, h));
-    if(texture != 0)
+    
+	if(texture != 0)
 	{
-		texture = CreateTexture(w, h);
+		auto name = TextureManager::GetInstance()->GetName(texture);
+		TextureManager::GetInstance()->DeleteTexture(name);
+		texture = TextureManager::GetInstance()->CreateTexture(w, h);
 	}
-	depth = CreateTexture(w, h, true);
+	auto name = TextureManager::GetInstance()->GetName(depth);
+	TextureManager::GetInstance()->DeleteTexture(name);
+	depth = TextureManager::GetInstance()->CreateTexture(w, h, true);
+
     Bind();
     if(texture != 0) glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
@@ -89,7 +95,7 @@ void Framebuffer::Draw()
 
 GLuint Framebuffer::Capture(GLuint texture)
 {
-	GLuint out = CreateTexture(size.x, size.y);
+	GLuint out = TextureManager::GetInstance()->CreateTexture(size.x, size.y);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, out, 0);
 	Bind();
 	glViewport(0, 0, size.x, size.y);
@@ -113,7 +119,7 @@ GLuint Framebuffer::CaptureCubemap(Shader* shader, GLuint tex, Matrices& m, bool
 {
 	Mesh cube;
 	cube.CreateCube();
-	GLuint cubemap = CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
+	GLuint cubemap = TextureManager::GetInstance()->CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
 	m.PushMatrix();
 	m.GetProjection() = glm::perspective(glm::radians(90.0), 1.0, 0.1, 1000.0);
 	Bind();
@@ -172,7 +178,7 @@ GLuint Framebuffer::CaptureCubemapMipmaps(Shader* shader, GLuint tex, Matrices& 
 {
 	Mesh cube;
 	cube.CreateCube();
-	GLuint cubemap = CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
+	GLuint cubemap = TextureManager::GetInstance()->CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
 	m.PushMatrix();
 	m.GetProjection() = glm::perspective(glm::radians(90.0), 1.0, 0.1, 1000.0);
 	Bind();

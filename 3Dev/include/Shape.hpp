@@ -39,6 +39,9 @@ public:
 	rp3d::Quaternion GetOrientation();
 	rp3d::Vector3 GetSize();
 
+	Json::Value Serialize();
+	void Deserialize(Json::Value data);
+
 private:
     bool transparent = false;
     

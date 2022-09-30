@@ -89,15 +89,32 @@ void ScriptManager::SetDefaultNamespace(std::string name)
     engine->SetDefaultNamespace(name.c_str());
 }
 
-void ScriptManager::LoadScript(std::string filename)
+bool ScriptManager::LoadScript(std::string filename)
 {
-    builder.AddSectionFromFile(filename.c_str());
+    CScriptBuilder temp;
+    temp.StartNewModule(engine, "temp");
+    temp.AddSectionFromFile(filename.c_str());
+    bool ret = temp.BuildModule() >= 0;
+    if(ret) scripts.push_back(filename);
+    engine->DiscardModule("temp");
+    return ret;
 }
 
 void ScriptManager::Build()
 {
+    engine->DiscardModule("module");
+    builder.StartNewModule(engine, "module");
+
+    for(auto& i : scripts)
+        builder.AddSectionFromFile(i.c_str());
+
     int ret = builder.BuildModule();
     buildSucceded = (ret >= 0);
+}
+
+bool ScriptManager::IsBuildSucceded()
+{
+    return buildSucceded;
 }
 
 void ScriptManager::ExecuteFunction(std::string declaration)
@@ -112,6 +129,16 @@ void ScriptManager::ExecuteFunction(std::string declaration)
         context->Prepare(function.first);
         context->Execute();
     }
+}
+
+void ScriptManager::RemoveScript(std::string filename)
+{
+    std::remove(scripts.begin(), scripts.end(), filename);
+}
+
+std::vector<std::string> ScriptManager::GetScripts()
+{
+    return scripts;
 }
 
 void ScriptManager::RegisterVector3()
@@ -230,16 +257,18 @@ void ScriptManager::RegisterShapePtr()
 
 void ScriptManager::RegisterRigidBody()
 {
+    AddEnum("BodyType", { "STATIC", "KINEMATIC", "DYNAMIC" });
     AddType("RigidBody",
     {
         { "float getMass()", asMETHOD(rp3d::RigidBody, getMass) },
         { "void setMass(float)", asMETHOD(rp3d::RigidBody, setMass) },
-        { "Vector3 getLinearVelocity()", asMETHOD(rp3d::RigidBody, getLinearVelocity) },
+        { "Vector3& getLinearVelocity()", asMETHOD(rp3d::RigidBody, getLinearVelocity) },
         { "void setLinearVelocity(const Vector3& in)", asMETHOD(rp3d::RigidBody, setLinearVelocity) },
-        { "Vector3 getAngularVelocity()", asMETHOD(rp3d::RigidBody, getAngularVelocity) },
+        { "Vector3& getAngularVelocity()", asMETHOD(rp3d::RigidBody, getAngularVelocity) },
         { "void setAngularVelocity(const Vector3& in)", asMETHOD(rp3d::RigidBody, setAngularVelocity) },
         { "bool isActive()", asMETHOD(rp3d::RigidBody, isActive) },
-        { "void setIsActive(bool)", asMETHOD(rp3d::RigidBody, setIsActive) }
+        { "void setIsActive(bool)", asMETHOD(rp3d::RigidBody, setIsActive) },
+        { "void setType(BodyType)", asMETHOD(rp3d::RigidBody, setType) }
     }, {});
 }
 
@@ -263,7 +292,8 @@ void ScriptManager::RegisterSceneManager()
     AddType("SceneManager",
     {
         { "ModelPtr GetModel(string)", asMETHOD(SceneManager, GetModel) },
-        { "ShapePtr GetShape(string)", asMETHOD(SceneManager, GetShape) }
+        { "ShapePtr GetShape(string)", asMETHOD(SceneManager, GetShape) },
+        { "Camera@ GetCamera()", asMETHOD(SceneManager, GetCamera) }
     }, {});
 }
 
