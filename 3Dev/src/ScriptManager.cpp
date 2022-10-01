@@ -174,16 +174,17 @@ void ScriptManager::RegisterQuaternion()
     AddValueType("Quaternion", sizeof(rp3d::Quaternion), asGetTypeTraits<rp3d::Quaternion>(),
     {
         { "float length()", asMETHOD(rp3d::Quaternion, length) },
-        { "Quaternion& opAssign(Quaternion& in)", asFUNCTION(AssignType<rp3d::Quaternion>) },
+        { "Quaternion& opAssign(Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
         { "Quaternion& opAddAssign(Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator+=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
         { "Quaternion& opSubAssign(Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator-=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
         //{ "Quaternion& opMul(float)", asMETHODPR(rp3d::Quaternion, operator*, (float), rp3d::Quaternion) },
         { "bool opEquals(Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator==, (const rp3d::Quaternion&) const, bool) }
     },
     {
-        { "float x", asOFFSET(rp3d::Vector3, x) },
-        { "float y", asOFFSET(rp3d::Vector3, y) },
-        { "float z", asOFFSET(rp3d::Vector3, z) }
+        { "float x", asOFFSET(rp3d::Quaternion, x) },
+        { "float y", asOFFSET(rp3d::Quaternion, y) },
+        { "float z", asOFFSET(rp3d::Quaternion, z) },
+        { "float w", asOFFSET(rp3d::Quaternion, w) }
     });
 
     AddTypeConstructor("Quaternion", "void f()", asFUNCTION(MakeType<rp3d::Quaternion>));
@@ -204,9 +205,9 @@ void ScriptManager::RegisterModel()
         { "void Move(Vector3)", asMETHOD(Model, Move) },
         { "void Rotate(Quaternion)", asMETHOD(Model, Rotate) },
         { "void Expand(Vector3)", asMETHOD(Model, Expand) },
-        { "Vector3& GetPosition()", asMETHOD(Model, GetPosition) },
-        { "Quaternion& GetOrientation()", asMETHOD(Model, GetOrientation) },
-        { "Vector3& GetSize()", asMETHOD(Model, GetSize) },
+        { "Vector3 GetPosition()", asMETHOD(Model, GetPosition) },
+        { "Quaternion GetOrientation()", asMETHOD(Model, GetOrientation) },
+        { "Vector3 GetSize()", asMETHOD(Model, GetSize) },
         { "RigidBody@ GetRigidBody()", asMETHOD(Model, GetRigidBody) },
         { "int GetMeshesCount()", asMETHOD(Model, GetMeshesCount) }
     }, {});
@@ -236,9 +237,9 @@ void ScriptManager::RegisterShape()
         { "void Move(Vector3)", asMETHOD(Shape, Move) },
         { "void Rotate(Quaternion)", asMETHOD(Shape, Rotate) },
         { "void Expand(Vector3)", asMETHOD(Shape, Expand) },
-        { "Vector3& GetPosition()", asMETHOD(Shape, GetPosition) },
-        { "Quaternion& GetOrientation()", asMETHOD(Shape, GetOrientation) },
-        { "Vector3& GetSize()", asMETHOD(Shape, GetSize) },
+        { "Vector3 GetPosition()", asMETHOD(Shape, GetPosition) },
+        { "Quaternion GetOrientation()", asMETHOD(Shape, GetOrientation) },
+        { "Vector3 GetSize()", asMETHOD(Shape, GetSize) },
         { "RigidBody@ GetRigidBody()", asMETHOD(Shape, GetRigidBody) }
     }, {});
 }
@@ -257,18 +258,30 @@ void ScriptManager::RegisterShapePtr()
 
 void ScriptManager::RegisterRigidBody()
 {
+    AddValueType("AABB", sizeof(rp3d::AABB), asGetTypeTraits<rp3d::AABB>(),
+    {
+        { "AABB& opAssign(AABB& in)", asFUNCTION(AssignAABB) }
+    }, {});
+
+    AddTypeConstructor("AABB", "void f()", asFUNCTION(MakeType<rp3d::AABB>));
+    AddTypeConstructor("AABB", "void f(Vector3& in, Vector3& in)", asFUNCTION(MakeAABB));
+    AddTypeConstructor("AABB", "void f(const AABB& in)", asFUNCTION(CopyType<rp3d::AABB>));
+    AddTypeDestructor("AABB", "void f()", asFUNCTION(DestroyType<rp3d::AABB>));
+
     AddEnum("BodyType", { "STATIC", "KINEMATIC", "DYNAMIC" });
     AddType("RigidBody",
     {
         { "float getMass()", asMETHOD(rp3d::RigidBody, getMass) },
         { "void setMass(float)", asMETHOD(rp3d::RigidBody, setMass) },
-        { "Vector3& getLinearVelocity()", asMETHOD(rp3d::RigidBody, getLinearVelocity) },
+        { "Vector3 getLinearVelocity()", asMETHOD(rp3d::RigidBody, getLinearVelocity) },
         { "void setLinearVelocity(const Vector3& in)", asMETHOD(rp3d::RigidBody, setLinearVelocity) },
-        { "Vector3& getAngularVelocity()", asMETHOD(rp3d::RigidBody, getAngularVelocity) },
+        { "Vector3 getAngularVelocity()", asMETHOD(rp3d::RigidBody, getAngularVelocity) },
         { "void setAngularVelocity(const Vector3& in)", asMETHOD(rp3d::RigidBody, setAngularVelocity) },
         { "bool isActive()", asMETHOD(rp3d::RigidBody, isActive) },
         { "void setIsActive(bool)", asMETHOD(rp3d::RigidBody, setIsActive) },
-        { "void setType(BodyType)", asMETHOD(rp3d::RigidBody, setType) }
+        { "void setType(BodyType)", asMETHOD(rp3d::RigidBody, setType) },
+        { "AABB getAABB()", asMETHOD(rp3d::RigidBody, getAABB) },
+        { "bool testAABBOverlap(const AABB& in)", asMETHOD(rp3d::RigidBody, testAABBOverlap) }
     }, {});
 }
 
@@ -282,8 +295,8 @@ void ScriptManager::RegisterCamera()
         { "void SetSpeed(float)", asMETHOD(Camera, SetSpeed) },
         { "void SetFOV(float)", asMETHOD(Camera, SetFOV) },
         { "void AlwaysUp(bool)", asMETHOD(Camera, AlwaysUp) },
-        { "Vector3& GetPosition()", asMETHOD(Camera, GetPosition) },
-        { "Quaternion& GetOrientation()", asMETHOD(Camera, GetOrientation) }
+        { "Vector3 GetPosition()", asMETHOD(Camera, GetPosition) },
+        { "Quaternion GetOrientation()", asMETHOD(Camera, GetOrientation) }
     }, {});
 }
 

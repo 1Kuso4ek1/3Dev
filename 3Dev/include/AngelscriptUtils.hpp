@@ -36,6 +36,9 @@ template<class T>
 static T& AssignType(T* dst, T* src) { return *dst = *src; }
 
 static void MakeVector3(float x, float y, float z, rp3d::Vector3* vec) { new(vec) rp3d::Vector3(x, y, z); }
+static rp3d::Vector3 AddVector3(rp3d::Vector3& l, rp3d::Vector3& r) { return rp3d::Vector3(l.x + r.x, l.y + r.y, l.z + r.z); }
+
 static void MakeQuaternion(float x, float y, float z, float w, rp3d::Quaternion* q) { new(q) rp3d::Quaternion(x, y, z, w); }
 
-static rp3d::Vector3 AddVector3(rp3d::Vector3& l, rp3d::Vector3& r) { return rp3d::Vector3(l.x + r.x, l.y + r.y, l.z + r.z); }
+static void MakeAABB(const rp3d::Vector3& min, const rp3d::Vector3& max, rp3d::AABB* aabb) { new(aabb) rp3d::AABB(min, max); }
+static rp3d::AABB& AssignAABB(rp3d::AABB* dst, rp3d::AABB* src) { dst->mergeWithAABB(*src); return *dst; }
