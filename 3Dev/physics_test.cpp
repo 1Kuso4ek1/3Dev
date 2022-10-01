@@ -97,6 +97,9 @@ int main()
     scene.AddObject(sphere, "sphere");
     scene.AddObject(terrain);
 
+    scene.AddMaterial(std::make_shared<Material>(material));
+    scene.AddMaterial(std::make_shared<Material>(sphereMaterial));
+
     scene.AddPhysicsManager(man);
 
     //scene.AddLight(&l);

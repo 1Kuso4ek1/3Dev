@@ -134,6 +134,13 @@ void SceneManager::Save(std::string filename)
     Json::Value data;
     int counter = 0;
 
+    for(auto& i : materials)
+    {
+        data["materials"][counter] = i.second->Serialize();
+        counter++;
+    }
+    counter = 0;
+
 	for(auto& i : shapes)
     {
         data["objects"]["shapes"][counter] = i.second->Serialize();

@@ -143,3 +143,8 @@ std::string TextureManager::GetFilename(std::string name)
 {
     return filenames[name];
 }
+
+std::string TextureManager::GetFilename(GLuint id)
+{
+    return filenames[GetName(id)];
+}

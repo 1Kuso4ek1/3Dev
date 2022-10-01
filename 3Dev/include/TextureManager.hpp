@@ -17,6 +17,7 @@ public:
     GLuint GetTexture(std::string name);
     std::string GetName(GLuint id);
     std::string GetFilename(std::string name);
+    std::string GetFilename(GLuint id);
 
 private:
     TextureManager() {}

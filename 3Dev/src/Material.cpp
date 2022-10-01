@@ -151,6 +151,64 @@ bool Material::Contains(Type type)
 				}) != parameters.end();
 }
 
+Json::Value Material::Serialize()
+{
+	Json::Value data;
+
+	for(auto& i : parameters)
+	{
+		switch(i.second)
+		{
+		case Material::Type::Color:
+			if(std::holds_alternative<glm::vec3>(i.first))
+			{
+				data["color"]["r"] = std::get<0>(i.first).x;
+				data["color"]["g"] = std::get<0>(i.first).y;
+				data["color"]["b"] = std::get<0>(i.first).z;
+			}
+			else data["color"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
+			break;
+		case Material::Type::Normal:
+			data["normal"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
+			break;
+		case Material::Type::AmbientOcclusion:
+			data["ao"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
+			break;
+		case Material::Type::Metalness:
+			if(std::holds_alternative<glm::vec3>(i.first))
+				data["metalness"]["value"] = std::get<0>(i.first).x;
+			else data["metalness"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
+			break;
+		case Material::Type::Emission:
+			if(std::holds_alternative<glm::vec3>(i.first))
+			{
+				data["emission"]["r"] = std::get<0>(i.first).x;
+				data["emission"]["g"] = std::get<0>(i.first).y;
+				data["emission"]["b"] = std::get<0>(i.first).z;
+			}
+			else data["emission"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
+			break;
+		case Material::Type::Roughness:
+			if(std::holds_alternative<glm::vec3>(i.first))
+				data["roughness"]["value"] = std::get<0>(i.first).x;
+			else data["roughness"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
+			break;
+		case Material::Type::Opacity:
+			if(std::holds_alternative<glm::vec3>(i.first))
+				data["opacity"]["value"] = std::get<0>(i.first).x;
+			else data["opacity"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
+			break;
+		}
+	}
+
+	return data;
+}
+
+void Material::Deserialize(Json::Value data)
+{
+	
+}
+
 std::vector<std::pair<std::variant<glm::vec3, GLuint>, Material::Type>>& Material::GetParameters()
 {
 	return parameters;

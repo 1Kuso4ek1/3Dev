@@ -1,4 +1,45 @@
 {
+	"materials" : 
+	[
+		{
+			"color" : 
+			{
+				"b" : 0.80000001192092896,
+				"g" : 0.80000001192092896,
+				"r" : 0.80000001192092896
+			},
+			"metalness" : 
+			{
+				"value" : 0.80000001192092896
+			},
+			"roughness" : 
+			{
+				"value" : 0.40000000596046448
+			}
+		},
+		{
+			"ao" : 
+			{
+				"filename" : "../textures/metal_ao.jpg"
+			},
+			"color" : 
+			{
+				"filename" : "../textures/metal_color.jpg"
+			},
+			"metalness" : 
+			{
+				"filename" : "../textures/metal_metalness.jpg"
+			},
+			"normal" : 
+			{
+				"filename" : "../textures/metal_normal.jpg"
+			},
+			"roughness" : 
+			{
+				"filename" : "../textures/metal_roughness.jpg"
+			}
+		}
+	],
 	"objects" : 
 	{
 		"shapes" : 

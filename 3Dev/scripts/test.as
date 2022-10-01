@@ -27,7 +27,6 @@ class Player
             {
                 isAlive = false;
                 shape.get().GetRigidBody().setLinearVelocity(Vector3(6.0, 15.0, 6.0));
-                shape.get().GetRigidBody().setAngularVelocity(Vector3(6.0, 10.0, 6.0));
             }
         }
         else

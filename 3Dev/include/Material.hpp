@@ -42,12 +42,14 @@ public:
 	void AddParameter(std::variant<glm::vec3, GLuint> parameter, Type type);
 
 	void UpdateShader(Shader* shader);
-
 	void ResetShader(Shader* shader);
-
 	void GetEnvironmentFromRenderer();
 
 	bool Contains(Type type);
+
+	Json::Value Serialize();
+
+	void Deserialize(Json::Value data);
 
 	// @return reference to all parameters
 	std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>>& GetParameters();
