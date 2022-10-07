@@ -137,6 +137,7 @@ void SceneManager::Save(std::string filename)
     for(auto& i : materials)
     {
         data["materials"][counter] = i.second->Serialize();
+        data["materials"][counter]["name"] = i.first;
         counter++;
     }
     counter = 0;
@@ -145,7 +146,19 @@ void SceneManager::Save(std::string filename)
     {
         data["objects"]["shapes"][counter] = i.second->Serialize();
         data["objects"]["shapes"][counter]["name"] = i.first;
+        std::string materialName = std::find_if(materials.begin(), materials.end(), [&](auto& a)
+                                                {
+                                                    return *a.second.get() == *i.second->GetMaterial();
+                                                })->first;
+        data["objects"]["shapes"][counter]["material"] = materialName;
         counter++;
+    }
+    counter = 0;
+
+    for(auto& i : models)
+    {
+        data["objects"]["models"][counter];
+        data["objects"]["models"][counter]["name"] = i.first;
     }
 
     std::ofstream file(filename);

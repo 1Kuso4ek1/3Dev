@@ -3,12 +3,12 @@
 int main()
 {
     Engine engine; // Engine class is responsible for creating a window
-    
+
     engine.GetSettings().depthBits = 24; // Optional
     engine.GetSettings().antialiasingLevel = 4;
     engine.CreateWindow(1280, 720, "test"); // Creating a 1280x720 window with title "test"
     engine.Init(); // Initializing OpenGL
-    
+
     engine.GetWindow().setMouseCursorVisible(false); // Hiding the cursor
     engine.GetWindow().setMouseCursorGrabbed(true); // Grabbing the cursor
 
@@ -31,7 +31,7 @@ int main()
     {
         if(event.type == sf::Event::Resized) // If the window is resized
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->RecreateTexture(event.size.width, event.size.height); // Resizing framebuffer texture
-        
+
         if(event.type == sf::Event::Closed) engine.Close(); // Closing the window
     });
 
@@ -62,7 +62,7 @@ int main()
     {
         { Renderer::GetInstance()->GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap }
     });
-    
+
     // All the shapes
     auto s = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, man.get());
     s->SetPosition({ 10, 30, 10 });
@@ -72,18 +72,21 @@ int main()
 
     auto s2 = std::make_shared<Shape>(rp3d::Vector3{ 1.5, 1.5, 3 }, &material, man.get());
     s2->SetPosition({ 10, 13, 10 });
-    
+
     auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 1, 1, 1 }, &skyboxMaterial);
-    
+
     // Loading a sphere model
     auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material*>{ &sphereMaterial }, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, man.get());
     sphere->CreateSphereShape(); // Creating sphere collision shape for a model
     sphere->SetPosition({ 10.f, 10.f, 10.f });
     sphere->GetRigidBody()->setIsActive(false);
 
-    auto terrain = std::make_shared<Model>("../terrain.obj", std::vector<Material*>{ &material }, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, man.get());
+    auto floor = std::make_shared<Shape>(rp3d::Vector3(30, 1, 30), &material, man.get());
+    floor->SetPosition({ 10.f, -30.f, 10.f });
+    floor->GetRigidBody()->setType(rp3d::BodyType::STATIC);
+    /*auto terrain = std::make_shared<Model>("../terrain.obj", std::vector<Material*>{ &material }, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, man.get());
     terrain->CreateConcaveShape();
-    terrain->SetPosition({ 10.f, -30.f, 10.f });
+    terrain->SetPosition({ 10.f, -30.f, 10.f });*/
 
     auto sman = std::make_shared<SoundManager>();
     sman->LoadSound("../quandale-dingle.ogg", "sound");
@@ -93,9 +96,10 @@ int main()
     scene.AddObject(s);
     scene.AddObject(s1);
     scene.AddObject(s2);
+    scene.AddObject(floor);
 
     scene.AddObject(sphere, "sphere");
-    scene.AddObject(terrain);
+    //scene.AddObject(terrain);
 
     scene.AddMaterial(std::make_shared<Material>(material));
     scene.AddMaterial(std::make_shared<Material>(sphereMaterial));
@@ -103,7 +107,7 @@ int main()
     scene.AddPhysicsManager(man);
 
     //scene.AddLight(&l);
-    
+
     scene.SetCamera(&cam);
 
     scene.SetSkybox(skybox);
@@ -120,16 +124,18 @@ int main()
     sman->SetLoop(true, "sound");
     sman->SetAttenuation(3, "sound");
     sman->SetMinDistance(5, "sound");
-    
+
     sman->PlayAt("sound", 0, sphere->GetPosition());
 
-    bool manageCameraMovement = true;
+    bool manageCameraMovement = true, manageCameraLook = true, manageCameraMouse = true;
 
     std::shared_ptr<ScriptManager> scman = std::make_shared<ScriptManager>();
     scman->SetDefaultNamespace("Game");
     scman->AddProperty("SceneManager scene", &scene);
     scman->AddProperty("Camera camera", &cam);
     scman->AddProperty("bool manageCameraMovement", &manageCameraMovement);
+    scman->AddProperty("bool manageCameraLook", &manageCameraMovement);
+    scman->AddProperty("bool manageCameraMouse", &manageCameraMovement);
     scman->AddProperty("PhysicsManager@ physicsManager", man.get());
     scman->SetDefaultNamespace("");
     scman->LoadScript("../scripts/test.as");
@@ -138,13 +144,13 @@ int main()
     scman->ExecuteFunction("void Start()");
 
     // Main game loop
-    engine.Loop([&]() 
+    engine.Loop([&]()
     {
         // Camera movement, rotation and so on
         cam.Update();
         if(manageCameraMovement) cam.Move(1);
-        cam.Mouse();
-        cam.Look();
+        if(manageCameraMouse) cam.Mouse();
+        if(manageCameraLook) cam.Look();
         //////////////////////////////////////
 
         scman->ExecuteFunction("void Loop()");
@@ -153,9 +159,9 @@ int main()
         ListenerWrapper::SetOrientation(cam.GetOrientation());
 
         shadows.Update();
-		
+
         scene.Draw(Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main));
-        
+
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 1.5);
 

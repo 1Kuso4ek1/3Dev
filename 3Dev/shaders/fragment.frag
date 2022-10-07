@@ -40,7 +40,7 @@ out vec4 color;
 
 struct Shadow
 {
-	sampler2D shadowmap;
+	sampler2DShadow shadowmap;
 	bool isactive;
 };
 
@@ -60,37 +60,20 @@ struct Light
 uniform Light lights[maxLights];
 uniform Shadow shadows[maxShadows];
 
-float LinearizeDepth(float depth)
-{
-    float z = depth * 2.0 - 1.0;
-    return (2.0 * 0.01 * 500.0) / (500.0 + 0.01 - z * (500.0 - 0.01));
-}
-
 float CalcShadow(int i, float bias)
 {
     vec3 pcoord = lspaceout[i].xyz / lspaceout[i].w;
     pcoord = pcoord * 0.5 + 0.5;
     if(pcoord.z > 1.0)
         return 0.0;
-    float current = LinearizeDepth(pcoord.z);
-    float shadow = 0.0;
-    vec2 pixelsize = 1.0 / textureSize(shadows[i].shadowmap, 0);
-	for(int x = -1; x <= 1; ++x)
-	{
-		for(int y = -1; y <= 1; ++y)
-		{
-		    float pcf = LinearizeDepth(texture(shadows[i].shadowmap, pcoord.xy + vec2(x, y) * pixelsize).x);
-		    shadow += float(current - bias > pcf);
-		}
-	}
-	shadow /= 9.0;
-    return shadow;
+    pcoord.z -= bias;
+    return 1.0 - texture(shadows[i].shadowmap, pcoord);
 }
 
 float GGX(float ndoth, float rough)
 {
     float dn = pi * pow(pow(ndoth, 2) * (pow(rough, 4) - 1.0) + 1.0, 2);
-    
+
     return pow(rough, 4) / dn;
 }
 
@@ -98,7 +81,7 @@ float GeometrySchlick(float ndotv, float rough)
 {
     float k = pow(rough + 1.0, 2) / 8.0;
     float dn = ndotv * (1.0 - k) + k;
-	
+
     return ndotv / dn;
 }
 
@@ -106,7 +89,7 @@ float GeometrySmith(float ndotv, float ndotl, float rough)
 {
     float ggx1  = GeometrySchlick(ndotv, rough);
     float ggx2  = GeometrySchlick(ndotl, rough);
-	
+
     return ggx1 * ggx2;
 }
 
@@ -148,7 +131,7 @@ vec3 CalcLight(Light light, vec3 norm, float rough, float metal, vec3 albedo, ve
     vec3 nm = ndf * g * f;
     float dn = 4.0 * ndotv * ndotl;
     vec3 spc = (nm / max(dn, 0.001));
-    
+
     vec3 lo = (kdif * albedo / pi + spc) * rad * ndotl;
 
     return lo;
@@ -178,12 +161,12 @@ void main()
         i++;
     }
     for(i = 0; i < maxShadows && shadows[i].isactive; i++)
-        shadow += CalcShadow(i, 0.3 /* use any value you like */);
+        shadow += CalcShadow(i, 8 * pow(10, -7)/* use any value you like */);
 
     vec3 f = FresnelSchlick(max(dot(norm, normalize(camposout - mpos)), 0.0), f0, rough);
     vec3 kspc = f;
     vec3 kdif = (1.0 - kspc) * (1.0 - metal);
-    
+
     vec2 brdf = normalize(texture(lut, vec2(max(dot(norm, normalize(camposout - mpos)), 0.0), rough)).xy);
     vec3 spc = prefiltered * (f * brdf.x + brdf.y);
 

@@ -4,7 +4,7 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
 {
     engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
     context = engine->CreateContext();
-    
+
     RegisterStdString(engine);
     RegisterScriptArray(engine, true);
     RegisterVector3();
@@ -22,12 +22,12 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
 
     AddFunction("string to_string(int)", asFUNCTIONPR(std::to_string, (int), std::string));
     AddFunction("string to_string(float)", asFUNCTIONPR(std::to_string, (float), std::string));
-    
+
     SetDefaultNamespace("Log");
     AddEnum("Type", { "Critical", "Error", "Warning", "Info" });
     AddFunction("void Write(string, int)", asFUNCTION(Log::Write));
     SetDefaultNamespace("");
-    
+
     builder.StartNewModule(engine, "module");
 }
 
@@ -126,8 +126,8 @@ void ScriptManager::ExecuteFunction(std::string declaration)
             function.first = builder.GetModule()->GetFunctionByDecl(declaration.c_str());
             function.second = declaration;
         }
-        context->Prepare(function.first);
-        context->Execute();
+        buildSucceded = (context->Prepare(function.first) >= 0);
+        buildSucceded = (context->Execute() >= 0);
     }
 }
 
@@ -218,7 +218,8 @@ void ScriptManager::RegisterModelPtr()
     AddValueType("ModelPtr", sizeof(std::shared_ptr<Model>), asGetTypeTraits<std::shared_ptr<Model>>(),
     {
         { "Model@ get()", asMETHOD(std::shared_ptr<Model>, get) },
-        { "ModelPtr& opAssign(ModelPtr& in)", asMETHODPR(std::shared_ptr<Model>, operator=, (std::shared_ptr<Model>&&), std::shared_ptr<Model>&) }
+        { "ModelPtr& opAssign(ModelPtr& in)", asMETHODPR(std::shared_ptr<Model>, operator=, (std::shared_ptr<Model>&&), std::shared_ptr<Model>&) },
+        { "Model@ opCall()", asMETHOD(std::shared_ptr<Model>, get) }
     }, {});
 
     AddTypeConstructor("ModelPtr", "void f()", asFUNCTION(MakeType<std::shared_ptr<Model>>));
@@ -249,7 +250,8 @@ void ScriptManager::RegisterShapePtr()
     AddValueType("ShapePtr", sizeof(std::shared_ptr<Shape>), asGetTypeTraits<std::shared_ptr<Shape>>(),
     {
         { "Shape@ get()", asMETHOD(std::shared_ptr<Shape>, get) },
-        { "ShapePtr& opAssign(ShapePtr& in)", asMETHODPR(std::shared_ptr<Shape>, operator=, (std::shared_ptr<Shape>&&), std::shared_ptr<Shape>&) }
+        { "ShapePtr& opAssign(ShapePtr& in)", asMETHODPR(std::shared_ptr<Shape>, operator=, (std::shared_ptr<Shape>&&), std::shared_ptr<Shape>&) },
+        { "Shape@ opCall()", asMETHOD(std::shared_ptr<Shape>, get) }
     }, {});
 
     AddTypeConstructor("ShapePtr", "void f()", asFUNCTION(MakeType<std::shared_ptr<Shape>>));
@@ -296,7 +298,9 @@ void ScriptManager::RegisterCamera()
         { "void SetFOV(float)", asMETHOD(Camera, SetFOV) },
         { "void AlwaysUp(bool)", asMETHOD(Camera, AlwaysUp) },
         { "Vector3 GetPosition()", asMETHOD(Camera, GetPosition) },
-        { "Quaternion GetOrientation()", asMETHOD(Camera, GetOrientation) }
+        { "Quaternion GetOrientation()", asMETHOD(Camera, GetOrientation) },
+        { "void Look()", asMETHODPR(Camera, Look, (), void) },
+        { "void Look(Vector3)", asMETHODPR(Camera, Look, (rp3d::Vector3), void) }
     }, {});
 }
 
@@ -314,8 +318,8 @@ void ScriptManager::RegisterSfKeyboard()
 {
     SetDefaultNamespace("Keyboard");
     AddFunction("bool isKeyPressed(int)", asFUNCTION(sf::Keyboard::isKeyPressed));
-    AddEnum("Key", { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", 
-                     "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Num0", "Num1", "Num2", "Num3", 
+    AddEnum("Key", { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
+                     "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Num0", "Num1", "Num2", "Num3",
                      "Num4", "Num5", "Num6", "Num7", "Num8", "Num9", "Escape", "LControl", "LShift", "LAlt", "LSystem",
                      "RControl", "RShift", "RAlt", "RSystem", "Menu", "LBracket", "RBracket", "Semicolon", "Comma",
                      "Period", "Quote", "Slash", "Backslash", "Tilde", "Equal", "Hyphen", "Space", "Enter", "Backspace",

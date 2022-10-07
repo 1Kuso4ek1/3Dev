@@ -12,6 +12,7 @@
 			{
 				"value" : 0.80000001192092896
 			},
+			"name" : "material1",
 			"roughness" : 
 			{
 				"value" : 0.40000000596046448
@@ -30,6 +31,7 @@
 			{
 				"filename" : "../textures/metal_metalness.jpg"
 			},
+			"name" : "material",
 			"normal" : 
 			{
 				"filename" : "../textures/metal_normal.jpg"
@@ -42,9 +44,43 @@
 	],
 	"objects" : 
 	{
+		"models" : 
+		[
+			{
+				"name" : "sphere"
+			}
+		],
 		"shapes" : 
 		[
 			{
+				"material" : "material",
+				"name" : "shape3",
+				"orientation" : 
+				{
+					"w" : 1.0,
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"position" : 
+				{
+					"x" : 10.0,
+					"y" : -30.0,
+					"z" : 10.0
+				},
+				"rigidBody" : 
+				{
+					"active" : true
+				},
+				"size" : 
+				{
+					"x" : 30.0,
+					"y" : 1.0,
+					"z" : 30.0
+				}
+			},
+			{
+				"material" : "material",
 				"name" : "shape2",
 				"orientation" : 
 				{
@@ -71,6 +107,7 @@
 				}
 			},
 			{
+				"material" : "material",
 				"name" : "shape1",
 				"orientation" : 
 				{
@@ -97,6 +134,7 @@
 				}
 			},
 			{
+				"material" : "material",
 				"name" : "shape",
 				"orientation" : 
 				{
