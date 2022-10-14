@@ -20,6 +20,7 @@
 - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
 - Audio
 - Scripting with Angelscript
+- 3Dev Editor
 ## TODO
 TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)!
 ## Building
@@ -31,6 +32,7 @@ TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)
 5. LightLog
 6. jsoncpp
 7. Angelscript
+8. TGUI
 ### Let's build it
 First of all, you need to clone this repository
 ```
@@ -40,7 +42,7 @@ cd 3Dev/3Dev
 When it's done, we can create a "build" directory and call cmake
 ```
 mkdir build && cd build
-cmake ..
+cmake .. -DCMAKE_BUILD_TYPE=Release # Debug, RelWithDebInfo, etc.
 ```
 This process won't take much time...  
 Makefile is finally generated!
@@ -62,6 +64,15 @@ find_package(Threads REQUIRED)
 
 target_link_libraries(cool-project PUBLIC 3Dev::3Dev)
 ```
+### Building 3Dev Editor
+Of cource you need to build 3Dev and install it first...
+```
+cd 3Dev/3Dev-Editor
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release # Debug, RelWithDebInfo, etc.
+make install # No sudo! Otherwise, resources will be installed only for root user
+./editor # Start creating cool stuff...
+```
 ## Projects
 ### Bloodbath
 A small online FPS game, it can be downloaded from [itch.io](https://1kuso4ek1.itch.io/bloodbath)!
@@ -70,3 +81,4 @@ A small online FPS game, it can be downloaded from [itch.io](https://1kuso4ek1.i
 ![](./Screenshots/scr.png)
 ![](./Screenshots/scr1.png)
 ![](./Screenshots/scr2.png)
+![](./Screenshots/scr3.png)
