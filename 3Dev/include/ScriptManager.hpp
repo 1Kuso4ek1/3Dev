@@ -10,8 +10,8 @@ public:
 
     void AddFunction(std::string declaration, const asSFuncPtr& ptr, asECallConvTypes callType = asCALL_CDECL);
     void AddProperty(std::string declaration, void* ptr);
-    void AddValueType(std::string name, int size, int traits, 
-                      std::unordered_map<std::string, asSFuncPtr> methods, 
+    void AddValueType(std::string name, int size, int traits,
+                      std::unordered_map<std::string, asSFuncPtr> methods,
                       std::unordered_map<std::string, int> properties);
     void AddType(std::string name, std::unordered_map<std::string, asSFuncPtr> methods, std::unordered_map<std::string, int> properties);
     void AddTypeConstructor(std::string name, std::string declaration, const asSFuncPtr& ptr);
@@ -42,6 +42,7 @@ private:
     void RegisterSfKeyboard();
     void RegisterPhysicsManager();
     void RegisterTransform();
+    void RegisterRandom();
 
     bool buildSucceded = false;
 

@@ -16,25 +16,27 @@ public:
 	void Draw(Camera* cam, std::vector<Light*> lights);
 	void DrawSkybox();
 
-	void SetPosition(rp3d::Vector3 position);
-	void SetOrientation(rp3d::Quaternion orientation);
-	void SetSize(rp3d::Vector3 size);
+	void SetPosition(const rp3d::Vector3& position);
+	void SetOrientation(const rp3d::Quaternion& orientation);
+	void SetSize(const rp3d::Vector3& size);
 	void SetMaterial(Material* mat);
 	void SetShader(Shader* shader);
 	void SetPhysicsManager(PhysicsManager* man);
-	
+
 	void CreateRigidBody();
 
-	void Move(rp3d::Vector3 position);
-	void Rotate(rp3d::Quaternion orientation);
-	void Expand(rp3d::Vector3 size);
-	
+	void Move(const rp3d::Vector3& position);
+	void Rotate(const rp3d::Quaternion& orientation);
+	void Expand(const rp3d::Vector3& size);
+
+	void CheckOpacity();
+
 	bool IsTransparent();
-	
+
 	Shader* GetShader();
 	rp3d::RigidBody* GetRigidBody();
 	Material* GetMaterial();
-	
+
 	rp3d::Vector3 GetPosition();
 	rp3d::Quaternion GetOrientation();
 	rp3d::Vector3 GetSize();
@@ -44,7 +46,7 @@ public:
 
 private:
     bool transparent = false;
-    
+
 	Material* mat;
 	Matrices* m = Renderer::GetInstance()->GetMatrices();
 	Shader* shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);

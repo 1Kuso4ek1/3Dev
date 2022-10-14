@@ -4,137 +4,37 @@
 		{
 			"color" : 
 			{
-				"b" : 0.80000001192092896,
-				"g" : 0.80000001192092896,
-				"r" : 0.80000001192092896
+				"b" : 1.0,
+				"g" : 1.0,
+				"r" : 1.0
+			},
+			"emission" : 
+			{
+				"b" : 0.0,
+				"g" : 0.0,
+				"r" : 0.0
 			},
 			"metalness" : 
 			{
-				"value" : 0.80000001192092896
+				"value" : 0.5
 			},
-			"name" : "material1",
-			"roughness" : 
+			"name" : "default",
+			"opacity" : 
 			{
-				"value" : 0.40000000596046448
-			}
-		},
-		{
-			"ao" : 
-			{
-				"filename" : "../textures/metal_ao.jpg"
-			},
-			"color" : 
-			{
-				"filename" : "../textures/metal_color.jpg"
-			},
-			"metalness" : 
-			{
-				"filename" : "../textures/metal_metalness.jpg"
-			},
-			"name" : "material",
-			"normal" : 
-			{
-				"filename" : "../textures/metal_normal.jpg"
+				"value" : 1.0
 			},
 			"roughness" : 
 			{
-				"filename" : "../textures/metal_roughness.jpg"
+				"value" : 0.5
 			}
 		}
 	],
 	"objects" : 
 	{
-		"models" : 
-		[
-			{
-				"name" : "sphere"
-			}
-		],
 		"shapes" : 
 		[
 			{
-				"material" : "material",
-				"name" : "shape3",
-				"orientation" : 
-				{
-					"w" : 1.0,
-					"x" : 0.0,
-					"y" : 0.0,
-					"z" : 0.0
-				},
-				"position" : 
-				{
-					"x" : 10.0,
-					"y" : -30.0,
-					"z" : 10.0
-				},
-				"rigidBody" : 
-				{
-					"active" : true
-				},
-				"size" : 
-				{
-					"x" : 30.0,
-					"y" : 1.0,
-					"z" : 30.0
-				}
-			},
-			{
-				"material" : "material",
-				"name" : "shape2",
-				"orientation" : 
-				{
-					"w" : 1.0,
-					"x" : 0.0,
-					"y" : 0.0,
-					"z" : 0.0
-				},
-				"position" : 
-				{
-					"x" : 10.0,
-					"y" : 13.0,
-					"z" : 10.0
-				},
-				"rigidBody" : 
-				{
-					"active" : true
-				},
-				"size" : 
-				{
-					"x" : 1.5,
-					"y" : 1.5,
-					"z" : 3.0
-				}
-			},
-			{
-				"material" : "material",
-				"name" : "shape1",
-				"orientation" : 
-				{
-					"w" : 1.0,
-					"x" : 0.0,
-					"y" : 0.0,
-					"z" : 0.0
-				},
-				"position" : 
-				{
-					"x" : 10.0,
-					"y" : 36.0,
-					"z" : 10.0
-				},
-				"rigidBody" : 
-				{
-					"active" : true
-				},
-				"size" : 
-				{
-					"x" : 3.0,
-					"y" : 3.0,
-					"z" : 3.0
-				}
-			},
-			{
-				"material" : "material",
+				"material" : "default",
 				"name" : "shape",
 				"orientation" : 
 				{
@@ -145,19 +45,19 @@
 				},
 				"position" : 
 				{
-					"x" : 10.0,
-					"y" : 30.0,
-					"z" : 10.0
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
 				},
 				"rigidBody" : 
 				{
-					"active" : true
+					"active" : false
 				},
 				"size" : 
 				{
-					"x" : 3.0,
-					"y" : 3.0,
-					"z" : 3.0
+					"x" : 1.0,
+					"y" : 1.0,
+					"z" : 1.0
 				}
 			}
 		]

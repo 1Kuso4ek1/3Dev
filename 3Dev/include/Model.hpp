@@ -50,25 +50,25 @@ class Model
 public:
 	Model(Shader* shader = nullptr);
 	Model(std::vector<std::shared_ptr<Mesh>> meshes, Shader* shader = nullptr);
-	Model(std::string filename, std::vector<Material*> mat, unsigned int flags = aiProcess_Triangulate,
+	Model(std::string filename, std::vector<Material*> mat, unsigned int flags = aiProcess_Triangulate | aiProcess_FlipUVs,
 		  PhysicsManager* man = nullptr, Shader* shader = nullptr, Matrices* m = nullptr);
 
 	void Load(std::string filename, unsigned int flags = 0);
 
 	void Draw(Camera* cam, std::vector<Light*> lights);
 
-	void SetPosition(rp3d::Vector3 position);
-	void SetOrientation(rp3d::Quaternion orientation);
-	void SetSize(rp3d::Vector3 size);
+	void SetPosition(const rp3d::Vector3& position);
+	void SetOrientation(const rp3d::Quaternion& orientation);
+	void SetSize(const rp3d::Vector3& size);
 	void SetMaterial(std::vector<Material*> mat);
 	void SetShader(Shader* shader);
 	void SetPhysicsManager(PhysicsManager* man);
-	
+
 	void CreateRigidBody();
-	
-	void Move(rp3d::Vector3 position);
-	void Rotate(rp3d::Quaternion orientation);
-	void Expand(rp3d::Vector3 size);
+
+	void Move(const rp3d::Vector3& position);
+	void Rotate(const rp3d::Quaternion& orientation);
+	void Expand(const rp3d::Vector3& size);
 
 	void CreateBoxShape(int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
 	void CreateSphereShape(int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
@@ -84,11 +84,13 @@ public:
 
 	void UpdateAnimation();
 
+	void CheckOpacity();
+
 	int GetMeshesCount();
 	int GetAnimationsCount();
-	
+
 	bool IsTransparent();
-		
+
 	rp3d::Vector3 GetPosition();
 	rp3d::Quaternion GetOrientation();
 	rp3d::Vector3 GetSize();
@@ -100,10 +102,13 @@ public:
 
 	std::vector<Bone>& GetBones(int mesh = 0);
 	std::vector<glm::mat4>& GetPose(int mesh = 0);
-	
+
 	std::string GetFilename();
-	
+
 	std::vector<Material*>& GetMaterial();
+
+	Json::Value Serialize();
+	void Deserialize(Json::Value data);
 
 private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
@@ -116,12 +121,12 @@ private:
 
 	bool autoUpdateAnimation = true;
 	bool transparent = false;
-	
+
 	std::vector<std::shared_ptr<Mesh>> meshes;
-	
+
 	Matrices* m = Renderer::GetInstance()->GetMatrices();
 	Shader* shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
-	
+
 	std::vector<Material*> mat;
 	std::vector<Animation> anims;
 
@@ -138,7 +143,7 @@ private:
 	rp3d::PolygonVertexArray::PolygonFace* faces = nullptr;
 	rp3d::PolygonVertexArray* polygons = nullptr;
 	rp3d::PolyhedronMesh* pmesh = nullptr;
-	
+
 	std::string filename;
 
 	rp3d::Vector3 size;

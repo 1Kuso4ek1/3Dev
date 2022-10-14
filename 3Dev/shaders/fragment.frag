@@ -143,7 +143,7 @@ void main()
     if(nnormalMap) norm = normalize(tbn * normalize(texture(normalMap, coord).xyz * 2.0 - 1.0));
     else norm = normalize(mnormal);
 
-    vec3 emission = (nemission.x < 0.0 ? texture(emission, coord).xyz : nemission.xyz);
+    vec3 emission = (nemission.x < 0.0 ? texture(emission, coord).xyz : nemission);
     float rough = (nroughness < 0.0 ? texture(roughness, coord).x : nroughness);
     float metal = (nmetalness < 0.0 ? texture(metalness, coord).x : nmetalness);
     float ao = (nao ? texture(ao, coord).x : 1.0);

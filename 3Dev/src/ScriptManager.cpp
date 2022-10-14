@@ -19,6 +19,7 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterCamera();
     RegisterSceneManager();
     RegisterSfKeyboard();
+    RegisterRandom();
 
     AddFunction("string to_string(int)", asFUNCTIONPR(std::to_string, (int), std::string));
     AddFunction("string to_string(float)", asFUNCTIONPR(std::to_string, (float), std::string));
@@ -60,7 +61,7 @@ void ScriptManager::AddValueType(std::string name, int size, int traits,
 {
     engine->RegisterObjectType(name.c_str(), size, asOBJ_VALUE | traits);
     for(auto& i : methods)
-        engine->RegisterObjectMethod(name.c_str(), i.first.c_str(), i.second, i.second.flag == 3 ? asCALL_THISCALL : asCALL_CDECL_OBJFIRST);
+        engine->RegisterObjectMethod(name.c_str(), i.first.c_str(), i.second, i.second.flag == 3 ? asCALL_THISCALL : asCALL_CDECL_OBJLAST);
     for(auto& i : properties)
         engine->RegisterObjectProperty(name.c_str(), i.first.c_str(), i.second);
 }
@@ -147,7 +148,7 @@ void ScriptManager::RegisterVector3()
     {
         { "float length()", asMETHOD(rp3d::Vector3, length) },
         { "string to_string()", asMETHOD(rp3d::Vector3, to_string) },
-        { "Vector3& opAssign(Vector3& in)", asFUNCTION(AssignType<rp3d::Vector3>) },
+        { "Vector3& opAssign(Vector3& in)", asMETHODPR(rp3d::Vector3, operator=, (const rp3d::Vector3&), rp3d::Vector3&) },
         { "Vector3& opAddAssign(Vector3& in)", asMETHODPR(rp3d::Vector3, operator+=, (const rp3d::Vector3&), rp3d::Vector3&) },
         { "Vector3& opAdd(Vector3& in)", asFUNCTION(AddVector3) },
         { "Vector3& opSubAssign(Vector3& in)", asMETHODPR(rp3d::Vector3, operator-=, (const rp3d::Vector3&), rp3d::Vector3&) },
@@ -158,13 +159,13 @@ void ScriptManager::RegisterVector3()
         { "bool opCmp(Vector3& in)", asMETHODPR(rp3d::Vector3, operator<, (const rp3d::Vector3&) const, bool) }
     },
     {
-        { "float x", asOFFSET(rp3d::Vector3, x) },
+        { "float z", asOFFSET(rp3d::Vector3, z) },
         { "float y", asOFFSET(rp3d::Vector3, y) },
-        { "float z", asOFFSET(rp3d::Vector3, z) }
+        { "float x", asOFFSET(rp3d::Vector3, x) }
     });
 
     AddTypeConstructor("Vector3", "void f()", asFUNCTION(MakeType<rp3d::Vector3>));
-    AddTypeConstructor("Vector3", "void f(float x, float y, float z)", asFUNCTION(MakeVector3));
+    AddTypeConstructor("Vector3", "void f(float& in , float& in, float& in)", asFUNCTION(MakeVector3));
     AddTypeConstructor("Vector3", "void f(const Vector3& in)", asFUNCTION(CopyType<rp3d::Vector3>));
     AddTypeDestructor("Vector3", "void f()", asFUNCTION(DestroyType<rp3d::Vector3>));
 }
@@ -197,17 +198,17 @@ void ScriptManager::RegisterModel()
 {
     AddType("Model",
     {
-        { "void SetPosition(Vector3)", asMETHOD(Model, SetPosition) },
-        { "void SetOrientation(Quaternion)", asMETHOD(Model, SetOrientation) },
-        { "void SetSize(Vector3)", asMETHOD(Model, SetSize) },
+        { "void SetPosition(const Vector3& in)", asMETHOD(Model, SetPosition) },
+        { "void SetOrientation(const Quaternion& in)", asMETHOD(Model, SetOrientation) },
+        { "void SetSize(const Vector3& in)", asMETHOD(Model, SetSize) },
         { "void SetPhysicsManager(PhysicsManager@)", asMETHOD(Model, SetPhysicsManager) },
         { "void CreateRigidBody()", asMETHOD(Model, CreateRigidBody) },
-        { "void Move(Vector3)", asMETHOD(Model, Move) },
-        { "void Rotate(Quaternion)", asMETHOD(Model, Rotate) },
-        { "void Expand(Vector3)", asMETHOD(Model, Expand) },
-        { "Vector3 GetPosition()", asMETHOD(Model, GetPosition) },
-        { "Quaternion GetOrientation()", asMETHOD(Model, GetOrientation) },
-        { "Vector3 GetSize()", asMETHOD(Model, GetSize) },
+        { "void Move(const Vector3& in)", asMETHOD(Model, Move) },
+        { "void Rotate(const Quaternion& in)", asMETHOD(Model, Rotate) },
+        { "void Expand(const Vector3& in)", asMETHOD(Model, Expand) },
+        { "Vector3& GetPosition()", asMETHOD(Model, GetPosition) },
+        { "Quaternion& GetOrientation()", asMETHOD(Model, GetOrientation) },
+        { "Vector3& GetSize()", asMETHOD(Model, GetSize) },
         { "RigidBody@ GetRigidBody()", asMETHOD(Model, GetRigidBody) },
         { "int GetMeshesCount()", asMETHOD(Model, GetMeshesCount) }
     }, {});
@@ -230,17 +231,17 @@ void ScriptManager::RegisterShape()
 {
     AddType("Shape",
     {
-        { "void SetPosition(Vector3)", asMETHOD(Shape, SetPosition) },
-        { "void SetOrientation(Quaternion)", asMETHOD(Shape, SetOrientation) },
-        { "void SetSize(Vector3)", asMETHOD(Shape, SetSize) },
+        { "void SetPosition(const Vector3& in)", asMETHOD(Shape, SetPosition) },
+        { "void SetOrientation(const Quaternion& in)", asMETHOD(Shape, SetOrientation) },
+        { "void SetSize(const Vector3& in)", asMETHOD(Shape, SetSize) },
         { "void SetPhysicsManager(PhysicsManager@)", asMETHOD(Shape, SetPhysicsManager) },
         { "void CreateRigidBody()", asMETHOD(Shape, CreateRigidBody) },
-        { "void Move(Vector3)", asMETHOD(Shape, Move) },
-        { "void Rotate(Quaternion)", asMETHOD(Shape, Rotate) },
-        { "void Expand(Vector3)", asMETHOD(Shape, Expand) },
-        { "Vector3 GetPosition()", asMETHOD(Shape, GetPosition) },
-        { "Quaternion GetOrientation()", asMETHOD(Shape, GetOrientation) },
-        { "Vector3 GetSize()", asMETHOD(Shape, GetSize) },
+        { "void Move(const Vector3& in)", asMETHOD(Shape, Move) },
+        { "void Rotate(const Quaternion& in)", asMETHOD(Shape, Rotate) },
+        { "void Expand(const Vector3& in)", asMETHOD(Shape, Expand) },
+        { "Vector3& GetPosition()", asMETHOD(Shape, GetPosition) },
+        { "Quaternion& GetOrientation()", asMETHOD(Shape, GetOrientation) },
+        { "Vector3& GetSize()", asMETHOD(Shape, GetSize) },
         { "RigidBody@ GetRigidBody()", asMETHOD(Shape, GetRigidBody) }
     }, {});
 }
@@ -275,9 +276,9 @@ void ScriptManager::RegisterRigidBody()
     {
         { "float getMass()", asMETHOD(rp3d::RigidBody, getMass) },
         { "void setMass(float)", asMETHOD(rp3d::RigidBody, setMass) },
-        { "Vector3 getLinearVelocity()", asMETHOD(rp3d::RigidBody, getLinearVelocity) },
+        { "Vector3& getLinearVelocity()", asMETHOD(rp3d::RigidBody, getLinearVelocity) },
         { "void setLinearVelocity(const Vector3& in)", asMETHOD(rp3d::RigidBody, setLinearVelocity) },
-        { "Vector3 getAngularVelocity()", asMETHOD(rp3d::RigidBody, getAngularVelocity) },
+        { "Vector3& getAngularVelocity()", asMETHOD(rp3d::RigidBody, getAngularVelocity) },
         { "void setAngularVelocity(const Vector3& in)", asMETHOD(rp3d::RigidBody, setAngularVelocity) },
         { "bool isActive()", asMETHOD(rp3d::RigidBody, isActive) },
         { "void setIsActive(bool)", asMETHOD(rp3d::RigidBody, setIsActive) },
@@ -297,8 +298,8 @@ void ScriptManager::RegisterCamera()
         { "void SetSpeed(float)", asMETHOD(Camera, SetSpeed) },
         { "void SetFOV(float)", asMETHOD(Camera, SetFOV) },
         { "void AlwaysUp(bool)", asMETHOD(Camera, AlwaysUp) },
-        { "Vector3 GetPosition()", asMETHOD(Camera, GetPosition) },
-        { "Quaternion GetOrientation()", asMETHOD(Camera, GetOrientation) },
+        { "Vector3& GetPosition()", asMETHOD(Camera, GetPosition) },
+        { "Quaternion& GetOrientation()", asMETHOD(Camera, GetOrientation) },
         { "void Look()", asMETHODPR(Camera, Look, (), void) },
         { "void Look(Vector3)", asMETHODPR(Camera, Look, (rp3d::Vector3), void) }
     }, {});
@@ -337,9 +338,25 @@ void ScriptManager::RegisterPhysicsManager()
 
 void ScriptManager::RegisterTransform()
 {
-    rp3d::Transform::identity();
     AddValueType("Transform", sizeof(rp3d::Transform), asGetTypeTraits<rp3d::Transform>(), {}, {});
     AddTypeConstructor("Transform", "void f()", asFUNCTION(MakeType<rp3d::Transform>));
     AddTypeConstructor("Transform", "void f(const Transform& in)", asFUNCTION(CopyType<rp3d::Transform>));
     AddTypeDestructor("Transform", "void f()", asFUNCTION(DestroyType<rp3d::Transform>));
+}
+
+void ScriptManager::RegisterRandom()
+{
+    AddValueType("random_device", sizeof(std::random_device), asGetTypeTraits<std::random_device>(),
+    {
+        { "uint opCall()", asMETHOD(std::random_device, operator()) }
+    }, {});
+    AddTypeConstructor("random_device", "void f()", asFUNCTION(MakeType<std::random_device>));
+    AddTypeDestructor("random_device", "void f()", asFUNCTION(MakeType<std::random_device>));
+
+    AddValueType("default_random_engine", sizeof(std::default_random_engine), asGetTypeTraits<std::default_random_engine>(),
+    {
+        { "double opCall(double, double)", asFUNCTION(GenerateRandomNumber) }
+    }, {});
+    AddTypeConstructor("default_random_engine", "void f(uint)", asFUNCTION(MakeDefaultRandomEngine));
+    AddTypeDestructor("default_random_engine", "void f()", asFUNCTION(MakeType<std::default_random_engine>));
 }

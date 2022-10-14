@@ -39,7 +39,7 @@ public:
 	 * @param parameter new parameter
 	 * @param type type of a new parameter
 	 */
-	void AddParameter(std::variant<glm::vec3, GLuint> parameter, Type type);
+	void SetParameter(std::variant<glm::vec3, GLuint> parameter, Type type);
 
 	void UpdateShader(Shader* shader);
 	void ResetShader(Shader* shader);
@@ -51,6 +51,8 @@ public:
 
 	void Deserialize(Json::Value data);
 
+	std::variant<glm::vec3, GLuint> GetParameter(Type type);
+
 	// @return reference to all parameters
 	std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>>& GetParameters();
 
@@ -58,12 +60,12 @@ public:
 	bool operator!=(Material& r);
 
 private:
-	std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>> parameters = 
+	std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>> parameters =
 	{
 		{ glm::vec3(1.0), Type::Color },
 		{ glm::vec3(0.5), Type::Metalness },
-		{ glm::vec3(0.5), Type::Roughness },
 		{ glm::vec3(0.0), Type::Emission },
+		{ glm::vec3(0.5), Type::Roughness },
 		{ glm::vec3(1.0), Type::Opacity }
 	};
 };

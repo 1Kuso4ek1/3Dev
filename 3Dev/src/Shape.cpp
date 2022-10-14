@@ -5,8 +5,8 @@ Shape::Shape(const rp3d::Vector3& size, Material* mat, PhysicsManager* man, Shad
 {
 	if(shader) this->shader = shader;
 	if(m) this->m = m;
-	
-	transparent = mat->Contains(Material::Type::Opacity);
+
+	CheckOpacity();
 
 	cube = std::make_shared<Mesh>();
 	cube->CreateCube();
@@ -26,11 +26,11 @@ void Shape::Draw(Camera* cam, std::vector<Light*> lights)
 	if(body != nullptr) tr = body->getTransform();
 	rp3d::Vector3 tmp; float a;
 	tr.getOrientation().getRotationAngleAxis(a, tmp);
-	
+
 	m->Translate(toglm(tr.getPosition()));
 	m->Rotate(a, glm::axis(toglm(tr.getOrientation()))); // Using toglm(tmp) as second argument breaks everything and gives the matrix of nan
 	m->Scale(toglm(size));
-	
+
 	shader->Bind();
 	mat->UpdateShader(shader);
 	for(int i = 0; i < lights.size(); i++)
@@ -40,11 +40,11 @@ void Shape::Draw(Camera* cam, std::vector<Light*> lights)
 	shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
 	shader->SetUniform1i("bones", 0);
 	m->UpdateShader(shader);
-	
+
 	cube->Draw();
 
 	mat->ResetShader(shader);
-	
+
 	m->PopMatrix();
 }
 
@@ -53,7 +53,7 @@ void Shape::DrawSkybox()
 	auto tex = mat->GetParameters();
 	auto it = std::find_if(tex.begin(), tex.end(), [](auto& a) { return a.second == Material::Type::Cubemap; });
 	auto shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Skybox);
-	
+
 	if(it == tex.end()) return;
 
 	m->PushMatrix();
@@ -61,7 +61,7 @@ void Shape::DrawSkybox()
 	shader->Bind();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, std::get<1>(it->first));
-	
+
 	shader->SetUniform1i("cubemap", 0);
 	m->UpdateShader(shader);
 
@@ -70,19 +70,19 @@ void Shape::DrawSkybox()
 	m->PopMatrix();
 }
 
-void Shape::SetPosition(rp3d::Vector3 position)
+void Shape::SetPosition(const rp3d::Vector3& position)
 {
 	tr.setPosition(position);
 	if(body) body->setTransform(tr);
 }
 
-void Shape::SetOrientation(rp3d::Quaternion orientation)
+void Shape::SetOrientation(const rp3d::Quaternion& orientation)
 {
 	tr.setOrientation(orientation);
 	if(body) body->setTransform(tr);
 }
 
-void Shape::SetSize(rp3d::Vector3 size)
+void Shape::SetSize(const rp3d::Vector3& size)
 {
 	this->size = size;
 	if(body) shape->setHalfExtents(this->size);
@@ -91,7 +91,7 @@ void Shape::SetSize(rp3d::Vector3 size)
 void Shape::SetMaterial(Material* mat)
 {
 	this->mat = mat;
-	transparent = mat->Contains(Material::Type::Opacity);	
+	CheckOpacity();
 }
 
 void Shape::SetShader(Shader* shader)
@@ -103,28 +103,37 @@ void Shape::SetPhysicsManager(PhysicsManager* man)
 {
 	this->man = man;
 }
-	
+
 void Shape::CreateRigidBody()
 {
 	if(man) body = man->CreateRigidBody(tr);
 }
 
-void Shape::Move(rp3d::Vector3 position) 
+void Shape::Move(const rp3d::Vector3& position)
 {
 	tr.setPosition(tr.getPosition() + position);
 	if(body) body->setTransform(tr);
 }
 
-void Shape::Rotate(rp3d::Quaternion orientation) 
+void Shape::Rotate(const rp3d::Quaternion& orientation)
 {
 	tr.setOrientation(orientation * tr.getOrientation());
 	if(body) body->setTransform(tr);
 }
 
-void Shape::Expand(rp3d::Vector3 size) 
+void Shape::Expand(const rp3d::Vector3& size)
 {
 	this->size += size;
 	if(body) shape->setHalfExtents(this->size);
+}
+
+void Shape::CheckOpacity()
+{
+    auto p = mat->GetParameter(Material::Type::Opacity);
+    if(std::holds_alternative<glm::vec3>(p))
+        transparent = std::get<0>(p).x < 1.0;
+    else if(std::holds_alternative<GLuint>(p))
+        transparent = std::get<1>(p) > 0;
 }
 
 bool Shape::IsTransparent()
@@ -147,17 +156,17 @@ Material* Shape::GetMaterial()
 	return mat;
 }
 
-rp3d::Vector3 Shape::GetPosition() 
+rp3d::Vector3 Shape::GetPosition()
 {
 	return tr.getPosition();
 }
 
-rp3d::Quaternion Shape::GetOrientation() 
+rp3d::Quaternion Shape::GetOrientation()
 {
 	return tr.getOrientation();
 }
 
-rp3d::Vector3 Shape::GetSize() 
+rp3d::Vector3 Shape::GetSize()
 {
 	return size;
 }
@@ -165,7 +174,7 @@ rp3d::Vector3 Shape::GetSize()
 Json::Value Shape::Serialize()
 {
 	Json::Value data;
-	
+
 	auto pos = GetPosition();
 	auto orient = GetOrientation();
 	auto size = GetSize();

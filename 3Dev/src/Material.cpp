@@ -1,25 +1,31 @@
 #include <Material.hpp>
 
-Material::Material() 
+Material::Material()
 {
-    AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
-    AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
-    AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::LUT), Type::LUT);
+    SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
+    SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
+    SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::LUT), Type::LUT);
 }
 
 Material::Material(std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>> parameters) : parameters(parameters)
 {
 	if(!Contains(Type::Cubemap) && !Contains(Type::Environment))
 	{
-		if(!Contains(Type::Irradiance)) AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
-		if(!Contains(Type::PrefilteredMap)) AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
-		if(!Contains(Type::LUT)) AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::LUT), Type::LUT);
+		SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
+		SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
+		SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::LUT), Type::LUT);
 	}
 }
 
-void Material::AddParameter(std::variant<glm::vec3, GLuint> parameter, Type type)
+void Material::SetParameter(std::variant<glm::vec3, GLuint> parameter, Type type)
 {
-	parameters.emplace_back(parameter, type);
+    if(!Contains(type))
+        parameters.emplace_back(parameter, type);
+    else
+        std::find_if(parameters.begin(), parameters.end(), [&](auto& a)
+                    {
+                        return a.second == type;
+                    })->first = parameter;
 }
 
 void Material::UpdateShader(Shader* shader)
@@ -34,7 +40,7 @@ void Material::UpdateShader(Shader* shader)
 			param0 = std::get<0>(parameters[i].first);
 		else
 			param1 = std::get<1>(parameters[i].first);
-			
+
 		if(param1 != 0)
 		{
 			glActiveTexture(GL_TEXTURE0 + i);
@@ -67,7 +73,7 @@ void Material::UpdateShader(Shader* shader)
 		case Material::Type::Emission:
 			if(param1 != 0)
 				shader->SetUniform1i("emission", i);
-			shader->SetUniform1f("nemission", param1 == 0 ? param0.x : -1);
+			shader->SetUniform3f("nemission", (param1 == 0 ? param0.x : -1), param0.y, param0.z);
 			break;
 		case Material::Type::Roughness:
 			if(param1 != 0)
@@ -134,13 +140,8 @@ void Material::ResetShader(Shader* shader)
 
 void Material::GetEnvironmentFromRenderer()
 {
-	std::remove_if(parameters.begin(), parameters.end(), [&](auto& a)
-				{
-					return a.second == Type::Irradiance ||
-						   a.second == Type::PrefilteredMap;
-				});
-	AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
-	AddParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
+	SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
+	SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
 }
 
 bool Material::Contains(Type type)
@@ -206,7 +207,48 @@ Json::Value Material::Serialize()
 
 void Material::Deserialize(Json::Value data)
 {
-	
+    parameters.clear();
+	if(!data["color"]["filename"].empty())
+        parameters.push_back({ TextureManager::GetInstance()->LoadTexture(data["color"]["filename"].asString()), Type::Color });
+    else
+	{
+        parameters.push_back({ glm::vec3(data["color"]["r"].asDouble(),
+                                         data["color"]["g"].asDouble(),
+                                         data["color"]["b"].asDouble()), Type::Color });
+	}
+	if(!data["normal"]["filename"].empty())
+        parameters.push_back({ TextureManager::GetInstance()->LoadTexture(data["normal"]["filename"].asString()), Type::Normal });
+    if(!data["ao"]["filename"].empty())
+        parameters.push_back({ TextureManager::GetInstance()->LoadTexture(data["ao"]["filename"].asString()), Type::AmbientOcclusion });
+    if(!data["metalness"]["filename"].empty())
+        parameters.push_back({ TextureManager::GetInstance()->LoadTexture(data["metalness"]["filename"].asString()), Type::Metalness });
+    else parameters.push_back({ glm::vec3(data["metalness"]["value"].asDouble()), Type::Metalness});
+    if(!data["emission"]["filename"].empty())
+        parameters.push_back({ TextureManager::GetInstance()->LoadTexture(data["emission"]["filename"].asString()), Type::Emission });
+    else
+	{
+        parameters.push_back({ glm::vec3(data["emission"]["r"].asDouble(),
+                                         data["emission"]["g"].asDouble(),
+                                         data["emission"]["b"].asDouble()), Type::Emission });
+	}
+	if(!data["roughness"]["filename"].empty())
+        parameters.push_back({ TextureManager::GetInstance()->LoadTexture(data["roughness"]["filename"].asString()), Type::Roughness});
+    else parameters.push_back({ glm::vec3(data["roughness"]["value"].asDouble()), Type::Roughness});
+    if(!data["opacity"]["filename"].empty())
+        parameters.push_back({ TextureManager::GetInstance()->LoadTexture(data["opacity"]["filename"].asString()), Type::Opacity });
+    else parameters.push_back({ glm::vec3(data["opacity"]["value"].asDouble()), Type::Opacity});
+
+    GetEnvironmentFromRenderer();
+    SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::LUT), Type::LUT);
+}
+
+std::variant<glm::vec3, GLuint> Material::GetParameter(Type type)
+{
+    auto ret = std::find_if(parameters.begin(), parameters.end(), [&](auto& a)
+                    {
+                        return a.second == type;
+                    });
+    return ret->first;
 }
 
 std::vector<std::pair<std::variant<glm::vec3, GLuint>, Material::Type>>& Material::GetParameters()

@@ -68,6 +68,8 @@ GLuint TextureManager::LoadTexture(std::string filename, std::string name)
         textures[name + (nameCount ? std::to_string(nameCount) : "")] = texture;
         filenames[name + (nameCount ? std::to_string(nameCount) : "")] = filename;
 
+        Log::Write("Texture " + filename + " loaded", Log::Type::Info);
+
         return texture;
     }
     else
@@ -94,6 +96,8 @@ GLuint TextureManager::LoadTexture(std::string filename, std::string name)
                     { return p.first.find(name) != std::string::npos; });
         textures[name + (nameCount ? std::to_string(nameCount) : "")] = texture;
         filenames[name + (nameCount ? std::to_string(nameCount) : "")] = filename;
+
+        Log::Write("Texture " + filename + " loaded", Log::Type::Info);
 
         return texture;
     }
@@ -127,6 +131,7 @@ GLuint TextureManager::CreateCubemap(uint32_t size, GLuint filter, std::string n
 void TextureManager::DeleteTexture(std::string name)
 {
     glDeleteTextures(1, &textures[name]);
+    textures.erase(name);
 }
 
 GLuint TextureManager::GetTexture(std::string name)

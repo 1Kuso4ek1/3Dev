@@ -39,7 +39,7 @@ void Camera::Mouse()
 {
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
 	sf::Vector2f mousexy = sf::Vector2f((float)pixelPos.x, (float)pixelPos.y);
-	
+
 	orient = rp3d::Quaternion::fromEulerAngles(0, -glm::radians((mousexy.x - window->getSize().x / 2) / 8), 0) * orient;
 	auto tmp = orient * rp3d::Quaternion::fromEulerAngles(-glm::radians((mousexy.y - window->getSize().y / 2) / 8), 0, 0);
 	if((tmp * rp3d::Vector3(0, 0, -1)).getAbsoluteVector().y < 0.99) orient = tmp;
@@ -48,7 +48,7 @@ void Camera::Mouse()
 }
 
 void Camera::Look()
-{	
+{
 	rp3d::Vector3 v = orient * rp3d::Vector3(0, 0, -1), tmpv;
 	float tmp;
 	if(!alwaysUp) orient.getRotationAngleAxis(tmp, tmpv);

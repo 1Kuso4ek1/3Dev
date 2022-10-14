@@ -30,7 +30,10 @@ int main()
     engine.EventLoop([&](sf::Event& event)
     {
         if(event.type == sf::Event::Resized) // If the window is resized
+        {
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->RecreateTexture(event.size.width, event.size.height); // Resizing framebuffer texture
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->RecreateTexture(event.size.width, event.size.height); // Resizing framebuffer texture
+        }
 
         if(event.type == sf::Event::Closed) engine.Close(); // Closing the window
     });
@@ -55,7 +58,8 @@ int main()
     {
     	{ glm::vec3(0.8, 0.8, 0.8), Material::Type::Color },
     	{ glm::vec3(0.8), Material::Type::Metalness },
-    	{ glm::vec3(0.4), Material::Type::Roughness }
+    	{ glm::vec3(0.4), Material::Type::Roughness },
+        { glm::vec3(0.3), Material::Type::Opacity }
     });
 
     Material skyboxMaterial(
@@ -100,10 +104,6 @@ int main()
 
     scene.AddObject(sphere, "sphere");
     //scene.AddObject(terrain);
-
-    scene.AddMaterial(std::make_shared<Material>(material));
-    scene.AddMaterial(std::make_shared<Material>(sphereMaterial));
-
     scene.AddPhysicsManager(man);
 
     //scene.AddLight(&l);
@@ -113,8 +113,6 @@ int main()
     scene.SetSkybox(skybox);
 
     scene.SetSoundManager(sman);
-
-    scene.Save("../scenes/scene.json");
 
     ShadowManager shadows(&scene, { &l }, glm::ivec2(2048, 2048));
 
@@ -160,19 +158,17 @@ int main()
 
         shadows.Update();
 
-        scene.Draw(Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main));
+        scene.Draw();
 
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 1.5);
 
-        //glDisable(GL_DEPTH_TEST);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
-        //glEnable(GL_DEPTH_TEST);
-        //transparency.Draw();
+        glDisable(GL_DEPTH_TEST);
+        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
+        glEnable(GL_DEPTH_TEST);
     });
 
     // Launching the game!!!
     engine.Launch();
-    //scene.RemoveAllObjects();
-    //engine.Launch();
 }

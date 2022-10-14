@@ -1,7 +1,7 @@
 #include "Model.hpp"
 
 Model::Model(Shader* shader)
-	 : transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), shader(shader)			
+	 : transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), shader(shader)
 {
 	if(shader) this->shader = shader;
 }
@@ -18,11 +18,8 @@ Model::Model(std::string filename, std::vector<Material*> mat, unsigned int flag
 	if(shader) this->shader = shader;
 	if(m) this->m = m;
 	if(man) body = man->CreateRigidBody(transform);
-	
-    transparent = (std::find_if(mat.begin(), mat.end(), [&](auto a)
-                    {
-                        return a->Contains(Material::Type::Opacity);
-                    }) != mat.end());
+
+    CheckOpacity();
 
 	Load(filename, flags);
 }
@@ -44,13 +41,15 @@ void Model::Load(std::string filename, unsigned int flags)
 	Log::Write("Meshes loaded: " + std::to_string(meshes.size()), Log::Type::Info);
 	Log::Write("Bones loaded: " + std::to_string(meshes[0]->GetBones().size()), Log::Type::Info);
 	Log::Write("Animations loaded: " + std::to_string(anims.size()), Log::Type::Info);
-	
+
 	if(mat.empty()) Log::Write("Empty material array passed", Log::Type::Critical);
 	if(mat.size() != meshes.size())
 	{
 		Log::Write("Materials count != meshes count", Log::Type::Warning);
 		mat.resize(meshes.size(), mat.back());
 	}
+
+	this->filename = filename;
 }
 
 void Model::Draw(Camera* cam, std::vector<Light*> lights)
@@ -60,7 +59,7 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights)
 	if(body) transform = body->getTransform();
 	rp3d::Vector3 tmp; float a;
 	transform.getOrientation().getRotationAngleAxis(a, tmp);
-	
+
 	m->Translate(toglm(transform.getPosition()));
 	m->Rotate(a, glm::axis(toglm(transform.getOrientation()))); // Using toglm(tmp) as second argument breaks everything and gives the matrix of nan
 	m->Scale(toglm(size));
@@ -74,7 +73,7 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights)
 		mat[mesh]->UpdateShader(shader);
 		for(int i = 0; i < lights.size(); i++)
 			lights[i]->Update(shader, i);
-				
+
 		shader->SetUniform3f("campos", cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
 		shader->SetUniformMatrix4("transformation", meshes[mesh]->GetTransformation());
 		shader->SetVectorOfUniformMatrix4("pose", meshes[mesh]->GetPose().size(), meshes[mesh]->GetPose());
@@ -83,26 +82,26 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights)
 		m->UpdateShader(shader);
 
 		meshes[mesh]->Draw();
-		
+
 		mat[mesh]->ResetShader(shader);
 	}
-	
+
 	m->PopMatrix();
 }
 
-void Model::SetPosition(rp3d::Vector3 position)
+void Model::SetPosition(const rp3d::Vector3& position)
 {
 	transform.setPosition(position);
 	if(body) body->setTransform(transform);
 }
 
-void Model::SetOrientation(rp3d::Quaternion orientation)
+void Model::SetOrientation(const rp3d::Quaternion& orientation)
 {
 	transform.setOrientation(orientation);
 	if(body) body->setTransform(transform);
 }
 
-void Model::SetSize(rp3d::Vector3 size)
+void Model::SetSize(const rp3d::Vector3& size)
 {
 	this->size = size;
 }
@@ -110,10 +109,7 @@ void Model::SetSize(rp3d::Vector3 size)
 void Model::SetMaterial(std::vector<Material*> mat)
 {
 	this->mat = mat;
-	transparent = (std::find_if(mat.begin(), mat.end(), [&](auto a)
-                    {
-                        return a->Contains(Material::Type::Opacity);
-                    }) != mat.end());
+	CheckOpacity();
 }
 
 void Model::SetShader(Shader* shader)
@@ -125,25 +121,25 @@ void Model::SetPhysicsManager(PhysicsManager* man)
 {
 	this->man = man;
 }
-	
+
 void Model::CreateRigidBody()
 {
 	if(man) body = man->CreateRigidBody(transform);
 }
 
-void Model::Move(rp3d::Vector3 position) 
+void Model::Move(const rp3d::Vector3& position)
 {
 	transform.setPosition(transform.getPosition() + position);
 	if(body) body->setTransform(transform);
 }
 
-void Model::Rotate(rp3d::Quaternion orientation) 
+void Model::Rotate(const rp3d::Quaternion& orientation)
 {
 	transform.setOrientation(orientation * transform.getOrientation());
 	if(body) body->setTransform(transform);
 }
 
-void Model::Expand(rp3d::Vector3 size) 
+void Model::Expand(const rp3d::Vector3& size)
 {
 	this->size += size;
 }
@@ -263,6 +259,19 @@ void Model::UpdateAnimation()
 			CalculatePose(i, mesh, mesh->GetTransformation());
 }
 
+void Model::CheckOpacity()
+{
+    transparent = (std::find_if(mat.begin(), mat.end(), [&](auto a)
+                    {
+                        auto p = a->GetParameter(Material::Type::Opacity);
+                        if(std::holds_alternative<glm::vec3>(p))
+                            return std::get<0>(p).x < 1.0;
+                        else if(std::holds_alternative<GLuint>(p))
+                            return std::get<1>(p) > 0;
+                        return false;
+                    }) != mat.end());
+}
+
 int Model::GetMeshesCount()
 {
 	return meshes.size();
@@ -278,17 +287,17 @@ bool Model::IsTransparent()
     return transparent;
 }
 
-rp3d::Vector3 Model::GetPosition() 
+rp3d::Vector3 Model::GetPosition()
 {
 	return transform.getPosition();
 }
 
-rp3d::Quaternion Model::GetOrientation() 
+rp3d::Quaternion Model::GetOrientation()
 {
 	return transform.getOrientation();
 }
 
-rp3d::Vector3 Model::GetSize() 
+rp3d::Vector3 Model::GetSize()
 {
 	return size;
 }
@@ -312,7 +321,7 @@ std::vector<Bone>& Model::GetBones(int mesh)
 {
 	if(mesh >= meshes.size())
 		Log::Write("int mesh is out of meshes array bounds!", Log::Type::Critical);
-	
+
 	return meshes[mesh]->GetBones();
 }
 
@@ -320,11 +329,11 @@ std::vector<glm::mat4>& Model::GetPose(int mesh)
 {
 	if(mesh >= meshes.size())
 		Log::Write("int mesh is out of meshes array bounds!", Log::Type::Critical);
-	
+
 	return meshes[mesh]->GetPose();
 }
 
-std::string Model::GetFilename() 
+std::string Model::GetFilename()
 {
 	return filename;
 }
@@ -353,7 +362,7 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 		tr[i] = glm::normalize(tr[i]);
 
 	std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap;
-	
+
 	for(int i = 0; i < mesh->mNumVertices; i++)
 	{
 		glm::vec3 pos = toglm(mesh->mVertices[i]),
@@ -362,9 +371,9 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 		data.emplace_back(pos, norm, uv);
 	}
 	for(int i = 0; i < mesh->mNumFaces; i++)
-		for(int j = 0; j < 3; j++) 
+		for(int j = 0; j < 3; j++)
 			indices.push_back(mesh->mFaces[i].mIndices[j]);
-	
+
 	std::string a;
 	if(mesh->mNumBones)
 	{
@@ -388,7 +397,7 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 		{
 			int id = bone->mWeights[j].mVertexId;
 			float weight = bone->mWeights[j].mWeight;
-			if(nbones[id] < 4) 
+			if(nbones[id] < 4)
 			{
 				data[id].ids[nbones[id]] = i;
 				data[id].weights[nbones[id]] = weight;
@@ -397,18 +406,18 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 		}
 	}
 
-	for (int i = 0; i < data.size(); i++) 
+	for (int i = 0; i < data.size(); i++)
 	{
 		glm::vec4& weights = data[i].weights;
 		float total = weights.x + weights.y + weights.z + weights.w;
 		if(total > 0.0f)
 			data[i].weights /= total;
 	}
-			
+
 	Log::Write("Mesh vertices: " + std::to_string(mesh->mNumVertices), Log::Type::Info);
 	Log::Write("Mesh faces: " + std::to_string(mesh->mNumFaces), Log::Type::Info);
 	Log::Write("Mesh bones: " + std::to_string(mesh->mNumBones), Log::Type::Info);
-	
+
 	std::vector<Bone> bones;
 	FindBoneNodes(node, boneMap, bones);
 	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB, bones, tr));
@@ -500,7 +509,7 @@ void Model::CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 par
 				glm::mat4 globalTransform = parent * localTransform;
 
 				mesh->GetPose()[bone.id] = globalInverseTransform * globalTransform * bone.offset;
-				
+
 				for(Bone& child : bone.children)
 					CalculatePose(child, mesh, globalTransform);
 			}
@@ -508,7 +517,7 @@ void Model::CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 par
 			{
 				glm::mat4 globalTransform = parent;
 				mesh->GetPose()[bone.id] = globalInverseTransform * globalTransform * bone.offset;
-				
+
 				for(Bone& child : bone.children)
 					CalculatePose(child, mesh, globalTransform);
 			}
@@ -530,4 +539,62 @@ bool Model::ProcessBone(aiNode* node, std::unordered_map<std::string, std::pair<
 		return true;
 	}
 	return false;
+}
+
+Json::Value Model::Serialize()
+{
+    Json::Value data;
+
+	auto pos = GetPosition();
+	auto orient = GetOrientation();
+	auto size = GetSize();
+
+	data["filename"] = GetFilename();
+
+	data["position"]["x"] = pos.x;
+	data["position"]["y"] = pos.y;
+	data["position"]["z"] = pos.z;
+
+	data["orientation"]["x"] = orient.x;
+	data["orientation"]["y"] = orient.y;
+	data["orientation"]["z"] = orient.z;
+	data["orientation"]["w"] = orient.w;
+
+	data["size"]["x"] = size.x;
+	data["size"]["y"] = size.y;
+	data["size"]["z"] = size.z;
+
+	data["rigidBody"]["active"] = body ? body->isActive() : false;
+
+	return data;
+}
+
+void Model::Deserialize(Json::Value data)
+{
+    rp3d::Vector3 pos, size;
+	rp3d::Quaternion orient;
+
+	pos.x = data["position"]["x"].asFloat();
+	pos.y = data["position"]["y"].asFloat();
+	pos.z = data["position"]["z"].asFloat();
+
+	orient.x = data["orientation"]["x"].asFloat();
+	orient.y = data["orientation"]["y"].asFloat();
+	orient.z = data["orientation"]["z"].asFloat();
+	orient.w = data["orientation"]["w"].asFloat();
+
+	size.x = data["size"]["x"].asFloat();
+	size.y = data["size"]["y"].asFloat();
+	size.z = data["size"]["z"].asFloat();
+
+	if(body)
+	{
+        for(int i = 0; i < meshes.size(); i++)
+            CreateBoxShape(i);
+        body->setIsActive(data["rigidBody"]["active"].asBool());
+	}
+
+	SetPosition(pos);
+	SetOrientation(orient);
+	SetSize(size);
 }
