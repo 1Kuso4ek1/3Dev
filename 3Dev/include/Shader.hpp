@@ -8,7 +8,7 @@ public:
 	void Bind();
 	void Unbind();
 
-	void SetUniform1i(std::string name, int val); 
+	void SetUniform1i(std::string name, int val);
 	void SetUniform1f(std::string name, float val);
 	void SetUniform2f(std::string name, float x, float y);
 	void SetUniform3f(std::string name, float x, float y, float z);
@@ -23,4 +23,6 @@ private:
 	GLuint program;
 
 	std::string vertcode, fragcode;
+
+	std::unordered_map<std::string, GLuint> cache;
 };

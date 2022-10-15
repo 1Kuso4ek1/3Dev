@@ -20,10 +20,10 @@ Shader::Shader(std::string vertname, std::string fragname)
 
 	const GLchar* verttemp = vertcode.c_str();
 	const GLchar* fragtemp = fragcode.c_str();
-	
+
 	glShaderSource(vertshader, 1, &verttemp, NULL);
 	glShaderSource(fragshader, 1, &fragtemp, NULL);
-	
+
 	glCompileShader(vertshader);
 	glCompileShader(fragshader);
 
@@ -42,10 +42,10 @@ Shader::Shader(std::string vertname, std::string fragname)
 	}
 
 	program = glCreateProgram();
-	
+
 	glAttachShader(program, vertshader);
 	glAttachShader(program, fragshader);
-	
+
 	glLinkProgram(program);
 	glGetProgramiv(program, GL_LINK_STATUS, &success);
 
@@ -59,12 +59,12 @@ Shader::Shader(std::string vertname, std::string fragname)
 	glDeleteShader(fragshader);
 }
 
-void Shader::Bind() 
+void Shader::Bind()
 {
 	glUseProgram(program);
 }
 
-void Shader::Unbind() 
+void Shader::Unbind()
 {
 	glUseProgram(0);
 }
@@ -74,7 +74,7 @@ void Shader::SetUniform1i(std::string name, int val)
 	glUniform1i(GetUniformLocation(name), val);
 }
 
-void Shader::SetUniform1f(std::string name, float val) 
+void Shader::SetUniform1f(std::string name, float val)
 {
 	glUniform1f(GetUniformLocation(name), val);
 }
@@ -101,7 +101,9 @@ void Shader::SetVectorOfUniformMatrix4(std::string name, int count, std::vector<
 
 int Shader::GetUniformLocation(std::string name)
 {
-	return glGetUniformLocation(program, name.c_str());
+    if(cache.find(name) != cache.end())
+        return cache[name];
+    return (cache[name] = glGetUniformLocation(program, name.c_str()));
 }
 
 int Shader::GetAttribLocation(std::string name)

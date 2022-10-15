@@ -58,8 +58,7 @@ int main()
     {
     	{ glm::vec3(0.8, 0.8, 0.8), Material::Type::Color },
     	{ glm::vec3(0.8), Material::Type::Metalness },
-    	{ glm::vec3(0.4), Material::Type::Roughness },
-        { glm::vec3(0.3), Material::Type::Opacity }
+    	{ glm::vec3(0.4), Material::Type::Roughness }
     });
 
     Material skyboxMaterial(
@@ -164,9 +163,9 @@ int main()
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 1.5);
 
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
-        glDisable(GL_DEPTH_TEST);
+        /*glDisable(GL_DEPTH_TEST);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
-        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_TEST);*/
     });
 
     // Launching the game!!!
