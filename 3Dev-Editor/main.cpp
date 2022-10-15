@@ -112,10 +112,8 @@ int main()
     tgui::Gui menu{ engine.GetWindow() };
     tgui::Gui editor{ engine.GetWindow() };
 
-    menu.loadWidgetsFromFile("menu.txt");
-    editor.loadWidgetsFromFile("editor.txt");
-
-    //bool inMenu = true, inEditor = false;
+    menu.loadWidgetsFromFile(homeFolder + "gui/menu.txt");
+    editor.loadWidgetsFromFile(homeFolder + "gui/editor.txt");
 
     auto openButton = menu.get<tgui::Button>("open");
     auto pathEdit = menu.get<tgui::EditBox>("path");
@@ -133,6 +131,10 @@ int main()
     auto shapeButton = editor.get<tgui::Button>("createShape");
     auto lightButton = editor.get<tgui::Button>("createLight");
     auto materialButton = editor.get<tgui::Button>("createMaterial");
+    auto boxColliderButton = editor.get<tgui::Button>("boxCollider");
+    auto sphereColliderButton = editor.get<tgui::Button>("sphereCollider");
+    auto capsuleColliderButton = editor.get<tgui::Button>("capsuleCollider");
+    auto concaveColliderButton = editor.get<tgui::Button>("concaveCollider");
 	auto scriptButton = editor.get<tgui::Button>("createScript");
 
     auto sceneTree = editor.get<tgui::TreeView>("scene");
@@ -310,6 +312,7 @@ int main()
 
     scene.SetCamera(&cam);
     scene.SetSkybox(skybox);
+    scene.UpdatePhysics(false);
 
     filenameEdit->setText(projectFilename.empty() ? "scene.json" : projectFilename);
 
@@ -329,6 +332,8 @@ int main()
     	auto model = std::make_shared<Model>();
     	model->SetMaterial({ scene.GetMaterial(scene.GetNames()[2][0]).get() });
 		model->SetPhysicsManager(man.get());
+		model->CreateRigidBody();
+		//model->GetRigidBody()->setIsActive(false);
     	scene.AddObject(model);
     	std::string name = scene.GetNames()[0][0];
     	sceneTree->addItem({ "Scene", "Models", name });
@@ -341,7 +346,7 @@ int main()
     shapeButton->onPress([&]()
     {
 		auto shape = std::make_shared<Shape>(rp3d::Vector3{ 1, 1, 1 }, scene.GetMaterial(scene.GetNames()[2][0]).get(), man.get());
-		shape->GetRigidBody()->setIsActive(false);
+		//shape->GetRigidBody()->setIsActive(false);
     	scene.AddObject(shape);
     	std::string name = scene.GetNames()[1][0];
     	sceneTree->addItem({ "Scene", "Shapes", name });
@@ -356,6 +361,50 @@ int main()
     	sceneTree->addItem({ "Scene", "Materials", name });
     	sceneTree->selectItem({ "Scene", "Materials", name });
     	materialBox->addItem(name);
+    });
+
+    boxColliderButton->onPress([&]()
+    {
+        if(sceneTree->getSelectedItem().size() > 2)
+			if(sceneTree->getSelectedItem()[1] == "Models")
+			{
+			    auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+			    for(int i = 0; i < model->GetMeshesCount(); i++)
+                    model->CreateBoxShape(i);
+			}
+    });
+
+    sphereColliderButton->onPress([&]()
+    {
+        if(sceneTree->getSelectedItem().size() > 2)
+			if(sceneTree->getSelectedItem()[1] == "Models")
+			{
+			    auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+			    for(int i = 0; i < model->GetMeshesCount(); i++)
+                    model->CreateSphereShape(i);
+			}
+    });
+
+    capsuleColliderButton->onPress([&]()
+    {
+        if(sceneTree->getSelectedItem().size() > 2)
+			if(sceneTree->getSelectedItem()[1] == "Models")
+			{
+			    auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+			    for(int i = 0; i < model->GetMeshesCount(); i++)
+                    model->CreateCapsuleShape(i);
+			}
+    });
+
+    concaveColliderButton->onPress([&]()
+    {
+        if(sceneTree->getSelectedItem().size() > 2)
+			if(sceneTree->getSelectedItem()[1] == "Models")
+			{
+			    auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+			    for(int i = 0; i < model->GetMeshesCount(); i++)
+                    model->CreateConcaveShape(i);
+			}
     });
 
     colorPickerButton->onPress([&]()
@@ -569,9 +618,6 @@ int main()
                 auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
                 model->Load(openFileDialog->getSelectedPaths()[0].asNativeString(),
                             aiProcess_Triangulate | aiProcess_FlipUVs);
-                model->CreateRigidBody();
-                model->GetRigidBody()->setIsActive(false);
-                model->CreateBoxShape();
 
                 materialsList->removeAllItems();
                 auto mtl = model->GetMaterial();
@@ -609,12 +655,15 @@ int main()
 		{
 			scriptLaunched = !scriptLaunched;
 			if(scriptLaunched)
+            {
+                scene.SaveState();
+                scene.UpdatePhysics(true);
 				scman.ExecuteFunction(startDecl);
+            }
 			else
 			{
-				auto names = scene.GetNames()[1];
-				for(auto i : names)
-					scene.GetShape(i)->GetRigidBody()->setIsActive(false);
+			    scene.UpdatePhysics(false);
+			    scene.LoadState();
 			}
 		}
     });

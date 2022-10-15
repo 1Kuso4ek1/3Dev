@@ -135,6 +135,7 @@ private:
 	glm::mat4 globalInverseTransform;
 
 	std::vector<rp3d::CollisionShape*> shapes;
+	std::vector<rp3d::Collider*> colliders;
 	rp3d::RigidBody* body = nullptr;
 
 	rp3d::TriangleVertexArray* triangles = nullptr;

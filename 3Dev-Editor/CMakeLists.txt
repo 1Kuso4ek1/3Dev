@@ -14,7 +14,7 @@ find_package(Threads REQUIRED)
 
 add_executable(editor main.cpp)
 
-target_include_directories(editor 
+target_include_directories(editor
   	PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
@@ -23,5 +23,7 @@ target_link_libraries(editor PUBLIC 3Dev::3Dev TGUI::TGUI stdc++fs)
 
 #install(TARGETS editor DESTINATION bin)
 install(DIRECTORY DESTINATION $ENV{HOME}/.3Dev-Editor)
+install(DIRECTORY DESTINATION $ENV{HOME}/.3Dev-Editor/gui)
 install(DIRECTORY DESTINATION $ENV{HOME}/.3Dev-Editor/default)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/default/hdri.hdr DESTINATION $ENV{HOME}/.3Dev-Editor/default)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/gui/menu.txt ${CMAKE_CURRENT_SOURCE_DIR}/gui/editor.txt DESTINATION $ENV{HOME}/.3Dev-Editor/gui)

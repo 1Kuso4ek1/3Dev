@@ -30,16 +30,21 @@ public:
     void Save(std::string filename);
     void Load(std::string filename);
 
+    void SaveState();
+    void LoadState();
+
     void SetMainShader(Shader* shader);
     void SetCamera(Camera* camera);
     void SetSkybox(std::shared_ptr<Shape> skybox);
     void SetSoundManager(std::shared_ptr<SoundManager> manager);
-    
+
     void SetModelName(std::string name, std::string newName);
     void SetShapeName(std::string name, std::string newName);
     void SetMaterialName(std::string name, std::string newName);
     void SetPhysicsManagerName(std::string name, std::string newName);
     void SetLightName(std::string name, std::string newName);
+
+    void UpdatePhysics(bool update);
 
     std::shared_ptr<Model> GetModel(std::string name);
     std::shared_ptr<Shape> GetShape(std::string name);
@@ -56,9 +61,21 @@ public:
     std::array<std::vector<std::string>, 5> GetNames();
 
 private:
+    struct State
+    {
+
+        /*State(rp3d::Vector3 pos, rp3d::Vector3 size, rp3d::Quaternion orient)
+              : pos(pos), size(size), orient(orient) {}*/
+
+        rp3d::Vector3 pos, size;
+        rp3d::Quaternion orient;
+    };
+
     sf::Clock clock;
 
     Camera* camera;
+
+    bool updatePhysics = true;
 
     std::shared_ptr<Shape> skybox;
     std::shared_ptr<SoundManager> sManager;
@@ -72,6 +89,8 @@ private:
 
     std::unordered_map<std::string, Light*> lights;
     std::vector<Light*> lightsVector; // for drawing
+
+    std::unordered_map<std::string, State> savedState;
 
     Json::Value root;
 };

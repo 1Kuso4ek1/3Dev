@@ -35,8 +35,12 @@ void Model::Load(std::string filename, unsigned int flags)
 
 	ProcessNode(scene->mRootNode, scene);
 	LoadAnimations(scene);
+
 	if(man)
-		shapes.resize(meshes.size(), nullptr);
+    {
+        shapes.resize(meshes.size(), nullptr);
+        colliders.resize(meshes.size(), nullptr);
+    }
 
 	Log::Write("Meshes loaded: " + std::to_string(meshes.size()), Log::Type::Info);
 	Log::Write("Bones loaded: " + std::to_string(meshes[0]->GetBones().size()), Log::Type::Info);
@@ -147,40 +151,84 @@ void Model::Expand(const rp3d::Vector3& size)
 void Model::CreateBoxShape(int mesh, rp3d::Transform tr)
 {
 	if(mesh >= meshes.size())
-		Log::Write("int mesh is out of meshes array bounds!", Log::Type::Critical);
+    {
+        Log::Write("CreateBoxShape(): int mesh is out of meshes array bounds", Log::Type::Error);
+        return;
+    }
+    if(!body)
+    {
+        Log::Write("CreateBoxShape(): model don't have a RigidBody", Log::Type::Error);
+        return;
+    }
+
+    if(colliders[mesh])
+        body->removeCollider(colliders[mesh]);
 
 	aiAABB aabb = meshes[mesh]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
 	shapes[mesh] = man->CreateBoxShape((rp3d::Vector3(v.x, v.y, v.z) / 2) * size);
-	body->addCollider(shapes[mesh], tr);
+	colliders[mesh] = body->addCollider(shapes[mesh], tr);
 }
 
 void Model::CreateSphereShape(int mesh, rp3d::Transform tr)
 {
 	if(mesh >= meshes.size())
-		Log::Write("int mesh is out of meshes array bounds!", Log::Type::Critical);
+    {
+        Log::Write("CreateSphereShape(): int mesh is out of meshes array bounds", Log::Type::Error);
+        return;
+    }
+    if(!body)
+    {
+        Log::Write("CreateSphereShape(): model don't have a RigidBody", Log::Type::Error);
+        return;
+    }
+
+    if(colliders[mesh])
+        body->removeCollider(colliders[mesh]);
 
 	aiAABB aabb = meshes[mesh]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
 	shapes[mesh] = man->CreateSphereShape((v.y / 2) * size.y);
-	body->addCollider(shapes[mesh], tr);
+	colliders[mesh] = body->addCollider(shapes[mesh], tr);
 }
 
 void Model::CreateCapsuleShape(int mesh, rp3d::Transform tr)
 {
 	if(mesh >= meshes.size())
-		Log::Write("int mesh is out of meshes array bounds!", Log::Type::Critical);
+    {
+        Log::Write("CreateCapsuleShape(): int mesh is out of meshes array bounds", Log::Type::Error);
+        return;
+    }
+    if(!body)
+    {
+        Log::Write("CreateCapsuleShape(): model don't have a RigidBody", Log::Type::Error);
+        return;
+    }
+
+    if(colliders[mesh])
+        body->removeCollider(colliders[mesh]);
 
 	aiAABB aabb = meshes[mesh]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
 	shapes[mesh] = man->CreateCapsuleShape((glm::max(v.x, v.z) / 2) * size.x, v.y / 2);
-	body->addCollider(shapes[mesh], tr);
+	colliders[mesh] = body->addCollider(shapes[mesh], tr);
 }
 
 void Model::CreateConcaveShape(int mesh, rp3d::Transform tr)
 {
 	if(mesh >= meshes.size())
-		Log::Write("int mesh is out of meshes array bounds!", Log::Type::Critical);
+    {
+        Log::Write("CreateConcaveShape(): int mesh is out of meshes array bounds", Log::Type::Error);
+        return;
+    }
+    if(!body)
+    {
+        Log::Write("CreateConcaveShape(): model don't have a RigidBody", Log::Type::Error);
+        return;
+    }
+
+    if(colliders[mesh])
+        body->removeCollider(colliders[mesh]);
 
 	triangles = new rp3d::TriangleVertexArray(
 	meshes[mesh]->GetData().size(), &meshes[mesh]->GetData()[0], sizeof(Vertex),
@@ -193,12 +241,23 @@ void Model::CreateConcaveShape(int mesh, rp3d::Transform tr)
 	tmesh = man->CreateTriangleMesh();
 	tmesh->addSubpart(triangles);
 	shapes[mesh] = man->CreateConcaveMeshShape(tmesh, size);
-	body->addCollider(shapes[mesh], tr);
+	colliders[mesh] = body->addCollider(shapes[mesh], tr);
 	body->setType(rp3d::BodyType::STATIC);
 }
 
 void Model::CreateConvexShape(int mesh, rp3d::Transform tr)
 {
+    if(mesh >= meshes.size())
+    {
+        Log::Write("CreateConvexShape(): int mesh is out of meshes array bounds", Log::Type::Error);
+        return;
+    }
+    if(!body)
+    {
+        Log::Write("CreateConvexShape(): model don't have a RigidBody", Log::Type::Error);
+        return;
+    }
+
 	faces = new rp3d::PolygonVertexArray::PolygonFace[meshes[mesh]->GetIndices().size() / 3];
 	for (int i = 0; i < meshes[mesh]->GetIndices().size() / 3; i++)
 	{
@@ -213,13 +272,16 @@ void Model::CreateConvexShape(int mesh, rp3d::Transform tr)
 
 	pmesh = man->CreatePolyhedronMesh(polygons);
 	shapes[mesh] = man->CreateConvexMeshShape(pmesh, size);
-	body->addCollider(shapes[mesh], tr);
+	colliders[mesh] = body->addCollider(shapes[mesh], tr);
 }
 
 void Model::PlayAnimation(int anim)
 {
 	if(anim >= anims.size())
-		Log::Write("int anim is out of anims array bounds!", Log::Type::Critical);
+    {
+        Log::Write("PlayAnimation(): int anim is out of anims array bounds", Log::Type::Error);
+        return;
+    }
 
 	for(int i = 0; i < GetAnimationsCount(); i++)
 		StopAnimation(i);
@@ -231,7 +293,10 @@ void Model::PlayAnimation(int anim)
 void Model::StopAnimation(int anim)
 {
 	if(anim >= anims.size())
-		Log::Write("int anim is out of anims array bounds!", Log::Type::Critical);
+    {
+        Log::Write("StopAnimation(): int anim is out of anims array bounds", Log::Type::Error);
+        return;
+    }
 
 	anims[anim].state = Animation::State::Stopped;
 	for(auto& i : meshes)
@@ -241,7 +306,10 @@ void Model::StopAnimation(int anim)
 void Model::PauseAnimation(int anim)
 {
 	if(anim >= anims.size())
-		Log::Write("int anim is out of anims array bounds!", Log::Type::Critical);
+    {
+        Log::Write("PauseAnimation(): int anim is out of anims array bounds", Log::Type::Error);
+        return;
+    }
 
 	anims[anim].state = Animation::State::Paused;
 	anims[anim].lastTime = anims[anim].GetTime();

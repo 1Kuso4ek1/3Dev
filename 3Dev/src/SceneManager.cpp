@@ -9,7 +9,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency)
     glViewport(0, 0, size.x, size.y);
 
     float time = clock.restart().asSeconds();
-    std::for_each(pManagers.begin(), pManagers.end(), [&](auto p) { p.second->Update(time); });
+    if(updatePhysics)
+        std::for_each(pManagers.begin(), pManagers.end(), [&](auto p) { p.second->Update(time); });
 
     // needed for materials without textures to render correctly in some cases
     for(int i = 0; i < 8; i++)
@@ -146,10 +147,7 @@ void SceneManager::Save(std::string filename)
     {
         data["objects"]["shapes"][counter] = i.second->Serialize();
         data["objects"]["shapes"][counter]["name"] = i.first;
-        std::string materialName = GetName(i.second->GetMaterial());/*std::find_if(materials.begin(), materials.end(), [&](auto& a)
-                                                {
-                                                    return *a.second.get() == *i.second->GetMaterial();
-                                                })->first*/;
+        std::string materialName = GetName(i.second->GetMaterial());
         data["objects"]["shapes"][counter]["material"] = materialName;
         counter++;
     }
@@ -229,6 +227,42 @@ void SceneManager::Load(std::string filename)
     }
 }
 
+void SceneManager::SaveState()
+{
+    savedState.clear();
+    std::for_each(models.begin(), models.end(), [&](auto p)
+                  {
+                      savedState[p.first].pos = p.second->GetPosition();
+                      savedState[p.first].size = p.second->GetSize();
+                      savedState[p.first].orient = p.second->GetOrientation();
+                  });
+    std::for_each(shapes.begin(), shapes.end(), [&](auto p)
+                  {
+                      savedState[p.first].pos = p.second->GetPosition();
+                      savedState[p.first].size = p.second->GetSize();
+                      savedState[p.first].orient = p.second->GetOrientation();
+                  });
+}
+
+void SceneManager::LoadState()
+{
+    for(auto& i : savedState)
+    {
+        if(models.find(i.first) != models.end())
+        {
+            models[i.first]->SetPosition(i.second.pos);
+            models[i.first]->SetSize(i.second.size);
+            models[i.first]->SetOrientation(i.second.orient);
+        }
+        else if(shapes.find(i.first) != shapes.end())
+        {
+            shapes[i.first]->SetPosition(i.second.pos);
+            shapes[i.first]->SetSize(i.second.size);
+            shapes[i.first]->SetOrientation(i.second.orient);
+        }
+    }
+}
+
 void SceneManager::SetMainShader(Shader* shader)
 {
     std::for_each(models.begin(), models.end(), [&](auto p) { p.second->SetShader(shader); });
@@ -248,6 +282,11 @@ void SceneManager::SetSkybox(std::shared_ptr<Shape> skybox)
 void SceneManager::SetSoundManager(std::shared_ptr<SoundManager> manager)
 {
     sManager = manager;
+}
+
+void SceneManager::UpdatePhysics(bool update)
+{
+    updatePhysics = update;
 }
 
 std::shared_ptr<Model> SceneManager::GetModel(std::string name)
