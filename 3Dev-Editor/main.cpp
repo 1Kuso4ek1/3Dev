@@ -223,6 +223,7 @@ int main()
         if(projectsComboBox->getSelectedItem() != "New project")
             pathEdit->setText(properties["recentProjectsPaths"]
                                         [projectsComboBox->getSelectedItemIndex()].asString());
+        else pathEdit->setText("");
     });
 
     openFileDialogButton->onPress([&]()
@@ -239,12 +240,13 @@ int main()
 
     openButton->onPress([&]()
     {
-    	if(projectsComboBox->getSelectedItem() == "New project")
+    	if(projectsComboBox->getSelectedItem() == "New project" && !pathEdit->getText().empty())
     		engine.Close();
         else
         {
-            projectFilename = properties["recentProjectsPaths"]
-                                        [projectsComboBox->getSelectedItemIndex()].asString();
+            if(projectsComboBox->getSelectedItem() != "New project")
+                projectFilename = properties["recentProjectsPaths"]
+                                            [projectsComboBox->getSelectedItemIndex()].asString();
             if(projectFilename != pathEdit->getText().toStdString())
                 projectFilename = pathEdit->getText().toStdString();
             engine.Close();
@@ -317,13 +319,23 @@ int main()
     filenameEdit->setText(projectFilename.empty() ? "scene.json" : projectFilename);
 
 	ScriptManager scman;
-	bool manageCameraMovement = true;
+	bool manageCameraMovement = true, manageCameraLook = true, manageCameraMouse = true;
 	bool scriptLaunched = false;
     scman.SetDefaultNamespace("Game");
     scman.AddProperty("SceneManager scene", &scene);
+    scman.AddProperty("Camera camera", &cam);
     scman.AddProperty("bool manageCameraMovement", &manageCameraMovement);
+    scman.AddProperty("bool manageCameraLook", &manageCameraLook);
+    scman.AddProperty("bool manageCameraMouse", &manageCameraMouse);
     scman.SetDefaultNamespace("");
 	std::string startDecl = "void Start()", loopDecl = "void Loop()";
+
+	auto scPath = projectFilename;
+	scPath.insert(scPath.find_last_of('.'), "_scripts");
+	scman.Load(scPath);
+	auto scripts = scman.GetScripts();
+    for(auto& i : scripts)
+        sceneTree->addItem({ "Scene", "Scripts", i });
 
     ShadowManager shadows(&scene, { &shadowSource }, glm::ivec2(2048, 2048));
 
@@ -600,7 +612,7 @@ int main()
             if(!openFileDialog->getSelectedPaths().empty())
             {
                 if(scman.LoadScript(openFileDialog->getSelectedPaths()[0].asNativeString()))
-                    sceneTree->addItem({ "Scene", "Scripts", openFileDialog->getSelectedPaths()[0].getFilename().toStdString() });
+                    sceneTree->addItem({ "Scene", "Scripts", openFileDialog->getSelectedPaths()[0].getFilename() });
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asNativeString();
             }
   	    	openFileDialog = nullptr;
@@ -662,6 +674,7 @@ int main()
             }
 			else
 			{
+			    manageCameraMovement = manageCameraLook = manageCameraMouse = true;
 			    scene.UpdatePhysics(false);
 			    scene.LoadState();
 			}
@@ -688,8 +701,12 @@ int main()
     {
         if(!filenameEdit->getText().empty())
         {
-            scene.Save(filenameEdit->getText().toStdString());
-            auto filename = std::filesystem::path(filenameEdit->getText().toStdString()).filename().string();
+            auto path = filenameEdit->getText().toStdString(), scPath = path;
+            scene.Save(path);
+            scPath.insert(scPath.find_last_of('.'), "_scripts");
+            scman.Save(scPath);
+
+            auto filename = std::filesystem::path(path).filename().string();
             auto it = std::find(properties["recentProjects"].begin(), properties["recentProjects"].end(), filename);
             if(it == properties["recentProjects"].end())
             {
@@ -1090,15 +1107,15 @@ int main()
 		{
 			engine.GetWindow().setMouseCursorVisible(false);
 			engine.GetWindow().setMouseCursorGrabbed(true);
-	        cam.Move(1);
-	        cam.Mouse();
+	        if(manageCameraMovement) cam.Move(1);
+	        if(manageCameraMouse) cam.Mouse();
         }
         else
         {
         	engine.GetWindow().setMouseCursorVisible(true);
         	engine.GetWindow().setMouseCursorGrabbed(false);
         }
-        cam.Look();
+        if(manageCameraLook) cam.Look();
 
 		ListenerWrapper::SetPosition(cam.GetPosition());
 		ListenerWrapper::SetOrientation(cam.GetOrientation());

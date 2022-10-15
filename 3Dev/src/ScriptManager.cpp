@@ -90,6 +90,36 @@ void ScriptManager::SetDefaultNamespace(std::string name)
     engine->SetDefaultNamespace(name.c_str());
 }
 
+void ScriptManager::Save(std::string filename)
+{
+    Json::Value data;
+
+    for(int i = 0; i < scripts.size(); i++)
+        data["scripts"][i] = scripts[i];
+
+    std::ofstream file(filename);
+    file << data.toStyledString();
+    file.close();
+}
+
+void ScriptManager::Load(std::string filename)
+{
+    Json::Value data;
+    Json::CharReaderBuilder rbuilder;
+
+    std::ifstream file(filename);
+
+    std::string errors;
+    if(!Json::parseFromStream(rbuilder, file, &data, &errors))
+    {
+        Log::Write("Json parsing failed: " + errors, Log::Type::Error);
+        return;
+    }
+
+    for(int i = 0; i < data["scripts"].size(); i++)
+        scripts.push_back(data["scripts"][i].asString());
+}
+
 bool ScriptManager::LoadScript(std::string filename)
 {
     CScriptBuilder temp;

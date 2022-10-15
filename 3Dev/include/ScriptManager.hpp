@@ -19,6 +19,9 @@ public:
     void AddEnum(std::string name, std::vector<std::string> values);
     void SetDefaultNamespace(std::string name);
 
+    void Save(std::string filename);
+    void Load(std::string filename);
+
     bool LoadScript(std::string filename);
     void Build();
     bool IsBuildSucceded();

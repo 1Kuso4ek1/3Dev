@@ -131,8 +131,8 @@ int main()
     scman->AddProperty("SceneManager scene", &scene);
     scman->AddProperty("Camera camera", &cam);
     scman->AddProperty("bool manageCameraMovement", &manageCameraMovement);
-    scman->AddProperty("bool manageCameraLook", &manageCameraMovement);
-    scman->AddProperty("bool manageCameraMouse", &manageCameraMovement);
+    scman->AddProperty("bool manageCameraLook", &manageCameraLook);
+    scman->AddProperty("bool manageCameraMouse", &manageCameraMouse);
     scman->AddProperty("PhysicsManager@ physicsManager", man.get());
     scman->SetDefaultNamespace("");
     scman->LoadScript("../scripts/test.as");
