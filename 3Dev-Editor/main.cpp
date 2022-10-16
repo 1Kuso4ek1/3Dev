@@ -331,12 +331,15 @@ int main()
     scman.SetDefaultNamespace("");
 	std::string startDecl = "void Start()", loopDecl = "void Loop()";
 
-	auto scPath = projectFilename;
-	scPath.insert(scPath.find_last_of('.'), "_scripts");
-	scman.Load(scPath);
-	auto scripts = scman.GetScripts();
-    for(auto& i : scripts)
-        sceneTree->addItem({ "Scene", "Scripts", i });
+    if(!projectFilename.empty())
+    {
+        auto scPath = projectFilename;
+        scPath.insert(scPath.find_last_of('.'), "_scripts");
+        scman.Load(scPath);
+        auto scripts = scman.GetScripts();
+        for(auto& i : scripts)
+            sceneTree->addItem({ "Scene", "Scripts", i });
+    }
 
     ShadowManager shadows(&scene, { &shadowSource }, glm::ivec2(2048, 2048));
 
