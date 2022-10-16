@@ -1,3 +1,12 @@
 [submodule "3Dev/libraries/Angelscript"]
 	path = 3Dev/libraries/Angelscript
 	url = https://github.com/codecat/angelscript-mirror.git
+[submodule "3Dev/libraries/ReactPhysics3D"]
+	path = 3Dev/libraries/ReactPhysics3D
+	url = https://github.com/DanielChappuis/reactphysics3d.git
+[submodule "3Dev/libraries/LightLog"]
+	path = 3Dev/libraries/LightLog
+	url = https://github.com/1Kuso4ek1/LightLog.git
+[submodule "3Dev/libraries/TGUI"]
+	path = 3Dev/libraries/TGUI
+	url = https://github.com/texus/TGUI.git
