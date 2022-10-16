@@ -698,7 +698,6 @@ ChildWindow.objectEditorWindow {
         Position = (10, 10);
         Renderer = &4;
         Size = (200, 250);
-        Visible = false;
 
         Label.Label11 {
             AutoSize = true;
@@ -754,6 +753,13 @@ ChildWindow.objectEditorWindow {
             Position = (0, 120);
             Renderer = &2;
             Text = "Start / stop";
+            TextSize = 13;
+        }
+
+        Button.removeScript {
+            Position = (0, 148);
+            Renderer = &2;
+            Text = "Remove script";
             TextSize = 13;
         }
     }

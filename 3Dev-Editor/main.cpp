@@ -198,6 +198,7 @@ int main()
 
 	auto buildButton = editor.get<tgui::Button>("build");
     auto startStopButton = editor.get<tgui::Button>("startStop");
+    auto removeScriptButton = editor.get<tgui::Button>("removeScript");
 
     auto filenameEdit = editor.get<tgui::EditBox>("filename");
     auto fileDialogButton = editor.get<tgui::Button>("openFileDialog");
@@ -611,8 +612,8 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
-                if(scman.LoadScript(openFileDialog->getSelectedPaths()[0].asNativeString()))
-                    sceneTree->addItem({ "Scene", "Scripts", openFileDialog->getSelectedPaths()[0].getFilename() });
+                scman.LoadScript(openFileDialog->getSelectedPaths()[0].asNativeString());
+                sceneTree->addItem({ "Scene", "Scripts", openFileDialog->getSelectedPaths()[0].getFilename() });
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asNativeString();
             }
   	    	openFileDialog = nullptr;
@@ -680,6 +681,12 @@ int main()
 			}
 		}
     });
+
+    removeScriptButton->onPress([&]()
+	{
+        scman.RemoveScript(sceneTree->getSelectedItem()[2].toStdString());
+        sceneTree->removeItem(sceneTree->getSelectedItem(), false);
+	});
 
     fileDialogButton->onPress([&]()
     {

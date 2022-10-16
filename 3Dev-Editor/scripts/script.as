@@ -1,39 +1,68 @@
-ShapePtr shape, obstacle;
-Vector3 obstacleStartPos, playerStartPos;
-
 random_device d;
 default_random_engine eng(d());
 
+class Object
+{
+    void Reset()
+    {
+        shape().SetPosition(startPos);
+    }
+
+    ShapePtr shape;
+    Vector3 startPos;
+};
+
+Object bird, obstacle, obstacle1;
+
 void Start()
 {
-    shape = Game::scene.GetShape("shape");
-    obstacle = Game::scene.GetShape("shape1");
-    shape().GetRigidBody().setIsActive(true);
-    obstacleStartPos = Vector3(0.0, -10.0, -25.0);
-    playerStartPos = Vector3(0.0, 0.0, 0.0);
-    obstacle().SetPosition(obstacleStartPos);
-    shape().SetPosition(playerStartPos);
+    bird.shape = Game::scene.GetShape("bird");
+    obstacle.shape = Game::scene.GetShape("obstacle");
+    obstacle1.shape = Game::scene.GetShape("obstacle1");
+
+    bird.shape().GetRigidBody().setIsActive(true);
+    obstacle.shape().GetRigidBody().setIsActive(false);
+    obstacle1.shape().GetRigidBody().setIsActive(false);
+
+    bird.startPos = Vector3(0.0, 0.0, 0.0);
+    obstacle.startPos = Vector3(0.0, -15.0, -25.0);
+    obstacle1.startPos = Vector3(0.0, 15.0, -25.0);
+
+    bird.Reset();
+    obstacle.Reset();
+    obstacle1.Reset();
 }
 
 void Loop()
 {
     if(Keyboard::isKeyPressed(Keyboard::Q))
+        bird.shape().GetRigidBody().setLinearVelocity(Vector3(0.0, 8.0, 0.0));
+
+    bird.shape().SetPosition(Vector3(0.0, bird.shape().GetPosition().y, 0.0));
+    obstacle.shape().Move(Vector3(0.0, 0.0, 0.5));
+    obstacle1.shape().Move(Vector3(0.0, 0.0, 0.5));
+
+    if(obstacle.shape().GetPosition().z > 10)
     {
-        shape().GetRigidBody().setLinearVelocity(Vector3(0.0, 8.0, 0.0));
-        shape().GetRigidBody().setAngularVelocity(Vector3(4.0, 3.0, 2.0));
+        float y = eng(-15, 5);
+        obstacle.startPos.y = y;
+        obstacle1.startPos.y = y + 30;
+
+        obstacle.Reset();
+        obstacle1.Reset();
     }
-    obstacle().Move(Vector3(0.0, 0.0, 0.5));
-    shape().SetPosition(Vector3(0.0, shape().GetPosition().y, 0.0));
-    if(obstacle().GetPosition().z > 10)
-    {
-        obstacleStartPos.y = eng(-10, 20);
-        obstacle().SetPosition(obstacleStartPos);
-    }
-    if(obstacle().GetRigidBody().testAABBOverlap(shape().GetRigidBody().getAABB()))
+    if(obstacle.shape().GetRigidBody().testAABBOverlap(bird.shape().GetRigidBody().getAABB()) ||
+       obstacle1.shape().GetRigidBody().testAABBOverlap(bird.shape().GetRigidBody().getAABB()))
     {
         Log::Write("You're dead!", Log::Info);
-        shape().SetPosition(playerStartPos);
-        shape().GetRigidBody().setLinearVelocity(Vector3(0.0, 0.0, 0.0));
-        obstacle().SetPosition(obstacleStartPos);
+        bird.Reset();
+        bird.shape().GetRigidBody().setLinearVelocity(Vector3(0.0, 0.0, 0.0));
+
+        float y = eng(-15, 5);
+        obstacle.startPos.y = y;
+        obstacle1.startPos.y = y + 30;
+
+        obstacle.Reset();
+        obstacle1.Reset();
     }
 }
