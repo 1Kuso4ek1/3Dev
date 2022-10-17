@@ -1,0 +1,9 @@
+{
+    "hdriPath" : "../textures/park.hdr",
+    "skyboxSideSize" : 512,
+    "irradianceSideSize" : 32,
+    "prefilteredSideSize" : 512,
+    "shadowMapResolution" : 2048,
+    "scenePath" : "../scenes/scene.json",
+
+}

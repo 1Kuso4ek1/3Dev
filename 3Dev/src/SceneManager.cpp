@@ -235,12 +235,22 @@ void SceneManager::SaveState()
                       savedState[p.first].pos = p.second->GetPosition();
                       savedState[p.first].size = p.second->GetSize();
                       savedState[p.first].orient = p.second->GetOrientation();
+                      if(p.second->GetRigidBody())
+                      {
+                          p.second->GetRigidBody()->setLinearVelocity(rp3d::Vector3::zero());
+                          p.second->GetRigidBody()->setAngularVelocity(rp3d::Vector3::zero());
+                      }
                   });
     std::for_each(shapes.begin(), shapes.end(), [&](auto p)
                   {
                       savedState[p.first].pos = p.second->GetPosition();
                       savedState[p.first].size = p.second->GetSize();
                       savedState[p.first].orient = p.second->GetOrientation();
+                      if(p.second->GetRigidBody())
+                      {
+                          p.second->GetRigidBody()->setLinearVelocity(rp3d::Vector3::zero());
+                          p.second->GetRigidBody()->setAngularVelocity(rp3d::Vector3::zero());
+                      }
                   });
 }
 

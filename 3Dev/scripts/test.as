@@ -10,7 +10,7 @@ void Start()
     Game::manageCameraMovement = false;
 
     sphere = Game::scene.GetModel("sphere");
-    sphere().SetPosition(Vector3(0.0, 10.0, 10.0));
+    sphere().GetRigidBody().setIsActive(false);
 
     for(int i = 0; i < 3; i++)
         players.insertLast(Player(Game::scene.GetShape("shape" + (i > 0 ? to_string(i) : ""))));
@@ -27,7 +27,7 @@ void Loop()
     if(Keyboard::isKeyPressed(Keyboard::R))
     {
         sphere().GetRigidBody().setIsActive(true);
-        sphere().SetPosition(Vector3(0.0, 10.0, 10.0));
+        sphere().SetPosition(Vector3(0.0, 40.0, 0.0));
         sphere().GetRigidBody().setLinearVelocity(Vector3(0.0, 0.0, 0.0));
     }
 }

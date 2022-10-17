@@ -13,7 +13,7 @@ public:
     void AddValueType(std::string name, int size, int traits,
                       std::unordered_map<std::string, asSFuncPtr> methods,
                       std::unordered_map<std::string, int> properties);
-    void AddType(std::string name, std::unordered_map<std::string, asSFuncPtr> methods, std::unordered_map<std::string, int> properties);
+    void AddType(std::string name, int size, std::unordered_map<std::string, asSFuncPtr> methods, std::unordered_map<std::string, int> properties);
     void AddTypeConstructor(std::string name, std::string declaration, const asSFuncPtr& ptr);
     void AddTypeDestructor(std::string name, std::string declaration, const asSFuncPtr& ptr);
     void AddEnum(std::string name, std::vector<std::string> values);

@@ -331,6 +331,8 @@ void Model::CheckOpacity()
 {
     transparent = (std::find_if(mat.begin(), mat.end(), [&](auto a)
                     {
+                        if(!a->Contains(Material::Type::Opacity))
+                            return false;
                         auto p = a->GetParameter(Material::Type::Opacity);
                         if(std::holds_alternative<glm::vec3>(p))
                             return std::get<0>(p).x < 1.0;

@@ -84,12 +84,9 @@ int main()
     sphere->SetPosition({ 10.f, 10.f, 10.f });
     sphere->GetRigidBody()->setIsActive(false);
 
-    auto floor = std::make_shared<Shape>(rp3d::Vector3(30, 1, 30), &material, man.get());
-    floor->SetPosition({ 10.f, -30.f, 10.f });
-    floor->GetRigidBody()->setType(rp3d::BodyType::STATIC);
-    /*auto terrain = std::make_shared<Model>("../terrain.obj", std::vector<Material*>{ &material }, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, man.get());
+    auto terrain = std::make_shared<Model>("../terrain.obj", std::vector<Material*>{ &material }, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, man.get());
     terrain->CreateConcaveShape();
-    terrain->SetPosition({ 10.f, -30.f, 10.f });*/
+    terrain->SetPosition({ 10.f, -30.f, 10.f });
 
     auto sman = std::make_shared<SoundManager>();
     sman->LoadSound("../quandale-dingle.ogg", "sound");
@@ -99,10 +96,9 @@ int main()
     scene.AddObject(s);
     scene.AddObject(s1);
     scene.AddObject(s2);
-    scene.AddObject(floor);
 
     scene.AddObject(sphere, "sphere");
-    //scene.AddObject(terrain);
+    scene.AddObject(terrain);
     scene.AddPhysicsManager(man);
 
     //scene.AddLight(&l);
@@ -163,9 +159,9 @@ int main()
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 1.5);
 
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
-        /*glDisable(GL_DEPTH_TEST);
+        glDisable(GL_DEPTH_TEST);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
-        glEnable(GL_DEPTH_TEST);*/
+        glEnable(GL_DEPTH_TEST);
     });
 
     // Launching the game!!!

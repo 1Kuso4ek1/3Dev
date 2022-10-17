@@ -66,9 +66,9 @@ void ScriptManager::AddValueType(std::string name, int size, int traits,
         engine->RegisterObjectProperty(name.c_str(), i.first.c_str(), i.second);
 }
 
-void ScriptManager::AddType(std::string name, std::unordered_map<std::string, asSFuncPtr> methods, std::unordered_map<std::string, int> properties)
+void ScriptManager::AddType(std::string name, int size, std::unordered_map<std::string, asSFuncPtr> methods, std::unordered_map<std::string, int> properties)
 {
-    engine->RegisterObjectType(name.c_str(), 0, asOBJ_REF | asOBJ_NOCOUNT);
+    engine->RegisterObjectType(name.c_str(), size, asOBJ_REF | asOBJ_NOCOUNT);
     for(auto& i : methods)
         engine->RegisterObjectMethod(name.c_str(), i.first.c_str(), i.second, asCALL_THISCALL);
     for(auto& i : properties)
@@ -226,7 +226,7 @@ void ScriptManager::RegisterQuaternion()
 
 void ScriptManager::RegisterModel()
 {
-    AddType("Model",
+    AddType("Model", sizeof(Model),
     {
         { "void SetPosition(const Vector3& in)", asMETHOD(Model, SetPosition) },
         { "void SetOrientation(const Quaternion& in)", asMETHOD(Model, SetOrientation) },
@@ -259,7 +259,7 @@ void ScriptManager::RegisterModelPtr()
 
 void ScriptManager::RegisterShape()
 {
-    AddType("Shape",
+    AddType("Shape", sizeof(Shape),
     {
         { "void SetPosition(const Vector3& in)", asMETHOD(Shape, SetPosition) },
         { "void SetOrientation(const Quaternion& in)", asMETHOD(Shape, SetOrientation) },
@@ -302,7 +302,7 @@ void ScriptManager::RegisterRigidBody()
     AddTypeDestructor("AABB", "void f()", asFUNCTION(DestroyType<rp3d::AABB>));
 
     AddEnum("BodyType", { "STATIC", "KINEMATIC", "DYNAMIC" });
-    AddType("RigidBody",
+    AddType("RigidBody", sizeof(rp3d::RigidBody),
     {
         { "float getMass()", asMETHOD(rp3d::RigidBody, getMass) },
         { "void setMass(float)", asMETHOD(rp3d::RigidBody, setMass) },
@@ -320,7 +320,7 @@ void ScriptManager::RegisterRigidBody()
 
 void ScriptManager::RegisterCamera()
 {
-    AddType("Camera",
+    AddType("Camera", sizeof(Camera),
     {
         { "Vector3& Move(float)", asMETHOD(Camera, Move) },
         { "void SetPosition(Vector3)", asMETHOD(Camera, SetPosition) },
@@ -337,7 +337,7 @@ void ScriptManager::RegisterCamera()
 
 void ScriptManager::RegisterSceneManager()
 {
-    AddType("SceneManager",
+    AddType("SceneManager", sizeof(SceneManager),
     {
         { "ModelPtr GetModel(string)", asMETHOD(SceneManager, GetModel) },
         { "ShapePtr GetShape(string)", asMETHOD(SceneManager, GetShape) },
@@ -363,7 +363,7 @@ void ScriptManager::RegisterSfKeyboard()
 
 void ScriptManager::RegisterPhysicsManager()
 {
-    AddType("PhysicsManager", {}, {});
+    AddType("PhysicsManager", sizeof(PhysicsManager), {}, {});
 }
 
 void ScriptManager::RegisterTransform()
