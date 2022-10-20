@@ -26,7 +26,7 @@ public:
      * @param h height of the new framebuffer texture
      */
     void RecreateTexture(int w, int h);
-    
+
     /*
      * Calculates pixel size of current texture (useful in shaders)
      * @param v width and height of the current texture
@@ -43,10 +43,10 @@ public:
     void Draw();
 
     GLuint Capture(GLuint texture = 0);
-
     GLuint CaptureCubemap(Shader* shader, GLuint tex, Matrices& m, bool isSkybox = false);
-
     GLuint CaptureCubemapMipmaps(Shader* shader, GLuint tex, Matrices& m, int maxLevel, int samples);
+
+    static float* GetPixels(glm::ivec2 coords, glm::ivec2 size);
 
     /*
      * Returns the buffer texture
@@ -62,7 +62,7 @@ private:
     glm::vec2 pixelsize;
     glm::ivec2 size;
 
-    float data[20] = 
+    float data[20] =
     {
         -1, 1, 0, 0, 1,
         -1, -1, 0, 0, 0,
@@ -70,7 +70,7 @@ private:
         1, 1, 0, 1, 1
     };
 
-    std::vector<glm::mat4> views = 
+    std::vector<glm::mat4> views =
 	{
 		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
 		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),

@@ -6,7 +6,7 @@ public:
 	Shader(std::string vertname, std::string fragname);
 
 	void Bind();
-	void Unbind();
+	static void Unbind();
 
 	void SetUniform1i(std::string name, int val);
 	void SetUniform1f(std::string name, float val);

@@ -14,13 +14,13 @@ Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, GLint filte
     if(status != GL_FRAMEBUFFER_COMPLETE)
         Log::Write("framebuffer status isn't GL_FRAMEBUFFER_COMPLETE", Log::Type::Error);
     Unbind();
-    
+
 	glGenBuffers(1, &vbo);
 	glGenBuffers(1, &ebo);
 	glGenVertexArrays(1, &vao);
-	
+
 	glBindVertexArray(vao);
-	
+
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
 
@@ -32,7 +32,7 @@ Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, GLint filte
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 20, 0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 20, (void*)12);
-	
+
 	glBindVertexArray(0);
 }
 
@@ -45,7 +45,7 @@ void Framebuffer::RecreateTexture(int w, int h)
 {
 	size = glm::ivec2(w, h);
 	CalcPixelSize(glm::vec2(w, h));
-    
+
 	if(texture != 0)
 	{
 		auto name = TextureManager::GetInstance()->GetName(texture);
@@ -139,25 +139,25 @@ GLuint Framebuffer::CaptureCubemap(Shader* shader, GLuint tex, Matrices& m, bool
 			shader->Bind();
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
-			
+
 			shader->SetUniform1i("cubemap", 0);
 			m.UpdateShader(shader);
 
 			cube.Draw();
 
 			m.PopMatrix();
-			
+
 			glEnable(GL_CULL_FACE);
 			glDepthFunc(GL_LESS);
 		}
-		else 
+		else
 		{
 			m.PushMatrix();
 
 			shader->Bind();
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, tex);
-			
+
 			shader->SetUniform1i("environment", 0);
 			m.UpdateShader(shader);
 
@@ -197,13 +197,13 @@ GLuint Framebuffer::CaptureCubemapMipmaps(Shader* shader, GLuint tex, Matrices& 
 
 			glDepthFunc(GL_LEQUAL);
 			glDisable(GL_CULL_FACE);
-			
+
 			m.PushMatrix();
 
 			shader->Bind();
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
-			
+
 			shader->SetUniform1i("cubemap", 0);
 			m.UpdateShader(shader);
 
@@ -218,6 +218,13 @@ GLuint Framebuffer::CaptureCubemapMipmaps(Shader* shader, GLuint tex, Matrices& 
 	Unbind();
 	m.PopMatrix();
 	return cubemap;
+}
+
+float* Framebuffer::GetPixels(glm::ivec2 coords, glm::ivec2 size)
+{
+    float* data = (float*)malloc(size.x * size.y * 4 * 4);
+    glReadPixels(coords.x, coords.y, size.x, size.y, GL_RGBA, GL_FLOAT, data);
+    return data;
 }
 
 GLuint Framebuffer::GetTexture(bool depth)

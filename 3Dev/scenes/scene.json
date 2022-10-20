@@ -1,4 +1,25 @@
 {
+	"camera" : 
+	{
+		"alwaysUp" : true,
+		"far" : 1000.0,
+		"fov" : 80.0,
+		"near" : 0.0099999997764825821,
+		"orientation" : 
+		{
+			"w" : 0.8828810453414917,
+			"x" : 0.011557615362107754,
+			"y" : -0.46943601965904236,
+			"z" : 0.0061454037204384804
+		},
+		"position" : 
+		{
+			"x" : -27.738546371459961,
+			"y" : 18.070228576660156,
+			"z" : 22.747568130493164
+		},
+		"speed" : 1.0
+	},
 	"materials" : 
 	[
 		{
@@ -34,6 +55,39 @@
 		"models" : 
 		[
 			{
+				"filename" : "/home/pi/Desktop/projects/3Dev/3Dev/sphere.obj",
+				"material" : 
+				[
+					{
+						"name" : "default"
+					}
+				],
+				"name" : "sphere",
+				"orientation" : 
+				{
+					"w" : 1.0,
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"position" : 
+				{
+					"x" : 0.0,
+					"y" : 40.0,
+					"z" : 0.0
+				},
+				"rigidBody" : 
+				{
+					"active" : true
+				},
+				"size" : 
+				{
+					"x" : 1.0,
+					"y" : 1.0,
+					"z" : 1.0
+				}
+			},
+			{
 				"filename" : "/home/pi/Desktop/projects/3Dev/3Dev/terrain.obj",
 				"material" : 
 				[
@@ -65,46 +119,13 @@
 					"y" : 1.0,
 					"z" : 1.0
 				}
-			},
-			{
-				"filename" : "/home/pi/Desktop/projects/3Dev/3Dev/sphere.obj",
-				"material" : 
-				[
-					{
-						"name" : "default"
-					}
-				],
-				"name" : "sphere",
-				"orientation" : 
-				{
-					"w" : 1.0,
-					"x" : 0.0,
-					"y" : 0.0,
-					"z" : 0.0
-				},
-				"position" : 
-				{
-					"x" : 0.0,
-					"y" : 40.0,
-					"z" : 0.0
-				},
-				"rigidBody" : 
-				{
-					"active" : false
-				},
-				"size" : 
-				{
-					"x" : 1.0,
-					"y" : 1.0,
-					"z" : 1.0
-				}
 			}
 		],
 		"shapes" : 
 		[
 			{
 				"material" : "default",
-				"name" : "shape",
+				"name" : "shape2",
 				"orientation" : 
 				{
 					"w" : 1.0,
@@ -115,7 +136,7 @@
 				"position" : 
 				{
 					"x" : 0.0,
-					"y" : 30.0,
+					"y" : 20.0,
 					"z" : 0.0
 				},
 				"rigidBody" : 
@@ -124,8 +145,8 @@
 				},
 				"size" : 
 				{
-					"x" : 1.0,
-					"y" : 1.0,
+					"x" : 0.5,
+					"y" : 0.5,
 					"z" : 1.0
 				}
 			},
@@ -158,7 +179,7 @@
 			},
 			{
 				"material" : "default",
-				"name" : "shape2",
+				"name" : "shape",
 				"orientation" : 
 				{
 					"w" : 1.0,
@@ -169,7 +190,7 @@
 				"position" : 
 				{
 					"x" : 0.0,
-					"y" : 20.0,
+					"y" : 30.0,
 					"z" : 0.0
 				},
 				"rigidBody" : 
@@ -178,8 +199,8 @@
 				},
 				"size" : 
 				{
-					"x" : 0.5,
-					"y" : 0.5,
+					"x" : 1.0,
+					"y" : 1.0,
 					"z" : 1.0
 				}
 			}

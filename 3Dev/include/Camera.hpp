@@ -5,6 +5,7 @@
 class Camera {
 public:
 	Camera(sf::Window* window, rp3d::Vector3 pos = rp3d::Vector3::zero(), float speed = 1, float fov = 80, float near = 0.01, float far = 1000.0, Matrices* m = nullptr);
+	Camera(sf::Vector2u viewportSize, rp3d::Vector3 pos = rp3d::Vector3::zero(), float speed = 1, float fov = 80, float near = 0.01, float far = 1000.0, Matrices* m = nullptr);
 
 	void Update(bool force = false);
 
@@ -31,6 +32,9 @@ public:
 	float GetFOV();
 	float GetNear();
 	float GetFar();
+
+	Json::Value Serialize();
+	void Deserialize(Json::Value data);
 
 private:
 	void UpdateMatrix();

@@ -193,9 +193,6 @@ int main()
     auto emissionTextureButton = editor.get<tgui::Button>("loadEmission");
     auto opacityTextureButton = editor.get<tgui::Button>("loadOpacity");
 
-	auto startDeclEdit = editor.get<tgui::EditBox>("startDecl");
-	auto loopDeclEdit = editor.get<tgui::EditBox>("loopDecl");
-
 	auto buildButton = editor.get<tgui::Button>("build");
     auto startStopButton = editor.get<tgui::Button>("startStop");
     auto removeScriptButton = editor.get<tgui::Button>("removeScript");
@@ -294,6 +291,10 @@ int main()
     SceneManager scene;
 
 	scene.AddPhysicsManager(man);
+	scene.SetCamera(&cam);
+    scene.SetSkybox(skybox);
+    scene.UpdatePhysics(false);
+
 	if(!projectFilename.empty())
 	{
         scene.Load(projectFilename);
@@ -312,10 +313,6 @@ int main()
         materialBox->addItem("default");
         sceneTree->addItem({ "Scene", "Materials", "default" });
     }
-
-    scene.SetCamera(&cam);
-    scene.SetSkybox(skybox);
-    scene.UpdatePhysics(false);
 
     filenameEdit->setText(projectFilename.empty() ? "scene.json" : projectFilename);
 
@@ -1081,20 +1078,6 @@ int main()
 				scriptsGroup->setVisible(true);
 				sceneGroup->setEnabled(false);
 				sceneGroup->setVisible(false);
-
-				if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
-				{
-					if(startDeclEdit->isFocused() && startDeclEdit->getText() != startDecl)
-					{
-						startDecl = startDeclEdit->getText().toStdString();
-						startDeclEdit->setFocused(false);
-					}
-					if(loopDeclEdit->isFocused() && loopDeclEdit->getText() != loopDecl)
-					{
-						loopDecl = loopDeclEdit->getText().toStdString();
-						loopDeclEdit->setFocused(false);
-					}
-				}
 			}
 		}
 		else

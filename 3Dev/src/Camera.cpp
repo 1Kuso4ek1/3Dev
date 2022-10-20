@@ -7,11 +7,19 @@ Camera::Camera(sf::Window* window, rp3d::Vector3 pos, float speed, float fov, fl
 	UpdateMatrix();
 }
 
+Camera::Camera(sf::Vector2u viewportSize, rp3d::Vector3 pos, float speed, float fov, float near, float far, Matrices* m) : viewportSize(viewportSize), pos(pos), speed(speed), fov(fov), near(near), far(far)
+{
+    if(m) this->m = m;
+	aspect = (float)viewportSize.x / (float)viewportSize.y;
+	UpdateMatrix();
+}
+
 void Camera::Update(bool force)
 {
-	if((((float)window->getSize().x / (float)window->getSize().y) != aspect || force) && viewportSize == sf::Vector2u(0, 0))
+    sf::Vector2u size = (window ? window->getSize() : viewportSize);
+	if((((float)size.x / (float)size.y) != aspect || force))
 	{
-		aspect = (float)window->getSize().x / (float)window->getSize().y;
+		aspect = (float)size.x / (float)size.y;
 		UpdateMatrix();
 	}
 }
@@ -37,14 +45,17 @@ rp3d::Vector3 Camera::Move(float time)
 
 void Camera::Mouse()
 {
-	sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
-	sf::Vector2f mousexy = sf::Vector2f((float)pixelPos.x, (float)pixelPos.y);
+    if(window)
+    {
+        sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
+        sf::Vector2f mousexy = sf::Vector2f((float)pixelPos.x, (float)pixelPos.y);
 
-	orient = rp3d::Quaternion::fromEulerAngles(0, -glm::radians((mousexy.x - window->getSize().x / 2) / 8), 0) * orient;
-	auto tmp = orient * rp3d::Quaternion::fromEulerAngles(-glm::radians((mousexy.y - window->getSize().y / 2) / 8), 0, 0);
-	if((tmp * rp3d::Vector3(0, 0, -1)).getAbsoluteVector().y < 0.99) orient = tmp;
+        orient = rp3d::Quaternion::fromEulerAngles(0, -glm::radians((mousexy.x - window->getSize().x / 2) / 8), 0) * orient;
+        auto tmp = orient * rp3d::Quaternion::fromEulerAngles(-glm::radians((mousexy.y - window->getSize().y / 2) / 8), 0, 0);
+        if((tmp * rp3d::Vector3(0, 0, -1)).getAbsoluteVector().y < 0.99) orient = tmp;
 
-	sf::Mouse::setPosition(sf::Vector2i(window->getSize().x / 2, window->getSize().y / 2), *window);
+        sf::Mouse::setPosition(sf::Vector2i(window->getSize().x / 2, window->getSize().y / 2), *window);
+    }
 }
 
 void Camera::Look()
@@ -63,7 +74,7 @@ void Camera::Look(rp3d::Vector3 vec)
 void Camera::SetViewportSize(sf::Vector2u size)
 {
 	viewportSize = size;
-	aspect = (float)size.x / (float)size.y;
+	aspect = size.x / (float)size.y;
 	UpdateMatrix();
 }
 
@@ -138,4 +149,43 @@ float Camera::GetFar()
 void Camera::UpdateMatrix()
 {
 	m->GetProjection() = glm::perspective(glm::radians(fov), aspect, near, far);
+}
+
+Json::Value Camera::Serialize()
+{
+    Json::Value data;
+    data["position"]["x"] = pos.x;
+    data["position"]["y"] = pos.y;
+    data["position"]["z"] = pos.z;
+
+    data["orientation"]["x"] = orient.x;
+    data["orientation"]["y"] = orient.y;
+    data["orientation"]["z"] = orient.z;
+    data["orientation"]["w"] = orient.w;
+
+    data["speed"] = speed;
+    data["fov"] = fov;
+    data["near"] = near;
+    data["far"] = far;
+    data["alwaysUp"] = alwaysUp;
+
+    return data;
+}
+
+void Camera::Deserialize(Json::Value data)
+{
+    pos.x = data["position"]["x"].asFloat();
+    pos.y = data["position"]["y"].asFloat();
+    pos.z = data["position"]["z"].asFloat();
+
+    orient.x = data["orientation"]["x"].asFloat();
+    orient.y = data["orientation"]["y"].asFloat();
+    orient.z = data["orientation"]["z"].asFloat();
+    orient.w = data["orientation"]["w"].asFloat();
+
+    speed = data["speed"].asFloat();
+    fov = data["fov"].asFloat();
+    near = data["near"].asFloat();
+    far = data["far"].asFloat();
+    alwaysUp = data["alwaysUp"].asBool();
 }

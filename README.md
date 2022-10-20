@@ -71,6 +71,7 @@ cd 3Dev/3Dev-Editor
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release # Debug, RelWithDebInfo, etc.
 make install # No sudo! Otherwise, resources will be installed only for root user
+cp -r ../../3Dev/libraries/TGUI/themes .
 ./editor # Start creating cool stuff...
 ```
 ## Projects

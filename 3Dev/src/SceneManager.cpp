@@ -166,6 +166,8 @@ void SceneManager::Save(std::string filename)
         counter++;
     }
 
+    data["camera"] = camera->Serialize();
+
     std::ofstream file(filename);
     file << data.toStyledString();
     file.close();
@@ -225,6 +227,8 @@ void SceneManager::Load(std::string filename)
         models[name]->Deserialize(data["objects"]["models"][counter]);
         counter++;
     }
+
+    camera->Deserialize(data["camera"]);
 }
 
 void SceneManager::SaveState()

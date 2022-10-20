@@ -137,10 +137,7 @@ void Shape::CheckOpacity()
 
     auto p = mat->GetParameter(Material::Type::Opacity);
     if(std::holds_alternative<glm::vec3>(p))
-    {
         transparent = std::get<0>(p).x < 1.0;
-        std::cout << std::get<0>(p).x << std::endl;
-    }
     else if(std::holds_alternative<GLuint>(p))
         transparent = std::get<1>(p) > 0;
 }

@@ -697,7 +697,7 @@ ChildWindow.objectEditorWindow {
         Enabled = false;
         Position = (10, 10);
         Renderer = &4;
-        Size = (200, 250);
+        Size = (200, 360);
 
         Label.Label11 {
             AutoSize = true;
@@ -708,58 +708,94 @@ ChildWindow.objectEditorWindow {
             TextSize = 13;
         }
 
-        EditBox.startDecl {
-            Position = (0, 30);
-            Renderer = &5;
-            Size = (120, 24);
-            Text = "void Start()";
-            TextSize = 13;
-        }
-
-        EditBox.loopDecl {
-            Position = (0, 60);
-            Renderer = &5;
-            Size = (120, 24);
-            Text = "void Loop()";
-            TextSize = 13;
-        }
-
-        Label.Label12 {
-            AutoSize = true;
-            Position = (130, 34);
-            Renderer = &6;
-            Size = (60, 17);
-            Text = "Start decl";
-            TextSize = 12;
-        }
-
-        Label.Label13 {
-            AutoSize = true;
-            Position = (130, 64);
-            Renderer = &6;
-            Size = (61, 17);
-            Text = "Loop decl";
-            TextSize = 12;
-        }
-
         Button.build {
-            Position = (0, 92);
+            Position = (0, 22);
             Renderer = &2;
             Text = Build;
             TextSize = 13;
         }
 
         Button.startStop {
-            Position = (0, 120);
+            Position = (0, 50);
             Renderer = &2;
             Text = "Start / stop";
             TextSize = 13;
         }
 
         Button.removeScript {
-            Position = (0, 148);
+            Position = (0, 288);
             Renderer = &2;
             Text = "Remove script";
+            TextSize = 13;
+        }
+
+        ListView.variables {
+            ExpandLastColumn = 1;
+            HeaderHeight = 0;
+            HeaderSeparatorHeight = 0;
+            HeaderVisible = true;
+            ItemHeight = 20;
+            Position = (0, 100);
+            ResizableColumns = true;
+            SeparatorWidth = 1;
+            ShowHorizontalGridLines = 1;
+            ShowVerticalGridLines = 1;
+            Size = (200, 137);
+            TextSize = 13;
+
+            Renderer {
+                BackgroundColor = rgb( 80, 80, 80);
+                BackgroundColorHover = rgb(100, 100, 100);
+                BorderColor = Black;
+                Borders = (1, 1, 1, 1);
+                HeaderBackgroundColor = rgb( 95, 95, 95);
+                HeaderTextColor = rgb(210, 210, 210);
+                SelectedBackgroundColor = rgb( 10, 110, 255);
+                SelectedBackgroundColorHover = rgb(30, 150, 255);
+                SelectedTextColor = White;
+                TextColor = rgb(190, 190, 190);
+                TextColorHover = rgb(250, 250, 250);
+                TextureBackground = None;
+                TextureHeaderBackground = None;
+
+                Scrollbar {
+                    TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+                    TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+                    TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+                    TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+                }
+            }
+
+            Column {
+                Alignment = Center;
+                Text = Declaration;
+                Width = 120;
+            }
+
+            Column {
+                Alignment = Center;
+                Text = Value;
+                Width = 60;
+            }
+        }
+
+        Label.Label12 {
+            AutoSize = true;
+            Position = (67, 80);
+            Renderer = &6;
+            Size = (63.2, 18);
+            Text = Variables;
+            TextSize = 13;
+        }
+
+        EditBox.value {
+            Position = (0, 241);
+            Renderer = &5;
+            Size = (120, 22);
             TextSize = 13;
         }
     }
