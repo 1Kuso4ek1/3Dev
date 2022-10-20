@@ -111,6 +111,16 @@ public:
 	void Deserialize(Json::Value data);
 
 private:
+    enum class CollisionShapeType
+    {
+        Nothing,
+        Box,
+        Sphere,
+        Capsule,
+        Concave,
+        Convex
+    };
+
 	void ProcessNode(aiNode* node, const aiScene* scene);
 	void ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode);
 	void LoadAnimations(const aiScene* scene);
@@ -137,6 +147,7 @@ private:
 	std::vector<rp3d::CollisionShape*> shapes;
 	std::vector<rp3d::Collider*> colliders;
 	rp3d::RigidBody* body = nullptr;
+	CollisionShapeType cstype = CollisionShapeType::Nothing;
 
 	rp3d::TriangleVertexArray* triangles = nullptr;
 	rp3d::TriangleMesh* tmesh = nullptr;

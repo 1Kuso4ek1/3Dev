@@ -168,6 +168,7 @@ void Model::CreateBoxShape(int mesh, rp3d::Transform tr)
 	auto v = aabb.mMax - aabb.mMin;
 	shapes[mesh] = man->CreateBoxShape((rp3d::Vector3(v.x, v.y, v.z) / 2) * size);
 	colliders[mesh] = body->addCollider(shapes[mesh], tr);
+	cstype = CollisionShapeType::Box;
 }
 
 void Model::CreateSphereShape(int mesh, rp3d::Transform tr)
@@ -190,6 +191,7 @@ void Model::CreateSphereShape(int mesh, rp3d::Transform tr)
 	auto v = aabb.mMax - aabb.mMin;
 	shapes[mesh] = man->CreateSphereShape((v.y / 2) * size.y);
 	colliders[mesh] = body->addCollider(shapes[mesh], tr);
+	cstype = CollisionShapeType::Sphere;
 }
 
 void Model::CreateCapsuleShape(int mesh, rp3d::Transform tr)
@@ -212,6 +214,7 @@ void Model::CreateCapsuleShape(int mesh, rp3d::Transform tr)
 	auto v = aabb.mMax - aabb.mMin;
 	shapes[mesh] = man->CreateCapsuleShape((glm::max(v.x, v.z) / 2) * size.x, v.y / 2);
 	colliders[mesh] = body->addCollider(shapes[mesh], tr);
+	cstype = CollisionShapeType::Capsule;
 }
 
 void Model::CreateConcaveShape(int mesh, rp3d::Transform tr)
@@ -243,6 +246,7 @@ void Model::CreateConcaveShape(int mesh, rp3d::Transform tr)
 	shapes[mesh] = man->CreateConcaveMeshShape(tmesh, size);
 	colliders[mesh] = body->addCollider(shapes[mesh], tr);
 	body->setType(rp3d::BodyType::STATIC);
+	cstype = CollisionShapeType::Concave;
 }
 
 void Model::CreateConvexShape(int mesh, rp3d::Transform tr)
@@ -273,6 +277,7 @@ void Model::CreateConvexShape(int mesh, rp3d::Transform tr)
 	pmesh = man->CreatePolyhedronMesh(polygons);
 	shapes[mesh] = man->CreateConvexMeshShape(pmesh, size);
 	colliders[mesh] = body->addCollider(shapes[mesh], tr);
+	cstype = CollisionShapeType::Convex;
 }
 
 void Model::PlayAnimation(int anim)
@@ -635,6 +640,7 @@ Json::Value Model::Serialize()
 	data["size"]["z"] = size.z;
 
 	data["rigidBody"]["active"] = body ? body->isActive() : false;
+	data["rigidBody"]["collider"] = (int)cstype;
 
 	return data;
 }
@@ -659,8 +665,21 @@ void Model::Deserialize(Json::Value data)
 
 	if(body)
 	{
+	    cstype = (CollisionShapeType)data["rigidBody"]["collider"].asInt();
         for(int i = 0; i < meshes.size(); i++)
-            CreateBoxShape(i);
+            switch(cstype)
+            {
+            case CollisionShapeType::Box:
+                CreateBoxShape(i); break;
+            case CollisionShapeType::Sphere:
+                CreateSphereShape(i); break;
+            case CollisionShapeType::Capsule:
+                CreateCapsuleShape(i); break;
+            case CollisionShapeType::Concave:
+                CreateConcaveShape(i); break;
+            case CollisionShapeType::Convex:
+                CreateConvexShape(i); break;
+            }
         body->setIsActive(data["rigidBody"]["active"].asBool());
 	}
 
