@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=3Dev Editor
+Keywords=game;engine;
+Categories=Programming;
+Terminal=false
+Exec=/home/pi/Desktop/projects/3Dev/3Dev-Editor/build/editor
+Icon=/home/pi/Desktop/projects/3Dev/3Dev-Editor/icon.png
+Comment=Create a game.

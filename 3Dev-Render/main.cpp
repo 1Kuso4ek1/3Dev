@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
 
     scene.Load(scenePath);
 
-    ShadowManager shadows(&scene, { &shadowSource }, glm::ivec2(2048, 2048));
+    ShadowManager shadows(&scene, { &shadowSource }, glm::ivec2(4096, 4096));
 
     Framebuffer render(nullptr, w, h);
 

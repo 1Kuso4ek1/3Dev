@@ -1,7 +1,9 @@
 #include <Engine.hpp>
 #include <filesystem>
+#define TGUI_USE_STD_FILESYSTEM
 #include <TGUI/TGUI.hpp>
 #include <TGUI/Backend/SFML-OpenGL3.hpp>
+#include <unistd.h>
 
 std::string homeFolder = std::string(getenv("HOME")) + "/.3Dev-Editor/";
 std::string lastPath = std::filesystem::current_path();
@@ -102,12 +104,14 @@ int main()
         properties = ParseProperties();
     }
 
-    Engine engine;
-    engine.CreateWindow(1280, 720, "3Dev Editor");
+    Engine engine(false);
     Log::Init(properties["logFilename"].asString(), false, true);
+    engine.CreateWindow(1280, 720, "3Dev Editor");
     engine.Init();
 
     engine.GetWindow().setFramerateLimit(120);
+
+    std::filesystem::current_path(homeFolder);
 
     tgui::Gui menu{ engine.GetWindow() };
     tgui::Gui editor{ engine.GetWindow() };
@@ -205,7 +209,7 @@ int main()
 
     tgui::Color matColor = tgui::Color::White;
 
-    for(int i = 0; i < properties["recentProjects"].size(); i++)
+    for(int i = 0; i < (properties["recentProjects"].size() >= 9 ? 9 : properties["recentProjects"].size()); i++)
         if(!properties["recentProjects"][i].empty())
             projectsComboBox->addItem(properties["recentProjects"][i].asString());
 

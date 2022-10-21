@@ -24,56 +24,7 @@
 ## TODO
 TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)!
 ## Building
-### Dependencies
-1. GLEW
-2. SFML
-3. ReactPhysics3D
-4. Assimp
-5. LightLog
-6. jsoncpp
-7. Angelscript
-8. TGUI
-### Let's build it
-First of all, you need to clone this repository
-```
-git clone --recursive https://github.com/1Kuso4ek1/3Dev.git
-cd 3Dev/3Dev
-```
-When it's done, we can create a "build" directory and call cmake
-```
-mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release # Debug, RelWithDebInfo, etc.
-```
-This process won't take much time...  
-Makefile is finally generated!
-```
-make -j4
-sudo make install # So you can use the library everywhere...
-```
-You can use 3Dev in your cmake project pretty easily
-```
-find_package(3Dev REQUIRED)
-
-find_package(assimp REQUIRED)
-find_package(OpenGL REQUIRED)
-find_package(ReactPhysics3D REQUIRED)
-find_package(glm REQUIRED)
-find_package(jsoncpp REQUIRED)
-find_package(Angelscript REQUIRED)
-find_package(Threads REQUIRED)
-
-target_link_libraries(cool-project PUBLIC 3Dev::3Dev)
-```
-### Building 3Dev Editor
-Of cource you need to build 3Dev and install it first...
-```
-cd 3Dev/3Dev-Editor
-mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release # Debug, RelWithDebInfo, etc.
-make install # No sudo! Otherwise, resources will be installed only for root user
-cp -r ../../3Dev/libraries/TGUI/themes .
-./editor # Start creating cool stuff...
-```
+All building instructions are [here](https://1kuso4ek1.github.io/3Dev/build.html)!
 ## Projects
 ### Bloodbath
 A small online FPS game, it can be downloaded from [itch.io](https://1kuso4ek1.itch.io/bloodbath)!

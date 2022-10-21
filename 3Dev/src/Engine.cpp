@@ -1,8 +1,9 @@
 #include "Engine.hpp"
 
-Engine::Engine(bool silentLog)
+Engine::Engine(bool initLog, bool silentLog)
 {
-    Log::Init("3Dev_log.txt", silentLog);
+    if(initLog)
+        Log::Init("3Dev_log.txt", silentLog);
 }
 
 void Engine::Init()

@@ -24,7 +24,7 @@ class Engine
 {
 public:
     // Default constructor
-    Engine(bool silentLog = false);
+    Engine(bool initLog = true, bool silentLog = false);
 
     // Default OpenGL initialization function
     void Init();
