@@ -19,3 +19,6 @@
 [submodule "3Dev/libraries/assimp"]
 	path = 3Dev/libraries/assimp
 	url = https://github.com/assimp/assimp
+[submodule "3Dev/libraries/jsoncpp"]
+	path = 3Dev/libraries/jsoncpp
+	url = https://github.com/open-source-parsers/jsoncpp
