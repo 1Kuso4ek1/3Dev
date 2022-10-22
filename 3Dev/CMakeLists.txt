@@ -51,7 +51,8 @@ add_library(3Dev
 add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/shaders/\"" "-DasINT32=int")
 
 add_executable(physics physics_test.cpp)
-          
+add_executable(launcher launcher.cpp)
+
 target_link_libraries(3Dev
 	PUBLIC
 	LightLog
@@ -66,11 +67,13 @@ target_link_libraries(3Dev
 )
 
 target_link_libraries(physics PUBLIC 3Dev)
+target_link_libraries(launcher PUBLIC 3Dev)
 
 set_target_properties(3Dev PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 set_target_properties(physics PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
+set_target_properties(launcher PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 
-target_include_directories(3Dev 
+target_include_directories(3Dev
   	PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<BUILD_INTERFACE:${SFML_INCLUDE_DIR}>
@@ -94,17 +97,29 @@ target_include_directories(physics
   	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
+target_link_directories(launcher
+	PUBLIC
+	${GLEW_LIBRARIES}
+	${SFML_INCLUDE_DIR}/../lib
+	${LIGHTLOG_INCLUDE_DIR}/../lib
+)
+
+target_include_directories(launcher
+  	PUBLIC
+  	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
 	${CMAKE_CURRENT_BINARY_DIR}/3DevConfig.cmake
 	INSTALL_DESTINATION lib/cmake/3Dev
 )
 
-install(TARGETS 3Dev 
+install(TARGETS 3Dev
   	EXPORT 3DevTargets
   	LIBRARY DESTINATION lib
 	INCLUDES DESTINATION include/3Dev
 )
-    
+
 install(EXPORT 3DevTargets
 	FILE 3DevTargets.cmake
 	NAMESPACE 3Dev::
@@ -116,7 +131,7 @@ install(FILES
 	DESTINATION lib/cmake/3Dev
 )
 
-install(FILES 
+install(FILES
   	include/Utils.hpp
 	include/AngelscriptUtils.hpp
   	include/Matrices.hpp
@@ -127,7 +142,6 @@ install(FILES
   	include/Model.hpp
   	include/Shader.hpp
   	include/Shape.hpp
-  	include/Texture.hpp
   	include/Framebuffer.hpp
   	include/Mesh.hpp
   	include/PhysicsManager.hpp

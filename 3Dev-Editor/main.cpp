@@ -111,7 +111,7 @@ int main()
 
     engine.GetWindow().setFramerateLimit(120);
 
-    std::filesystem::current_path(homeFolder);
+    std::filesystem::current_path(homeFolder + "gui");
 
     tgui::Gui menu{ engine.GetWindow() };
     tgui::Gui editor{ engine.GetWindow() };
@@ -713,9 +713,9 @@ int main()
         if(!filenameEdit->getText().empty())
         {
             auto path = filenameEdit->getText().toStdString(), scPath = path;
-            scene.Save(path);
+            scene.Save(path, true);
             scPath.insert(scPath.find_last_of('.'), "_scripts");
-            scman.Save(scPath);
+            scman.Save(scPath, true);
 
             auto filename = std::filesystem::path(path).filename().string();
             auto it = std::find(properties["recentProjects"].begin(), properties["recentProjects"].end(), filename);

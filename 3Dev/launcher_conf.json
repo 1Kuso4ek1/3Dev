@@ -1,9 +1,18 @@
 {
-    "hdriPath" : "../textures/park.hdr",
-    "skyboxSideSize" : 512,
-    "irradianceSideSize" : 32,
-    "prefilteredSideSize" : 512,
-    "shadowMapResolution" : 2048,
-    "scenePath" : "../scenes/scene.json",
-
+    "scenePath" : "../../3Dev-Editor/projects/flappy_bird.json",
+    "window" :
+    {
+        "title" : "game",
+        "width" : 1280,
+        "height" : 720
+    },
+    "renderer" :
+    {
+        "hdriPath" : "../textures/park.hdr",
+        "skyboxSideSize" : 256,
+        "irradianceSideSize" : 32,
+        "prefilteredSideSize" : 256,
+        "shadowMapResolution" : 2048,
+        "exposure" : 1.0
+    }
 }

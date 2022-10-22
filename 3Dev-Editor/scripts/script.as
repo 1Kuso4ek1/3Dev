@@ -14,13 +14,18 @@ class Object
 
 Object bird, obstacle, obstacle1;
 
+bool gameRunning = false;
+
 void Start()
 {
+    Game::manageCameraMouse = false;
+    Game::manageCameraMovement = false;
+
     bird.shape = Game::scene.GetShape("bird");
     obstacle.shape = Game::scene.GetShape("obstacle");
     obstacle1.shape = Game::scene.GetShape("obstacle1");
 
-    bird.shape().GetRigidBody().setIsActive(true);
+    bird.shape().GetRigidBody().setIsActive(false);
     obstacle.shape().GetRigidBody().setIsActive(false);
     obstacle1.shape().GetRigidBody().setIsActive(false);
 
@@ -35,12 +40,23 @@ void Start()
 
 void Loop()
 {
-    if(Keyboard::isKeyPressed(Keyboard::Q))
+    if(Keyboard::isKeyPressed(Keyboard::Space))
+    {
+        if(!gameRunning)
+        {
+            gameRunning = true;
+            bird.shape().GetRigidBody().setIsActive(true);
+        }
         bird.shape().GetRigidBody().setLinearVelocity(Vector3(0.0, 8.0, 0.0));
+    }
 
     bird.shape().SetPosition(Vector3(0.0, bird.shape().GetPosition().y, 0.0));
-    obstacle.shape().Move(Vector3(0.0, 0.0, 0.5));
-    obstacle1.shape().Move(Vector3(0.0, 0.0, 0.5));
+    
+    if(gameRunning)
+    {
+        obstacle.shape().Move(Vector3(0.0, 0.0, 0.5));
+        obstacle1.shape().Move(Vector3(0.0, 0.0, 0.5));
+    }
 
     if(obstacle.shape().GetPosition().z > 10)
     {
@@ -64,5 +80,8 @@ void Loop()
 
         obstacle.Reset();
         obstacle1.Reset();
+        
+        gameRunning = false;
+        bird.shape().GetRigidBody().setIsActive(false);
     }
 }

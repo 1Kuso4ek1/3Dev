@@ -127,11 +127,18 @@ GLuint TextureManager::CreateCubemap(uint32_t size, GLuint filter, std::string n
 	return texture;
 }
 
-
 void TextureManager::DeleteTexture(std::string name)
 {
     glDeleteTextures(1, &textures[name]);
     textures.erase(name);
+}
+
+void TextureManager::MakeFilenamesRelativeTo(std::string base)
+{
+    std::for_each(filenames.begin(), filenames.end(), [&](auto& a)
+                  {
+                      a.second = std::filesystem::relative(a.second, base);
+                  });
 }
 
 GLuint TextureManager::GetTexture(std::string name)

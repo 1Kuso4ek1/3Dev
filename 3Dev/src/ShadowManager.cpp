@@ -16,39 +16,37 @@ ShadowManager::ShadowManager(SceneManager* scene, std::vector<Light*> lights, gl
 void ShadowManager::Update()
 {
     scene->SetMainShader(depthShader);
-        
+
     glCullFace(GL_FRONT);
    	depthShader->Bind();
     for(int i = 0; i < lights.size(); i++)
-    { 
+    {
         glm::mat4 lprojection = glm::perspective(glm::radians(90.0), 1.0, 0.01, 500.0);
         glm::mat4 lview = glm::lookAt(toglm(lights[i]->GetPosition()),
                                       toglm(lights[i]->GetDirection()),
                                       glm::vec3(0.0, 1.0, 0.0));
         glm::mat4 lspace = lprojection * lview;
         lightSpaces[i] = lspace;
-       	
+
         depthShader->SetUniformMatrix4("light", lspace);
-        
+
         scene->Draw(&depthBuffers[i]);
-        
-        //depthShader->SetUniformMatrix4("light", glm::mat4(0.0));
-        
+
         textures[i] = depthBuffers[i].GetTexture(true);
     }
-    
+
     scene->SetMainShader(mainShader);
-    
+
     mainShader->Bind();
     for(int i = 0; i < lights.size(); i++)
     {
         mainShader->SetUniformMatrix4("lspace[" + std::to_string(i) + "]", lightSpaces[i]);
-       	
+
         glActiveTexture(GL_TEXTURE9 + i);
         glBindTexture(GL_TEXTURE_2D, textures[i]);
         mainShader->SetUniform1i("shadows[" + std::to_string(i) + "].shadowmap", 9 + i);
         mainShader->SetUniform1i("shadows[" + std::to_string(i) + "].isactive", 1);
     }
-    
+
     glCullFace(GL_BACK);
 }

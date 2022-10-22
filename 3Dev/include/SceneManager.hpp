@@ -27,7 +27,7 @@ public:
 
     void RemoveAllObjects();
 
-    void Save(std::string filename);
+    void Save(std::string filename, bool relativePaths = false);
     void Load(std::string filename);
 
     void SaveState();
@@ -63,10 +63,6 @@ public:
 private:
     struct State
     {
-
-        /*State(rp3d::Vector3 pos, rp3d::Vector3 size, rp3d::Quaternion orient)
-              : pos(pos), size(size), orient(orient) {}*/
-
         rp3d::Vector3 pos, size;
         rp3d::Quaternion orient;
     };

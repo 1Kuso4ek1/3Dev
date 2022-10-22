@@ -13,6 +13,7 @@ public:
     GLuint CreateCubemap(uint32_t size, GLuint filter = GL_LINEAR, std::string name = "cubemap");
 
     void DeleteTexture(std::string name);
+    void MakeFilenamesRelativeTo(std::string base);
 
     GLuint GetTexture(std::string name);
     std::string GetName(GLuint id);

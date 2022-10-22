@@ -130,10 +130,13 @@ void SceneManager::RemoveAllObjects()
     shapes.clear();
 }
 
-void SceneManager::Save(std::string filename)
+void SceneManager::Save(std::string filename, bool relativePaths)
 {
     Json::Value data;
     int counter = 0;
+
+    if(relativePaths)
+        TextureManager::GetInstance()->MakeFilenamesRelativeTo(std::filesystem::path(filename).parent_path());
 
     for(auto& i : materials)
     {
@@ -156,6 +159,11 @@ void SceneManager::Save(std::string filename)
     for(auto& i : models)
     {
         data["objects"]["models"][counter] = i.second->Serialize();
+        if(relativePaths)
+        {
+            auto& modelFilename = data["objects"]["models"][counter]["filename"];
+            modelFilename = std::string(std::filesystem::relative(modelFilename.asString(), std::filesystem::path(filename).parent_path()));
+        }
         data["objects"]["models"][counter]["name"] = i.first;
         std::vector<std::string> materialNames;
         auto mat = i.second->GetMaterial();
@@ -192,6 +200,7 @@ void SceneManager::Load(std::string filename)
 
     //materials["default"] = std::make_shared<Material>();
 
+    std::filesystem::current_path(std::filesystem::path(filename).parent_path());
 
     int counter = 0;
     while(!data["materials"][counter].empty())

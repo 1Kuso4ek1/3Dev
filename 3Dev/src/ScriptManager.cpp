@@ -90,12 +90,14 @@ void ScriptManager::SetDefaultNamespace(std::string name)
     engine->SetDefaultNamespace(name.c_str());
 }
 
-void ScriptManager::Save(std::string filename)
+void ScriptManager::Save(std::string filename, bool relativePaths)
 {
     Json::Value data;
 
     for(int i = 0; i < scripts.size(); i++)
-        data["scripts"][i] = scripts[i];
+        if(relativePaths)
+            data["scripts"][i] = std::string(std::filesystem::relative(scripts[i], std::filesystem::path(filename).parent_path()));
+        else data["scripts"][i] = scripts[i];
 
     std::ofstream file(filename);
     file << data.toStyledString();
@@ -117,7 +119,7 @@ void ScriptManager::Load(std::string filename)
     }
 
     for(int i = 0; i < data["scripts"].size(); i++)
-        scripts.push_back(data["scripts"][i].asString());
+        scripts.push_back(std::filesystem::absolute(data["scripts"][i].asString()));
 }
 
 bool ScriptManager::LoadScript(std::string filename)
@@ -341,7 +343,8 @@ void ScriptManager::RegisterSceneManager()
     {
         { "ModelPtr GetModel(string)", asMETHOD(SceneManager, GetModel) },
         { "ShapePtr GetShape(string)", asMETHOD(SceneManager, GetShape) },
-        { "Camera@ GetCamera()", asMETHOD(SceneManager, GetCamera) }
+        { "Camera@ GetCamera()", asMETHOD(SceneManager, GetCamera) },
+        { "void UpdatePhysics(bool)", asMETHOD(SceneManager, UpdatePhysics) }
     }, {});
 }
 

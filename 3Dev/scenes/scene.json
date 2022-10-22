@@ -7,16 +7,16 @@
 		"near" : 0.0099999997764825821,
 		"orientation" : 
 		{
-			"w" : 0.76879793405532837,
-			"x" : -0.26003682613372803,
-			"y" : -0.5534551739692688,
-			"z" : -0.18719945847988129
+			"w" : 0.90306460857391357,
+			"x" : -0.33203944563865662,
+			"y" : -0.25575435161590576,
+			"z" : -0.094035685062408447
 		},
 		"position" : 
 		{
-			"x" : -9.547022819519043,
-			"y" : 28.055360794067383,
-			"z" : 15.225437164306641
+			"x" : -13.381504058837891,
+			"y" : 38.948074340820312,
+			"z" : 21.829980850219727
 		},
 		"speed" : 1.0
 	},
@@ -55,41 +55,7 @@
 		"models" : 
 		[
 			{
-				"filename" : "/home/pi/Desktop/projects/3Dev/3Dev/terrain.obj",
-				"material" : 
-				[
-					{
-						"name" : "default"
-					}
-				],
-				"name" : "terrain",
-				"orientation" : 
-				{
-					"w" : 1.0,
-					"x" : 0.0,
-					"y" : 0.0,
-					"z" : 0.0
-				},
-				"position" : 
-				{
-					"x" : 0.0,
-					"y" : 0.0,
-					"z" : 0.0
-				},
-				"rigidBody" : 
-				{
-					"active" : true,
-					"collider" : 4
-				},
-				"size" : 
-				{
-					"x" : 1.0,
-					"y" : 1.0,
-					"z" : 1.0
-				}
-			},
-			{
-				"filename" : "/home/pi/Desktop/projects/3Dev/3Dev/sphere.obj",
+				"filename" : "../sphere.obj",
 				"material" : 
 				[
 					{
@@ -121,13 +87,16 @@
 					"y" : 1.0,
 					"z" : 1.0
 				}
-			}
-		],
-		"shapes" : 
-		[
+			},
 			{
-				"material" : "default",
-				"name" : "shape",
+				"filename" : "../terrain.obj",
+				"material" : 
+				[
+					{
+						"name" : "default"
+					}
+				],
+				"name" : "terrain",
 				"orientation" : 
 				{
 					"w" : 1.0,
@@ -138,7 +107,38 @@
 				"position" : 
 				{
 					"x" : 0.0,
-					"y" : 30.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"rigidBody" : 
+				{
+					"active" : true,
+					"collider" : 4
+				},
+				"size" : 
+				{
+					"x" : 1.0,
+					"y" : 1.0,
+					"z" : 1.0
+				}
+			}
+		],
+		"shapes" : 
+		[
+			{
+				"material" : "default",
+				"name" : "shape2",
+				"orientation" : 
+				{
+					"w" : 1.0,
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"position" : 
+				{
+					"x" : 0.0,
+					"y" : 20.0,
 					"z" : 0.0
 				},
 				"rigidBody" : 
@@ -147,8 +147,8 @@
 				},
 				"size" : 
 				{
-					"x" : 1.0,
-					"y" : 1.0,
+					"x" : 0.5,
+					"y" : 0.5,
 					"z" : 1.0
 				}
 			},
@@ -181,7 +181,7 @@
 			},
 			{
 				"material" : "default",
-				"name" : "shape2",
+				"name" : "shape",
 				"orientation" : 
 				{
 					"w" : 1.0,
@@ -192,7 +192,7 @@
 				"position" : 
 				{
 					"x" : 0.0,
-					"y" : 20.0,
+					"y" : 30.0,
 					"z" : 0.0
 				},
 				"rigidBody" : 
@@ -201,8 +201,8 @@
 				},
 				"size" : 
 				{
-					"x" : 0.5,
-					"y" : 0.5,
+					"x" : 1.0,
+					"y" : 1.0,
 					"z" : 1.0
 				}
 			}
