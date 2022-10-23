@@ -48,7 +48,7 @@ add_library(3Dev
 	libraries/Angelscript/sdk/add_on/scriptarray/scriptarray.cpp
 )
 
-add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/shaders/\"" "-DasINT32=int")
+add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/shaders/\"")
 
 add_executable(physics physics_test.cpp)
 add_executable(launcher launcher.cpp)
