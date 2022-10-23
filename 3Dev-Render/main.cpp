@@ -19,17 +19,19 @@ int main(int argc, char* argv[])
     {
         std::cout << "3Dev-Render is a tool for drawing a scene to an image." << std::endl
                   << "Usage: render [options] -s path/to/scene" << std::endl
-                  << "  --help         Display this information" << std::endl
-                  << "  -s <file>      Path to the scene file" << std::endl
-                  << "  -o <file>      Name for the output image (output.png is default)" << std::endl
-                  << "  -e <file>      Path to the hdri environment (${HOME}/.3Dev-Editor/default/hdri.hdr is default)" << std::endl
-                  << "  -w <number>    Width of the output (1280 is default)" << std::endl
-                  << "  -h <number>    Height of the output (720 is default)" << std::endl
-                  << "  -b <number>    Size of a skybox side (1024 is default)" << std::endl;
+                  << "  --help            Display this information" << std::endl
+                  << "  -s <file>         Path to the scene file" << std::endl
+                  << "  -o <file>         Name for the output image (output.png is default)" << std::endl
+                  << "  -e <file>         Path to the hdri environment (${HOME}/.3Dev-Editor/default/hdri.hdr is default)" << std::endl
+                  << "  -w <number>       Width of the output (1280 is default)" << std::endl
+                  << "  -h <number>       Height of the output (720 is default)" << std::endl
+                  << "  -b <number>       Size of a skybox side (1024 is default)" << std::endl
+                  << "  -x <number>       Exposure (1.5 is default)" << std::endl;
         return 0;
     }
 
     uint32_t w = 1280, h = 720, b = 1024;
+    float exp = 1.5;
     std::string env = std::string(getenv("HOME")) + "/.3Dev-Editor/default/hdri.hdr", out = "output.png", scenePath;
 
     if(!GetArgument(argc, argv, "-s").empty()) scenePath = GetArgument(argc, argv, "-s");
@@ -38,6 +40,7 @@ int main(int argc, char* argv[])
     if(!GetArgument(argc, argv, "-w").empty()) w = std::stoi(GetArgument(argc, argv, "-w"));
     if(!GetArgument(argc, argv, "-h").empty()) h = std::stoi(GetArgument(argc, argv, "-h"));
     if(!GetArgument(argc, argv, "-b").empty()) b = std::stoi(GetArgument(argc, argv, "-b"));
+    if(!GetArgument(argc, argv, "-x").empty()) exp = std::stof(GetArgument(argc, argv, "-x"));
     if(!GetArgument(argc, argv, "-o").empty()) out = GetArgument(argc, argv, "-o");
     if(!GetArgument(argc, argv, "-e").empty()) env = GetArgument(argc, argv, "-e");
 
@@ -48,7 +51,7 @@ int main(int argc, char* argv[])
 
     engine.Init();
 
-    Renderer::GetInstance()->Init({ w, h }, env, b, 32, b);
+    Renderer::GetInstance()->Init({ w, h }, env, b, 128, b);
 
     Camera cam({ w, h });
 
@@ -65,6 +68,8 @@ int main(int argc, char* argv[])
 
     auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 1, 1, 1 }, &skyboxMaterial);
 
+    auto path = std::filesystem::current_path();
+
     SceneManager scene;
 
     scene.AddPhysicsManager(man);
@@ -73,6 +78,8 @@ int main(int argc, char* argv[])
     scene.UpdatePhysics(false);
 
     scene.Load(scenePath);
+
+    std::filesystem::current_path(path);
 
     ShadowManager shadows(&scene, { &shadowSource }, glm::ivec2(4096, 4096));
 
@@ -85,7 +92,7 @@ int main(int argc, char* argv[])
     scene.Draw();
 
     Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 1.5);
+    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exp);
 
     render.Bind();
 

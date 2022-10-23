@@ -14,6 +14,14 @@ uniform bool fxaa = true;
 
 out vec4 color;
 
+mat3 acesIn = mat3(0.59719, 0.07600, 0.02840,
+                   0.35458, 0.90834, 0.13383,
+                   0.04823, 0.01566, 0.83777);
+
+mat3 acesOut = mat3(1.60475, -0.10208, -0.00327,
+                    -0.53108,  1.10813, -0.07276,
+                    -0.07367, -0.00605, 1.07602);
+
 vec4 FXAA()
 {
     float color0 = dot(color.xyz, vec3(0.299, 0.587, 0.114));
@@ -30,13 +38,13 @@ vec4 FXAA()
 
 	vec2 sampleDir = vec2(-((color1 + color2) - (color3 + color4)),
                            ((color1 + color3) - (color2 + color4)));
-    
+
     float dirReduce = max((color1 + color2 + color3 + color4) * 0.25 * mulReduce, minReduce);
 
 	float factor = 1.0 / (min(abs(sampleDir.x), abs(sampleDir.y)) + dirReduce);
-    
+
     sampleDir = clamp(sampleDir * factor, vec2(-maxSpan), vec2(maxSpan)) * pixelsize;
-	
+
 	vec3 samplePos1 = texture(frame, coord + sampleDir * (1.0 / 3.0 - 0.5)).xyz;
 	vec3 samplePos2 = texture(frame, coord + sampleDir * (2.0 / 3.0 - 0.5)).xyz;
 
@@ -44,9 +52,9 @@ vec4 FXAA()
 
 	vec3 samplePosOut1 = texture(frame, coord + sampleDir * (0.0 - 0.5)).xyz;
 	vec3 samplePosOut2 = texture(frame, coord + sampleDir * (1.0 - 0.5)).xyz;
-	
-	vec3 tab4 = (samplePosOut1 + samplePosOut2) * 0.25 + tab2 * 0.5;   
-	
+
+	vec3 tab4 = (samplePosOut1 + samplePosOut2) * 0.25 + tab2 * 0.5;
+
 	float lumTab4 = dot(tab4, vec3(0.299, 0.587, 0.114));
 
 	if(lumTab4 < cmin || lumTab4 > cmax)
@@ -54,17 +62,26 @@ vec4 FXAA()
 	else return vec4(tab4, color.w);
 }
 
+vec3 ACES()
+{
+    vec3 v = acesIn * color.rgb * exposure;
+    vec3 a = v * (v + 0.0245786) - 0.000090537;
+    vec3 b = v * (0.983729 * v + 0.4329510) + 0.238081;
+    return acesOut * (a / b);
+}
+
 void main()
 {
     color = texture(frame, coord);
     if(fxaa) color = FXAA();
-    
-    color.rgb = color.rgb / (color.rgb + vec3(1.0));
+
+    /*color.rgb = color.rgb / (color.rgb + vec3(1.0));
     color.rgb *= exposure;
-    
+
     float lum = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
     float mlum = (lum * (1.0 + lum)) / (1.0 + lum);
 
-    color.rgb = (mlum / lum) * color.rgb;
+    color.rgb = (mlum / lum) * color.rgb;*/
+    color.rgb = ACES();
     color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
 }
