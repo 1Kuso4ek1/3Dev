@@ -232,7 +232,7 @@ void SceneManager::Load(std::string filename)
             material.push_back(materials[i["name"].asString()].get());
 
         models[name] = std::make_shared<Model>(data["objects"]["models"][counter]["filename"].asString(), material,
-                                               aiProcess_Triangulate | aiProcess_FlipUVs, pManagers.begin()->second.get());
+                                               aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, pManagers.begin()->second.get());
         models[name]->Deserialize(data["objects"]["models"][counter]);
         counter++;
     }

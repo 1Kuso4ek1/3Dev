@@ -634,7 +634,7 @@ int main()
 			{
                 auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
                 model->Load(openFileDialog->getSelectedPaths()[0].asNativeString(),
-                            aiProcess_Triangulate | aiProcess_FlipUVs);
+                            aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
 
                 materialsList->removeAllItems();
                 auto mtl = model->GetMaterial();
