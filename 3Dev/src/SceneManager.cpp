@@ -136,7 +136,7 @@ void SceneManager::Save(std::string filename, bool relativePaths)
     int counter = 0;
 
     if(relativePaths)
-        TextureManager::GetInstance()->MakeFilenamesRelativeTo(std::filesystem::path(filename).parent_path());
+        TextureManager::GetInstance()->MakeFilenamesRelativeTo(std::filesystem::path(filename).parent_path().string());
 
     for(auto& i : materials)
     {
@@ -162,7 +162,7 @@ void SceneManager::Save(std::string filename, bool relativePaths)
         if(relativePaths)
         {
             auto& modelFilename = data["objects"]["models"][counter]["filename"];
-            modelFilename = std::string(std::filesystem::relative(modelFilename.asString(), std::filesystem::path(filename).parent_path()));
+            modelFilename = std::filesystem::relative(modelFilename.asString(), std::filesystem::path(filename).parent_path()).string();
         }
         data["objects"]["models"][counter]["name"] = i.first;
         std::vector<std::string> materialNames;

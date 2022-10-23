@@ -137,7 +137,7 @@ void TextureManager::MakeFilenamesRelativeTo(std::string base)
 {
     std::for_each(filenames.begin(), filenames.end(), [&](auto& a)
                   {
-                      a.second = std::filesystem::relative(a.second, base);
+                      a.second = std::filesystem::relative(a.second, base).string();
                   });
 }
 

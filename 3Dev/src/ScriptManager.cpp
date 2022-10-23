@@ -96,7 +96,7 @@ void ScriptManager::Save(std::string filename, bool relativePaths)
 
     for(int i = 0; i < scripts.size(); i++)
         if(relativePaths)
-            data["scripts"][i] = std::string(std::filesystem::relative(scripts[i], std::filesystem::path(filename).parent_path()));
+            data["scripts"][i] = std::filesystem::relative(scripts[i], std::filesystem::path(filename).parent_path()).string();
         else data["scripts"][i] = scripts[i];
 
     std::ofstream file(filename);
@@ -119,7 +119,7 @@ void ScriptManager::Load(std::string filename)
     }
 
     for(int i = 0; i < data["scripts"].size(); i++)
-        scripts.push_back(std::filesystem::absolute(data["scripts"][i].asString()));
+        scripts.push_back(std::filesystem::absolute(data["scripts"][i].asString()).string());
 }
 
 bool ScriptManager::LoadScript(std::string filename)
