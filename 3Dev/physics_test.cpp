@@ -122,19 +122,19 @@ int main()
 
     bool manageCameraMovement = true, manageCameraLook = true, manageCameraMouse = true;
 
-    std::shared_ptr<ScriptManager> scman = std::make_shared<ScriptManager>();
-    scman->SetDefaultNamespace("Game");
-    scman->AddProperty("SceneManager scene", &scene);
-    scman->AddProperty("Camera camera", &cam);
-    scman->AddProperty("bool manageCameraMovement", &manageCameraMovement);
-    scman->AddProperty("bool manageCameraLook", &manageCameraLook);
-    scman->AddProperty("bool manageCameraMouse", &manageCameraMouse);
-    scman->AddProperty("PhysicsManager@ physicsManager", man.get());
-    scman->SetDefaultNamespace("");
-    scman->LoadScript("../scripts/test.as");
-    scman->Build();
+    ScriptManager scman;
+    scman.SetDefaultNamespace("Game");
+    scman.AddProperty("SceneManager scene", &scene);
+    scman.AddProperty("Camera camera", &cam);
+    scman.AddProperty("bool manageCameraMovement", &manageCameraMovement);
+    scman.AddProperty("bool manageCameraLook", &manageCameraLook);
+    scman.AddProperty("bool manageCameraMouse", &manageCameraMouse);
+    scman.AddProperty("PhysicsManager@ physicsManager", man.get());
+    scman.SetDefaultNamespace("");
+    scman.LoadScript("../scripts/test.as");
+    scman.Build();
 
-    scman->ExecuteFunction("void Start()");
+    scman.ExecuteFunction("void Start()");
 
     // Main game loop
     engine.Loop([&]()
@@ -146,7 +146,7 @@ int main()
         if(manageCameraLook) cam.Look();
         //////////////////////////////////////
 
-        scman->ExecuteFunction("void Loop()");
+        scman.ExecuteFunction("void Loop()");
 
         ListenerWrapper::SetPosition(cam.GetPosition());
         ListenerWrapper::SetOrientation(cam.GetOrientation());
@@ -156,7 +156,7 @@ int main()
         scene.Draw();
 
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 1.5);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 1.0);
 
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
         glDisable(GL_DEPTH_TEST);
