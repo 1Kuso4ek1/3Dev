@@ -1117,6 +1117,10 @@ int main()
 		ListenerWrapper::SetPosition(cam.GetPosition());
 		ListenerWrapper::SetOrientation(cam.GetOrientation());
 
+		if(engine.GetWindow().hasFocus())
+            engine.GetWindow().setFramerateLimit(60);
+        else engine.GetWindow().setFramerateLimit(10);
+
 		shadows.Update();
 
         scene.Draw(Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main));

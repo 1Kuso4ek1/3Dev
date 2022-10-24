@@ -46,6 +46,7 @@ private:
     void RegisterPhysicsManager();
     void RegisterTransform();
     void RegisterRandom();
+    void RegisterRay();
 
     bool buildSucceded = false;
 

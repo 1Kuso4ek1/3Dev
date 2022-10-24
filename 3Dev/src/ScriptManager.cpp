@@ -3,6 +3,11 @@
 ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
 {
     engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
+
+    engine->SetEngineProperty(asEP_ALLOW_UNSAFE_REFERENCES, true);
+    engine->SetEngineProperty(asEP_COMPILER_WARNINGS, true);
+    engine->SetEngineProperty(asEP_OPTIMIZE_BYTECODE, true);
+
     context = engine->CreateContext();
 
     RegisterStdString(engine);
@@ -11,12 +16,13 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterQuaternion();
     RegisterTransform();
     RegisterPhysicsManager();
+    RegisterRay();
     RegisterRigidBody();
+    RegisterCamera();
     RegisterModel();
     RegisterModelPtr();
     RegisterShape();
     RegisterShapePtr();
-    RegisterCamera();
     RegisterSceneManager();
     RegisterSfKeyboard();
     RegisterRandom();
@@ -180,15 +186,15 @@ void ScriptManager::RegisterVector3()
     {
         { "float length()", asMETHOD(rp3d::Vector3, length) },
         { "string to_string()", asMETHOD(rp3d::Vector3, to_string) },
-        { "Vector3& opAssign(Vector3& in)", asMETHODPR(rp3d::Vector3, operator=, (const rp3d::Vector3&), rp3d::Vector3&) },
-        { "Vector3& opAddAssign(Vector3& in)", asMETHODPR(rp3d::Vector3, operator+=, (const rp3d::Vector3&), rp3d::Vector3&) },
-        { "Vector3& opAdd(Vector3& in)", asFUNCTION(AddVector3) },
-        { "Vector3& opSubAssign(Vector3& in)", asMETHODPR(rp3d::Vector3, operator-=, (const rp3d::Vector3&), rp3d::Vector3&) },
+        { "Vector3& opAssign(const Vector3& in)", asMETHODPR(rp3d::Vector3, operator=, (const rp3d::Vector3&), rp3d::Vector3&) },
+        { "Vector3& opAddAssign(const Vector3& in)", asMETHODPR(rp3d::Vector3, operator+=, (const rp3d::Vector3&), rp3d::Vector3&) },
+        { "Vector3& opAdd(const Vector3& in)", asFUNCTION(AddVector3) },
+        { "Vector3& opSubAssign(const Vector3& in)", asMETHODPR(rp3d::Vector3, operator-=, (const rp3d::Vector3&), rp3d::Vector3&) },
         { "Vector3& opMulAssign(float)", asMETHODPR(rp3d::Vector3, operator*=, (float), rp3d::Vector3&) },
         { "Vector3& opDivAssign(float)", asMETHODPR(rp3d::Vector3, operator/=, (float), rp3d::Vector3&) },
-        { "bool opEquals(Vector3& in)", asMETHODPR(rp3d::Vector3, operator==, (const rp3d::Vector3&) const, bool) },
-        { "bool opEquals(Vector3& in)", asMETHODPR(rp3d::Vector3, operator!=, (const rp3d::Vector3&) const, bool) },
-        { "bool opCmp(Vector3& in)", asMETHODPR(rp3d::Vector3, operator<, (const rp3d::Vector3&) const, bool) }
+        { "bool opEquals(const Vector3& in)", asMETHODPR(rp3d::Vector3, operator==, (const rp3d::Vector3&) const, bool) },
+        { "bool opEquals(const Vector3& in)", asMETHODPR(rp3d::Vector3, operator!=, (const rp3d::Vector3&) const, bool) },
+        { "bool opCmp(const Vector3& in)", asMETHODPR(rp3d::Vector3, operator<, (const rp3d::Vector3&) const, bool) }
     },
     {
         { "float z", asOFFSET(rp3d::Vector3, z) },
@@ -207,11 +213,16 @@ void ScriptManager::RegisterQuaternion()
     AddValueType("Quaternion", sizeof(rp3d::Quaternion), asGetTypeTraits<rp3d::Quaternion>(),
     {
         { "float length()", asMETHOD(rp3d::Quaternion, length) },
-        { "Quaternion& opAssign(Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
-        { "Quaternion& opAddAssign(Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator+=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
-        { "Quaternion& opSubAssign(Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator-=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
-        //{ "Quaternion& opMul(float)", asMETHODPR(rp3d::Quaternion, operator*, (float), rp3d::Quaternion) },
-        { "bool opEquals(Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator==, (const rp3d::Quaternion&) const, bool) }
+        { "string to_string()", asMETHOD(rp3d::Quaternion, to_string) },
+        { "void inverse()", asMETHOD(rp3d::Quaternion, inverse) },
+        { "Quaternion& getInverse()", asMETHOD(rp3d::Quaternion, getInverse) },
+        { "Quaternion& opAssign(const Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
+        { "Quaternion& opAddAssign(const Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator+=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
+        { "Quaternion& opSubAssign(const Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator-=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
+        { "Quaternion& opMul(float)", asMETHODPR(rp3d::Quaternion, operator*, (float) const, rp3d::Quaternion) },
+        { "Quaternion& opMul(const Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator*, (const rp3d::Quaternion&) const, rp3d::Quaternion) },
+        { "Vector3& opMul(const Vector3& in)", asMETHODPR(rp3d::Quaternion, operator*, (const rp3d::Vector3&) const, rp3d::Vector3) },
+        { "bool opEquals(const Quaternion& in)", asMETHODPR(rp3d::Quaternion, operator==, (const rp3d::Quaternion&) const, bool) }
     },
     {
         { "float x", asOFFSET(rp3d::Quaternion, x) },
@@ -220,8 +231,10 @@ void ScriptManager::RegisterQuaternion()
         { "float w", asOFFSET(rp3d::Quaternion, w) }
     });
 
+    AddFunction("Quaternion& QuaternionFromEuler(const Vector3& in)", asFUNCTIONPR(rp3d::Quaternion::fromEulerAngles, (const rp3d::Vector3&), rp3d::Quaternion));
+
     AddTypeConstructor("Quaternion", "void f()", asFUNCTION(MakeType<rp3d::Quaternion>));
-    AddTypeConstructor("Quaternion", "void f(float x, float y, float z, float w)", asFUNCTION(MakeQuaternion));
+    AddTypeConstructor("Quaternion", "void f(float& in, float& in, float& in, float& in)", asFUNCTION(MakeQuaternion));
     AddTypeConstructor("Quaternion", "void f(const Quaternion& in)", asFUNCTION(CopyType<rp3d::Quaternion>));
     AddTypeDestructor("Quaternion", "void f()", asFUNCTION(DestroyType<rp3d::Quaternion>));
 }
@@ -316,7 +329,8 @@ void ScriptManager::RegisterRigidBody()
         { "void setIsActive(bool)", asMETHOD(rp3d::RigidBody, setIsActive) },
         { "void setType(BodyType)", asMETHOD(rp3d::RigidBody, setType) },
         { "AABB getAABB()", asMETHOD(rp3d::RigidBody, getAABB) },
-        { "bool testAABBOverlap(const AABB& in)", asMETHOD(rp3d::RigidBody, testAABBOverlap) }
+        { "bool testAABBOverlap(const AABB& in)", asMETHOD(rp3d::RigidBody, testAABBOverlap) },
+        { "bool raycast(const Ray&, RaycastInfo& out)", asMETHOD(rp3d::RigidBody, raycast) }
     }, {});
 }
 
@@ -331,7 +345,7 @@ void ScriptManager::RegisterCamera()
         { "void SetFOV(float)", asMETHOD(Camera, SetFOV) },
         { "void AlwaysUp(bool)", asMETHOD(Camera, AlwaysUp) },
         { "Vector3& GetPosition()", asMETHOD(Camera, GetPosition) },
-        { "Quaternion& GetOrientation()", asMETHOD(Camera, GetOrientation) },
+        { "Quaternion GetOrientation()", asMETHOD(Camera, GetOrientation) },
         { "void Look()", asMETHODPR(Camera, Look, (), void) },
         { "void Look(Vector3)", asMETHODPR(Camera, Look, (rp3d::Vector3), void) }
     }, {});
@@ -383,6 +397,7 @@ void ScriptManager::RegisterRandom()
     {
         { "uint opCall()", asMETHOD(std::random_device, operator()) }
     }, {});
+
     AddTypeConstructor("random_device", "void f()", asFUNCTION(MakeType<std::random_device>));
     AddTypeDestructor("random_device", "void f()", asFUNCTION(MakeType<std::random_device>));
 
@@ -390,6 +405,30 @@ void ScriptManager::RegisterRandom()
     {
         { "double opCall(double, double)", asFUNCTION(GenerateRandomNumber) }
     }, {});
+
     AddTypeConstructor("default_random_engine", "void f(uint)", asFUNCTION(MakeDefaultRandomEngine));
     AddTypeDestructor("default_random_engine", "void f()", asFUNCTION(MakeType<std::default_random_engine>));
+}
+
+void ScriptManager::RegisterRay()
+{
+    AddValueType("Ray", sizeof(rp3d::Ray), asGetTypeTraits<rp3d::Ray>(), {}, {});
+
+    AddTypeConstructor("Ray", "void f(const Vector3& in, const Vector3& in)", asFUNCTION(MakeRay));
+    AddTypeDestructor("Ray", "void f()", asFUNCTION(DestroyType<rp3d::Ray>));
+
+    AddValueType("RaycastInfo", sizeof(rp3d::RaycastInfo), asGetTypeTraits<rp3d::RaycastInfo>(),
+    {
+        { "RaycastInfo& opAssign(RaycastInfo& in)", asFUNCTION(AssignRaycastInfo) }
+    },
+    {
+        { "Vector3 worldPoint", asOFFSET(rp3d::RaycastInfo, worldPoint) },
+        { "Vector3 worldNormal", asOFFSET(rp3d::RaycastInfo, worldNormal) },
+        { "float hitFraction", asOFFSET(rp3d::RaycastInfo, hitFraction) },
+        { "int meshSubpart", asOFFSET(rp3d::RaycastInfo, meshSubpart) },
+        { "int triangleIndex", asOFFSET(rp3d::RaycastInfo, triangleIndex) }
+    });
+
+    AddTypeConstructor("RaycastInfo", "void f()", asFUNCTION(MakeType<rp3d::RaycastInfo>));
+    AddTypeDestructor("RaycastInfo", "void f()", asFUNCTION(DestroyType<rp3d::RaycastInfo>));
 }

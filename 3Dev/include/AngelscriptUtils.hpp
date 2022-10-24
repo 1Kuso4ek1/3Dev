@@ -38,7 +38,7 @@ static T& AssignType(T* src, T* dst) { return *dst = *src; }
 static void MakeVector3(float& x, float& y, float& z, rp3d::Vector3* vec) { new(vec) rp3d::Vector3(x, y, z); }
 static rp3d::Vector3 AddVector3(rp3d::Vector3& r, rp3d::Vector3& l) { return rp3d::Vector3(l.x + r.x, l.y + r.y, l.z + r.z); }
 
-static void MakeQuaternion(float x, float y, float z, float w, rp3d::Quaternion* q) { new(q) rp3d::Quaternion(x, y, z, w); }
+static void MakeQuaternion(float& x, float& y, float& z, float& w, rp3d::Quaternion* q) { new(q) rp3d::Quaternion(x, y, z, w); }
 
 static void MakeAABB(const rp3d::Vector3& min, const rp3d::Vector3& max, rp3d::AABB* aabb) { new(aabb) rp3d::AABB(min, max); }
 static rp3d::AABB& AssignAABB(rp3d::AABB* src, rp3d::AABB* dst) { dst->mergeWithAABB(*src); return *dst; }
@@ -48,4 +48,18 @@ static void MakeDefaultRandomEngine(unsigned int seed, std::default_random_engin
 static double GenerateRandomNumber(double min, double max, std::default_random_engine* eng)
 {
     return std::uniform_real_distribution<double>(min, max)(*eng);
+}
+
+static void MakeRay(const rp3d::Vector3& start, const rp3d::Vector3& end, rp3d::Ray* ray) { new(ray) rp3d::Ray(start, end); }
+
+static rp3d::RaycastInfo& AssignRaycastInfo(rp3d::RaycastInfo* src, rp3d::RaycastInfo* dst)
+{
+    dst->body = src->body;
+    dst->collider = src->collider;
+    dst->hitFraction = src->hitFraction;
+    dst->meshSubpart = src->meshSubpart;
+    dst->triangleIndex = src->triangleIndex;
+    dst->worldNormal = src->worldNormal;
+    dst->worldPoint = src->worldPoint;
+    return *dst;
 }
