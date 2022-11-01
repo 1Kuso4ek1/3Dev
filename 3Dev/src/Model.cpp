@@ -56,7 +56,7 @@ void Model::Load(std::string filename, unsigned int flags)
 	this->filename = filename;
 }
 
-void Model::Draw(Camera* cam, std::vector<Light*> lights)
+void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
 {
 	m->PushMatrix();
 
@@ -82,10 +82,23 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights)
 		shader->SetUniformMatrix4("transformation", meshes[mesh]->GetTransformation());
 		shader->SetVectorOfUniformMatrix4("pose", meshes[mesh]->GetPose().size(), meshes[mesh]->GetPose());
 		shader->SetUniform1i("bones", !meshes[mesh]->GetBones().empty());
+		shader->SetUniform1i("drawTransparency", transparencyPass);
 
 		m->UpdateShader(shader);
 
-		meshes[mesh]->Draw();
+		if(!transparent && transparencyPass)
+        {
+            glEnable(GL_CULL_FACE);
+            glFrontFace(GL_CCW);
+        }
+
+        meshes[mesh]->Draw();
+
+        if(!transparent && transparencyPass)
+        {
+            glDisable(GL_CULL_FACE);
+            glFrontFace(GL_CW);
+        }
 
 		mat[mesh]->ResetShader(shader);
 	}

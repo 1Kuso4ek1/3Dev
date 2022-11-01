@@ -13,7 +13,7 @@ class Shape
 public:
 	Shape(const rp3d::Vector3& size, Material* mat, PhysicsManager* man = nullptr, Shader* shader = nullptr, Matrices* m = nullptr);
 
-	void Draw(Camera* cam, std::vector<Light*> lights);
+	void Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass = false);
 	void DrawSkybox();
 
 	void SetPosition(const rp3d::Vector3& position);

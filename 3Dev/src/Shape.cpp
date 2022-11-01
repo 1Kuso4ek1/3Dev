@@ -19,7 +19,7 @@ Shape::Shape(const rp3d::Vector3& size, Material* mat, PhysicsManager* man, Shad
 	}
 }
 
-void Shape::Draw(Camera* cam, std::vector<Light*> lights)
+void Shape::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
 {
 	m->PushMatrix();
 
@@ -38,10 +38,23 @@ void Shape::Draw(Camera* cam, std::vector<Light*> lights)
 	if(cam)
 		shader->SetUniform3f("campos", cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
 	shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
+	shader->SetUniform1i("drawTransparency", transparencyPass);
 	shader->SetUniform1i("bones", 0);
 	m->UpdateShader(shader);
 
-	cube->Draw();
+	if(!transparent && transparencyPass)
+    {
+        glEnable(GL_CULL_FACE);
+        glFrontFace(GL_CCW);
+    }
+
+    cube->Draw();
+
+    if(!transparent && transparencyPass)
+    {
+        glDisable(GL_CULL_FACE);
+        glFrontFace(GL_CW);
+    }
 
 	mat->ResetShader(shader);
 

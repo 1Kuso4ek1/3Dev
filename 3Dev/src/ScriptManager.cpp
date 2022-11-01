@@ -197,9 +197,9 @@ void ScriptManager::RegisterVector3()
         { "bool opCmp(const Vector3& in)", asMETHODPR(rp3d::Vector3, operator<, (const rp3d::Vector3&) const, bool) }
     },
     {
-        { "float z", asOFFSET(rp3d::Vector3, z) },
+        { "float x", asOFFSET(rp3d::Vector3, x) },
         { "float y", asOFFSET(rp3d::Vector3, y) },
-        { "float x", asOFFSET(rp3d::Vector3, x) }
+        { "float z", asOFFSET(rp3d::Vector3, z) }
     });
 
     AddTypeConstructor("Vector3", "void f()", asFUNCTION(MakeType<rp3d::Vector3>));
@@ -345,7 +345,7 @@ void ScriptManager::RegisterCamera()
         { "void SetFOV(float)", asMETHOD(Camera, SetFOV) },
         { "void AlwaysUp(bool)", asMETHOD(Camera, AlwaysUp) },
         { "Vector3& GetPosition()", asMETHOD(Camera, GetPosition) },
-        { "Quaternion GetOrientation()", asMETHOD(Camera, GetOrientation) },
+        { "Quaternion& GetOrientation()", asMETHOD(Camera, GetOrientation) },
         { "void Look()", asMETHODPR(Camera, Look, (), void) },
         { "void Look(Vector3)", asMETHODPR(Camera, Look, (rp3d::Vector3), void) }
     }, {});

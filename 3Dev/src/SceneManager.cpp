@@ -19,8 +19,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency)
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-    std::for_each(models.begin(), models.end(), [&](auto p) { if(!p.second->IsTransparent()) p.second->Draw(camera, lightsVector); });
-    std::for_each(shapes.begin(), shapes.end(), [&](auto p) { if(!p.second->IsTransparent()) p.second->Draw(camera, lightsVector); });
+    std::for_each(models.begin(), models.end(), [&](auto p) { p.second->Draw(camera, lightsVector); });
+    std::for_each(shapes.begin(), shapes.end(), [&](auto p) { p.second->Draw(camera, lightsVector); });
 
     if(skybox)
     {
@@ -41,8 +41,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency)
     size = transparency->GetSize();
     glViewport(0, 0, size.x, size.y);
 
-    std::for_each(models.begin(), models.end(), [&](auto p) { if(p.second->IsTransparent()) p.second->Draw(camera, lightsVector); });
-    std::for_each(shapes.begin(), shapes.end(), [&](auto p) { if(p.second->IsTransparent()) p.second->Draw(camera, lightsVector); });
+    std::for_each(models.begin(), models.end(), [&](auto p) { p.second->Draw(camera, lightsVector, true); });
+    std::for_each(shapes.begin(), shapes.end(), [&](auto p) { p.second->Draw(camera, lightsVector, true); });
 
     transparency->Unbind();
     glEnable(GL_CULL_FACE);

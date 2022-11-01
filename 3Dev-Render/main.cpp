@@ -97,9 +97,7 @@ int main(int argc, char* argv[])
     render.Bind();
 
     Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
-    glDisable(GL_DEPTH_TEST);
-    Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
-    glEnable(GL_DEPTH_TEST);
+    //Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
 
     sf::Image image;
     image.create(w, h);

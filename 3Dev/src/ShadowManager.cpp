@@ -7,6 +7,7 @@ ShadowManager::ShadowManager(SceneManager* scene, std::vector<Light*> lights, gl
     if(depthShader) this->depthShader = depthShader;
 
     glEnable(GL_CULL_FACE);
+
     textures.resize(lights.size(), 0);
     lightSpaces.resize(lights.size(), glm::mat4(1.0));
     for(int i = 0; i < lights.size(); i++)

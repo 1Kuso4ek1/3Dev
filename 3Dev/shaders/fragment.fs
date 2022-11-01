@@ -139,6 +139,19 @@ vec3 CalcLight(Light light, vec3 norm, float rough, float metal, vec3 albedo, ve
 
 void main()
 {
+    float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity);
+    float w = texture(albedo, coord).w;
+    if(w != alpha && w != 1.0)
+    	alpha = w;
+
+    if(!drawTransparency && alpha < 1.0)
+        discard;
+    if(drawTransparency && alpha == 1.0)
+    {
+        color = vec4(0.0, 0.0, 0.0, 1.0 * pow(10, -20)); // need to set gl_FragDepth to something
+        return;
+    }
+
     vec3 norm;
     if(nnormalMap) norm = normalize(tbn * normalize(texture(normalMap, coord).xyz * 2.0 - 1.0));
     else norm = normalize(mnormal);
@@ -172,11 +185,6 @@ void main()
 
     vec3 diffuse = irr * alb;
     vec3 ambient = ((kdif * diffuse) + spc) * ao;
-
-    float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity);
-    float w = texture(albedo, coord).w;
-    if(w != alpha && w != 1.0)
-    	alpha = w;
 
     total += ambient;
     color = vec4((emission + total) * (1.0 - shadow + ambient), (alpha < 1.0 ? alpha + ((total.x + total.y, + total.z) / 3.0) : 1.0));

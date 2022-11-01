@@ -58,7 +58,8 @@ int main()
     {
     	{ glm::vec3(0.8, 0.8, 0.8), Material::Type::Color },
     	{ glm::vec3(0.8), Material::Type::Metalness },
-    	{ glm::vec3(0.4), Material::Type::Roughness }
+    	{ glm::vec3(0.4), Material::Type::Roughness },
+        { glm::vec3(0.8), Material::Type::Opacity }
     });
 
     Material skyboxMaterial(
