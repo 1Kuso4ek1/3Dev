@@ -205,7 +205,13 @@ int main()
     auto fileDialogButton = editor.get<tgui::Button>("openFileDialog");
     auto saveButton = editor.get<tgui::Button>("save");
 
+    auto modeLabel = editor.get<tgui::Label>("mode");
+    modeLabel->moveToFront();
+
     std::shared_ptr<tgui::FileDialog> openFileDialog = nullptr;
+
+    bool objectMovement = false;
+    sf::Clock changeMode;
 
     tgui::Color matColor = tgui::Color::White;
 
@@ -431,6 +437,7 @@ int main()
         colorPicker->onClose([&]()
   	    {
   	    	colorPicker->destroy();
+  	    	colorPicker = nullptr;
   	    });
     });
 
@@ -441,6 +448,7 @@ int main()
         emissionPicker->onClose([&]()
   	    {
   	    	emissionPicker->destroy();
+  	    	emissionPicker = nullptr;
   	    });
     });
 
@@ -1104,22 +1112,41 @@ int main()
 		{
 			engine.GetWindow().setMouseCursorVisible(false);
 			engine.GetWindow().setMouseCursorGrabbed(true);
+
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+                cam.SetSpeed(2.0);
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+                cam.SetSpeed(0.5);
+            else cam.SetSpeed(1.0);
+
+            modeLabel->setText("Mode: Camera movement");
+
 	        if(manageCameraMovement) cam.Move(1);
 	        if(manageCameraMouse) cam.Mouse();
         }
         else
         {
+            if(!objectMovement)
+                modeLabel->setText("Mode: None");
+            else modeLabel->setText("Mode: Object movement");
+
         	engine.GetWindow().setMouseCursorVisible(true);
         	engine.GetWindow().setMouseCursorGrabbed(false);
         }
         if(manageCameraLook) cam.Look();
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::G) && changeMode.getElapsedTime().asSeconds() > 0.3)
+        {
+            objectMovement = !objectMovement;
+            changeMode.restart();
+        }
 
 		ListenerWrapper::SetPosition(cam.GetPosition());
 		ListenerWrapper::SetOrientation(cam.GetOrientation());
 
 		if(engine.GetWindow().hasFocus())
             engine.GetWindow().setFramerateLimit(60);
-        else engine.GetWindow().setFramerateLimit(10);
+        else engine.GetWindow().setFramerateLimit(5);
 
 		shadows.Update();
 

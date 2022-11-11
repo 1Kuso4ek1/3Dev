@@ -848,6 +848,32 @@ ChildWindow.viewport {
     TitleAlignment = Center;
     TitleButtons = None;
     TitleTextSize = 13;
+
+    Label.mode {
+        Position = (4, 468);
+        Size = (808.2, 26.0827);
+        Text = "Mode: None";
+        TextSize = 13;
+        VerticalAlignment = Center;
+
+        Renderer {
+            TextColor = rgb(190, 190, 190);
+            TextOutlineColor = black;
+            TextOutlineThickness = 0.3;
+            TextureBackground = None;
+
+            Scrollbar {
+                TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+                TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+                TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+                TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+            }
+        }
+    }
 }
 
 ChildWindow.ChildWindow3 {

@@ -7,16 +7,16 @@
 		"near" : 0.0099999997764825821,
 		"orientation" : 
 		{
-			"w" : 0.90306460857391357,
-			"x" : -0.33203944563865662,
-			"y" : -0.25575435161590576,
-			"z" : -0.094035685062408447
+			"w" : -0.86125379800796509,
+			"x" : 0.42355570197105408,
+			"y" : -0.25205227732658386,
+			"z" : -0.12395664304494858
 		},
 		"position" : 
 		{
-			"x" : -13.381504058837891,
-			"y" : 38.948074340820312,
-			"z" : 21.829980850219727
+			"x" : 11.859404563903809,
+			"y" : 30.903312683105469,
+			"z" : 10.218531608581543
 		},
 		"speed" : 1.0
 	},
@@ -25,9 +25,7 @@
 		{
 			"color" : 
 			{
-				"b" : 1.0,
-				"g" : 1.0,
-				"r" : 1.0
+				"filename" : "../textures/metal_color.jpg"
 			},
 			"emission" : 
 			{
@@ -37,16 +35,20 @@
 			},
 			"metalness" : 
 			{
-				"value" : 1.0
+				"filename" : "../textures/metal_metalness.jpg"
 			},
 			"name" : "default",
+			"normal" : 
+			{
+				"filename" : "../textures/metal_normal.jpg"
+			},
 			"opacity" : 
 			{
 				"value" : 1.0
 			},
 			"roughness" : 
 			{
-				"value" : 0.32999998331069946
+				"filename" : "../textures/metal_roughness.jpg"
 			}
 		}
 	],
@@ -54,40 +56,6 @@
 	{
 		"models" : 
 		[
-			{
-				"filename" : "../sphere.obj",
-				"material" : 
-				[
-					{
-						"name" : "default"
-					}
-				],
-				"name" : "sphere",
-				"orientation" : 
-				{
-					"w" : 1.0,
-					"x" : 0.0,
-					"y" : 0.0,
-					"z" : 0.0
-				},
-				"position" : 
-				{
-					"x" : 0.0,
-					"y" : 40.0,
-					"z" : 0.0
-				},
-				"rigidBody" : 
-				{
-					"active" : true,
-					"collider" : 2
-				},
-				"size" : 
-				{
-					"x" : 1.0,
-					"y" : 1.0,
-					"z" : 1.0
-				}
-			},
 			{
 				"filename" : "../terrain.obj",
 				"material" : 
@@ -121,13 +89,16 @@
 					"y" : 1.0,
 					"z" : 1.0
 				}
-			}
-		],
-		"shapes" : 
-		[
+			},
 			{
-				"material" : "default",
-				"name" : "shape2",
+				"filename" : "../sphere.obj",
+				"material" : 
+				[
+					{
+						"name" : "default"
+					}
+				],
+				"name" : "sphere",
 				"orientation" : 
 				{
 					"w" : 1.0,
@@ -138,7 +109,38 @@
 				"position" : 
 				{
 					"x" : 0.0,
-					"y" : 20.0,
+					"y" : 40.0,
+					"z" : 0.0
+				},
+				"rigidBody" : 
+				{
+					"active" : true,
+					"collider" : 2
+				},
+				"size" : 
+				{
+					"x" : 1.0,
+					"y" : 1.0,
+					"z" : 1.0
+				}
+			}
+		],
+		"shapes" : 
+		[
+			{
+				"material" : "default",
+				"name" : "shape",
+				"orientation" : 
+				{
+					"w" : 1.0,
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"position" : 
+				{
+					"x" : 0.0,
+					"y" : 30.0,
 					"z" : 0.0
 				},
 				"rigidBody" : 
@@ -147,8 +149,8 @@
 				},
 				"size" : 
 				{
-					"x" : 0.5,
-					"y" : 0.5,
+					"x" : 1.0,
+					"y" : 1.0,
 					"z" : 1.0
 				}
 			},
@@ -181,7 +183,7 @@
 			},
 			{
 				"material" : "default",
-				"name" : "shape",
+				"name" : "shape2",
 				"orientation" : 
 				{
 					"w" : 1.0,
@@ -192,7 +194,7 @@
 				"position" : 
 				{
 					"x" : 0.0,
-					"y" : 30.0,
+					"y" : 20.0,
 					"z" : 0.0
 				},
 				"rigidBody" : 
@@ -201,8 +203,8 @@
 				},
 				"size" : 
 				{
-					"x" : 1.0,
-					"y" : 1.0,
+					"x" : 0.5,
+					"y" : 0.5,
 					"z" : 1.0
 				}
 			}

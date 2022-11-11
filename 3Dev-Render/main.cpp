@@ -13,6 +13,11 @@ bool ArgumentExists(int argc, char* argv[], std::string arg)
     return std::find(argv, argv + argc, arg) != argv + argc;
 }
 
+float Blend(float c1, float c2, float a)
+{
+    return std::clamp(((c1 * (1.0 - a)) + (c2 * a)) * 255.0, 0.0, 255.0);
+}
+
 int main(int argc, char* argv[])
 {
     if(ArgumentExists(argc, argv, "--help"))
@@ -83,7 +88,7 @@ int main(int argc, char* argv[])
 
     ShadowManager shadows(&scene, { &shadowSource }, glm::ivec2(4096, 4096));
 
-    Framebuffer render(nullptr, w, h);
+    Framebuffer render(nullptr, w, h), renderTr(nullptr, w, h);
 
     cam.Look();
 
@@ -95,24 +100,29 @@ int main(int argc, char* argv[])
     Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exp);
 
     render.Bind();
-
     Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
-    //Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
+    auto pixels = render.GetPixels(glm::ivec2(0, 0), render.GetSize());
+
+    renderTr.Bind();
+    Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
+    auto pixelsTr = renderTr.GetPixels(glm::ivec2(0, 0), renderTr.GetSize());
 
     sf::Image image;
     image.create(w, h);
 
-    auto pixels = render.GetPixels(glm::ivec2(0, 0), render.GetSize());
     for(int i = 0; i < h; i++)
         for(int j = 0; j < w; j++)
         {
-            float r = pixels[(i * w + j) * 4] * 255; if(r > 255) r = 255;
-            float g = pixels[((i * w + j) * 4) + 1] * 255; if(g > 255) g = 255;
-            float b = pixels[((i * w + j) * 4) + 2] * 255; if(b > 255) b = 255;
-
+            float a = pixelsTr[((i * w + j) * 4) + 3];
+            float r = Blend(pixels[(i * w + j) * 4], std::isnan(pixelsTr[(i * w + j) * 4]) ? 0 : pixelsTr[(i * w + j) * 4], a);
+            float g = Blend(pixels[((i * w + j) * 4) + 1], std::isnan(pixelsTr[((i * w + j) * 4) + 1]) ? 0 : pixelsTr[((i * w + j) * 4) + 1], a);
+            float b = Blend(pixels[((i * w + j) * 4) + 2], std::isnan(pixelsTr[((i * w + j) * 4) + 2]) ? 0 : pixelsTr[((i * w + j) * 4) + 2], a);
             sf::Color color((uint8_t)r, (uint8_t)g, (uint8_t)b);
             image.setPixel(j, h - 1 - i, color);
         }
+
+    free(pixels);
+    free(pixelsTr);
 
     image.saveToFile(out);
 }
