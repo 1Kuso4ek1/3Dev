@@ -35,10 +35,14 @@ static void DestroyType(T* memory) { memory->~T(); }
 template<class T>
 static T& AssignType(T* src, T* dst) { return *dst = *src; }
 
-static void MakeVector3(float& x, float& y, float& z, rp3d::Vector3* vec) { new(vec) rp3d::Vector3(x, y, z); }
-static rp3d::Vector3 AddVector3(rp3d::Vector3& r, rp3d::Vector3& l) { return rp3d::Vector3(l.x + r.x, l.y + r.y, l.z + r.z); }
+template<class T>
+static T* TypeFactory() { return new T(); }
 
-static void MakeQuaternion(float& x, float& y, float& z, float& w, rp3d::Quaternion* q) { new(q) rp3d::Quaternion(x, y, z, w); }
+static void MakeVector3(float x, float y, float z, rp3d::Vector3* vec) { new(vec) rp3d::Vector3(x, y, z); }
+static void Vector3Factory(float x, float y, float z) { new rp3d::Vector3(x, y, z); }
+static rp3d::Vector3 AddVector3(const rp3d::Vector3& r, const rp3d::Vector3& l) { return r + l; }
+
+static void MakeQuaternion(float x, float y, float z, float w, rp3d::Quaternion* q) { new(q) rp3d::Quaternion(x, y, z, w); }
 
 static void MakeAABB(const rp3d::Vector3& min, const rp3d::Vector3& max, rp3d::AABB* aabb) { new(aabb) rp3d::AABB(min, max); }
 static rp3d::AABB& AssignAABB(rp3d::AABB* src, rp3d::AABB* dst) { dst->mergeWithAABB(*src); return *dst; }

@@ -66,7 +66,7 @@ void Camera::Look()
 	m->GetView() = glm::lookAt(toglm(pos), toglm(pos + v), alwaysUp ? glm::vec3(0.0, 1.0, 0.0) : toglm(tmpv));
 }
 
-void Camera::Look(rp3d::Vector3 vec)
+void Camera::Look(const rp3d::Vector3& vec)
 {
 	m->GetView() = glm::lookAt(toglm(pos), toglm(vec), glm::vec3(0, 1, 0));
 }
@@ -78,12 +78,12 @@ void Camera::SetViewportSize(sf::Vector2u size)
 	UpdateMatrix();
 }
 
-void Camera::SetPosition(rp3d::Vector3 vec)
+void Camera::SetPosition(const rp3d::Vector3& vec)
 {
 	pos = vec;
 }
 
-void Camera::SetOrientation(rp3d::Quaternion quat)
+void Camera::SetOrientation(const rp3d::Quaternion& quat)
 {
 	orient = quat;
 }
@@ -116,12 +116,12 @@ void Camera::AlwaysUp(bool a)
 	alwaysUp = a;
 }
 
-rp3d::Vector3 Camera::GetPosition()
+const rp3d::Vector3& Camera::GetPosition()
 {
 	return pos;
 }
 
-rp3d::Quaternion Camera::GetOrientation()
+const rp3d::Quaternion& Camera::GetOrientation()
 {
 	return orient;
 }

@@ -16,6 +16,7 @@ public:
     void AddType(std::string name, int size, std::unordered_map<std::string, asSFuncPtr> methods, std::unordered_map<std::string, int> properties);
     void AddTypeConstructor(std::string name, std::string declaration, const asSFuncPtr& ptr);
     void AddTypeDestructor(std::string name, std::string declaration, const asSFuncPtr& ptr);
+    void AddTypeFactory(std::string name, std::string declaration, const asSFuncPtr& ptr);
     void AddEnum(std::string name, std::vector<std::string> values);
     void SetDefaultNamespace(std::string name);
 

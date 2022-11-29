@@ -58,8 +58,7 @@ int main()
     {
     	{ glm::vec3(0.8, 0.8, 0.8), Material::Type::Color },
     	{ glm::vec3(0.8), Material::Type::Metalness },
-    	{ glm::vec3(0.4), Material::Type::Roughness },
-        { glm::vec3(0.8), Material::Type::Opacity }
+    	{ glm::vec3(0.4), Material::Type::Roughness }
     });
 
     Material skyboxMaterial(
@@ -126,13 +125,12 @@ int main()
     ScriptManager scman;
     scman.SetDefaultNamespace("Game");
     scman.AddProperty("SceneManager scene", &scene);
-    scman.AddProperty("Camera camera", &cam);
+    scman.AddProperty("Camera camera", scene.GetCamera());
     scman.AddProperty("bool manageCameraMovement", &manageCameraMovement);
     scman.AddProperty("bool manageCameraLook", &manageCameraLook);
     scman.AddProperty("bool manageCameraMouse", &manageCameraMouse);
-    scman.AddProperty("PhysicsManager@ physicsManager", man.get());
-    scman.SetDefaultNamespace("");
     scman.LoadScript("../scripts/test.as");
+    scman.SetDefaultNamespace("");
     scman.Build();
 
     scman.ExecuteFunction("void Start()");

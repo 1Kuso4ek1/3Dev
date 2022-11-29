@@ -27,7 +27,7 @@ void Loop()
     if(Keyboard::isKeyPressed(Keyboard::R))
     {
         sphere().GetRigidBody().setIsActive(true);
-        sphere().SetPosition(Vector3(0.0, 40.0, 0.0));
+        sphere().SetPosition(Vector3(25, 50, 20));
         sphere().GetRigidBody().setLinearVelocity(Vector3(0.0, 0.0, 0.0));
     }
 }
