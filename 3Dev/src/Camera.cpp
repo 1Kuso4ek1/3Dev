@@ -116,12 +116,12 @@ void Camera::AlwaysUp(bool a)
 	alwaysUp = a;
 }
 
-const rp3d::Vector3& Camera::GetPosition()
+rp3d::Vector3 Camera::GetPosition()
 {
 	return pos;
 }
 
-const rp3d::Quaternion& Camera::GetOrientation()
+rp3d::Quaternion Camera::GetOrientation()
 {
 	return orient;
 }

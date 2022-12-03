@@ -51,6 +51,14 @@ public:
     std::shared_ptr<Material> GetMaterial(std::string name);
     std::shared_ptr<PhysicsManager> GetPhysicsManager(std::string name);
     std::shared_ptr<SoundManager> GetSoundManager();
+
+    // For angelscript
+    Model* GetModelPtr(std::string name);
+    Shape* GetShapePtr(std::string name);
+    Material* GetMaterialPtr(std::string name);
+    PhysicsManager* GetPhysicsManagerPtr(std::string name);
+    SoundManager* GetSoundManagerPtr();
+
     Camera* GetCamera();
     Light* GetLight(std::string name);
 

@@ -82,6 +82,7 @@ target_include_directories(3Dev
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptbuilder>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptstdstring>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptarray>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/autowrapper>
 	$<INSTALL_INTERFACE:include>
 )
 
@@ -155,5 +156,6 @@ install(FILES
 	libraries/Angelscript/sdk/add_on/scriptbuilder/scriptbuilder.h
 	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.h
 	libraries/Angelscript/sdk/add_on/scriptarray/scriptarray.h
+	libraries/Angelscript/sdk/add_on/autowrapper/aswrappedcall.h
 	DESTINATION include/3Dev
 )

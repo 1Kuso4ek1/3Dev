@@ -37,9 +37,9 @@ public:
 	rp3d::RigidBody* GetRigidBody();
 	Material* GetMaterial();
 
-	const rp3d::Vector3& GetPosition();
-	const rp3d::Quaternion& GetOrientation();
-	const rp3d::Vector3& GetSize();
+	rp3d::Vector3 GetPosition();
+	rp3d::Quaternion GetOrientation();
+	rp3d::Vector3 GetSize();
 
 	Json::Value Serialize();
 	void Deserialize(Json::Value data);

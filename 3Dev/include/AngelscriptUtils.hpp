@@ -1,8 +1,8 @@
 #pragma once
-#include "Utils.hpp"
 #include <scriptbuilder.h>
 #include <scriptstdstring.h>
 #include <scriptarray.h>
+#include <aswrappedcall.h>
 
 static void MessageCallback(const asSMessageInfo *msg, void *param)
 {

@@ -375,17 +375,17 @@ bool Model::IsTransparent()
     return transparent;
 }
 
-const rp3d::Vector3& Model::GetPosition()
+rp3d::Vector3 Model::GetPosition()
 {
 	return transform.getPosition();
 }
 
-const rp3d::Quaternion& Model::GetOrientation()
+rp3d::Quaternion Model::GetOrientation()
 {
 	return transform.getOrientation();
 }
 
-const rp3d::Vector3& Model::GetSize()
+rp3d::Vector3 Model::GetSize()
 {
 	return size;
 }

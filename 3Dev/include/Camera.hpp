@@ -25,8 +25,8 @@ public:
 	void SetFar(float far);
 	void AlwaysUp(bool a);
 
-	const rp3d::Vector3& GetPosition();
-	const rp3d::Quaternion& GetOrientation();
+	rp3d::Vector3 GetPosition();
+	rp3d::Quaternion GetOrientation();
 
 	float GetSpeed();
 	float GetFOV();

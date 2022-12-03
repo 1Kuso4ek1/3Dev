@@ -14,7 +14,7 @@ int main()
 
     Renderer::GetInstance()->Init(engine.GetWindow().getSize(), "../textures/park.hdr");
 
-    Camera cam(&engine.GetWindow(), { 0, 10, 0 }); // Main camera
+    auto cam = std::make_shared<Camera>(&engine.GetWindow(), rp3d::Vector3{ 0, 10, 0 }); // Main camera
 
     // Textures for a material
     GLuint texture = TextureManager::GetInstance()->LoadTexture("../textures/metal_color.jpg"),
@@ -103,7 +103,7 @@ int main()
 
     //scene.AddLight(&l);
 
-    scene.SetCamera(&cam);
+    scene.SetCamera(cam.get());
 
     scene.SetSkybox(skybox);
 
@@ -111,8 +111,8 @@ int main()
 
     ShadowManager shadows(&scene, { &l }, glm::ivec2(2048, 2048));
 
-    ListenerWrapper::SetPosition(cam.GetPosition());
-    ListenerWrapper::SetOrientation(cam.GetOrientation());
+    ListenerWrapper::SetPosition(cam->GetPosition());
+    ListenerWrapper::SetOrientation(cam->GetOrientation());
 
     sman->SetLoop(true, "sound");
     sman->SetAttenuation(3, "sound");
@@ -139,16 +139,16 @@ int main()
     engine.Loop([&]()
     {
         // Camera movement, rotation and so on
-        cam.Update();
-        if(manageCameraMovement) cam.Move(1);
-        if(manageCameraMouse) cam.Mouse();
-        if(manageCameraLook) cam.Look();
+        cam->Update();
+        if(manageCameraMovement) cam->Move(1);
+        if(manageCameraMouse) cam->Mouse();
+        if(manageCameraLook) cam->Look();
         //////////////////////////////////////
 
         scman.ExecuteFunction("void Loop()");
 
-        ListenerWrapper::SetPosition(cam.GetPosition());
-        ListenerWrapper::SetOrientation(cam.GetOrientation());
+        ListenerWrapper::SetPosition(cam->GetPosition());
+        ListenerWrapper::SetOrientation(cam->GetOrientation());
 
         shadows.Update();
 

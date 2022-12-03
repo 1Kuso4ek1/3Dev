@@ -353,6 +353,47 @@ std::shared_ptr<SoundManager> SceneManager::GetSoundManager()
     return sManager;
 }
 
+Model* SceneManager::GetModelPtr(std::string name)
+{
+    if(models.find(name) != models.end())
+        return models[name].get();
+    Log::Write("Could not find a model with name \""
+                + name + "\", function will return nullptr", Log::Type::Warning);
+    return nullptr;
+}
+
+Shape* SceneManager::GetShapePtr(std::string name)
+{
+    if(shapes.find(name) != shapes.end())
+        return shapes[name].get();
+    Log::Write("Could not find a shape with name \""
+                + name + "\", function will return nullptr", Log::Type::Warning);
+    return nullptr;
+}
+
+Material* SceneManager::GetMaterialPtr(std::string name)
+{
+    if(materials.find(name) != materials.end())
+        return materials[name].get();
+    Log::Write("Could not find a material with name \""
+                + name + "\", function will return nullptr", Log::Type::Warning);
+    return nullptr;
+}
+
+PhysicsManager* SceneManager::GetPhysicsManagerPtr(std::string name)
+{
+    if(pManagers.find(name) != pManagers.end())
+        return pManagers[name].get();
+    Log::Write("Could not find a physics manager with name \""
+                + name + "\", function will return nullptr", Log::Type::Warning);
+    return nullptr;
+}
+
+SoundManager* SceneManager::GetSoundManagerPtr()
+{
+    return sManager.get();
+}
+
 Camera* SceneManager::GetCamera()
 {
     return camera;

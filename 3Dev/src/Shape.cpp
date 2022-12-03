@@ -175,17 +175,17 @@ Material* Shape::GetMaterial()
 	return mat;
 }
 
-const rp3d::Vector3& Shape::GetPosition()
+rp3d::Vector3 Shape::GetPosition()
 {
 	return tr.getPosition();
 }
 
-const rp3d::Quaternion& Shape::GetOrientation()
+rp3d::Quaternion Shape::GetOrientation()
 {
 	return tr.getOrientation();
 }
 
-const rp3d::Vector3& Shape::GetSize()
+rp3d::Vector3 Shape::GetSize()
 {
 	return size;
 }
