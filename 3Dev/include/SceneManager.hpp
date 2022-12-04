@@ -11,7 +11,7 @@
 class SceneManager
 {
 public:
-    void Draw(Framebuffer* fbo = nullptr, Framebuffer* transparency = nullptr);
+    void Draw(Framebuffer* fbo = nullptr, Framebuffer* transparency = nullptr, bool shadows = false);
 
     void AddObject(std::shared_ptr<Model> model, std::string name = "model");
     void AddObject(std::shared_ptr<Shape> shape, std::string name = "shape");

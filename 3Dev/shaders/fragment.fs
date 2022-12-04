@@ -40,7 +40,9 @@ out vec4 color;
 
 struct Shadow
 {
-	sampler2DShadow shadowmap;
+	//sampler2DShadow shadowmap; Doesn't work on Windows?
+	vec3 sourcepos;
+	sampler2D shadowmap;
 	bool isactive;
 };
 
@@ -60,14 +62,35 @@ struct Light
 uniform Light lights[maxLights];
 uniform Shadow shadows[maxShadows];
 
-float CalcShadow(int i, float bias)
+float LinearizeDepth(float depth)
 {
+    float z = depth * 2.0 - 1.0;
+    return (2.0 * 0.01 * 500.0) / (500.0 + 0.01 - z * (500.0 - 0.01));
+}
+
+float CalcShadow(int i)
+{
+    if(1.0 - dot(mnormal, normalize(shadows[i].sourcepos - mpos)) >= 1.0) return 0.0;
     vec3 pcoord = lspaceout[i].xyz / lspaceout[i].w;
     pcoord = pcoord * 0.5 + 0.5;
     if(pcoord.z > 1.0)
         return 0.0;
+    /* Doesn't work on Windows?
     pcoord.z -= bias;
     return 1.0 - texture(shadows[i].shadowmap, pcoord);
+    */
+    float current = LinearizeDepth(pcoord.z);
+    float shadow = 0.0;
+    vec2 pixelsize = 1.0 / textureSize(shadows[i].shadowmap, 0);
+	for(int x = 0; x <= 1; ++x)
+	{
+		for(int y = 0; y <= 1; ++y)
+		{
+		    float pcf = LinearizeDepth(texture(shadows[i].shadowmap, pcoord.xy + vec2(x, y) * pixelsize).x);
+		    shadow += float(current > pcf);
+		}
+	}
+    return shadow / 4.0;
 }
 
 float GGX(float ndoth, float rough)
@@ -174,7 +197,7 @@ void main()
         i++;
     }
     for(i = 0; i < maxShadows && shadows[i].isactive; i++)
-        shadow += CalcShadow(i, 3 * pow(10, -7)/* use any value you like */);
+        shadow += CalcShadow(i);
 
     vec3 f = FresnelSchlick(max(dot(norm, normalize(camposout - mpos)), 0.0), f0, rough);
     vec3 kspc = f;

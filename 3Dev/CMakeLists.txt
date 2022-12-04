@@ -66,9 +66,6 @@ target_link_libraries(3Dev
 	jsoncpp_lib
 )
 
-target_link_libraries(physics PUBLIC 3Dev)
-target_link_libraries(launcher PUBLIC 3Dev)
-
 set_target_properties(3Dev PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 set_target_properties(physics PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 set_target_properties(launcher PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
@@ -86,29 +83,15 @@ target_include_directories(3Dev
 	$<INSTALL_INTERFACE:include>
 )
 
-target_link_directories(physics
+target_link_directories(3Dev
 	PUBLIC
 	${GLEW_LIBRARIES}
 	${SFML_INCLUDE_DIR}/../lib
 	${LIGHTLOG_INCLUDE_DIR}/../lib
 )
 
-target_include_directories(physics
-  	PUBLIC
-  	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-)
-
-target_link_directories(launcher
-	PUBLIC
-	${GLEW_LIBRARIES}
-	${SFML_INCLUDE_DIR}/../lib
-	${LIGHTLOG_INCLUDE_DIR}/../lib
-)
-
-target_include_directories(launcher
-  	PUBLIC
-  	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-)
+target_link_libraries(physics PUBLIC 3Dev)
+target_link_libraries(launcher PUBLIC 3Dev)
 
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
 	${CMAKE_CURRENT_BINARY_DIR}/3DevConfig.cmake

@@ -1,6 +1,6 @@
 #include <SceneManager.hpp>
 
-void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency)
+void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool shadows)
 {
     if(!fbo) fbo = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main);
 
@@ -8,9 +8,11 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency)
     auto size = fbo->GetSize();
     glViewport(0, 0, size.x, size.y);
 
-    float time = clock.restart().asSeconds();
-    if(updatePhysics)
+    if(updatePhysics && !shadows)
+    {
+        float time = clock.restart().asSeconds();
         std::for_each(pManagers.begin(), pManagers.end(), [&](auto p) { p.second->Update(time); });
+    }
 
     // needed for materials without textures to render correctly in some cases
     for(int i = 0; i < 8; i++)

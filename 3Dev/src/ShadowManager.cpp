@@ -31,7 +31,7 @@ void ShadowManager::Update()
 
         depthShader->SetUniformMatrix4("light", lspace);
 
-        scene->Draw(&depthBuffers[i]);
+        scene->Draw(&depthBuffers[i], nullptr, true);
 
         textures[i] = depthBuffers[i].GetTexture(true);
     }
@@ -42,9 +42,11 @@ void ShadowManager::Update()
     for(int i = 0; i < lights.size(); i++)
     {
         mainShader->SetUniformMatrix4("lspace[" + std::to_string(i) + "]", lightSpaces[i]);
+        auto pos = lights[i]->GetPosition();
 
         glActiveTexture(GL_TEXTURE9 + i);
         glBindTexture(GL_TEXTURE_2D, textures[i]);
+        mainShader->SetUniform3f("shadows[" + std::to_string(i) + "].sourcepos", pos.x, pos.y, pos.z);
         mainShader->SetUniform1i("shadows[" + std::to_string(i) + "].shadowmap", 9 + i);
         mainShader->SetUniform1i("shadows[" + std::to_string(i) + "].isactive", 1);
     }

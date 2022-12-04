@@ -5,8 +5,13 @@
 #include <TGUI/Backend/SFML-OpenGL3.hpp>
 #include <unistd.h>
 
-std::string homeFolder = std::string(getenv("HOME")) + "/.3Dev-Editor/";
-std::string lastPath = std::filesystem::current_path();
+#ifdef _WIN32
+    std::string homeFolder = std::string(getenv("HOMEPATH")) + "/.3Dev-Editor/";
+#else
+    std::string homeFolder = std::string(getenv("HOME")) + "/.3Dev-Editor/";
+#endif
+
+std::string lastPath = std::filesystem::current_path().string();
 
 void SaveProperties(Json::Value data)
 {
@@ -461,7 +466,7 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
-                auto path = openFileDialog->getSelectedPaths()[0].asNativeString();
+                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
                 auto p = mat->GetParameter(Material::Type::Color);
                 if(std::holds_alternative<GLuint>(p))
@@ -470,7 +475,7 @@ int main()
                     TextureManager::GetInstance()->DeleteTexture(name);
                 }
                 mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::Color);
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asNativeString();
+                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
   	    });
@@ -484,7 +489,7 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
-                auto path = openFileDialog->getSelectedPaths()[0].asNativeString();
+                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
                 auto p = mat->GetParameter(Material::Type::Metalness);
                 if(std::holds_alternative<GLuint>(p))
@@ -494,7 +499,7 @@ int main()
                 }
                 mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::Metalness);
                 metalSlider->setValue(0.0);
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asNativeString();
+                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
   	    });
@@ -508,7 +513,7 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
-                auto path = openFileDialog->getSelectedPaths()[0].asNativeString();
+                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
                 auto p = mat->GetParameter(Material::Type::Roughness);
                 if(std::holds_alternative<GLuint>(p))
@@ -518,7 +523,7 @@ int main()
                 }
                 mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::Roughness);
                 roughSlider->setValue(0.0);
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asNativeString();
+                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
   	    });
@@ -532,7 +537,7 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
-                auto path = openFileDialog->getSelectedPaths()[0].asNativeString();
+                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
                 auto p = mat->GetParameter(Material::Type::Normal);
                 if(std::holds_alternative<GLuint>(p))
@@ -541,7 +546,7 @@ int main()
                     TextureManager::GetInstance()->DeleteTexture(name);
                 }
                 mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::Normal);
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asNativeString();
+                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
   	    });
@@ -555,7 +560,7 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
-                auto path = openFileDialog->getSelectedPaths()[0].asNativeString();
+                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
                 auto p = mat->GetParameter(Material::Type::AmbientOcclusion);
                 if(std::holds_alternative<GLuint>(p))
@@ -564,7 +569,7 @@ int main()
                     TextureManager::GetInstance()->DeleteTexture(name);
                 }
                 mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::AmbientOcclusion);
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asNativeString();
+                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
   	    });
@@ -578,7 +583,7 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
-                auto path = openFileDialog->getSelectedPaths()[0].asNativeString();
+                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
                 auto p = mat->GetParameter(Material::Type::Emission);
                 if(std::holds_alternative<GLuint>(p))
@@ -587,7 +592,7 @@ int main()
                     TextureManager::GetInstance()->DeleteTexture(name);
                 }
                 mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::Emission);
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asNativeString();
+                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
   	    });
@@ -601,7 +606,7 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
-                auto path = openFileDialog->getSelectedPaths()[0].asNativeString();
+                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
                 auto p = mat->GetParameter(Material::Type::Opacity);
                 if(std::holds_alternative<GLuint>(p))
@@ -610,7 +615,7 @@ int main()
                     TextureManager::GetInstance()->DeleteTexture(name);
                 }
                 mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::Opacity);
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asNativeString();
+                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
   	    });
@@ -624,9 +629,9 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
-                scman.LoadScript(openFileDialog->getSelectedPaths()[0].asNativeString());
+                scman.LoadScript(openFileDialog->getSelectedPaths()[0].asString().toStdString());
                 sceneTree->addItem({ "Scene", "Scripts", openFileDialog->getSelectedPaths()[0].getFilename() });
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asNativeString();
+                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
   	    });
@@ -641,7 +646,7 @@ int main()
             if(!openFileDialog->getSelectedPaths().empty())
 			{
                 auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
-                model->Load(openFileDialog->getSelectedPaths()[0].asNativeString(),
+                model->Load(openFileDialog->getSelectedPaths()[0].asString().toStdString(),
                             aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
 
                 materialsList->removeAllItems();
@@ -650,7 +655,7 @@ int main()
                     materialsList->addItem(scene.GetName(mtl[i]), tgui::String(i));
                 if(model->GetAnimationsCount())
                     model->PlayAnimation();
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asNativeString();
+                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
   	    });
@@ -709,8 +714,8 @@ int main()
             if(!openFileDialog->getSelectedPaths().empty())
             {
 				if(openFileDialog->getSelectedPaths()[0].asString().find(".json") != std::string::npos)
-                    filenameEdit->setText(openFileDialog->getSelectedPaths()[0].asNativeString());
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asNativeString();
+                    filenameEdit->setText(openFileDialog->getSelectedPaths()[0].asString().toStdString());
+                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
   	    });
