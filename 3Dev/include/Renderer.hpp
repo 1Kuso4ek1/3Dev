@@ -36,6 +36,7 @@ public:
 
     void Init(sf::Vector2u fbSize, std::string environmentMapFilename, uint32_t skyboxSideSize = 256, uint32_t irradianceSideSize = 32, uint32_t prefilteredSideSize = 256);
     void LoadEnvironment(std::string environmentMapFilename, uint32_t skyboxSideSize = 256, uint32_t irradianceSideSize = 32, uint32_t prefilteredSideSize = 256);
+    void SetShadersDirectory(std::string dir);
 
     GLuint GetTexture(TextureType type);
     Shader* GetShader(ShaderType type);
@@ -46,6 +47,8 @@ private:
     Renderer() {}
 
     static Renderer* instance;
+
+    std::string shadersDir = std::string(SHADERS_DIRECTORY);
 
     Matrices m;
 

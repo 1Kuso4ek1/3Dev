@@ -8,6 +8,7 @@
     },
     "renderer" :
     {
+    	"shadersDir" : "default",
         "hdriPath" : "../textures/park.hdr",
         "skyboxSideSize" : 256,
         "irradianceSideSize" : 32,

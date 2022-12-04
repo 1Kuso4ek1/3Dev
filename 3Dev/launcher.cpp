@@ -19,6 +19,8 @@ int main()
     engine.GetWindow().setMouseCursorVisible(false);
     engine.GetWindow().setMouseCursorGrabbed(true);
 
+    if(cfg["renderer"]["shadersDir"].asString() != "default")
+        Renderer::GetInstance()->SetShadersDirectory(cfg["renderer"]["shadersDir"].asString());
     Renderer::GetInstance()->Init(engine.GetWindow().getSize(),
                                   cfg["renderer"]["hdriPath"].asString(),
                                   cfg["renderer"]["skyboxSideSize"].asInt(),

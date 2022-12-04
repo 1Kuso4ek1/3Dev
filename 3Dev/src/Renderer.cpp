@@ -20,14 +20,14 @@ void Renderer::DeleteInstance()
 
 void Renderer::Init(sf::Vector2u fbSize, std::string environmentMapFilename, uint32_t skyboxSideSize, uint32_t irradianceSideSize, uint32_t prefilteredSideSize)
 {
-    shaders[ShaderType::Main] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "vertex.vs", std::string(SHADERS_DIRECTORY) + "fragment.fs");
-    shaders[ShaderType::Skybox] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "skybox.vs", std::string(SHADERS_DIRECTORY) + "skybox.fs");
-    shaders[ShaderType::Depth] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "depth.vs", std::string(SHADERS_DIRECTORY) + "depth.fs");
-    shaders[ShaderType::Post] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "post.vs", std::string(SHADERS_DIRECTORY) + "post.fs");
-    shaders[ShaderType::Environment] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "environment.vs", std::string(SHADERS_DIRECTORY) + "environment.fs");
-    shaders[ShaderType::Irradiance] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "irradiance.vs", std::string(SHADERS_DIRECTORY) + "irradiance.fs");
-    shaders[ShaderType::Filtering] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "spcfiltering.vs", std::string(SHADERS_DIRECTORY) + "spcfiltering.fs");
-    shaders[ShaderType::BRDF] = std::make_shared<Shader>(std::string(SHADERS_DIRECTORY) + "brdf.vs", std::string(SHADERS_DIRECTORY) + "brdf.fs");
+    shaders[ShaderType::Main] = std::make_shared<Shader>(shadersDir + "vertex.vs", shadersDir + "fragment.fs");
+    shaders[ShaderType::Skybox] = std::make_shared<Shader>(shadersDir + "skybox.vs", shadersDir + "skybox.fs");
+    shaders[ShaderType::Depth] = std::make_shared<Shader>(shadersDir + "depth.vs", shadersDir + "depth.fs");
+    shaders[ShaderType::Post] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "post.fs");
+    shaders[ShaderType::Environment] = std::make_shared<Shader>(shadersDir + "environment.vs", shadersDir + "environment.fs");
+    shaders[ShaderType::Irradiance] = std::make_shared<Shader>(shadersDir + "irradiance.vs", shadersDir + "irradiance.fs");
+    shaders[ShaderType::Filtering] = std::make_shared<Shader>(shadersDir + "spcfiltering.vs", shadersDir + "spcfiltering.fs");
+    shaders[ShaderType::BRDF] = std::make_shared<Shader>(shadersDir + "brdf.vs", shadersDir + "brdf.fs");
 
     framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
     framebuffers[FramebufferType::Transparency] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
@@ -61,6 +61,11 @@ void Renderer::LoadEnvironment(std::string environmentMapFilename, uint32_t skyb
         GLuint BRDF = captureBRDF.GetTexture();
         textures[TextureType::LUT] = BRDF;
     }
+}
+
+void Renderer::SetShadersDirectory(std::string dir)
+{
+    shadersDir = dir;
 }
 
 GLuint Renderer::GetTexture(TextureType type)
