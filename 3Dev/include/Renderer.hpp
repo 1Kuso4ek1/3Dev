@@ -48,7 +48,7 @@ private:
 
     static Renderer* instance;
 
-    std::string shadersDir = std::string(SHADERS_DIRECTORY);
+    std::string shadersDir;
 
     Matrices m;
 

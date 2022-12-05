@@ -8,6 +8,7 @@ Renderer* Renderer::GetInstance()
     else
     {
         instance = new Renderer;
+        instance->SetShadersDirectory(SHADERS_DIRECTORY);
         return instance;
     }
 }
