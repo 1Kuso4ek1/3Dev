@@ -176,6 +176,8 @@ int main()
     auto materialsList = editor.get<tgui::ListBox>("materials");
     auto materialBox = editor.get<tgui::ComboBox>("material");
 
+    auto bodyTypeBox = editor.get<tgui::ComboBox>("bodyType");
+
     auto openFileButton = editor.get<tgui::Button>("openFile");
     auto deleteButton = editor.get<tgui::Button>("delete");
 
@@ -828,6 +830,7 @@ int main()
 						auto mtl = std::get<0>(object)->GetMaterial();
 						for(int i = 0; i < mtl.size(); i++)
 							materialsList->addItem(scene.GetName(mtl[i]), tgui::String(i));
+                        bodyTypeBox->setSelectedItemByIndex((int)std::get<0>(object)->GetRigidBody()->getType());
 					}
 					else
 					{
@@ -836,6 +839,7 @@ int main()
 						size = std::get<1>(object)->GetSize();
 
 						materialsList->addItem(scene.GetName(std::get<1>(object)->GetMaterial()), "0");
+                        bodyTypeBox->setSelectedItemByIndex((int)std::get<1>(object)->GetRigidBody()->getType());
 					}
 
 					nameEdit->setText(sceneTree->getSelectedItem()[2]);
@@ -901,7 +905,8 @@ int main()
 							materialsList->changeItemById(materialsList->getSelectedItemId(), materialBox->getSelectedItem());
 						}
 					}
-					std::get<0>(object)->CheckOpacity();
+					if((int)std::get<0>(object)->GetRigidBody()->getType() != bodyTypeBox->getSelectedItemIndex())
+                        std::get<0>(object)->GetRigidBody()->setType(rp3d::BodyType(bodyTypeBox->getSelectedItemIndex()));
 				}
 				else
 				{
@@ -917,7 +922,8 @@ int main()
 							materialsList->changeItemById(materialsList->getSelectedItemId(), materialBox->getSelectedItem());
 						}
 					}
-					std::get<1>(object)->CheckOpacity();
+					if((int)std::get<1>(object)->GetRigidBody()->getType() != bodyTypeBox->getSelectedItemIndex())
+                        std::get<1>(object)->GetRigidBody()->setType(rp3d::BodyType(bodyTypeBox->getSelectedItemIndex()));
 				}
 
 				if(!materialsList->getSelectedItem().empty())

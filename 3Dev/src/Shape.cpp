@@ -212,6 +212,7 @@ Json::Value Shape::Serialize()
 	data["size"]["z"] = size.z;
 
 	data["rigidBody"]["active"] = body ? body->isActive() : false;
+	data["rigidBody"]["type"] = (int)body->getType();
 
 	return data;
 }
@@ -234,7 +235,11 @@ void Shape::Deserialize(Json::Value data)
 	size.y = data["size"]["y"].asFloat();
 	size.z = data["size"]["z"].asFloat();
 
-	if(body) body->setIsActive(data["rigidBody"]["active"].asBool());
+	if(body)
+    {
+        body->setIsActive(data["rigidBody"]["active"].asBool());
+        body->setType((rp3d::BodyType)data["rigidBody"]["type"].asInt());
+    }
 
 	SetPosition(pos);
 	SetOrientation(orient);

@@ -654,6 +654,7 @@ Json::Value Model::Serialize()
 
 	data["rigidBody"]["active"] = body ? body->isActive() : false;
 	data["rigidBody"]["collider"] = (int)cstype;
+	data["rigidBody"]["type"] = (int)body->getType();
 
 	return data;
 }
@@ -694,6 +695,7 @@ void Model::Deserialize(Json::Value data)
                 CreateConvexShape(i); break;
             }
         body->setIsActive(data["rigidBody"]["active"].asBool());
+        body->setType((rp3d::BodyType)data["rigidBody"]["type"].asInt());
 	}
 
 	SetPosition(pos);
