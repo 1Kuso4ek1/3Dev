@@ -22,6 +22,7 @@ public:
 	void SetMaterial(Material* mat);
 	void SetShader(Shader* shader);
 	void SetPhysicsManager(PhysicsManager* man);
+	void SetIsDrawable(bool drawable);
 
 	void CreateRigidBody();
 
@@ -29,9 +30,7 @@ public:
 	void Rotate(const rp3d::Quaternion& orientation);
 	void Expand(const rp3d::Vector3& size);
 
-	void CheckOpacity();
-
-	bool IsTransparent();
+	bool IsDrawable();
 
 	Shader* GetShader();
 	rp3d::RigidBody* GetRigidBody();
@@ -45,7 +44,7 @@ public:
 	void Deserialize(Json::Value data);
 
 private:
-    bool transparent = false;
+    bool drawable = true;
 
 	Material* mat;
 	Matrices* m = Renderer::GetInstance()->GetMatrices();

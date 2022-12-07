@@ -19,8 +19,6 @@ Model::Model(std::string filename, std::vector<Material*> mat, unsigned int flag
 	if(m) this->m = m;
 	if(man) body = man->CreateRigidBody(transform);
 
-    CheckOpacity();
-
 	Load(filename, flags);
 }
 
@@ -58,6 +56,8 @@ void Model::Load(std::string filename, unsigned int flags)
 
 void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
 {
+    if(!drawable) return;
+
 	m->PushMatrix();
 
 	if(body) transform = body->getTransform();
@@ -71,37 +71,40 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
 	if(autoUpdateAnimation)
 		UpdateAnimation();
 
-	for(int mesh = 0; mesh < meshes.size(); mesh++)
-	{
-		shader->Bind();
-		mat[mesh]->UpdateShader(shader);
-		for(int i = 0; i < lights.size(); i++)
-			lights[i]->Update(shader, i);
-
-		shader->SetUniform3f("campos", cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
-		shader->SetUniformMatrix4("transformation", meshes[mesh]->GetTransformation());
-		shader->SetVectorOfUniformMatrix4("pose", meshes[mesh]->GetPose().size(), meshes[mesh]->GetPose());
-		shader->SetUniform1i("bones", !meshes[mesh]->GetBones().empty());
-		shader->SetUniform1i("drawTransparency", transparencyPass);
-
-		m->UpdateShader(shader);
-
-		if(!transparent && transparencyPass)
+    if(drawable)
+    {
+        for(int mesh = 0; mesh < meshes.size(); mesh++)
         {
-            glEnable(GL_CULL_FACE);
-            glFrontFace(GL_CCW);
+            shader->Bind();
+            mat[mesh]->UpdateShader(shader);
+            for(int i = 0; i < lights.size(); i++)
+                lights[i]->Update(shader, i);
+
+            shader->SetUniform3f("campos", cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
+            shader->SetUniformMatrix4("transformation", meshes[mesh]->GetTransformation());
+            shader->SetVectorOfUniformMatrix4("pose", meshes[mesh]->GetPose().size(), meshes[mesh]->GetPose());
+            shader->SetUniform1i("bones", !meshes[mesh]->GetBones().empty());
+            shader->SetUniform1i("drawTransparency", transparencyPass);
+
+            m->UpdateShader(shader);
+
+            if(transparencyPass)
+            {
+                glEnable(GL_CULL_FACE);
+                glFrontFace(GL_CCW);
+            }
+
+            meshes[mesh]->Draw();
+
+            if(transparencyPass)
+            {
+                glDisable(GL_CULL_FACE);
+                glFrontFace(GL_CW);
+            }
+
+            mat[mesh]->ResetShader(shader);
         }
-
-        meshes[mesh]->Draw();
-
-        if(!transparent && transparencyPass)
-        {
-            glDisable(GL_CULL_FACE);
-            glFrontFace(GL_CW);
-        }
-
-		mat[mesh]->ResetShader(shader);
-	}
+    }
 
 	m->PopMatrix();
 }
@@ -126,7 +129,6 @@ void Model::SetSize(const rp3d::Vector3& size)
 void Model::SetMaterial(std::vector<Material*> mat)
 {
 	this->mat = mat;
-	CheckOpacity();
 }
 
 void Model::SetShader(Shader* shader)
@@ -137,6 +139,11 @@ void Model::SetShader(Shader* shader)
 void Model::SetPhysicsManager(PhysicsManager* man)
 {
 	this->man = man;
+}
+
+void Model::SetIsDrawable(bool drawable)
+{
+    this->drawable = drawable;
 }
 
 void Model::CreateRigidBody()
@@ -345,21 +352,6 @@ void Model::UpdateAnimation()
 			CalculatePose(i, mesh, mesh->GetTransformation());
 }
 
-void Model::CheckOpacity()
-{
-    transparent = (std::find_if(mat.begin(), mat.end(), [&](auto a)
-                    {
-                        if(!a->Contains(Material::Type::Opacity))
-                            return false;
-                        auto p = a->GetParameter(Material::Type::Opacity);
-                        if(std::holds_alternative<glm::vec3>(p))
-                            return std::get<0>(p).x < 1.0;
-                        else if(std::holds_alternative<GLuint>(p))
-                            return std::get<1>(p) > 0;
-                        return false;
-                    }) != mat.end());
-}
-
 int Model::GetMeshesCount()
 {
 	return meshes.size();
@@ -370,9 +362,9 @@ int Model::GetAnimationsCount()
 	return anims.size();
 }
 
-bool Model::IsTransparent()
+bool Model::IsDrawable()
 {
-    return transparent;
+    return drawable;
 }
 
 rp3d::Vector3 Model::GetPosition()
@@ -652,6 +644,8 @@ Json::Value Model::Serialize()
 	data["size"]["y"] = size.y;
 	data["size"]["z"] = size.z;
 
+	data["drawable"] = drawable;
+
 	data["rigidBody"]["active"] = body ? body->isActive() : false;
 	data["rigidBody"]["collider"] = (int)cstype;
 	data["rigidBody"]["type"] = (int)body->getType();
@@ -676,6 +670,8 @@ void Model::Deserialize(Json::Value data)
 	size.x = data["size"]["x"].asFloat();
 	size.y = data["size"]["y"].asFloat();
 	size.z = data["size"]["z"].asFloat();
+
+	drawable = data["drawable"].asBool();
 
 	if(body)
 	{

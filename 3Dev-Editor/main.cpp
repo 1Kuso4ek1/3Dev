@@ -178,6 +178,8 @@ int main()
 
     auto bodyTypeBox = editor.get<tgui::ComboBox>("bodyType");
 
+    auto isDrawableBox = editor.get<tgui::CheckBox>("isDrawable");
+
     auto openFileButton = editor.get<tgui::Button>("openFile");
     auto deleteButton = editor.get<tgui::Button>("delete");
 
@@ -831,6 +833,7 @@ int main()
 						for(int i = 0; i < mtl.size(); i++)
 							materialsList->addItem(scene.GetName(mtl[i]), tgui::String(i));
                         bodyTypeBox->setSelectedItemByIndex((int)std::get<0>(object)->GetRigidBody()->getType());
+                        isDrawableBox->setChecked(std::get<0>(object)->IsDrawable());
 					}
 					else
 					{
@@ -840,6 +843,7 @@ int main()
 
 						materialsList->addItem(scene.GetName(std::get<1>(object)->GetMaterial()), "0");
                         bodyTypeBox->setSelectedItemByIndex((int)std::get<1>(object)->GetRigidBody()->getType());
+                        isDrawableBox->setChecked(std::get<1>(object)->IsDrawable());
 					}
 
 					nameEdit->setText(sceneTree->getSelectedItem()[2]);
@@ -907,6 +911,7 @@ int main()
 					}
 					if((int)std::get<0>(object)->GetRigidBody()->getType() != bodyTypeBox->getSelectedItemIndex())
                         std::get<0>(object)->GetRigidBody()->setType(rp3d::BodyType(bodyTypeBox->getSelectedItemIndex()));
+                    std::get<0>(object)->SetIsDrawable(isDrawableBox->isChecked());
 				}
 				else
 				{
@@ -924,6 +929,7 @@ int main()
 					}
 					if((int)std::get<1>(object)->GetRigidBody()->getType() != bodyTypeBox->getSelectedItemIndex())
                         std::get<1>(object)->GetRigidBody()->setType(rp3d::BodyType(bodyTypeBox->getSelectedItemIndex()));
+                    std::get<1>(object)->SetIsDrawable(isDrawableBox->isChecked());
 				}
 
 				if(!materialsList->getSelectedItem().empty())

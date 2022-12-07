@@ -276,7 +276,7 @@ ChildWindow.objectEditorWindow {
         Enabled = false;
         Position = (10, 10);
         Renderer = &4;
-        Size = (200, 350);
+        Size = (200, 380);
 
         EditBox.name {
             Renderer = &5;
@@ -394,7 +394,7 @@ ChildWindow.objectEditorWindow {
 
         Button.openFile {
             Enabled = false;
-            Position = (0, 290);
+            Position = (0, 310);
             Renderer = &2;
             Text = "Open file";
             TextSize = 13;
@@ -473,7 +473,7 @@ ChildWindow.objectEditorWindow {
         }
 
         Button.delete {
-            Position = (0, 316);
+            Position = (0, 336);
             Renderer = &2;
             Size = (74, 20);
             Text = Delete;
@@ -482,7 +482,7 @@ ChildWindow.objectEditorWindow {
 
         Label.Label13 {
             AutoSize = true;
-            Position = (0, 258);
+            Position = (0, 254);
             Size = (68.2, 18);
             Text = "Body type";
             TextSize = 13;
@@ -509,7 +509,7 @@ ChildWindow.objectEditorWindow {
             Items = [STATIC, KINEMATIC, DYNAMIC];
             ItemsToDisplay = 0;
             MaximumItems = 0;
-            Position = (80, 257);
+            Position = (80, 253);
             SelectedItemIndex = 2;
             Size = (120, 22);
             TextSize = 13;
@@ -543,6 +543,50 @@ ChildWindow.objectEditorWindow {
                         TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
                         TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
                     }
+                }
+            }
+        }
+
+        CheckBox.isDrawable {
+            Checked = true;
+            Position = (80, 283);
+            Size = (18, 18);
+            TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextColorHover = rgb(250, 250, 250);
+                TextureChecked = "themes/Black.png" Part(47, 126, 32, 32) Smooth;
+                TextureCheckedDisabled = None;
+                TextureCheckedFocused = "themes/Black.png" Part(81, 126, 32, 32) Smooth;
+                TextureCheckedHover = "themes/Black.png" Part(0, 178, 32, 32) Smooth;
+                TextureUnchecked = "themes/Black.png" Part(34, 178, 32, 32) Smooth;
+                TextureUncheckedDisabled = None;
+                TextureUncheckedFocused = "themes/Black.png" Part(68, 178, 32, 32) Smooth;
+                TextureUncheckedHover = "themes/Black.png" Part(0, 212, 32, 32) Smooth;
+            }
+        }
+
+        Label.Label19 {
+            AutoSize = true;
+            Position = (0, 282);
+            Size = (65.2, 18);
+            Text = Drawable;
+            TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextureBackground = None;
+
+                Scrollbar {
+                    TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+                    TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+                    TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+                    TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
                 }
             }
         }

@@ -6,8 +6,6 @@ Shape::Shape(const rp3d::Vector3& size, Material* mat, PhysicsManager* man, Shad
 	if(shader) this->shader = shader;
 	if(m) this->m = m;
 
-	CheckOpacity();
-
 	cube = std::make_shared<Mesh>();
 	cube->CreateCube();
 
@@ -31,38 +29,43 @@ void Shape::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
 	m->Rotate(a, glm::axis(toglm(tr.getOrientation()))); // Using toglm(tmp) as second argument breaks everything and gives the matrix of nan
 	m->Scale(toglm(size));
 
-	shader->Bind();
-	mat->UpdateShader(shader);
-	for(int i = 0; i < lights.size(); i++)
-		lights[i]->Update(shader, i);
-	if(cam)
-		shader->SetUniform3f("campos", cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
-	shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
-	shader->SetUniform1i("drawTransparency", transparencyPass);
-	shader->SetUniform1i("bones", 0);
-	m->UpdateShader(shader);
-
-	if(!transparent && transparencyPass)
+	if(drawable)
     {
-        glEnable(GL_CULL_FACE);
-        glFrontFace(GL_CCW);
+        shader->Bind();
+        mat->UpdateShader(shader);
+        for(int i = 0; i < lights.size(); i++)
+            lights[i]->Update(shader, i);
+        if(cam)
+            shader->SetUniform3f("campos", cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
+        shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
+        shader->SetUniform1i("drawTransparency", transparencyPass);
+        shader->SetUniform1i("bones", 0);
+        m->UpdateShader(shader);
+
+        if(transparencyPass)
+        {
+            glEnable(GL_CULL_FACE);
+            glFrontFace(GL_CCW);
+        }
+
+        cube->Draw();
+
+        if(transparencyPass)
+        {
+            glDisable(GL_CULL_FACE);
+            glFrontFace(GL_CW);
+        }
+
+        mat->ResetShader(shader);
     }
-
-    cube->Draw();
-
-    if(!transparent && transparencyPass)
-    {
-        glDisable(GL_CULL_FACE);
-        glFrontFace(GL_CW);
-    }
-
-	mat->ResetShader(shader);
 
 	m->PopMatrix();
 }
 
 void Shape::DrawSkybox()
 {
+    if(!drawable) return;
+
 	auto tex = mat->GetParameters();
 	auto it = std::find_if(tex.begin(), tex.end(), [](auto& a) { return a.second == Material::Type::Cubemap; });
 	auto shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Skybox);
@@ -104,7 +107,6 @@ void Shape::SetSize(const rp3d::Vector3& size)
 void Shape::SetMaterial(Material* mat)
 {
 	this->mat = mat;
-	CheckOpacity();
 }
 
 void Shape::SetShader(Shader* shader)
@@ -115,6 +117,11 @@ void Shape::SetShader(Shader* shader)
 void Shape::SetPhysicsManager(PhysicsManager* man)
 {
 	this->man = man;
+}
+
+void Shape::SetIsDrawable(bool drawable)
+{
+    this->drawable = drawable;
 }
 
 void Shape::CreateRigidBody()
@@ -140,24 +147,9 @@ void Shape::Expand(const rp3d::Vector3& size)
 	if(body) shape->setHalfExtents(this->size);
 }
 
-void Shape::CheckOpacity()
+bool Shape::IsDrawable()
 {
-    if(!mat->Contains(Material::Type::Opacity))
-    {
-        transparent = false;
-        return;
-    }
-
-    auto p = mat->GetParameter(Material::Type::Opacity);
-    if(std::holds_alternative<glm::vec3>(p))
-        transparent = std::get<0>(p).x < 1.0;
-    else if(std::holds_alternative<GLuint>(p))
-        transparent = std::get<1>(p) > 0;
-}
-
-bool Shape::IsTransparent()
-{
-    return transparent;
+    return drawable;
 }
 
 Shader* Shape::GetShader()
@@ -211,6 +203,8 @@ Json::Value Shape::Serialize()
 	data["size"]["y"] = size.y;
 	data["size"]["z"] = size.z;
 
+	data["drawable"] = drawable;
+
 	data["rigidBody"]["active"] = body ? body->isActive() : false;
 	data["rigidBody"]["type"] = (int)body->getType();
 
@@ -234,6 +228,8 @@ void Shape::Deserialize(Json::Value data)
 	size.x = data["size"]["x"].asFloat();
 	size.y = data["size"]["y"].asFloat();
 	size.z = data["size"]["z"].asFloat();
+
+	drawable = data["drawable"].asBool();
 
 	if(body)
     {

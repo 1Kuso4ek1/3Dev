@@ -63,6 +63,7 @@ public:
 	void SetMaterial(std::vector<Material*> mat);
 	void SetShader(Shader* shader);
 	void SetPhysicsManager(PhysicsManager* man);
+	void SetIsDrawable(bool drawable);
 
 	void CreateRigidBody();
 
@@ -84,12 +85,10 @@ public:
 
 	void UpdateAnimation();
 
-	void CheckOpacity();
-
 	int GetMeshesCount();
 	int GetAnimationsCount();
 
-	bool IsTransparent();
+	bool IsDrawable();
 
 	rp3d::Vector3 GetPosition();
 	rp3d::Quaternion GetOrientation();
@@ -130,7 +129,7 @@ private:
 	bool ProcessBone(aiNode* node, std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap, Bone& out);
 
 	bool autoUpdateAnimation = true;
-	bool transparent = false;
+	bool drawable = true;
 
 	std::vector<std::shared_ptr<Mesh>> meshes;
 
