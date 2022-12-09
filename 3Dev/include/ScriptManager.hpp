@@ -47,6 +47,7 @@ private:
     void RegisterTransform();
     void RegisterRandom();
     void RegisterRay();
+    void RegisterHingeJoint();
 
     bool buildSucceded = false;
 

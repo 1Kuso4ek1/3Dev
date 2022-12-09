@@ -39,8 +39,7 @@ template<class T>
 static T* TypeFactory() { return new T(); }
 
 static void MakeVector3(float x, float y, float z, rp3d::Vector3* vec) { new(vec) rp3d::Vector3(x, y, z); }
-static void Vector3Factory(float x, float y, float z) { new rp3d::Vector3(x, y, z); }
-static rp3d::Vector3 AddVector3(const rp3d::Vector3& r, const rp3d::Vector3& l) { return r + l; }
+static rp3d::Vector3 AddVector3(const rp3d::Vector3& r, rp3d::Vector3* l) { return r + *l; }
 
 static void MakeQuaternion(float x, float y, float z, float w, rp3d::Quaternion* q) { new(q) rp3d::Quaternion(x, y, z, w); }
 
@@ -66,4 +65,9 @@ static rp3d::RaycastInfo& AssignRaycastInfo(rp3d::RaycastInfo* src, rp3d::Raycas
     dst->worldNormal = src->worldNormal;
     dst->worldPoint = src->worldPoint;
     return *dst;
+}
+
+static void MakeHingeJointInfo(rp3d::RigidBody* r, rp3d::RigidBody* r1, const rp3d::Vector3& v, const rp3d::Vector3& v1, rp3d::HingeJointInfo* info)
+{
+    new(info) rp3d::HingeJointInfo(r, r1, v, v1);
 }

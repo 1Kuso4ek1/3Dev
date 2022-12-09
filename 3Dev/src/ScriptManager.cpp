@@ -13,9 +13,10 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterVector3();
     RegisterQuaternion();
     RegisterTransform();
-    RegisterPhysicsManager();
     RegisterRay();
     RegisterRigidBody();
+    RegisterHingeJoint();
+    RegisterPhysicsManager();
     RegisterCamera();
     RegisterModel();
     RegisterShape();
@@ -135,7 +136,7 @@ bool ScriptManager::LoadScript(std::string filename)
     temp.StartNewModule(engine, "temp");
     temp.AddSectionFromFile(filename.c_str());
     bool ret = temp.BuildModule() >= 0;
-    if(ret) scripts.push_back(filename);
+    scripts.push_back(filename);
     engine->DiscardModule("temp");
     return ret;
 }
@@ -187,11 +188,12 @@ void ScriptManager::RegisterVector3()
     {
         { "float length() const", WRAP_MFN(rp3d::Vector3, length) },
         { "string to_string()", WRAP_MFN(rp3d::Vector3, to_string) },
-        { "Vector3 opAssign(const Vector3& in)", WRAP_MFN_PR(rp3d::Vector3, operator=, (const rp3d::Vector3&), rp3d::Vector3&) },
-        { "Vector3 opAddAssign(const Vector3& in)", WRAP_MFN_PR(rp3d::Vector3, operator+=, (const rp3d::Vector3&), rp3d::Vector3&) },
-        { "Vector3 opSubAssign(const Vector3& in)", WRAP_MFN_PR(rp3d::Vector3, operator-=, (const rp3d::Vector3&), rp3d::Vector3&) },
-        { "Vector3 opMulAssign(float)", WRAP_MFN_PR(rp3d::Vector3, operator*=, (float), rp3d::Vector3&) },
-        { "Vector3 opDivAssign(float)", WRAP_MFN_PR(rp3d::Vector3, operator/=, (float), rp3d::Vector3&) },
+        { "Vector3& opAssign(const Vector3& in)", WRAP_MFN_PR(rp3d::Vector3, operator=, (const rp3d::Vector3&), rp3d::Vector3&) },
+        { "Vector3 opAdd(const Vector3& in)", WRAP_OBJ_LAST(AddVector3) },
+        { "Vector3& opAddAssign(const Vector3& in)", WRAP_MFN_PR(rp3d::Vector3, operator+=, (const rp3d::Vector3&), rp3d::Vector3&) },
+        { "Vector3& opSubAssign(const Vector3& in)", WRAP_MFN_PR(rp3d::Vector3, operator-=, (const rp3d::Vector3&), rp3d::Vector3&) },
+        { "Vector3& opMulAssign(float)", WRAP_MFN_PR(rp3d::Vector3, operator*=, (float), rp3d::Vector3&) },
+        { "Vector3& opDivAssign(float)", WRAP_MFN_PR(rp3d::Vector3, operator/=, (float), rp3d::Vector3&) },
         { "bool opEquals(const Vector3& in) const", WRAP_MFN_PR(rp3d::Vector3, operator==, (const rp3d::Vector3&) const, bool) }
     },
     {
@@ -213,10 +215,10 @@ void ScriptManager::RegisterQuaternion()
         { "float length()", WRAP_MFN(rp3d::Quaternion, length) },
         { "string to_string()", WRAP_MFN(rp3d::Quaternion, to_string) },
         { "void inverse()", WRAP_MFN(rp3d::Quaternion, inverse) },
-        { "Quaternion getInverse()", WRAP_MFN(rp3d::Quaternion, getInverse) },
-        { "Quaternion opAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
-        { "Quaternion opAddAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator+=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
-        { "Quaternion opSubAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator-=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
+        { "Quaternion& getInverse()", WRAP_MFN(rp3d::Quaternion, getInverse) },
+        { "Quaternion& opAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
+        { "Quaternion& opAddAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator+=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
+        { "Quaternion& opSubAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator-=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
         { "Quaternion opMul(float)", WRAP_MFN_PR(rp3d::Quaternion, operator*, (float) const, rp3d::Quaternion) },
         { "Quaternion opMul(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator*, (const rp3d::Quaternion&) const, rp3d::Quaternion) },
         { "Vector3 opMul(const Vector3& in)", WRAP_MFN_PR(rp3d::Quaternion, operator*, (const rp3d::Vector3&) const, rp3d::Vector3) },
@@ -343,6 +345,7 @@ void ScriptManager::RegisterSceneManager()
         { "Model@ GetModel(string)", WRAP_MFN(SceneManager, GetModelPtr) },
         { "Shape@ GetShape(string)", WRAP_MFN(SceneManager, GetShapePtr) },
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
+        { "PhysicsManager@ GetPhysicsManager()", WRAP_MFN(SceneManager, GetPhysicsManagerPtr) },
         { "void UpdatePhysics(bool)", WRAP_MFN(SceneManager, UpdatePhysics) }
     }, {});
 }
@@ -365,7 +368,10 @@ void ScriptManager::RegisterSfKeyboard()
 
 void ScriptManager::RegisterPhysicsManager()
 {
-    AddType("PhysicsManager", sizeof(PhysicsManager), {}, {});
+    AddType("PhysicsManager", sizeof(PhysicsManager),
+    {
+        { "HingeJoint@ CreateHingeJoint(HingeJointInfo)", WRAP_MFN(PhysicsManager, CreateHingeJoint) }
+    }, {});
 }
 
 void ScriptManager::RegisterTransform()
@@ -416,4 +422,14 @@ void ScriptManager::RegisterRay()
 
     AddTypeConstructor("RaycastInfo", "void f()", WRAP_OBJ_LAST(MakeType<rp3d::RaycastInfo>));
     AddTypeDestructor("RaycastInfo", "void f()", WRAP_OBJ_LAST(DestroyType<rp3d::RaycastInfo>));
+}
+
+void ScriptManager::RegisterHingeJoint()
+{
+    AddValueType("HingeJointInfo", sizeof(rp3d::HingeJointInfo), asGetTypeTraits<rp3d::HingeJointInfo>() | asOBJ_POD, {}, {});
+
+    AddTypeConstructor("HingeJointInfo", "void f(RigidBody@, RigidBody@, const Vector3& in, const Vector3& in)", WRAP_OBJ_LAST(MakeHingeJointInfo));
+    AddTypeDestructor("HingeJointInfo", "void f()", WRAP_OBJ_LAST(DestroyType<rp3d::HingeJointInfo>));
+
+    AddType("HingeJoint", sizeof(rp3d::HingeJoint), {}, {});
 }
