@@ -33,7 +33,7 @@ template<class T>
 static void DestroyType(T* memory) { memory->~T(); }
 
 template<class T>
-static T& AssignType(T* src, T* dst) { return *dst = *src; }
+static T& AssignType(const T& src, T* dst) { return *dst = src; }
 
 template<class T>
 static T* TypeFactory() { return new T(); }
@@ -44,7 +44,7 @@ static rp3d::Vector3 AddVector3(const rp3d::Vector3& r, rp3d::Vector3* l) { retu
 static void MakeQuaternion(float x, float y, float z, float w, rp3d::Quaternion* q) { new(q) rp3d::Quaternion(x, y, z, w); }
 
 static void MakeAABB(const rp3d::Vector3& min, const rp3d::Vector3& max, rp3d::AABB* aabb) { new(aabb) rp3d::AABB(min, max); }
-static rp3d::AABB& AssignAABB(rp3d::AABB* src, rp3d::AABB* dst) { dst->mergeWithAABB(*src); return *dst; }
+static rp3d::AABB& AssignAABB(const rp3d::AABB& src, rp3d::AABB* dst) { dst->mergeWithAABB(src); return *dst; }
 
 static void MakeDefaultRandomEngine(unsigned int seed, std::default_random_engine* eng) { new(eng) std::default_random_engine(seed); }
 
@@ -55,15 +55,15 @@ static double GenerateRandomNumber(double min, double max, std::default_random_e
 
 static void MakeRay(const rp3d::Vector3& start, const rp3d::Vector3& end, rp3d::Ray* ray) { new(ray) rp3d::Ray(start, end); }
 
-static rp3d::RaycastInfo& AssignRaycastInfo(rp3d::RaycastInfo* src, rp3d::RaycastInfo* dst)
+static rp3d::RaycastInfo& AssignRaycastInfo(const rp3d::RaycastInfo& src, rp3d::RaycastInfo* dst)
 {
-    dst->body = src->body;
-    dst->collider = src->collider;
-    dst->hitFraction = src->hitFraction;
-    dst->meshSubpart = src->meshSubpart;
-    dst->triangleIndex = src->triangleIndex;
-    dst->worldNormal = src->worldNormal;
-    dst->worldPoint = src->worldPoint;
+    dst->body = src.body;
+    dst->collider = src.collider;
+    dst->hitFraction = src.hitFraction;
+    dst->meshSubpart = src.meshSubpart;
+    dst->triangleIndex = src.triangleIndex;
+    dst->worldNormal = src.worldNormal;
+    dst->worldPoint = src.worldPoint;
     return *dst;
 }
 

@@ -25,33 +25,6 @@
 		{
 			"color" : 
 			{
-				"b" : 0.39215686917304993,
-				"g" : 0.39215686917304993,
-				"r" : 0.39215686917304993
-			},
-			"emission" : 
-			{
-				"b" : 0.0,
-				"g" : 0.0,
-				"r" : 0.0
-			},
-			"metalness" : 
-			{
-				"value" : 1.0
-			},
-			"name" : "obstacle",
-			"opacity" : 
-			{
-				"value" : 1.0
-			},
-			"roughness" : 
-			{
-				"value" : 0.19999998807907104
-			}
-		},
-		{
-			"color" : 
-			{
 				"b" : 0.10588235408067703,
 				"g" : 1.0,
 				"r" : 0.035294119268655777
@@ -75,6 +48,33 @@
 			{
 				"value" : 1.0
 			}
+		},
+		{
+			"color" : 
+			{
+				"b" : 0.39215686917304993,
+				"g" : 0.39215686917304993,
+				"r" : 0.39215686917304993
+			},
+			"emission" : 
+			{
+				"b" : 0.0,
+				"g" : 0.0,
+				"r" : 0.0
+			},
+			"metalness" : 
+			{
+				"value" : 1.0
+			},
+			"name" : "obstacle",
+			"opacity" : 
+			{
+				"value" : 1.0
+			},
+			"roughness" : 
+			{
+				"value" : 0.19999998807907104
+			}
 		}
 	],
 	"objects" : 
@@ -82,60 +82,7 @@
 		"shapes" : 
 		[
 			{
-				"material" : "bird",
-				"name" : "bird",
-				"orientation" : 
-				{
-					"w" : 1.0,
-					"x" : 0.0,
-					"y" : 0.0,
-					"z" : 0.0
-				},
-				"position" : 
-				{
-					"x" : 0.0,
-					"y" : 0.0,
-					"z" : 0.0
-				},
-				"rigidBody" : 
-				{
-					"active" : false
-				},
-				"size" : 
-				{
-					"x" : 1.0,
-					"y" : 1.0,
-					"z" : 1.0
-				}
-			},
-			{
-				"material" : "obstacle",
-				"name" : "obstacle1",
-				"orientation" : 
-				{
-					"w" : 1.0,
-					"x" : 0.0,
-					"y" : 0.0,
-					"z" : 0.0
-				},
-				"position" : 
-				{
-					"x" : 0.0,
-					"y" : 15.0,
-					"z" : -20.0
-				},
-				"rigidBody" : 
-				{
-					"active" : true
-				},
-				"size" : 
-				{
-					"x" : 2.0,
-					"y" : 10.0,
-					"z" : 2.0
-				}
-			},
-			{
+				"drawable" : true,
 				"material" : "obstacle",
 				"name" : "obstacle",
 				"orientation" : 
@@ -153,13 +100,72 @@
 				},
 				"rigidBody" : 
 				{
-					"active" : false
+					"active" : false,
+					"type" : 0
 				},
 				"size" : 
 				{
 					"x" : 2.0,
 					"y" : 10.0,
 					"z" : 2.0
+				}
+			},
+			{
+				"drawable" : true,
+				"material" : "obstacle",
+				"name" : "obstacle1",
+				"orientation" : 
+				{
+					"w" : 1.0,
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"position" : 
+				{
+					"x" : 0.0,
+					"y" : 15.0,
+					"z" : -20.0
+				},
+				"rigidBody" : 
+				{
+					"active" : false,
+					"type" : 0
+				},
+				"size" : 
+				{
+					"x" : 2.0,
+					"y" : 10.0,
+					"z" : 2.0
+				}
+			},
+			{
+				"drawable" : true,
+				"material" : "bird",
+				"name" : "bird",
+				"orientation" : 
+				{
+					"w" : 1.0,
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"position" : 
+				{
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"rigidBody" : 
+				{
+					"active" : false,
+					"type" : 2
+				},
+				"size" : 
+				{
+					"x" : 1.0,
+					"y" : 1.0,
+					"z" : 1.0
 				}
 			}
 		]

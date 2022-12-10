@@ -48,6 +48,7 @@ private:
     void RegisterRandom();
     void RegisterRay();
     void RegisterHingeJoint();
+    void RegisterClock();
 
     bool buildSucceded = false;
 

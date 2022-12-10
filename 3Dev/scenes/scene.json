@@ -7,16 +7,16 @@
 		"near" : 0.0099999997764825821,
 		"orientation" : 
 		{
-			"w" : -0.86125379800796509,
-			"x" : 0.42355570197105408,
-			"y" : -0.25205227732658386,
-			"z" : -0.12395664304494858
+			"w" : -0.42700627446174622,
+			"x" : -0.021911516785621643,
+			"y" : -0.90282911062240601,
+			"z" : 0.04632825031876564
 		},
 		"position" : 
 		{
-			"x" : 11.859404563903809,
-			"y" : 30.903312683105469,
-			"z" : 10.218531608581543
+			"x" : 3.2223136425018311,
+			"y" : 1.5421339273452759,
+			"z" : 0.59121131896972656
 		},
 		"speed" : 1.0
 	},
@@ -57,40 +57,7 @@
 		"models" : 
 		[
 			{
-				"filename" : "../terrain.obj",
-				"material" : 
-				[
-					{
-						"name" : "default"
-					}
-				],
-				"name" : "terrain",
-				"orientation" : 
-				{
-					"w" : 1.0,
-					"x" : 0.0,
-					"y" : 0.0,
-					"z" : 0.0
-				},
-				"position" : 
-				{
-					"x" : 0.0,
-					"y" : 0.0,
-					"z" : 0.0
-				},
-				"rigidBody" : 
-				{
-					"active" : true,
-					"collider" : 4
-				},
-				"size" : 
-				{
-					"x" : 1.0,
-					"y" : 1.0,
-					"z" : 1.0
-				}
-			},
-			{
+				"drawable" : true,
 				"filename" : "../sphere.obj",
 				"material" : 
 				[
@@ -115,7 +82,44 @@
 				"rigidBody" : 
 				{
 					"active" : true,
-					"collider" : 2
+					"collider" : 2,
+					"type" : 2
+				},
+				"size" : 
+				{
+					"x" : 1.0,
+					"y" : 1.0,
+					"z" : 1.0
+				}
+			},
+			{
+				"drawable" : true,
+				"filename" : "../terrain.obj",
+				"material" : 
+				[
+					{
+						"name" : "default"
+					}
+				],
+				"name" : "terrain",
+				"orientation" : 
+				{
+					"w" : 1.0,
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"position" : 
+				{
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"rigidBody" : 
+				{
+					"active" : true,
+					"collider" : 4,
+					"type" : 0
 				},
 				"size" : 
 				{
@@ -128,60 +132,7 @@
 		"shapes" : 
 		[
 			{
-				"material" : "default",
-				"name" : "shape",
-				"orientation" : 
-				{
-					"w" : 1.0,
-					"x" : 0.0,
-					"y" : 0.0,
-					"z" : 0.0
-				},
-				"position" : 
-				{
-					"x" : 0.0,
-					"y" : 30.0,
-					"z" : 0.0
-				},
-				"rigidBody" : 
-				{
-					"active" : true
-				},
-				"size" : 
-				{
-					"x" : 1.0,
-					"y" : 1.0,
-					"z" : 1.0
-				}
-			},
-			{
-				"material" : "default",
-				"name" : "shape1",
-				"orientation" : 
-				{
-					"w" : 1.0,
-					"x" : 0.0,
-					"y" : 0.0,
-					"z" : 0.0
-				},
-				"position" : 
-				{
-					"x" : 0.0,
-					"y" : 25.0,
-					"z" : 0.0
-				},
-				"rigidBody" : 
-				{
-					"active" : true
-				},
-				"size" : 
-				{
-					"x" : 1.0,
-					"y" : 1.0,
-					"z" : 1.0
-				}
-			},
-			{
+				"drawable" : true,
 				"material" : "default",
 				"name" : "shape2",
 				"orientation" : 
@@ -199,12 +150,71 @@
 				},
 				"rigidBody" : 
 				{
-					"active" : true
+					"active" : true,
+					"type" : 2
 				},
 				"size" : 
 				{
 					"x" : 0.5,
 					"y" : 0.5,
+					"z" : 1.0
+				}
+			},
+			{
+				"drawable" : true,
+				"material" : "default",
+				"name" : "shape1",
+				"orientation" : 
+				{
+					"w" : 1.0,
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"position" : 
+				{
+					"x" : 0.0,
+					"y" : 25.0,
+					"z" : 0.0
+				},
+				"rigidBody" : 
+				{
+					"active" : true,
+					"type" : 2
+				},
+				"size" : 
+				{
+					"x" : 1.0,
+					"y" : 1.0,
+					"z" : 1.0
+				}
+			},
+			{
+				"drawable" : true,
+				"material" : "default",
+				"name" : "shape",
+				"orientation" : 
+				{
+					"w" : 1.0,
+					"x" : 0.0,
+					"y" : 0.0,
+					"z" : 0.0
+				},
+				"position" : 
+				{
+					"x" : 0.0,
+					"y" : 30.0,
+					"z" : 0.0
+				},
+				"rigidBody" : 
+				{
+					"active" : true,
+					"type" : 2
+				},
+				"size" : 
+				{
+					"x" : 1.0,
+					"y" : 1.0,
 					"z" : 1.0
 				}
 			}

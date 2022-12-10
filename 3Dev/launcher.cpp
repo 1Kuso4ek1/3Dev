@@ -64,6 +64,9 @@ int main()
     scman.Load(scPath);
 
     scman.Build();
+    
+    if(!scman.IsBuildSucceded())
+      return -1;
 
     scman.ExecuteFunction("void Start()");
 

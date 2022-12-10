@@ -23,13 +23,14 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterSceneManager();
     RegisterSfKeyboard();
     RegisterRandom();
+    RegisterClock();
 
     AddFunction("string to_string(int)", WRAP_FN_PR(std::to_string, (int), std::string));
     AddFunction("string to_string(float)", WRAP_FN_PR(std::to_string, (float), std::string));
 
     SetDefaultNamespace("Log");
     AddEnum("Type", { "Critical", "Error", "Warning", "Info" });
-    AddFunction("void Write(string, int)", WRAP_FN(Log::Write));
+    AddFunction("void Write(string, int = Info)", WRAP_FN(Log::Write));
     SetDefaultNamespace("");
 
     builder.StartNewModule(engine, "module");
@@ -215,7 +216,7 @@ void ScriptManager::RegisterQuaternion()
         { "float length()", WRAP_MFN(rp3d::Quaternion, length) },
         { "string to_string()", WRAP_MFN(rp3d::Quaternion, to_string) },
         { "void inverse()", WRAP_MFN(rp3d::Quaternion, inverse) },
-        { "Quaternion& getInverse()", WRAP_MFN(rp3d::Quaternion, getInverse) },
+        { "Quaternion getInverse()", WRAP_MFN(rp3d::Quaternion, getInverse) },
         { "Quaternion& opAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
         { "Quaternion& opAddAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator+=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
         { "Quaternion& opSubAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator-=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
@@ -284,15 +285,9 @@ void ScriptManager::RegisterShape()
 
 void ScriptManager::RegisterRigidBody()
 {
-    AddValueType("AABB", sizeof(rp3d::AABB), asGetTypeTraits<rp3d::AABB>(),
-    {
-        { "AABB& opAssign(AABB& in)", WRAP_FN(AssignAABB) }
-    }, {});
+    AddValueType("AABB", sizeof(rp3d::AABB), asGetTypeTraits<rp3d::AABB>() | asOBJ_POD, {}, {});
 
-    AddTypeConstructor("AABB", "void f()", WRAP_OBJ_LAST(MakeType<rp3d::AABB>));
-    AddTypeConstructor("AABB", "void f(Vector3& in, Vector3& in)", WRAP_OBJ_LAST(MakeAABB));
-    AddTypeConstructor("AABB", "void f(const AABB& in)", WRAP_OBJ_LAST(CopyType<rp3d::AABB>));
-    AddTypeDestructor("AABB", "void f()", WRAP_OBJ_LAST(DestroyType<rp3d::AABB>));
+    AddTypeConstructor("AABB", "void f(const Vector3& in, const Vector3& in)", WRAP_OBJ_LAST(MakeAABB));
 
     AddEnum("BodyType", { "STATIC", "KINEMATIC", "DYNAMIC" });
     AddType("RigidBody", sizeof(rp3d::RigidBody),
@@ -319,6 +314,8 @@ void ScriptManager::RegisterRigidBody()
         { "bool testAABBOverlap(const AABB& in)", WRAP_MFN(rp3d::RigidBody, testAABBOverlap) },
         { "bool raycast(const Ray& in, RaycastInfo& out)", WRAP_MFN(rp3d::RigidBody, raycast) }
     }, {});
+
+    engine->RegisterObjectProperty("RaycastInfo", "RigidBody@ body", asOFFSET(rp3d::RaycastInfo, body));
 }
 
 void ScriptManager::RegisterCamera()
@@ -346,7 +343,9 @@ void ScriptManager::RegisterSceneManager()
         { "Shape@ GetShape(string)", WRAP_MFN(SceneManager, GetShapePtr) },
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
         { "PhysicsManager@ GetPhysicsManager()", WRAP_MFN(SceneManager, GetPhysicsManagerPtr) },
-        { "void UpdatePhysics(bool)", WRAP_MFN(SceneManager, UpdatePhysics) }
+        { "void UpdatePhysics(bool)", WRAP_MFN(SceneManager, UpdatePhysics) },
+        { "void SaveState()", WRAP_MFN(SceneManager, SaveState) },
+        { "void LoadState()", WRAP_MFN(SceneManager, LoadState) }
     }, {});
 }
 
@@ -403,14 +402,17 @@ void ScriptManager::RegisterRandom()
 
 void ScriptManager::RegisterRay()
 {
-    AddValueType("Ray", sizeof(rp3d::Ray), asGetTypeTraits<rp3d::Ray>(), {}, {});
+    AddValueType("Ray", sizeof(rp3d::Ray), asGetTypeTraits<rp3d::Ray>(),
+    {
+    	{ "Ray& opAssign(const Ray& in)", WRAP_OBJ_LAST(AssignType<rp3d::Ray>) }
+    }, {});
 
     AddTypeConstructor("Ray", "void f(const Vector3& in, const Vector3& in)", WRAP_OBJ_LAST(MakeRay));
     AddTypeDestructor("Ray", "void f()", WRAP_OBJ_LAST(DestroyType<rp3d::Ray>));
 
     AddValueType("RaycastInfo", sizeof(rp3d::RaycastInfo), asGetTypeTraits<rp3d::RaycastInfo>(),
     {
-        { "RaycastInfo& opAssign(RaycastInfo& in)", WRAP_FN(AssignRaycastInfo) }
+        { "RaycastInfo& opAssign(const RaycastInfo& in)", WRAP_OBJ_LAST(AssignRaycastInfo) }
     },
     {
         { "Vector3 worldPoint", asOFFSET(rp3d::RaycastInfo, worldPoint) },
@@ -432,4 +434,26 @@ void ScriptManager::RegisterHingeJoint()
     AddTypeDestructor("HingeJointInfo", "void f()", WRAP_OBJ_LAST(DestroyType<rp3d::HingeJointInfo>));
 
     AddType("HingeJoint", sizeof(rp3d::HingeJoint), {}, {});
+}
+
+void ScriptManager::RegisterClock()
+{
+	AddValueType("Time", sizeof(sf::Time), asGetTypeTraits<sf::Time>(),
+	{
+		{ "float asSeconds()", WRAP_MFN(sf::Time, asSeconds) },
+		{ "float asMilliseconds()", WRAP_MFN(sf::Time, asMilliseconds) },
+		{ "float asMicroseconds()", WRAP_MFN(sf::Time, asMicroseconds) }
+	}, {});
+
+	AddTypeConstructor("Time", "void f()", WRAP_OBJ_LAST(MakeType<sf::Time>));
+	AddTypeDestructor("Time", "void f()", WRAP_OBJ_LAST(DestroyType<sf::Time>));
+
+	AddValueType("Clock", sizeof(sf::Clock), asGetTypeTraits<sf::Clock>(),
+	{
+		{ "Time restart()", WRAP_MFN(sf::Clock, restart) },
+		{ "Time getElapsedTime()", WRAP_MFN(sf::Clock, getElapsedTime) }
+	}, {});
+
+	AddTypeConstructor("Clock", "void f()", WRAP_OBJ_LAST(MakeType<sf::Clock>));
+	AddTypeDestructor("Clock", "void f()", WRAP_OBJ_LAST(DestroyType<sf::Clock>));
 }
