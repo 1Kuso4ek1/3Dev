@@ -13,8 +13,8 @@ class SceneManager
 public:
     void Draw(Framebuffer* fbo = nullptr, Framebuffer* transparency = nullptr, bool shadows = false);
 
-    void AddObject(std::shared_ptr<Model> model, std::string name = "model");
-    void AddObject(std::shared_ptr<Shape> shape, std::string name = "shape");
+    void AddObject(std::shared_ptr<Model> model, std::string name = "model", bool checkUniqueness = true);
+    void AddObject(std::shared_ptr<Shape> shape, std::string name = "shape", bool checkUniqueness = true);
     void AddMaterial(std::shared_ptr<Material>, std::string name = "material");
     void AddPhysicsManager(std::shared_ptr<PhysicsManager> manager, std::string name = "pmanager");
     void AddLight(Light* light, std::string name = "light");
@@ -52,12 +52,18 @@ public:
     std::shared_ptr<PhysicsManager> GetPhysicsManager(std::string name);
     std::shared_ptr<SoundManager> GetSoundManager();
 
+    std::vector<std::shared_ptr<Model>> GetModelGroup(std::string name);
+    std::vector<std::shared_ptr<Shape>> GetShapeGroup(std::string name);
+
     // For angelscript
     Model* GetModelPtr(std::string name);
     Shape* GetShapePtr(std::string name);
     Material* GetMaterialPtr(std::string name);
     PhysicsManager* GetPhysicsManagerPtr(std::string name);
     SoundManager* GetSoundManagerPtr();
+
+    std::vector<Model*> GetModelPtrGroup(std::string name);
+    std::vector<Shape*> GetShapePtrGroup(std::string name);
 
     Camera* GetCamera();
     Light* GetLight(std::string name);
@@ -75,6 +81,14 @@ private:
         rp3d::Quaternion orient;
     };
 
+    void RemoveFromTheGroup(std::string group, std::shared_ptr<Model> model);
+    void RemoveFromTheGroup(std::string group, std::shared_ptr<Shape> shape);
+
+    void MoveToTheGroup(std::string from, std::string to, std::shared_ptr<Model> model);
+    void MoveToTheGroup(std::string from, std::string to, std::shared_ptr<Shape> shape);
+
+    std::pair<std::string, std::string> ParseName(std::string in);
+
     sf::Clock clock;
 
     Camera* camera;
@@ -83,6 +97,9 @@ private:
 
     std::shared_ptr<Shape> skybox;
     std::shared_ptr<SoundManager> sManager;
+
+    std::unordered_map<std::string, std::vector<std::shared_ptr<Model>>> modelGroups;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<Shape>>> shapeGroups;
 
     std::unordered_map<std::string, std::shared_ptr<Model>> models;
     std::unordered_map<std::string, std::shared_ptr<Shape>> shapes;

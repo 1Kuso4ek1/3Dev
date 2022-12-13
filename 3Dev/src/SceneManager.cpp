@@ -51,20 +51,36 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool shadow
     glFrontFace(GL_CCW);
 }
 
-void SceneManager::AddObject(std::shared_ptr<Model> model, std::string name)
+void SceneManager::AddObject(std::shared_ptr<Model> model, std::string name, bool checkUniqueness)
 {
-    int nameCount = std::count_if(models.begin(), models.end(), [&](auto& p)
-                    { return p.first.find(name) != std::string::npos; });
+    auto n = ParseName(name);
+    if(checkUniqueness)
+    {
+        int nameCount = std::count_if(models.begin(), models.end(), [&](auto& p)
+                        { return p.first.find(n.first) != std::string::npos; });
 
-    models[name + (nameCount ? std::to_string(nameCount) : "")] = model;
+        models[n.first + (nameCount ? std::to_string(nameCount) : "") + (n.second.empty() ? "" : ":") + n.second] = model;
+    }
+    else models[name] = model;
+
+    if(!n.second.empty())
+        modelGroups[n.second].push_back(model);
 }
 
-void SceneManager::AddObject(std::shared_ptr<Shape> shape, std::string name)
+void SceneManager::AddObject(std::shared_ptr<Shape> shape, std::string name, bool checkUniqueness)
 {
-    int nameCount = std::count_if(shapes.begin(), shapes.end(), [&](auto& p)
-                    { return p.first.find(name) != std::string::npos; });
+    auto n = ParseName(name);
+    if(checkUniqueness)
+    {
+        int nameCount = std::count_if(shapes.begin(), shapes.end(), [&](auto& p)
+                        { return p.first.find(n.first) != std::string::npos; });
 
-    shapes[name + (nameCount ? std::to_string(nameCount) : "")] = shape;
+        shapes[n.first + (nameCount ? std::to_string(nameCount) : "") + (n.second.empty() ? "" : ":") + n.second] = shape;
+    }
+    else shapes[name] = shape;
+
+    if(!n.second.empty())
+        shapeGroups[n.second].push_back(shape);
 }
 
 void SceneManager::AddMaterial(std::shared_ptr<Material> material, std::string name)
@@ -94,13 +110,25 @@ void SceneManager::AddLight(Light* light, std::string name)
 void SceneManager::RemoveObject(std::shared_ptr<Model> model)
 {
     auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second == model; });
-    if(it != models.end()) models.erase(it);
+    if(it != models.end())
+    {
+        auto p = ParseName(it->first);
+        models.erase(it);
+        if(!p.second.empty())
+            RemoveFromTheGroup(p.second, model);
+    }
 }
 
 void SceneManager::RemoveObject(std::shared_ptr<Shape> shape)
 {
     auto it = std::find_if(shapes.begin(), shapes.end(), [&](auto& p) { return p.second == shape; });
-    if(it != shapes.end()) shapes.erase(it);
+    if(it != shapes.end())
+    {
+        auto p = ParseName(it->first);
+        shapes.erase(it);
+        if(!p.second.empty())
+            RemoveFromTheGroup(p.second, shape);
+    }
 }
 
 void SceneManager::RemoveMaterial(std::shared_ptr<Material> material)
@@ -130,6 +158,9 @@ void SceneManager::RemoveAllObjects()
 {
     models.clear();
     shapes.clear();
+
+    modelGroups.clear();
+    shapeGroups.clear();
 }
 
 void SceneManager::Save(std::string filename, bool relativePaths)
@@ -197,11 +228,6 @@ void SceneManager::Load(std::string filename)
         return;
     }
 
-    /*rp3d::PhysicsWorld::WorldSettings settings;
-    pManagers.emplace_back(std::make_shared<PhysicsManager>(settings));*/
-
-    //materials["default"] = std::make_shared<Material>();
-
     std::filesystem::current_path(std::filesystem::path(filename).parent_path());
 
     int counter = 0;
@@ -218,8 +244,9 @@ void SceneManager::Load(std::string filename)
     {
         auto name = data["objects"]["shapes"][counter]["name"].asString();
         auto material = materials[data["objects"]["shapes"][counter]["material"].asString()].get();
-        shapes[name] = std::make_shared<Shape>(rp3d::Vector3::zero(), material, pManagers.begin()->second.get());
-        shapes[name]->Deserialize(data["objects"]["shapes"][counter]);
+        auto shape = std::make_shared<Shape>(rp3d::Vector3::zero(), material, pManagers.begin()->second.get());
+        shape->Deserialize(data["objects"]["shapes"][counter]);
+        AddObject(shape, name, false);
         counter++;
     }
 
@@ -233,9 +260,10 @@ void SceneManager::Load(std::string filename)
         for(auto& i : data["objects"]["models"][counter]["material"])
             material.push_back(materials[i["name"].asString()].get());
 
-        models[name] = std::make_shared<Model>(data["objects"]["models"][counter]["filename"].asString(), material,
+        auto model = std::make_shared<Model>(data["objects"]["models"][counter]["filename"].asString(), material,
                                                aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, pManagers.begin()->second.get());
-        models[name]->Deserialize(data["objects"]["models"][counter]);
+        model->Deserialize(data["objects"]["models"][counter]);
+        AddObject(model, name, false);
         counter++;
     }
 
@@ -355,6 +383,16 @@ std::shared_ptr<SoundManager> SceneManager::GetSoundManager()
     return sManager;
 }
 
+std::vector<std::shared_ptr<Model>> SceneManager::GetModelGroup(std::string name)
+{
+    return modelGroups[name];
+}
+
+std::vector<std::shared_ptr<Shape>> SceneManager::GetShapeGroup(std::string name)
+{
+    return shapeGroups[name];
+}
+
 Model* SceneManager::GetModelPtr(std::string name)
 {
     if(models.find(name) != models.end())
@@ -396,6 +434,22 @@ SoundManager* SceneManager::GetSoundManagerPtr()
     return sManager.get();
 }
 
+std::vector<Model*> SceneManager::GetModelPtrGroup(std::string name)
+{
+    std::vector<Model*> ret;
+    for(auto& i : modelGroups[name])
+        ret.push_back(i.get());
+    return ret;
+}
+
+std::vector<Shape*> SceneManager::GetShapePtrGroup(std::string name)
+{
+    std::vector<Shape*> ret;
+    for(auto& i : shapeGroups[name])
+        ret.push_back(i.get());
+    return ret;
+}
+
 Camera* SceneManager::GetCamera()
 {
     return camera;
@@ -415,6 +469,17 @@ void SceneManager::SetModelName(std::string name, std::string newName)
 	auto it = models.find(name);
 	if(it != models.end())
 	{
+        auto p = ParseName(name);
+        auto p1 = ParseName(newName);
+
+        if(p.second != p1.second)
+            if(p1.second.empty())
+                RemoveFromTheGroup(p.second, it->second);
+            else if(p.second.empty())
+                modelGroups[p1.second].push_back(it->second);
+            else
+                MoveToTheGroup(p.second, p1.second, it->second);
+
 		auto n = models.extract(it);
 		n.key() = newName;
 		models.insert(std::move(n));
@@ -428,6 +493,17 @@ void SceneManager::SetShapeName(std::string name, std::string newName)
 	auto it = shapes.find(name);
 	if(it != shapes.end())
 	{
+        auto p = ParseName(name);
+        auto p1 = ParseName(newName);
+
+        if(p.second != p1.second)
+            if(p1.second.empty())
+                RemoveFromTheGroup(p.second, it->second);
+            else if(p.second.empty())
+                shapeGroups[p1.second].push_back(it->second);
+            else
+                MoveToTheGroup(p.second, p1.second, it->second);
+
 		auto n = shapes.extract(it);
 		n.key() = newName;
 		shapes.insert(std::move(n));
@@ -511,4 +587,48 @@ std::string SceneManager::GetName(Material* mat)
             {
                 return m.second.get() == mat;
             })->first;
+}
+
+void SceneManager::RemoveFromTheGroup(std::string group, std::shared_ptr<Model> model)
+{
+    auto& groupVec = modelGroups[group];
+    auto it = std::find(groupVec.begin(), groupVec.end(), model);
+    groupVec.erase(it);
+}
+
+void SceneManager::RemoveFromTheGroup(std::string group, std::shared_ptr<Shape> shape)
+{
+    auto& groupVec = shapeGroups[group];
+    auto it = std::find(groupVec.begin(), groupVec.end(), shape);
+    groupVec.erase(it);
+}
+
+void SceneManager::MoveToTheGroup(std::string from, std::string to, std::shared_ptr<Model> model)
+{
+    auto& groupVec = modelGroups[from];
+    auto it = std::find(groupVec.begin(), groupVec.end(), model);
+    groupVec.erase(it);
+
+    modelGroups[to].push_back(model);
+}
+
+void SceneManager::MoveToTheGroup(std::string from, std::string to, std::shared_ptr<Shape> shape)
+{
+    auto& groupVec = shapeGroups[from];
+    auto it = std::find(groupVec.begin(), groupVec.end(), shape);
+    groupVec.erase(it);
+
+    shapeGroups[to].push_back(shape);
+}
+
+std::pair<std::string, std::string> SceneManager::ParseName(std::string in)
+{
+    if(in.find(':') == std::string::npos)
+        return { in, "" };
+
+    std::string name, group;
+    name = in.substr(0, in.find(':'));
+    group = in.substr(in.find(':') + 1, in.size());
+
+    return { name, group };
 }

@@ -341,6 +341,8 @@ void ScriptManager::RegisterSceneManager()
     {
         { "Model@ GetModel(string)", WRAP_MFN(SceneManager, GetModelPtr) },
         { "Shape@ GetShape(string)", WRAP_MFN(SceneManager, GetShapePtr) },
+        { "array<Model@>@ GetModelGroup(string)", WRAP_MFN(SceneManager, GetModelPtrGroup) },
+        { "array<Shape@>@ GetShapeGroup(string)", WRAP_MFN(SceneManager, GetShapePtrGroup) },
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
         { "PhysicsManager@ GetPhysicsManager()", WRAP_MFN(SceneManager, GetPhysicsManagerPtr) },
         { "void UpdatePhysics(bool)", WRAP_MFN(SceneManager, UpdatePhysics) },

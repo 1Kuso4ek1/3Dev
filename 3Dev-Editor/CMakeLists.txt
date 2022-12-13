@@ -46,6 +46,7 @@ endif()
 
 install(DIRECTORY DESTINATION ${HOME_PATH}/.3Dev-Editor)
 install(DIRECTORY DESTINATION ${HOME_PATH}/.3Dev-Editor/gui)
+install(DIRECTORY DESTINATION ${HOME_PATH}/.3Dev-Editor/log)
 install(DIRECTORY DESTINATION ${HOME_PATH}/.3Dev-Editor/default)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/default/hdri.hdr DESTINATION ${HOME_PATH}/.3Dev-Editor/default)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/gui/menu.txt ${CMAKE_CURRENT_SOURCE_DIR}/gui/editor.txt DESTINATION ${HOME_PATH}/.3Dev-Editor/gui)
