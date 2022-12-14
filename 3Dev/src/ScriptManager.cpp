@@ -337,12 +337,24 @@ void ScriptManager::RegisterCamera()
 
 void ScriptManager::RegisterSceneManager()
 {
+    AddValueType("ModelGroup", sizeof(Group<Model>), asGetTypeTraits<Group<Model>>() | asOBJ_POD,
+    {
+        { "uint Size()", WRAP_MFN(Group<Model>, Size) },
+        { "Model@ opIndex(uint)", WRAP_MFN(Group<Model>, operator[]) }
+    }, {});
+
+    AddValueType("ShapeGroup", sizeof(Group<Shape>), asGetTypeTraits<Group<Shape>>() | asOBJ_POD,
+    {
+        { "uint Size()", WRAP_MFN(Group<Shape>, Size) },
+        { "Shape@ opIndex(uint)", WRAP_MFN(Group<Shape>, operator[]) }
+    }, {});
+
     AddType("SceneManager", sizeof(SceneManager),
     {
         { "Model@ GetModel(string)", WRAP_MFN(SceneManager, GetModelPtr) },
         { "Shape@ GetShape(string)", WRAP_MFN(SceneManager, GetShapePtr) },
-        { "array<Model@>@ GetModelGroup(string)", WRAP_MFN(SceneManager, GetModelPtrGroup) },
-        { "array<Shape@>@ GetShapeGroup(string)", WRAP_MFN(SceneManager, GetShapePtrGroup) },
+        { "ModelGroup GetModelGroup(string)", WRAP_MFN(SceneManager, GetModelPtrGroup) },
+        { "ShapeGroup GetShapeGroup(string)", WRAP_MFN(SceneManager, GetShapePtrGroup) },
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
         { "PhysicsManager@ GetPhysicsManager()", WRAP_MFN(SceneManager, GetPhysicsManagerPtr) },
         { "void UpdatePhysics(bool)", WRAP_MFN(SceneManager, UpdatePhysics) },

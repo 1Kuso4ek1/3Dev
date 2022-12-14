@@ -24,6 +24,20 @@ static void MessageCallback(const asSMessageInfo *msg, void *param)
 }
 
 template<class T>
+class Group
+{
+public:
+    Group(std::vector<T*> objects) : objects(objects) {}
+
+    uint32_t Size() { return objects.size(); }
+
+    T* operator[](uint32_t index) { return objects[index]; }
+
+private:
+    std::vector<T*> objects;
+};
+
+template<class T>
 static void MakeType(T* memory) { new(memory) T(); }
 
 template<class T>

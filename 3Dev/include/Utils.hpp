@@ -34,7 +34,6 @@
 
 #include <json/json.h>
 
-#define AS_MAX_PORTABILITY
 #include <angelscript.h>
 
 constexpr glm::vec3 toglm(const rp3d::Vector3& vec) { return glm::vec3(vec.x, vec.y, vec.z); }
