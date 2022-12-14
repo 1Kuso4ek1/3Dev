@@ -59,9 +59,14 @@ void SceneManager::AddObject(std::shared_ptr<Model> model, std::string name, boo
         int nameCount = std::count_if(models.begin(), models.end(), [&](auto& p)
                         { return p.first.find(n.first) != std::string::npos; });
 
-        models[n.first + (nameCount ? std::to_string(nameCount) : "") + (n.second.empty() ? "" : ":") + n.second] = model;
+        lastAdded = n.first + (nameCount ? std::to_string(nameCount) : "") + (n.second.empty() ? "" : ":") + n.second;
+        models[lastAdded] = model;
     }
-    else models[name] = model;
+    else
+    {
+        models[name] = model;
+        lastAdded = name;
+    }
 
     if(!n.second.empty())
         modelGroups[n.second].push_back(model);
@@ -75,9 +80,14 @@ void SceneManager::AddObject(std::shared_ptr<Shape> shape, std::string name, boo
         int nameCount = std::count_if(shapes.begin(), shapes.end(), [&](auto& p)
                         { return p.first.find(n.first) != std::string::npos; });
 
-        shapes[n.first + (nameCount ? std::to_string(nameCount) : "") + (n.second.empty() ? "" : ":") + n.second] = shape;
+        lastAdded = n.first + (nameCount ? std::to_string(nameCount) : "") + (n.second.empty() ? "" : ":") + n.second;
+        shapes[lastAdded] = shape;
     }
-    else shapes[name] = shape;
+    else
+    {
+        shapes[name] = shape;
+        lastAdded = name;
+    }
 
     if(!n.second.empty())
         shapeGroups[n.second].push_back(shape);
@@ -88,7 +98,8 @@ void SceneManager::AddMaterial(std::shared_ptr<Material> material, std::string n
     int nameCount = std::count_if(materials.begin(), materials.end(), [&](auto& p)
                     { return p.first.find(name) != std::string::npos; });
 
-    materials[name + (nameCount ? std::to_string(nameCount) : "")] = material;
+    lastAdded = name + (nameCount ? std::to_string(nameCount) : "");
+    materials[lastAdded] = material;
 }
 
 void SceneManager::AddPhysicsManager(std::shared_ptr<PhysicsManager> manager, std::string name)
@@ -96,7 +107,8 @@ void SceneManager::AddPhysicsManager(std::shared_ptr<PhysicsManager> manager, st
     int nameCount = std::count_if(pManagers.begin(), pManagers.end(), [&](auto& p)
                     { return p.first.find(name) != std::string::npos; });
 
-    pManagers[name + (nameCount ? std::to_string(nameCount) : "")] = manager;
+    lastAdded = name + (nameCount ? std::to_string(nameCount) : "");
+    pManagers[lastAdded] = manager;
 }
 
 void SceneManager::AddLight(Light* light, std::string name)
@@ -104,7 +116,24 @@ void SceneManager::AddLight(Light* light, std::string name)
     int nameCount = std::count_if(lights.begin(), lights.end(), [&](auto& p)
                     { return p.first.find(name) != std::string::npos; });
 
-    lights[name + (nameCount ? std::to_string(nameCount) : "")] = light;
+    lastAdded = name + (nameCount ? std::to_string(nameCount) : "");
+    lights[lastAdded] = light;
+}
+
+template<class... Args>
+std::shared_ptr<Model> SceneManager::CreateModel(std::string name, Args&&... args)
+{
+    auto ret = std::make_shared<Model>(args...);
+    AddObject(ret, name);
+    return ret;
+}
+
+template<class... Args>
+std::shared_ptr<Shape> SceneManager::CreateShape(std::string name, Args&&... args)
+{
+    auto ret = std::make_shared<Shape>(args...);
+    AddObject(ret, name);
+    return ret;
 }
 
 void SceneManager::RemoveObject(std::shared_ptr<Model> model)
@@ -342,6 +371,11 @@ void SceneManager::UpdatePhysics(bool update)
     updatePhysics = update;
 }
 
+std::string SceneManager::GetLastAdded()
+{
+    return lastAdded;
+}
+
 std::shared_ptr<Model> SceneManager::GetModel(std::string name)
 {
     if(models.find(name) != models.end())
@@ -432,6 +466,20 @@ PhysicsManager* SceneManager::GetPhysicsManagerPtr(std::string name)
 SoundManager* SceneManager::GetSoundManagerPtr()
 {
     return sManager.get();
+}
+
+Model* SceneManager::CloneModel(Model* model, std::string name)
+{
+    auto ret = std::make_shared<Model>(*model);
+    AddObject(ret, name);
+    return ret.get();
+}
+    
+Shape* SceneManager::CloneShape(Shape* shape, std::string name)
+{
+    auto ret = std::make_shared<Shape>(*shape);
+    AddObject(ret, name);
+    return ret.get();
 }
 
 std::vector<Model*> SceneManager::GetModelPtrGroup(std::string name)

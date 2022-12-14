@@ -19,6 +19,12 @@ public:
     void AddPhysicsManager(std::shared_ptr<PhysicsManager> manager, std::string name = "pmanager");
     void AddLight(Light* light, std::string name = "light");
 
+    template<class... Args>
+    std::shared_ptr<Model> CreateModel(std::string name, Args&&... args);
+
+    template<class... Args>
+    std::shared_ptr<Shape> CreateShape(std::string name, Args&&... args);
+
     void RemoveObject(std::shared_ptr<Model> model);
     void RemoveObject(std::shared_ptr<Shape> shape);
     void RemoveMaterial(std::shared_ptr<Material> material);
@@ -46,6 +52,8 @@ public:
 
     void UpdatePhysics(bool update);
 
+    std::string GetLastAdded();
+
     std::shared_ptr<Model> GetModel(std::string name);
     std::shared_ptr<Shape> GetShape(std::string name);
     std::shared_ptr<Material> GetMaterial(std::string name);
@@ -61,6 +69,9 @@ public:
     Material* GetMaterialPtr(std::string name);
     PhysicsManager* GetPhysicsManagerPtr(std::string name);
     SoundManager* GetSoundManagerPtr();
+
+    Model* CloneModel(Model* model, std::string name = "model");
+    Shape* CloneShape(Shape* shape, std::string name = "shape");
 
     std::vector<Model*> GetModelPtrGroup(std::string name);
     std::vector<Shape*> GetShapePtrGroup(std::string name);
@@ -94,6 +105,8 @@ private:
     Camera* camera;
 
     bool updatePhysics = true;
+
+    std::string lastAdded = "";
 
     std::shared_ptr<Shape> skybox;
     std::shared_ptr<SoundManager> sManager;

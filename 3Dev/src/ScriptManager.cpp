@@ -353,10 +353,12 @@ void ScriptManager::RegisterSceneManager()
     {
         { "Model@ GetModel(string)", WRAP_MFN(SceneManager, GetModelPtr) },
         { "Shape@ GetShape(string)", WRAP_MFN(SceneManager, GetShapePtr) },
-        { "ModelGroup GetModelGroup(string)", WRAP_MFN(SceneManager, GetModelPtrGroup) },
-        { "ShapeGroup GetShapeGroup(string)", WRAP_MFN(SceneManager, GetShapePtrGroup) },
+        { "Model@ CloneModel(Model@, string)", WRAP_MFN(SceneManager, CloneModel) },
+        { "Shape@ CloneShape(Shape@, string)", WRAP_MFN(SceneManager, CloneShape) },
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
         { "PhysicsManager@ GetPhysicsManager()", WRAP_MFN(SceneManager, GetPhysicsManagerPtr) },
+        { "ModelGroup GetModelGroup(string)", WRAP_MFN(SceneManager, GetModelPtrGroup) },
+        { "ShapeGroup GetShapeGroup(string)", WRAP_MFN(SceneManager, GetShapePtrGroup) },
         { "void UpdatePhysics(bool)", WRAP_MFN(SceneManager, UpdatePhysics) },
         { "void SaveState()", WRAP_MFN(SceneManager, SaveState) },
         { "void LoadState()", WRAP_MFN(SceneManager, LoadState) }

@@ -367,7 +367,7 @@ int main()
 		model->CreateRigidBody();
 		//model->GetRigidBody()->setIsActive(false);
     	scene.AddObject(model);
-    	std::string name = scene.GetNames()[0][0];
+    	std::string name = scene.GetLastAdded();
     	sceneTree->addItem({ "Scene", "Models", name });
     	sceneTree->selectItem({ "Scene", "Models", name });
     	/*materialsNames[model] = { "" };
@@ -380,7 +380,7 @@ int main()
 		auto shape = std::make_shared<Shape>(rp3d::Vector3{ 1, 1, 1 }, scene.GetMaterial(scene.GetNames()[2][0]).get(), man.get());
 		//shape->GetRigidBody()->setIsActive(false);
     	scene.AddObject(shape);
-    	std::string name = scene.GetNames()[1][0];
+    	std::string name = scene.GetLastAdded();
     	sceneTree->addItem({ "Scene", "Shapes", name });
     	sceneTree->selectItem({ "Scene", "Shapes", name });
     	//materialsNames[scene.GetShape(name)] = { "default" };
@@ -389,7 +389,7 @@ int main()
     materialButton->onPress([&]()
     {
     	scene.AddMaterial(std::make_shared<Material>());
-    	std::string name = scene.GetNames()[2][0];
+    	std::string name = scene.GetLastAdded();
     	sceneTree->addItem({ "Scene", "Materials", name });
     	sceneTree->selectItem({ "Scene", "Materials", name });
     	materialBox->addItem(name);
