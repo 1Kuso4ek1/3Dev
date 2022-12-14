@@ -81,7 +81,7 @@ float CalcShadow(int i)
     */
     float current = LinearizeDepth(pcoord.z);
     float shadow = 0.0;
-    vec2 pixelsize = 1.0 / textureSize(shadows[i].shadowmap, 0);
+    /*vec2 pixelsize = 1.0 / textureSize(shadows[i].shadowmap, 0);
 	for(int x = -1; x <= 1; ++x)
 	{
 		for(int y = -1; y <= 1; ++y)
@@ -89,8 +89,8 @@ float CalcShadow(int i)
 		    float pcf = LinearizeDepth(texture(shadows[i].shadowmap, pcoord.xy + vec2(x, y) * pixelsize).x);
 		    shadow += float(current > pcf);
 		}
-	}
-    return shadow / 9.0;
+	}*/
+    return float(current - 0.1 > LinearizeDepth(texture(shadows[i].shadowmap, pcoord.xy).x));
 }
 
 float GGX(float ndoth, float rough)
