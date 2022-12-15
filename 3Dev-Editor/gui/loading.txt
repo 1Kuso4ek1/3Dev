@@ -1,0 +1,58 @@
+Panel.Panel1 {
+    Size = (1280, 720);
+
+    Renderer {
+        BackgroundColor = rgb(80, 80, 80);
+        TextureBackground = None;
+    }
+
+    ProgressBar.progressBar {
+        Maximum = 100;
+        Minimum = 0;
+        Position = (0, 690);
+        Size = (1280, 22);
+        TextSize = 13;
+        Value = 0;
+
+        Renderer {
+            TextColor = rgb(190, 190, 190);
+            TextColorFilled = rgb(250, 250, 250);
+            TextureBackground = "themes/Black.png" Part(17, 347, 90, 40) Middle(20, 0) Smooth;
+            TextureFill = "themes/Black.png" Part(0, 389, 90, 40) Middle(16, 0) Smooth;
+        }
+    }
+}
+
+Picture.Picture1 {
+    Position = (570, 250);
+    Size = (115, 114);
+
+    Renderer {
+        Texture = "../icon.png" Smooth;
+        TransparentTexture = false;
+    }
+}
+
+Label.Label1 {
+    HorizontalAlignment = Center;
+    Position = (570, 370);
+    Size = (118.2, 18);
+    Text = "3Dev Editor 1.0.0";
+    TextSize = 13;
+
+    Renderer {
+        TextColor = rgb(190, 190, 190);
+        TextureBackground = None;
+
+        Scrollbar {
+            TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+            TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+            TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+            TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+            TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+            TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+            TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+            TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+        }
+    }
+}

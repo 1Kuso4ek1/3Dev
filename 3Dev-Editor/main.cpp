@@ -358,7 +358,7 @@ int main()
             sceneTree->addItem({ "Scene", "Scripts", i });
     }
 
-    ShadowManager shadows(&scene, glm::ivec2(2048, 2048));
+    ShadowManager shadows(&scene, glm::ivec2(1024, 1024));
 
     modelButton->onPress([&]()
     {
@@ -1171,7 +1171,7 @@ int main()
         scene.Draw(Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main));
 
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 1.0);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 0.5);
 
 		viewport->bindFramebuffer();
 		glClear(GL_COLOR_BUFFER_BIT);

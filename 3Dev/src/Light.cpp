@@ -1,6 +1,6 @@
 #include "Light.hpp"
 
-Light::Light(rp3d::Vector3 color, rp3d::Vector3 position, bool castsShadows) 
+Light::Light(rp3d::Vector3 color, rp3d::Vector3 position, bool castShadows) 
 			: castShadows(castShadows), color(color), position(position) {}
 
 void Light::SetColor(rp3d::Vector3 color)
