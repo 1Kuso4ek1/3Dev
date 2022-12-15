@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
     rp3d::PhysicsWorld::WorldSettings st;
     auto man = std::make_shared<PhysicsManager>(st);
 
-    Light shadowSource({ 0, 0, 0 }, { 50.1, 100.0, 50.1 });
+    Light shadowSource({ 0, 0, 0 }, { 50.1, 100.0, 50.1 }, true);
     shadowSource.SetDirection({ 0.0, -1.0, 0.0 });
 
     Material skyboxMaterial(
@@ -79,6 +79,7 @@ int main(int argc, char* argv[])
 
     scene.AddPhysicsManager(man);
     scene.SetCamera(&cam);
+    scene.AddLight(&shadowSource);
     scene.SetSkybox(skybox);
     scene.UpdatePhysics(false);
 
@@ -86,7 +87,7 @@ int main(int argc, char* argv[])
 
     std::filesystem::current_path(path);
 
-    ShadowManager shadows(&scene, { &shadowSource }, glm::ivec2(4096, 4096));
+    ShadowManager shadows(&scene, glm::ivec2(4096, 4096));
 
     Framebuffer render(nullptr, w, h), renderTr(nullptr, w, h);
 
