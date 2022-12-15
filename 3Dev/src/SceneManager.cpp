@@ -512,6 +512,15 @@ Light* SceneManager::GetLight(std::string name)
     return nullptr;
 }
 
+std::vector<Light*> SceneManager::GetShadowCastingLights()
+{
+    std::vector<Light*> ret;
+    for(auto& i : lights)
+        if(i.second->IsCastingShadows())
+            ret.push_back(i.second);
+    return ret;
+}
+
 void SceneManager::SetModelName(std::string name, std::string newName)
 {
 	auto it = models.find(name);

@@ -32,7 +32,7 @@ int main()
     rp3d::PhysicsWorld::WorldSettings st;
     auto man = std::make_shared<PhysicsManager>(st);
 
-    Light l({ 3, 3, 3 }, { 50.1, 150.0, 50.1 });
+    Light l({ 0, 0, 0 }, { 50.1, 100.0, 50.1 }, true);
     l.SetDirection({ 0.0, -1.0, 0.0 });
 
     Material skyboxMaterial(
@@ -46,6 +46,7 @@ int main()
     scene.AddPhysicsManager(man);
     scene.SetCamera(&cam);
     scene.SetSkybox(skybox);
+    scene.AddLight(&l);
     scene.UpdatePhysics(false);
     scene.Load(cfg["scenePath"].asString());
 
@@ -72,7 +73,7 @@ int main()
 
     scene.UpdatePhysics(true);
 
-    ShadowManager shadows(&scene, { &l }, glm::ivec2(cfg["renderer"]["shadowMapResolution"].asInt()));
+    ShadowManager shadows(&scene, glm::ivec2(cfg["renderer"]["shadowMapResolution"].asInt()));
 
     float exposure = cfg["renderer"]["exposure"].asFloat();
 

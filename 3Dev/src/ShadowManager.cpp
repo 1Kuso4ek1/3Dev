@@ -1,7 +1,7 @@
 #include <ShadowManager.hpp>
 
-ShadowManager::ShadowManager(SceneManager* scene, std::vector<Light*> lights, glm::ivec2 size, Shader* mainShader, Shader* depthShader)
-                            : scene(scene), lights(lights), shadowSize(size)
+ShadowManager::ShadowManager(SceneManager* scene, glm::ivec2 size, Shader* mainShader, Shader* depthShader)
+                            : scene(scene), lights(scene->GetShadowCastingLights()), shadowSize(size)
 {
     if(mainShader) this->mainShader = mainShader;
     if(depthShader) this->depthShader = depthShader;

@@ -39,7 +39,7 @@ int main()
     });
 
     // Main light
-    Light l({ 3, 3, 3 }, { 0.1, 50.0, 0.1 });
+    Light l({ 0, 0, 0 }, { 0.1, 50.0, 0.1 }, true);
     l.SetDirection({ 0.0, -1.0, 0.0 });
     /*l.SetCutoff(30);
     l.SetOuterCutoff(33);*/
@@ -101,7 +101,7 @@ int main()
     scene.AddObject(terrain);
     scene.AddPhysicsManager(man);
 
-    //scene.AddLight(&l);
+    scene.AddLight(&l);
 
     scene.SetCamera(cam.get());
 
@@ -109,7 +109,7 @@ int main()
 
     scene.SetSoundManager(sman);
 
-    ShadowManager shadows(&scene, { &l }, glm::ivec2(2048, 2048));
+    ShadowManager shadows(&scene, glm::ivec2(2048, 2048));
 
     ListenerWrapper::SetPosition(cam->GetPosition());
     ListenerWrapper::SetOrientation(cam->GetOrientation());

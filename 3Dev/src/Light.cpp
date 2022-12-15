@@ -1,6 +1,7 @@
 #include "Light.hpp"
 
-Light::Light(rp3d::Vector3 color, rp3d::Vector3 position) : color(color), position(position) {}
+Light::Light(rp3d::Vector3 color, rp3d::Vector3 position, bool castsShadows) 
+			: castShadows(castShadows), color(color), position(position) {}
 
 void Light::SetColor(rp3d::Vector3 color)
 {
@@ -43,6 +44,11 @@ void Light::Update(Shader* shader, int lightnum)
 	shader->SetUniform1f("lights[" + std::to_string(lightnum) + "].cutoff", glm::cos(glm::radians(cutoff)));
 	shader->SetUniform1f("lights[" + std::to_string(lightnum) + "].outerCutoff", glm::cos(glm::radians(outerCutoff)));
 	shader->SetUniform1i("lights[" + std::to_string(lightnum) + "].isactive", 1);
+}
+
+bool Light::IsCastingShadows()
+{
+	return castShadows;
 }
 
 rp3d::Vector3 Light::GetColor() 

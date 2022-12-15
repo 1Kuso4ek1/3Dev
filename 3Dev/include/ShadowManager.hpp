@@ -4,7 +4,7 @@
 class ShadowManager
 {
 public:
-    ShadowManager(SceneManager* scene, std::vector<Light*> lights, glm::ivec2 size, Shader* mainShader = nullptr, Shader* depthShader = nullptr);
+    ShadowManager(SceneManager* scene, glm::ivec2 size, Shader* mainShader = nullptr, Shader* depthShader = nullptr);
 
     void Update();
 

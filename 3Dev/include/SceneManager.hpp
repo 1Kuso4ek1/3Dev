@@ -79,6 +79,8 @@ public:
     Camera* GetCamera();
     Light* GetLight(std::string name);
 
+    std::vector<Light*> GetShadowCastingLights();
+
     std::string GetName(std::shared_ptr<Material> mat);
     std::string GetName(Material* mat);
 

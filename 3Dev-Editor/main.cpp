@@ -292,7 +292,7 @@ int main()
     Camera cam(&engine.GetWindow());
     cam.SetViewportSize({ 840, 492 });
 
-    Light shadowSource({ 0, 0, 0 }, { 50.1, 100.0, 50.1 });
+    Light shadowSource({ 0, 0, 0 }, { 50.1, 100.0, 50.1 }, true);
     shadowSource.SetDirection({ 0.0, -1.0, 0.0 });
 
     Material skyboxMaterial(
@@ -311,6 +311,7 @@ int main()
 
 	scene.AddPhysicsManager(man);
 	scene.SetCamera(&cam);
+	scene.AddLight(&shadowSource);
     scene.SetSkybox(skybox);
     scene.UpdatePhysics(false);
 
@@ -357,7 +358,7 @@ int main()
             sceneTree->addItem({ "Scene", "Scripts", i });
     }
 
-    ShadowManager shadows(&scene, { &shadowSource }, glm::ivec2(2048, 2048));
+    ShadowManager shadows(&scene, glm::ivec2(2048, 2048));
 
     modelButton->onPress([&]()
     {

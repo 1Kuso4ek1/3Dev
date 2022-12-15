@@ -12,8 +12,9 @@ public:
 	 * Basic constructor
 	 * @param color color of the light
 	 * @param position position of the light
+	 * @param castsShadows if true, this light will cast shadows
 	 */
-	Light(rp3d::Vector3 color, rp3d::Vector3 position);
+	Light(rp3d::Vector3 color, rp3d::Vector3 position, bool castShadows = false);
 	
 	// @param color color of the light
 	void SetColor(rp3d::Vector3 color);
@@ -46,6 +47,8 @@ public:
 	 */
 	void Update(Shader* shader, int lightnum);
 
+	bool IsCastingShadows();
+
 	// @return color of the light
 	rp3d::Vector3 GetColor();
 
@@ -66,6 +69,9 @@ public:
 
 private:
 	rp3d::Vector3 position, direction, color;
+
+	bool castShadows = false;
+
 	float constant = 1.0, linear = 0.0, quadratic = 0.0;
 	float cutoff = 360.0, outerCutoff = 0.0;
 };
