@@ -343,10 +343,14 @@ void SceneManager::LoadState()
             shapes[i.first]->SetOrientation(i.second.orient);
         }
     }
+    
     for(auto& i : temporaryModelCopies)
         RemoveObject(GetModel(i));
     for(auto& i : temporaryShapeCopies)
         RemoveObject(GetShape(i));
+
+    temporaryModelCopies.clear();
+    temporaryShapeCopies.clear();
 }
 
 void SceneManager::SetMainShader(Shader* shader)
