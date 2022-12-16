@@ -19,7 +19,7 @@ ChildWindow.ChildWindow1 {
     TitleTextSize = 13;
 
     Renderer {
-        BackgroundColor = rgb( 80, 80, 80);
+        BackgroundColor = #242424;
         BorderColor = Black;
         Borders = (1, 1, 1, 1);
         DistanceToSide = 5;

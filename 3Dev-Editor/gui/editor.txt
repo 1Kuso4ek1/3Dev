@@ -1,4 +1,32 @@
 Renderer.1 {
+    TextColor = rgb(190, 190, 190);
+    TextColorHover = rgb(250, 250, 250);
+    Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
+    TextureDisabled = None;
+    TextureDown = "themes/Black.png" Part(0, 74, 45, 50) Middle(10, 0) Smooth;
+    TextureDownFocused = None;
+    TextureDownHover = None;
+    TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
+    TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
+}
+
+Renderer.2 {
+    TextColor = rgba(255, 255, 255, 215);
+    TextureBackground = None;
+
+    Scrollbar {
+        ArrowBackgroundColor = rgba(160, 160, 160, 215);
+        ArrowBackgroundColorHover = rgba(170, 170, 170, 215);
+        ArrowColor = rgba(200, 200, 200, 215);
+        ArrowColorHover = rgba(225, 225, 225, 215);
+        ThumbColor = rgba(185, 185, 185, 215);
+        ThumbColorHover = rgba(195, 195, 195, 215);
+        TrackColor = rgba(160, 160, 160, 215);
+        TrackColorHover = rgba(170, 170, 170, 215);
+    }
+}
+
+Renderer.3 {
     BackgroundColor = rgb( 80, 80, 80);
     BorderColor = Black;
     Borders = (1, 1, 1, 1);
@@ -28,38 +56,7 @@ Renderer.1 {
     }
 }
 
-Renderer.2 {
-    TextColor = rgb(190, 190, 190);
-    TextColorHover = rgb(250, 250, 250);
-    Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
-    TextureDisabled = None;
-    TextureDown = "themes/Black.png" Part(0, 74, 45, 50) Middle(10, 0) Smooth;
-    TextureDownFocused = None;
-    TextureDownHover = None;
-    TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
-    TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
-}
-
-Renderer.3 {
-    TextColor = rgba(255, 255, 255, 215);
-    TextureBackground = None;
-
-    Scrollbar {
-        ArrowBackgroundColor = rgba(160, 160, 160, 215);
-        ArrowBackgroundColorHover = rgba(170, 170, 170, 215);
-        ArrowColor = rgba(200, 200, 200, 215);
-        ArrowColorHover = rgba(225, 225, 225, 215);
-        ThumbColor = rgba(185, 185, 185, 215);
-        ThumbColorHover = rgba(195, 195, 195, 215);
-        TrackColor = rgba(160, 160, 160, 215);
-        TrackColorHover = rgba(170, 170, 170, 215);
-    }
-}
-
 Renderer.4 {
-}
-
-Renderer.5 {
     CaretColor = rgb(110, 110, 255);
     DefaultTextColor = rgb(120, 120, 120);
     Padding = (6, 4, 6, 4);
@@ -72,7 +69,7 @@ Renderer.5 {
     TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
 }
 
-Renderer.6 {
+Renderer.5 {
     TextColor = rgb(190, 190, 190);
     TextureBackground = None;
 
@@ -88,6 +85,9 @@ Renderer.6 {
     }
 }
 
+Renderer.6 {
+}
+
 Renderer.7 {
     TextureThumb = "themes/Black.png" Part(44, 499, 30, 30) Smooth;
     TextureThumbHover = None;
@@ -97,16 +97,45 @@ Renderer.7 {
 
 ChildWindow.ChildWindow1 {
     PositionLocked = true;
-    Renderer = &1;
     Size = (220, 720);
     Title = Create;
     TitleAlignment = Center;
     TitleButtons = None;
     TitleTextSize = 13;
 
+    Renderer {
+        BackgroundColor = #242424;
+        BorderColor = Black;
+        Borders = (1, 1, 1, 1);
+        DistanceToSide = 5;
+        PaddingBetweenButtons = 2;
+        ShowTextOnTitleButtons = false;
+        TextureBackground = None;
+        TextureTitleBar = "themes/Black.png" Part(0, 580, 75, 25) Middle(25, 0) Smooth;
+        TitleColor = rgb(190, 190, 190);
+
+        MaximizeButton {
+            Texture = "themes/Black.png" Part(0, 330, 15, 15) Smooth;
+            TextureDown = "themes/Black.png" Part(17, 330, 15, 15) Smooth;
+            TextureHover = "themes/Black.png" Part(34, 330, 15, 15) Smooth;
+        }
+
+        MinimizeButton {
+            Texture = "themes/Black.png" Part(81, 330, 15, 15) Smooth;
+            TextureDown = "themes/Black.png" Part(98, 330, 15, 15) Smooth;
+            TextureHover = "themes/Black.png" Part(0, 347, 15, 15) Smooth;
+        }
+
+        CloseButton {
+            Texture = "themes/Black.png" Part(34, 212, 15, 15) Smooth;
+            TextureDown = "themes/Black.png" Part(51, 212, 15, 15) Smooth;
+            TextureHover = "themes/Black.png" Part(68, 212, 15, 15) Smooth;
+        }
+    }
+
     Button.createModel {
         Position = (0, 20);
-        Renderer = &2;
+        Renderer = &1;
         Size = (220, 37);
         Text = Model;
         TextSize = 13;
@@ -114,7 +143,7 @@ ChildWindow.ChildWindow1 {
 
     Button.createShape {
         Position = (0, 60);
-        Renderer = &2;
+        Renderer = &1;
         Size = (220, 37);
         Text = Shape;
         TextSize = 13;
@@ -122,7 +151,7 @@ ChildWindow.ChildWindow1 {
 
     Button.createLight {
         Position = (0, 100);
-        Renderer = &2;
+        Renderer = &1;
         Size = (220, 37);
         Text = Light;
         TextSize = 13;
@@ -130,7 +159,7 @@ ChildWindow.ChildWindow1 {
 
     Label.Label1 {
         HorizontalAlignment = Center;
-        Renderer = &3;
+        Renderer = &2;
         Size = (218.2, 18);
         Text = Graphics;
         TextSize = 13;
@@ -139,7 +168,7 @@ ChildWindow.ChildWindow1 {
     Label.Label2 {
         HorizontalAlignment = Center;
         Position = (0, 180);
-        Renderer = &3;
+        Renderer = &2;
         Size = (218.2, 18);
         Text = Physics;
         TextSize = 13;
@@ -147,7 +176,7 @@ ChildWindow.ChildWindow1 {
 
     Button.boxCollider {
         Position = (0, 200);
-        Renderer = &2;
+        Renderer = &1;
         Size = (220, 37);
         Text = "Box collider";
         TextSize = 13;
@@ -155,7 +184,7 @@ ChildWindow.ChildWindow1 {
 
     Button.sphereCollider {
         Position = (0, 240);
-        Renderer = &2;
+        Renderer = &1;
         Size = (220, 37);
         Text = "Sphere collider";
         TextSize = 13;
@@ -163,7 +192,7 @@ ChildWindow.ChildWindow1 {
 
     Button.capsuleCollider {
         Position = (0, 280);
-        Renderer = &2;
+        Renderer = &1;
         Size = (220, 37);
         Text = "Capsule collider";
         TextSize = 13;
@@ -172,7 +201,7 @@ ChildWindow.ChildWindow1 {
     Label.Label3 {
         HorizontalAlignment = Center;
         Position = (0, 360);
-        Renderer = &3;
+        Renderer = &2;
         Size = (218.2, 18);
         Text = Sound;
         TextSize = 13;
@@ -180,7 +209,7 @@ ChildWindow.ChildWindow1 {
 
     Button.sound {
         Position = (0, 380);
-        Renderer = &2;
+        Renderer = &1;
         Size = (220, 37);
         Text = "Sound source";
         TextSize = 13;
@@ -188,7 +217,7 @@ ChildWindow.ChildWindow1 {
 
     Button.createMaterial {
         Position = (0, 140);
-        Renderer = &2;
+        Renderer = &1;
         Size = (220, 37);
         Text = Material;
         TextSize = 13;
@@ -197,7 +226,7 @@ ChildWindow.ChildWindow1 {
     Label.Label10 {
         HorizontalAlignment = Center;
         Position = (0, 420);
-        Renderer = &3;
+        Renderer = &2;
         Size = (218.2, 18);
         Text = Code;
         TextSize = 13;
@@ -205,7 +234,7 @@ ChildWindow.ChildWindow1 {
 
     Button.createScript {
         Position = (0, 440);
-        Renderer = &2;
+        Renderer = &1;
         Size = (221, 37);
         Text = Script;
         TextSize = 13;
@@ -213,7 +242,7 @@ ChildWindow.ChildWindow1 {
 
     Button.concaveCollider {
         Position = (0, 320);
-        Renderer = &2;
+        Renderer = &1;
         Size = (220, 37);
         Text = "Concave collider";
         TextSize = 13;
@@ -223,7 +252,7 @@ ChildWindow.ChildWindow1 {
 ChildWindow.ChildWindow2 {
     Position = (1060, 0);
     PositionLocked = true;
-    Renderer = &1;
+    Renderer = &3;
     Size = (220, 250);
     Title = Scene;
     TitleAlignment = Center;
@@ -265,21 +294,52 @@ ChildWindow.ChildWindow2 {
 ChildWindow.objectEditorWindow {
     Position = (1060, 250);
     PositionLocked = true;
-    Renderer = &1;
     Size = (220, 470);
     Title = "Properties editor";
     TitleAlignment = Center;
     TitleButtons = None;
     TitleTextSize = 13;
 
+    Renderer {
+        BackgroundColor = #242424;
+        BorderColor = Black;
+        Borders = (1, 1, 1, 1);
+        DistanceToSide = 5;
+        PaddingBetweenButtons = 2;
+        ShowTextOnTitleButtons = false;
+        TextureBackground = None;
+        TextureTitleBar = "themes/Black.png" Part(0, 580, 75, 25) Middle(25, 0) Smooth;
+        TitleColor = rgb(190, 190, 190);
+
+        MaximizeButton {
+            Texture = "themes/Black.png" Part(0, 330, 15, 15) Smooth;
+            TextureDown = "themes/Black.png" Part(17, 330, 15, 15) Smooth;
+            TextureHover = "themes/Black.png" Part(34, 330, 15, 15) Smooth;
+        }
+
+        MinimizeButton {
+            Texture = "themes/Black.png" Part(81, 330, 15, 15) Smooth;
+            TextureDown = "themes/Black.png" Part(98, 330, 15, 15) Smooth;
+            TextureHover = "themes/Black.png" Part(0, 347, 15, 15) Smooth;
+        }
+
+        CloseButton {
+            Texture = "themes/Black.png" Part(34, 212, 15, 15) Smooth;
+            TextureDown = "themes/Black.png" Part(51, 212, 15, 15) Smooth;
+            TextureHover = "themes/Black.png" Part(68, 212, 15, 15) Smooth;
+        }
+    }
+
     Group.objectEditor {
         Enabled = false;
         Position = (10, 10);
-        Renderer = &4;
         Size = (200, 380);
 
+        Renderer {
+        }
+
         EditBox.name {
-            Renderer = &5;
+            Renderer = &4;
             Size = (200, 24);
             TextSize = 13;
         }
@@ -288,7 +348,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (0, 30);
-            Renderer = &5;
+            Renderer = &4;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -297,7 +357,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (50, 30);
-            Renderer = &5;
+            Renderer = &4;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -306,7 +366,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (100, 30);
-            Renderer = &5;
+            Renderer = &4;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -314,7 +374,7 @@ ChildWindow.objectEditorWindow {
         Label.Label4 {
             HorizontalAlignment = Center;
             Position = (140, 32);
-            Renderer = &6;
+            Renderer = &5;
             Size = (68.2, 18);
             Text = pos;
             TextSize = 13;
@@ -324,7 +384,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (0, 60);
-            Renderer = &5;
+            Renderer = &4;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -333,7 +393,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (50, 60);
-            Renderer = &5;
+            Renderer = &4;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -342,7 +402,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (100, 60);
-            Renderer = &5;
+            Renderer = &4;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -350,7 +410,7 @@ ChildWindow.objectEditorWindow {
         Label.Label5 {
             HorizontalAlignment = Center;
             Position = (140, 62);
-            Renderer = &6;
+            Renderer = &5;
             Size = (68.2, 18);
             Text = rot;
             TextSize = 13;
@@ -360,7 +420,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 1;
             InputValidator = Float;
             Position = (0, 90);
-            Renderer = &5;
+            Renderer = &4;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -369,7 +429,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 1;
             InputValidator = Float;
             Position = (50, 90);
-            Renderer = &5;
+            Renderer = &4;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -378,7 +438,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 1;
             InputValidator = Float;
             Position = (100, 90);
-            Renderer = &5;
+            Renderer = &4;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -386,7 +446,7 @@ ChildWindow.objectEditorWindow {
         Label.Label6 {
             HorizontalAlignment = Center;
             Position = (140, 92);
-            Renderer = &6;
+            Renderer = &5;
             Size = (68.2, 18);
             Text = size;
             TextSize = 13;
@@ -395,7 +455,7 @@ ChildWindow.objectEditorWindow {
         Button.openFile {
             Enabled = false;
             Position = (0, 310);
-            Renderer = &2;
+            Renderer = &1;
             Text = "Open file";
             TextSize = 13;
         }
@@ -474,7 +534,7 @@ ChildWindow.objectEditorWindow {
 
         Button.delete {
             Position = (0, 336);
-            Renderer = &2;
+            Renderer = &1;
             Size = (74, 20);
             Text = Delete;
             TextSize = 13;
@@ -594,7 +654,7 @@ ChildWindow.objectEditorWindow {
 
     Group.materialEditor {
         Position = (10, 10);
-        Renderer = &4;
+        Renderer = &6;
         Size = (200, 420);
         Visible = false;
 
@@ -625,7 +685,7 @@ ChildWindow.objectEditorWindow {
         EditBox.mtlbox {
             InputValidator = Float;
             Position = (160, 96);
-            Renderer = &5;
+            Renderer = &4;
             Size = (40, 22);
             Text = "0.0";
             TextSize = 13;
@@ -634,7 +694,7 @@ ChildWindow.objectEditorWindow {
         EditBox.rghbox {
             InputValidator = Float;
             Position = (160, 166);
-            Renderer = &5;
+            Renderer = &4;
             Size = (40, 22);
             Text = "0.0";
             TextSize = 13;
@@ -643,7 +703,7 @@ ChildWindow.objectEditorWindow {
         Label.Label7 {
             HorizontalAlignment = Center;
             Position = (10, 30);
-            Renderer = &6;
+            Renderer = &5;
             Size = (188.2, 18);
             Text = Color;
             TextSize = 13;
@@ -652,7 +712,7 @@ ChildWindow.objectEditorWindow {
         Label.Label8 {
             HorizontalAlignment = Center;
             Position = (10, 75);
-            Renderer = &6;
+            Renderer = &5;
             Size = (188.2, 18);
             Text = Metalness;
             TextSize = 13;
@@ -661,21 +721,21 @@ ChildWindow.objectEditorWindow {
         Label.Label9 {
             HorizontalAlignment = Center;
             Position = (10, 145);
-            Renderer = &6;
+            Renderer = &5;
             Size = (188.2, 18);
             Text = Roughness;
             TextSize = 13;
         }
 
         EditBox.matName {
-            Renderer = &5;
+            Renderer = &4;
             Size = (200, 24);
             TextSize = 13;
         }
 
         Button.colorPicker {
             Position = (20, 50);
-            Renderer = &2;
+            Renderer = &1;
             Size = (56, 20);
             Text = "Pick...";
             TextSize = 13;
@@ -683,7 +743,7 @@ ChildWindow.objectEditorWindow {
 
         Button.loadMetalness {
             Position = (20, 122);
-            Renderer = &2;
+            Renderer = &1;
             Size = (116, 20);
             Text = "Load texture...";
             TextSize = 13;
@@ -691,7 +751,7 @@ ChildWindow.objectEditorWindow {
 
         Button.loadRoughness {
             Position = (20, 192);
-            Renderer = &2;
+            Renderer = &1;
             Size = (116, 20);
             Text = "Load texture...";
             TextSize = 13;
@@ -699,7 +759,7 @@ ChildWindow.objectEditorWindow {
 
         Button.loadColor {
             Position = (82, 50);
-            Renderer = &2;
+            Renderer = &1;
             Size = (116, 20);
             Text = "Load texture...";
             TextSize = 13;
@@ -708,7 +768,7 @@ ChildWindow.objectEditorWindow {
         Label.Label15 {
             HorizontalAlignment = Center;
             Position = (10, 215);
-            Renderer = &6;
+            Renderer = &5;
             Size = (188.2, 18);
             Text = Normal;
             TextSize = 13;
@@ -716,7 +776,7 @@ ChildWindow.objectEditorWindow {
 
         Button.loadNormal {
             Position = (20, 235);
-            Renderer = &2;
+            Renderer = &1;
             Size = (116, 20);
             Text = "Load texture...";
             TextSize = 13;
@@ -725,7 +785,7 @@ ChildWindow.objectEditorWindow {
         Label.Label16 {
             HorizontalAlignment = Center;
             Position = (10, 257);
-            Renderer = &6;
+            Renderer = &5;
             Size = (188.2, 18);
             Text = "Ambient occlusion";
             TextSize = 13;
@@ -733,7 +793,7 @@ ChildWindow.objectEditorWindow {
 
         Button.loadAo {
             Position = (20, 277);
-            Renderer = &2;
+            Renderer = &1;
             Size = (116, 20);
             Text = "Load texture...";
             TextSize = 13;
@@ -742,7 +802,7 @@ ChildWindow.objectEditorWindow {
         Label.Label17 {
             HorizontalAlignment = Center;
             Position = (10, 299);
-            Renderer = &6;
+            Renderer = &5;
             Size = (188.2, 18);
             Text = Emission;
             TextSize = 13;
@@ -750,7 +810,7 @@ ChildWindow.objectEditorWindow {
 
         Button.loadEmission {
             Position = (82, 319);
-            Renderer = &2;
+            Renderer = &1;
             Size = (116, 20);
             Text = "Load texture...";
             TextSize = 13;
@@ -759,7 +819,7 @@ ChildWindow.objectEditorWindow {
         Label.Label18 {
             HorizontalAlignment = Center;
             Position = (10, 341);
-            Renderer = &6;
+            Renderer = &5;
             Size = (188.2, 18);
             Text = Opacity;
             TextSize = 13;
@@ -780,7 +840,7 @@ ChildWindow.objectEditorWindow {
         EditBox.opcbox {
             InputValidator = Float;
             Position = (160, 356);
-            Renderer = &5;
+            Renderer = &4;
             Size = (40, 22);
             Text = "0.0";
             TextSize = 13;
@@ -788,7 +848,7 @@ ChildWindow.objectEditorWindow {
 
         Button.loadOpacity {
             Position = (20, 385);
-            Renderer = &2;
+            Renderer = &1;
             Size = (116, 20);
             Text = "Load texture...";
             TextSize = 13;
@@ -796,7 +856,7 @@ ChildWindow.objectEditorWindow {
 
         Button.emissionPicker {
             Position = (20, 320);
-            Renderer = &2;
+            Renderer = &1;
             Size = (56, 20);
             Text = "Pick...";
             TextSize = 13;
@@ -806,14 +866,14 @@ ChildWindow.objectEditorWindow {
     Group.scriptsGroup {
         Enabled = false;
         Position = (10, 10);
-        Renderer = &4;
+        Renderer = &6;
         Size = (200, 360);
         Visible = false;
 
         Label.Label11 {
             AutoSize = true;
             Position = (75, 0);
-            Renderer = &6;
+            Renderer = &5;
             Size = (47.2, 18);
             Text = Scripts;
             TextSize = 13;
@@ -821,21 +881,21 @@ ChildWindow.objectEditorWindow {
 
         Button.build {
             Position = (0, 22);
-            Renderer = &2;
+            Renderer = &1;
             Text = Build;
             TextSize = 13;
         }
 
         Button.startStop {
             Position = (0, 50);
-            Renderer = &2;
+            Renderer = &1;
             Text = "Start / stop";
             TextSize = 13;
         }
 
         Button.removeScript {
             Position = (0, 288);
-            Renderer = &2;
+            Renderer = &1;
             Text = "Remove script";
             TextSize = 13;
         }
@@ -897,7 +957,7 @@ ChildWindow.objectEditorWindow {
         Label.Label12 {
             AutoSize = true;
             Position = (67, 80);
-            Renderer = &6;
+            Renderer = &5;
             Size = (63.2, 18);
             Text = Variables;
             TextSize = 13;
@@ -905,7 +965,7 @@ ChildWindow.objectEditorWindow {
 
         EditBox.value {
             Position = (0, 241);
-            Renderer = &5;
+            Renderer = &4;
             Size = (120, 22);
             TextSize = 13;
         }
@@ -913,13 +973,13 @@ ChildWindow.objectEditorWindow {
 
     Group.sceneGroup {
         Position = (10, 10);
-        Renderer = &4;
+        Renderer = &6;
         Size = (200, 260);
         Visible = false;
 
         Label.Label14 {
             Position = (78, 0);
-            Renderer = &6;
+            Renderer = &5;
             Size = (42.2, 18);
             Text = Scene;
             TextSize = 13;
@@ -927,7 +987,7 @@ ChildWindow.objectEditorWindow {
 
         Button.save {
             Position = (70, 50);
-            Renderer = &2;
+            Renderer = &1;
             Size = (58, 20);
             Text = Save;
             TextSize = 13;
@@ -935,14 +995,14 @@ ChildWindow.objectEditorWindow {
 
         EditBox.filename {
             Position = (0, 20);
-            Renderer = &5;
+            Renderer = &4;
             Size = (160, 24);
             TextSize = 13;
         }
 
         Button.openFileDialog {
             Position = (170, 20);
-            Renderer = &2;
+            Renderer = &1;
             Size = (31, 22);
             Text = "...";
             TextSize = 13;
@@ -953,7 +1013,7 @@ ChildWindow.objectEditorWindow {
 ChildWindow.viewport {
     Position = (220, 0);
     PositionLocked = true;
-    Renderer = &1;
+    Renderer = &3;
     Size = (840, 520);
     Title = Viewport;
     TitleAlignment = Center;
@@ -989,7 +1049,7 @@ ChildWindow.viewport {
 
 ChildWindow.ChildWindow3 {
     Position = (220, 520);
-    Renderer = &1;
+    Renderer = &3;
     Size = (840, 200);
     Title = Messages;
     TitleAlignment = Center;

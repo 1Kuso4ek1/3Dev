@@ -49,8 +49,23 @@ install(DIRECTORY DESTINATION ${HOME_PATH}/.3Dev-Editor/gui)
 install(DIRECTORY DESTINATION ${HOME_PATH}/.3Dev-Editor/log)
 install(DIRECTORY DESTINATION ${HOME_PATH}/.3Dev-Editor/default)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/default/hdri.hdr DESTINATION ${HOME_PATH}/.3Dev-Editor/default)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/gui/menu.txt ${CMAKE_CURRENT_SOURCE_DIR}/gui/editor.txt DESTINATION ${HOME_PATH}/.3Dev-Editor/gui)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/gui/themes/Black.txt ${CMAKE_CURRENT_SOURCE_DIR}/gui/themes/Black.png DESTINATION ${HOME_PATH}/.3Dev-Editor/gui/themes)
+install(FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/menu.txt
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/loading.txt 
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/editor.txt
+    DESTINATION ${HOME_PATH}/.3Dev-Editor/gui
+)
+
+install(FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/themes/Black.txt
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/themes/Black.png
+    DESTINATION ${HOME_PATH}/.3Dev-Editor/gui/themes
+)
+
+install(FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/icon.png
+    DESTINATION ${HOME_PATH}/.3Dev-Editor
+)
 
 if(UNIX)
     write_file(${CMAKE_CURRENT_SOURCE_DIR}/3Dev-Editor.desktop

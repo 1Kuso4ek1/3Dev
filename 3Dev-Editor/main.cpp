@@ -119,15 +119,19 @@ int main()
     std::filesystem::current_path(homeFolder + "gui");
 
     tgui::Gui menu{ engine.GetWindow() };
+    tgui::Gui loading{ engine.GetWindow() };
     tgui::Gui editor{ engine.GetWindow() };
 
     menu.loadWidgetsFromFile(homeFolder + "gui/menu.txt");
+    loading.loadWidgetsFromFile(homeFolder + "gui/loading.txt");
     editor.loadWidgetsFromFile(homeFolder + "gui/editor.txt");
 
     auto openButton = menu.get<tgui::Button>("open");
     auto pathEdit = menu.get<tgui::EditBox>("path");
     auto openFileDialogButton = menu.get<tgui::Button>("openFileDialog");
     auto projectsComboBox = menu.get<tgui::ComboBox>("projects");
+    
+    auto progressBar = loading.get<tgui::ProgressBar>("progressBar");
 
 	auto viewportWindow = editor.get<tgui::ChildWindow>("viewport");
     auto viewport = tgui::CanvasOpenGL3::create({ viewportWindow->getSize().x, viewportWindow->getSize().y - 28 });
@@ -286,8 +290,21 @@ int main()
     });
 
     engine.Launch();
+    
+    progressBar->setText("Initializing Renderer");
+    
+    glClear(GL_COLOR_BUFFER_BIT);
+    loading.draw();
+    engine.GetWindow().display();
 
     Renderer::GetInstance()->Init({ 840, 492 }, properties["defaultResorces"].asString() + "hdri.hdr");
+    
+    progressBar->setValue(20);
+    progressBar->setText("Setting up defaults");
+    
+    glClear(GL_COLOR_BUFFER_BIT);
+    loading.draw();
+    engine.GetWindow().display();
 
     Camera cam(&engine.GetWindow());
     cam.SetViewportSize({ 840, 492 });
@@ -306,6 +323,13 @@ int main()
 
 	rp3d::PhysicsWorld::WorldSettings st;
     auto man = std::make_shared<PhysicsManager>(st);
+    
+    progressBar->setValue(40);
+    progressBar->setText("Loading scene");
+    
+    glClear(GL_COLOR_BUFFER_BIT);
+    loading.draw();
+    engine.GetWindow().display();
 
     SceneManager scene;
 
@@ -333,6 +357,13 @@ int main()
         materialBox->addItem("default");
         sceneTree->addItem({ "Scene", "Materials", "default" });
     }
+    
+    progressBar->setValue(70);
+    progressBar->setText("Loading scripts");
+    
+    glClear(GL_COLOR_BUFFER_BIT);
+    loading.draw();
+    engine.GetWindow().display();
 
     filenameEdit->setText(projectFilename.empty() ? "scene.json" : projectFilename);
 
@@ -357,6 +388,13 @@ int main()
         for(auto& i : scripts)
             sceneTree->addItem({ "Scene", "Scripts", i });
     }
+    
+    progressBar->setValue(90);
+    progressBar->setText("Finishing");
+    
+    glClear(GL_COLOR_BUFFER_BIT);
+    loading.draw();
+    engine.GetWindow().display();
 
     ShadowManager shadows(&scene, glm::ivec2(1024, 1024));
 
@@ -1183,6 +1221,12 @@ int main()
 
         editor.draw();
     });
+    
+    progressBar->setValue(100);
+    
+    glClear(GL_COLOR_BUFFER_BIT);
+    loading.draw();
+    engine.GetWindow().display();
 
     engine.Launch();
 

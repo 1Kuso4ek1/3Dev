@@ -2,7 +2,7 @@ Panel.Panel1 {
     Size = (1280, 720);
 
     Renderer {
-        BackgroundColor = rgb(80, 80, 80);
+        BackgroundColor = #232323;
         TextureBackground = None;
     }
 
@@ -24,7 +24,7 @@ Panel.Panel1 {
 }
 
 Picture.Picture1 {
-    Position = (570, 250);
+    Position = (584, 260);
     Size = (115, 114);
 
     Renderer {
@@ -35,8 +35,8 @@ Picture.Picture1 {
 
 Label.Label1 {
     HorizontalAlignment = Center;
-    Position = (570, 370);
-    Size = (118.2, 18);
+    Position = (577, 380);
+    Size = (128.2, 18);
     Text = "3Dev Editor 1.0.0";
     TextSize = 13;
 
