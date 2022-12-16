@@ -17,6 +17,27 @@ Shape::Shape(const rp3d::Vector3& size, Material* mat, PhysicsManager* man, Shad
 	}
 }
 
+Shape::Shape(Shape* shape)
+{
+	drawable = shape->drawable;
+	mat = shape->mat;
+	m = shape->m;
+	shader = shape->shader;
+	man = shape->man;
+	cube = shape->cube;
+	size = shape->size;
+	tr = shape->tr;
+
+	if(man)
+	{
+		this->shape = man->CreateBoxShape(size);
+		body = man->CreateRigidBody(tr);
+		collider = body->addCollider(this->shape, rp3d::Transform::identity());
+		body->setIsActive(shape->body->isActive());
+        body->setType(shape->body->getType());
+	}
+}
+
 void Shape::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
 {
 	m->PushMatrix();

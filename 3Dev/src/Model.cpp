@@ -1,5 +1,43 @@
 #include "Model.hpp"
 
+Model::Model(Model* model)
+{
+	autoUpdateAnimation = model->autoUpdateAnimation;
+	drawable = model->drawable;
+	meshes = model->meshes;
+	m = model->m;
+	shader = model->shader;
+	mat = model->mat;
+	anims = model->anims;
+	man = model->man;
+	globalInverseTransform = model->globalInverseTransform;
+	filename = model->filename;
+	size = model->size;
+	transform = model->transform;
+
+	if(man)
+	{
+		CreateRigidBody();
+	    cstype = model->cstype;
+        for(int i = 0; i < meshes.size(); i++)
+            switch(cstype)
+            {
+            case CollisionShapeType::Box:
+                CreateBoxShape(i); break;
+            case CollisionShapeType::Sphere:
+                CreateSphereShape(i); break;
+            case CollisionShapeType::Capsule:
+                CreateCapsuleShape(i); break;
+            case CollisionShapeType::Concave:
+                CreateConcaveShape(i); break;
+            case CollisionShapeType::Convex:
+                CreateConvexShape(i); break;
+            }
+        body->setIsActive(model->body->isActive());
+        body->setType(model->body->getType());
+	}
+}
+
 Model::Model(Shader* shader)
 	 : transform({ 0, 0, 0 }, { 0, 0, 0, 1 }), size({ 1, 1, 1 }), shader(shader)
 {

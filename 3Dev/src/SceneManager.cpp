@@ -343,6 +343,10 @@ void SceneManager::LoadState()
             shapes[i.first]->SetOrientation(i.second.orient);
         }
     }
+    for(auto& i : temporaryModelCopies)
+        RemoveObject(GetModel(i));
+    for(auto& i : temporaryShapeCopies)
+        RemoveObject(GetShape(i));
 }
 
 void SceneManager::SetMainShader(Shader* shader)
@@ -468,17 +472,21 @@ SoundManager* SceneManager::GetSoundManagerPtr()
     return sManager.get();
 }
 
-Model* SceneManager::CloneModel(Model* model, std::string name)
+Model* SceneManager::CloneModel(Model* model, bool isTemporary, std::string name)
 {
-    auto ret = std::make_shared<Model>(*model);
+    auto ret = std::make_shared<Model>(model);
     AddObject(ret, name);
+    if(isTemporary)
+        temporaryModelCopies.push_back(GetLastAdded());
     return ret.get();
 }
     
-Shape* SceneManager::CloneShape(Shape* shape, std::string name)
+Shape* SceneManager::CloneShape(Shape* shape, bool isTemporary, std::string name)
 {
-    auto ret = std::make_shared<Shape>(*shape);
+    auto ret = std::make_shared<Shape>(shape);
     AddObject(ret, name);
+    if(isTemporary)
+        temporaryShapeCopies.push_back(GetLastAdded());
     return ret.get();
 }
 

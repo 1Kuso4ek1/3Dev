@@ -70,8 +70,8 @@ public:
     PhysicsManager* GetPhysicsManagerPtr(std::string name);
     SoundManager* GetSoundManagerPtr();
 
-    Model* CloneModel(Model* model, std::string name = "model");
-    Shape* CloneShape(Shape* shape, std::string name = "shape");
+    Model* CloneModel(Model* model, bool isTemporary = true, std::string name = "model");
+    Shape* CloneShape(Shape* shape, bool isTemporary = true, std::string name = "shape");
 
     std::vector<Model*> GetModelPtrGroup(std::string name);
     std::vector<Shape*> GetShapePtrGroup(std::string name);
@@ -112,6 +112,9 @@ private:
 
     std::shared_ptr<Shape> skybox;
     std::shared_ptr<SoundManager> sManager;
+
+    std::vector<std::string> temporaryModelCopies;
+    std::vector<std::string> temporaryShapeCopies;
 
     std::unordered_map<std::string, std::vector<std::shared_ptr<Model>>> modelGroups;
     std::unordered_map<std::string, std::vector<std::shared_ptr<Shape>>> shapeGroups;
