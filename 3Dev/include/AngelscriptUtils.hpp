@@ -3,6 +3,7 @@
 #include <scriptstdstring.h>
 #include <scriptarray.h>
 #include <aswrappedcall.h>
+#include <scriptmath.h>
 
 static void MessageCallback(const asSMessageInfo *msg, void *param)
 {

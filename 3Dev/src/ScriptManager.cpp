@@ -10,6 +10,7 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
 
     RegisterStdString(engine);
     RegisterScriptArray(engine, true);
+    RegisterScriptMath(engine);
     RegisterVector3();
     RegisterQuaternion();
     RegisterTransform();

@@ -46,6 +46,7 @@ add_library(3Dev
 	libraries/Angelscript/sdk/add_on/scriptbuilder/scriptbuilder.cpp
 	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.cpp
 	libraries/Angelscript/sdk/add_on/scriptarray/scriptarray.cpp
+	libraries/Angelscript/sdk/add_on/scriptmath/scriptmath.cpp
 )
 
 add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/shaders/\"")
@@ -80,6 +81,7 @@ target_include_directories(3Dev
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptstdstring>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptarray>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/autowrapper>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptmath>
 	$<INSTALL_INTERFACE:include>
 )
 
@@ -140,5 +142,6 @@ install(FILES
 	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.h
 	libraries/Angelscript/sdk/add_on/scriptarray/scriptarray.h
 	libraries/Angelscript/sdk/add_on/autowrapper/aswrappedcall.h
+	libraries/Angelscript/sdk/add_on/scriptmath/scriptmath.h
 	DESTINATION include/3Dev
 )
