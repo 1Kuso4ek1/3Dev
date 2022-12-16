@@ -57,6 +57,9 @@ Renderer.3 {
 }
 
 Renderer.4 {
+}
+
+Renderer.5 {
     CaretColor = rgb(110, 110, 255);
     DefaultTextColor = rgb(120, 120, 120);
     Padding = (6, 4, 6, 4);
@@ -69,7 +72,7 @@ Renderer.4 {
     TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
 }
 
-Renderer.5 {
+Renderer.6 {
     TextColor = rgb(190, 190, 190);
     TextureBackground = None;
 
@@ -83,9 +86,6 @@ Renderer.5 {
         TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
         TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
     }
-}
-
-Renderer.6 {
 }
 
 Renderer.7 {
@@ -333,13 +333,12 @@ ChildWindow.objectEditorWindow {
     Group.objectEditor {
         Enabled = false;
         Position = (10, 10);
+        Renderer = &4;
         Size = (200, 380);
-
-        Renderer {
-        }
+        Visible = false;
 
         EditBox.name {
-            Renderer = &4;
+            Renderer = &5;
             Size = (200, 24);
             TextSize = 13;
         }
@@ -348,7 +347,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (0, 30);
-            Renderer = &4;
+            Renderer = &5;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -357,7 +356,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (50, 30);
-            Renderer = &4;
+            Renderer = &5;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -366,7 +365,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (100, 30);
-            Renderer = &4;
+            Renderer = &5;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -374,7 +373,7 @@ ChildWindow.objectEditorWindow {
         Label.Label4 {
             HorizontalAlignment = Center;
             Position = (140, 32);
-            Renderer = &5;
+            Renderer = &6;
             Size = (68.2, 18);
             Text = pos;
             TextSize = 13;
@@ -384,7 +383,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (0, 60);
-            Renderer = &4;
+            Renderer = &5;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -393,7 +392,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (50, 60);
-            Renderer = &4;
+            Renderer = &5;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -402,7 +401,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (100, 60);
-            Renderer = &4;
+            Renderer = &5;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -410,7 +409,7 @@ ChildWindow.objectEditorWindow {
         Label.Label5 {
             HorizontalAlignment = Center;
             Position = (140, 62);
-            Renderer = &5;
+            Renderer = &6;
             Size = (68.2, 18);
             Text = rot;
             TextSize = 13;
@@ -420,7 +419,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 1;
             InputValidator = Float;
             Position = (0, 90);
-            Renderer = &4;
+            Renderer = &5;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -429,7 +428,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 1;
             InputValidator = Float;
             Position = (50, 90);
-            Renderer = &4;
+            Renderer = &5;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -438,7 +437,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 1;
             InputValidator = Float;
             Position = (100, 90);
-            Renderer = &4;
+            Renderer = &5;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -446,7 +445,7 @@ ChildWindow.objectEditorWindow {
         Label.Label6 {
             HorizontalAlignment = Center;
             Position = (140, 92);
-            Renderer = &5;
+            Renderer = &6;
             Size = (68.2, 18);
             Text = size;
             TextSize = 13;
@@ -654,7 +653,7 @@ ChildWindow.objectEditorWindow {
 
     Group.materialEditor {
         Position = (10, 10);
-        Renderer = &6;
+        Renderer = &4;
         Size = (200, 420);
         Visible = false;
 
@@ -685,7 +684,7 @@ ChildWindow.objectEditorWindow {
         EditBox.mtlbox {
             InputValidator = Float;
             Position = (160, 96);
-            Renderer = &4;
+            Renderer = &5;
             Size = (40, 22);
             Text = "0.0";
             TextSize = 13;
@@ -694,7 +693,7 @@ ChildWindow.objectEditorWindow {
         EditBox.rghbox {
             InputValidator = Float;
             Position = (160, 166);
-            Renderer = &4;
+            Renderer = &5;
             Size = (40, 22);
             Text = "0.0";
             TextSize = 13;
@@ -703,7 +702,7 @@ ChildWindow.objectEditorWindow {
         Label.Label7 {
             HorizontalAlignment = Center;
             Position = (10, 30);
-            Renderer = &5;
+            Renderer = &6;
             Size = (188.2, 18);
             Text = Color;
             TextSize = 13;
@@ -712,7 +711,7 @@ ChildWindow.objectEditorWindow {
         Label.Label8 {
             HorizontalAlignment = Center;
             Position = (10, 75);
-            Renderer = &5;
+            Renderer = &6;
             Size = (188.2, 18);
             Text = Metalness;
             TextSize = 13;
@@ -721,14 +720,14 @@ ChildWindow.objectEditorWindow {
         Label.Label9 {
             HorizontalAlignment = Center;
             Position = (10, 145);
-            Renderer = &5;
+            Renderer = &6;
             Size = (188.2, 18);
             Text = Roughness;
             TextSize = 13;
         }
 
         EditBox.matName {
-            Renderer = &4;
+            Renderer = &5;
             Size = (200, 24);
             TextSize = 13;
         }
@@ -768,7 +767,7 @@ ChildWindow.objectEditorWindow {
         Label.Label15 {
             HorizontalAlignment = Center;
             Position = (10, 215);
-            Renderer = &5;
+            Renderer = &6;
             Size = (188.2, 18);
             Text = Normal;
             TextSize = 13;
@@ -785,7 +784,7 @@ ChildWindow.objectEditorWindow {
         Label.Label16 {
             HorizontalAlignment = Center;
             Position = (10, 257);
-            Renderer = &5;
+            Renderer = &6;
             Size = (188.2, 18);
             Text = "Ambient occlusion";
             TextSize = 13;
@@ -802,7 +801,7 @@ ChildWindow.objectEditorWindow {
         Label.Label17 {
             HorizontalAlignment = Center;
             Position = (10, 299);
-            Renderer = &5;
+            Renderer = &6;
             Size = (188.2, 18);
             Text = Emission;
             TextSize = 13;
@@ -819,7 +818,7 @@ ChildWindow.objectEditorWindow {
         Label.Label18 {
             HorizontalAlignment = Center;
             Position = (10, 341);
-            Renderer = &5;
+            Renderer = &6;
             Size = (188.2, 18);
             Text = Opacity;
             TextSize = 13;
@@ -840,7 +839,7 @@ ChildWindow.objectEditorWindow {
         EditBox.opcbox {
             InputValidator = Float;
             Position = (160, 356);
-            Renderer = &4;
+            Renderer = &5;
             Size = (40, 22);
             Text = "0.0";
             TextSize = 13;
@@ -866,14 +865,15 @@ ChildWindow.objectEditorWindow {
     Group.scriptsGroup {
         Enabled = false;
         Position = (10, 10);
-        Renderer = &6;
         Size = (200, 360);
-        Visible = false;
+
+        Renderer {
+        }
 
         Label.Label11 {
             AutoSize = true;
             Position = (75, 0);
-            Renderer = &5;
+            Renderer = &6;
             Size = (47.2, 18);
             Text = Scripts;
             TextSize = 13;
@@ -915,15 +915,16 @@ ChildWindow.objectEditorWindow {
             TextSize = 13;
 
             Renderer {
-                BackgroundColor = rgb( 80, 80, 80);
+                BackgroundColor = #303030;
                 BackgroundColorHover = rgb(100, 100, 100);
                 BorderColor = Black;
                 Borders = (1, 1, 1, 1);
-                HeaderBackgroundColor = rgb( 95, 95, 95);
+                HeaderBackgroundColor = #404040;
                 HeaderTextColor = rgb(210, 210, 210);
                 SelectedBackgroundColor = rgb( 10, 110, 255);
                 SelectedBackgroundColorHover = rgb(30, 150, 255);
                 SelectedTextColor = White;
+                SeparatorColor = #101010;
                 TextColor = rgb(190, 190, 190);
                 TextColorHover = rgb(250, 250, 250);
                 TextureBackground = None;
@@ -957,7 +958,7 @@ ChildWindow.objectEditorWindow {
         Label.Label12 {
             AutoSize = true;
             Position = (67, 80);
-            Renderer = &5;
+            Renderer = &6;
             Size = (63.2, 18);
             Text = Variables;
             TextSize = 13;
@@ -965,7 +966,7 @@ ChildWindow.objectEditorWindow {
 
         EditBox.value {
             Position = (0, 241);
-            Renderer = &4;
+            Renderer = &5;
             Size = (120, 22);
             TextSize = 13;
         }
@@ -973,13 +974,13 @@ ChildWindow.objectEditorWindow {
 
     Group.sceneGroup {
         Position = (10, 10);
-        Renderer = &6;
+        Renderer = &4;
         Size = (200, 260);
         Visible = false;
 
         Label.Label14 {
             Position = (78, 0);
-            Renderer = &5;
+            Renderer = &6;
             Size = (42.2, 18);
             Text = Scene;
             TextSize = 13;
@@ -995,7 +996,7 @@ ChildWindow.objectEditorWindow {
 
         EditBox.filename {
             Position = (0, 20);
-            Renderer = &4;
+            Renderer = &5;
             Size = (160, 24);
             TextSize = 13;
         }
