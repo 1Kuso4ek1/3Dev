@@ -90,7 +90,7 @@ float CalcShadow(int i)
 		    shadow += float(current > pcf);
 		}
 	}*/
-    return float(current - 0.1 > LinearizeDepth(texture(shadows[i].shadowmap, pcoord.xy).x));
+    return float(current - 0.2 > LinearizeDepth(texture(shadows[i].shadowmap, pcoord.xy).x));
 }
 
 float GGX(float ndoth, float rough)
