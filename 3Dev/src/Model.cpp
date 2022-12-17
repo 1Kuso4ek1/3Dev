@@ -74,7 +74,7 @@ void Model::Load(std::string filename, unsigned int flags)
 
 	if(man)
     {
-        shapes.resize(meshes.size(), nullptr);
+        shapes.resize(meshes.size(), (rp3d::BoxShape*)(nullptr));
         colliders.resize(meshes.size(), nullptr);
     }
 
@@ -90,6 +90,11 @@ void Model::Load(std::string filename, unsigned int flags)
 	}
 
 	this->filename = filename;
+}
+
+void Model::AddMesh(std::shared_ptr<Mesh> mesh)
+{
+	meshes.push_back(mesh);
 }
 
 void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
@@ -162,6 +167,29 @@ void Model::SetOrientation(const rp3d::Quaternion& orientation)
 void Model::SetSize(const rp3d::Vector3& size)
 {
 	this->size = size;
+	if(body)
+	{
+		for(int i = 0; i < meshes.size(); i++)
+            switch(cstype)
+            {
+            case CollisionShapeType::Box:
+                std::get<0>(shapes[i])->setHalfExtents(std::get<0>(shapes[i])->getHalfExtents() * size);
+				break;
+            case CollisionShapeType::Sphere:
+                std::get<1>(shapes[i])->setRadius(std::get<1>(shapes[i])->getRadius() * size.x);
+				break;
+            case CollisionShapeType::Capsule:
+                std::get<2>(shapes[i])->setRadius(std::get<2>(shapes[i])->getRadius() * size.x);
+				std::get<2>(shapes[i])->setHeight(std::get<2>(shapes[i])->getHeight() * size.y);
+				break;
+            case CollisionShapeType::Concave:
+                std::get<3>(shapes[i])->setScale(size);
+				break;
+            case CollisionShapeType::Convex:
+                std::get<4>(shapes[i])->setScale(size);
+				break;
+            }
+	}
 }
 
 void Model::SetMaterial(std::vector<Material*> mat)
@@ -225,7 +253,7 @@ void Model::CreateBoxShape(int mesh, rp3d::Transform tr)
 	aiAABB aabb = meshes[mesh]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
 	shapes[mesh] = man->CreateBoxShape((rp3d::Vector3(v.x, v.y, v.z) / 2) * size);
-	colliders[mesh] = body->addCollider(shapes[mesh], tr);
+	colliders[mesh] = body->addCollider(std::get<0>(shapes[mesh]), tr);
 	cstype = CollisionShapeType::Box;
 }
 
@@ -248,7 +276,7 @@ void Model::CreateSphereShape(int mesh, rp3d::Transform tr)
 	aiAABB aabb = meshes[mesh]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
 	shapes[mesh] = man->CreateSphereShape((v.y / 2) * size.y);
-	colliders[mesh] = body->addCollider(shapes[mesh], tr);
+	colliders[mesh] = body->addCollider(std::get<1>(shapes[mesh]), tr);
 	cstype = CollisionShapeType::Sphere;
 }
 
@@ -270,8 +298,8 @@ void Model::CreateCapsuleShape(int mesh, rp3d::Transform tr)
 
 	aiAABB aabb = meshes[mesh]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
-	shapes[mesh] = man->CreateCapsuleShape((glm::max(v.x, v.z) / 2) * size.x, v.y / 2);
-	colliders[mesh] = body->addCollider(shapes[mesh], tr);
+	shapes[mesh] = man->CreateCapsuleShape((glm::max(v.x, v.z) / 2) * size.x, (v.y / 2) * size.y);
+	colliders[mesh] = body->addCollider(std::get<2>(shapes[mesh]), tr);
 	cstype = CollisionShapeType::Capsule;
 }
 
@@ -302,7 +330,7 @@ void Model::CreateConcaveShape(int mesh, rp3d::Transform tr)
 	tmesh = man->CreateTriangleMesh();
 	tmesh->addSubpart(triangles);
 	shapes[mesh] = man->CreateConcaveMeshShape(tmesh, size);
-	colliders[mesh] = body->addCollider(shapes[mesh], tr);
+	colliders[mesh] = body->addCollider(std::get<3>(shapes[mesh]), tr);
 	body->setType(rp3d::BodyType::STATIC);
 	cstype = CollisionShapeType::Concave;
 }
@@ -334,7 +362,7 @@ void Model::CreateConvexShape(int mesh, rp3d::Transform tr)
 
 	pmesh = man->CreatePolyhedronMesh(polygons);
 	shapes[mesh] = man->CreateConvexMeshShape(pmesh, size);
-	colliders[mesh] = body->addCollider(shapes[mesh], tr);
+	colliders[mesh] = body->addCollider(std::get<4>(shapes[mesh]), tr);
 	cstype = CollisionShapeType::Convex;
 }
 

@@ -55,6 +55,7 @@ public:
 		  PhysicsManager* man = nullptr, Shader* shader = nullptr, Matrices* m = nullptr);
 
 	void Load(std::string filename, unsigned int flags = 0);
+	void AddMesh(std::shared_ptr<Mesh> mesh);
 
 	void Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass = false);
 
@@ -144,7 +145,11 @@ private:
 
 	glm::mat4 globalInverseTransform;
 
-	std::vector<rp3d::CollisionShape*> shapes;
+	std::vector<std::variant<rp3d::BoxShape*,
+							 rp3d::SphereShape*,
+							 rp3d::CapsuleShape*,
+							 rp3d::ConcaveMeshShape*,
+							 rp3d::ConvexMeshShape*>> shapes;
 	std::vector<rp3d::Collider*> colliders;
 	rp3d::RigidBody* body = nullptr;
 	CollisionShapeType cstype = CollisionShapeType::Nothing;
