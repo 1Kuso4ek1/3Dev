@@ -17,6 +17,8 @@ Model::Model(Model* model)
 
 	if(man)
 	{
+		shapes.resize(meshes.size(), (rp3d::BoxShape*)(nullptr));
+        colliders.resize(meshes.size(), nullptr);
 		CreateRigidBody();
 	    cstype = model->cstype;
         for(int i = 0; i < meshes.size(); i++)
@@ -95,6 +97,12 @@ void Model::Load(std::string filename, unsigned int flags)
 void Model::AddMesh(std::shared_ptr<Mesh> mesh)
 {
 	meshes.push_back(mesh);
+
+	if(man)
+    {
+        shapes.push_back((rp3d::BoxShape*)(nullptr));
+        colliders.push_back(nullptr);
+    }
 }
 
 void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
@@ -247,8 +255,9 @@ void Model::CreateBoxShape(int mesh, rp3d::Transform tr)
         return;
     }
 
-    if(colliders[mesh])
-        body->removeCollider(colliders[mesh]);
+	if(colliders.size())
+		if(colliders[mesh])
+			body->removeCollider(colliders[mesh]);
 
 	aiAABB aabb = meshes[mesh]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
@@ -270,8 +279,9 @@ void Model::CreateSphereShape(int mesh, rp3d::Transform tr)
         return;
     }
 
-    if(colliders[mesh])
-        body->removeCollider(colliders[mesh]);
+    if(colliders.size())
+		if(colliders[mesh])
+			body->removeCollider(colliders[mesh]);
 
 	aiAABB aabb = meshes[mesh]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
@@ -293,8 +303,9 @@ void Model::CreateCapsuleShape(int mesh, rp3d::Transform tr)
         return;
     }
 
-    if(colliders[mesh])
-        body->removeCollider(colliders[mesh]);
+    if(colliders.size())
+		if(colliders[mesh])
+			body->removeCollider(colliders[mesh]);
 
 	aiAABB aabb = meshes[mesh]->GetAABB();
 	auto v = aabb.mMax - aabb.mMin;
@@ -316,8 +327,9 @@ void Model::CreateConcaveShape(int mesh, rp3d::Transform tr)
         return;
     }
 
-    if(colliders[mesh])
-        body->removeCollider(colliders[mesh]);
+    if(colliders.size())
+		if(colliders[mesh])
+			body->removeCollider(colliders[mesh]);
 
 	triangles = new rp3d::TriangleVertexArray(
 	meshes[mesh]->GetData().size(), &meshes[mesh]->GetData()[0], sizeof(Vertex),
@@ -347,6 +359,10 @@ void Model::CreateConvexShape(int mesh, rp3d::Transform tr)
         Log::Write("CreateConvexShape(): model don't have a RigidBody", Log::Type::Error);
         return;
     }
+
+	if(colliders.size())
+		if(colliders[mesh])
+			body->removeCollider(colliders[mesh]);
 
 	faces = new rp3d::PolygonVertexArray::PolygonFace[meshes[mesh]->GetIndices().size() / 3];
 	for (int i = 0; i < meshes[mesh]->GetIndices().size() / 3; i++)
