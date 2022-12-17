@@ -16,8 +16,7 @@ TextureManager* TextureManager::GetInstance()
 
 void TextureManager::DeleteInstance()
 {
-    if(instance)
-        delete instance;
+    delete instance;
 }
 
 GLuint TextureManager::CreateTexture(uint32_t w, uint32_t h, bool depth, GLint filter, std::string name)

@@ -15,8 +15,7 @@ Renderer* Renderer::GetInstance()
 
 void Renderer::DeleteInstance()
 {
-    if(instance)
-        delete instance;
+    delete instance;
 }
 
 void Renderer::Init(sf::Vector2u fbSize, std::string environmentMapFilename, uint32_t skyboxSideSize, uint32_t irradianceSideSize, uint32_t prefilteredSideSize)
