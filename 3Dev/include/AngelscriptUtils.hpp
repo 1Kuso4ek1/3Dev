@@ -4,6 +4,10 @@
 #include <scriptarray.h>
 #include <aswrappedcall.h>
 #include <scriptmath.h>
+#include <datetime.h>
+#include <scriptdictionary.h>
+#include <scriptfile.h>
+#include <scriptfilesystem.h>
 
 static void MessageCallback(const asSMessageInfo *msg, void *param)
 {
