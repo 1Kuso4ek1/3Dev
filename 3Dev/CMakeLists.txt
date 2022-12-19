@@ -50,7 +50,6 @@ add_library(3Dev
 	libraries/Angelscript/sdk/add_on/datetime/datetime.cpp
 	libraries/Angelscript/sdk/add_on/scriptdictionary/scriptdictionary.cpp
 	libraries/Angelscript/sdk/add_on/scriptfile/scriptfile.cpp
-	libraries/Angelscript/sdk/add_on/scriptfile/scriptfilesystem.cpp
 )
 
 add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/shaders/\"")
@@ -89,7 +88,6 @@ target_include_directories(3Dev
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/datetime>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptdictionary>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptfile>
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptfilesystem>
 	$<INSTALL_INTERFACE:include>
 )
 
@@ -154,6 +152,5 @@ install(FILES
 	libraries/Angelscript/sdk/add_on/datetime/datetime.h
 	libraries/Angelscript/sdk/add_on/scriptdictionary/scriptdictionary.h
 	libraries/Angelscript/sdk/add_on/scriptfile/scriptfile.h
-	libraries/Angelscript/sdk/add_on/scriptfile/scriptfilesystem.h
 	DESTINATION include/3Dev
 )

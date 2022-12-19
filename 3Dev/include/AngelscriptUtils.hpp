@@ -7,7 +7,6 @@
 #include <datetime.h>
 #include <scriptdictionary.h>
 #include <scriptfile.h>
-#include <scriptfilesystem.h>
 
 static void MessageCallback(const asSMessageInfo *msg, void *param)
 {
