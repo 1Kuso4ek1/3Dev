@@ -55,7 +55,6 @@ public:
 		  PhysicsManager* man = nullptr, Shader* shader = nullptr, Matrices* m = nullptr);
 
 	void Load(std::string filename, unsigned int flags = 0);
-	void AddMesh(std::shared_ptr<Mesh> mesh);
 
 	void Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass = false);
 

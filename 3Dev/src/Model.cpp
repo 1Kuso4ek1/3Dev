@@ -94,17 +94,6 @@ void Model::Load(std::string filename, unsigned int flags)
 	this->filename = filename;
 }
 
-void Model::AddMesh(std::shared_ptr<Mesh> mesh)
-{
-	meshes.push_back(mesh);
-
-	if(man)
-    {
-        shapes.push_back((rp3d::BoxShape*)(nullptr));
-        colliders.push_back(nullptr);
-    }
-}
-
 void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
 {
     if(!drawable) return;
