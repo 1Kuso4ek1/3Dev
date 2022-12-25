@@ -13,6 +13,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool shadow
         float time = clock.restart().asSeconds();
         std::for_each(pManagers.begin(), pManagers.end(), [&](auto p) { p.second->Update(time); });
     }
+    else clock.restart();
 
     // needed for materials without textures to render correctly in some cases
     for(int i = 0; i < 8; i++)
