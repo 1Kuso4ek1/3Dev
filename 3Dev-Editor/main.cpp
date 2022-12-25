@@ -11,6 +11,8 @@
     std::string homeFolder = std::string(getenv("HOME")) + "/.3Dev-Editor/";
 #endif
 
+sf::Clock shortcutDelay;
+
 std::string lastPath = std::filesystem::current_path().string();
 
 void SaveProperties(Json::Value data)
@@ -94,6 +96,16 @@ std::shared_ptr<tgui::ColorPicker> CreateColorPicker(std::string title, tgui::Co
     picker->setFocused(true);
 
     return picker;
+}
+
+bool Shortcut(std::vector<sf::Keyboard::Key> keys, float delay = 0.3)
+{
+	bool ret = true && shortcutDelay.getElapsedTime().asSeconds() > delay;
+	for(auto& i : keys)
+		ret &= sf::Keyboard::isKeyPressed(i);
+	if(ret)
+		shortcutDelay.restart();
+	return ret;
 }
 
 int main()
@@ -223,8 +235,8 @@ int main()
 
     std::shared_ptr<tgui::FileDialog> openFileDialog = nullptr;
 
-    bool objectMovement = false;
-    sf::Clock changeMode;
+    bool objectMode = false;
+    int axis = 0, param = 0;
 
     tgui::Color matColor = tgui::Color::White;
 
@@ -847,6 +859,55 @@ int main()
 			}
 			if(variantIndex != -1)
 			{
+				if(objectMode)
+				{
+					rp3d::Vector3 m(axis == 0 ? 0.1 : 0, axis == 1 ? 0.1 : 0, axis == 2 ? 0.1 : 0);
+					rp3d::Vector3 r(axis == 0 ? 0.05 : 0, axis == 1 ? 0.05 : 0, axis == 2 ? 0.05 : 0);
+					switch(param)
+					{
+					case 0:
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+						{
+							if(variantIndex == 0) std::get<0>(object)->Move(m);
+							else std::get<1>(object)->Move(m);
+						}
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+						{
+							if(variantIndex == 0) std::get<0>(object)->Move(-m);
+							else std::get<1>(object)->Move(-m);
+						}
+						break;
+					case 1:
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+						{
+							if(variantIndex == 0)
+								std::get<0>(object)->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
+							else
+								std::get<1>(object)->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
+						}
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+						{
+							if(variantIndex == 0)
+								std::get<0>(object)->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
+							else
+								std::get<1>(object)->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
+						}
+						break;
+					case 2:
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+						{
+							if(variantIndex == 0) std::get<0>(object)->Expand(m);
+							else std::get<1>(object)->Expand(m);
+						}
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+						{
+							if(variantIndex == 0) std::get<0>(object)->Expand(-m);
+							else std::get<1>(object)->Expand(-m);
+						}
+						break;
+					}
+				}
+			
 				objectEditorGroup->setEnabled(true);
 				objectEditorGroup->setVisible(true);
 				materialEditorGroup->setEnabled(false);
@@ -856,7 +917,7 @@ int main()
 				sceneGroup->setEnabled(false);
 				sceneGroup->setVisible(false);
 
-				if(!nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem()[2])
+				if((!nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem()[2]) || objectMode)
 				{
 					rp3d::Vector3 position;
 					rp3d::Quaternion orientation;
@@ -936,9 +997,12 @@ int main()
 
 			    if(variantIndex == 0)
 				{
-					std::get<0>(object)->SetPosition(pos);
-					std::get<0>(object)->SetOrientation(rp3d::Quaternion::fromEulerAngles(euler));
-					std::get<0>(object)->SetSize(size);
+					if(!objectMode)
+					{
+						std::get<0>(object)->SetPosition(pos);
+						std::get<0>(object)->SetOrientation(rp3d::Quaternion::fromEulerAngles(euler));
+						std::get<0>(object)->SetSize(size);
+					}
 
 					if(!materialBox->getSelectedItem().empty())
 					{
@@ -954,9 +1018,12 @@ int main()
 				}
 				else
 				{
-					std::get<1>(object)->SetPosition(pos);
-					std::get<1>(object)->SetOrientation(rp3d::Quaternion::fromEulerAngles(euler));
-					std::get<1>(object)->SetSize(size);
+					if(!objectMode)
+					{
+						std::get<1>(object)->SetPosition(pos);
+						std::get<1>(object)->SetOrientation(rp3d::Quaternion::fromEulerAngles(euler));
+						std::get<1>(object)->SetSize(size);
+					}
 
 					if(!materialBox->getSelectedItem().empty())
 					{
@@ -1175,26 +1242,36 @@ int main()
                 cam.SetSpeed(0.5);
             else cam.SetSpeed(1.0);
 
-            modeLabel->setText("Mode: Camera movement");
+            modeLabel->setText("Camera movement");
 
 	        if(manageCameraMovement) cam.Move(1);
 	        if(manageCameraMouse) cam.Mouse();
         }
         else
         {
-            if(!objectMovement)
-                modeLabel->setText("Mode: None");
-            else modeLabel->setText("Mode: Object movement");
+            if(!objectMode)
+                modeLabel->setText("");
+            else modeLabel->setText(std::string("Object mode") +
+            				(param == 0 ? " (Move)" : (param == 1 ? " (Rotate)" : " (Scale)")) +
+            				(axis == 0 ? " (X)" : (axis == 1 ? " (Y)" : " (Z)")));
 
         	engine.GetWindow().setMouseCursorVisible(true);
         	engine.GetWindow().setMouseCursorGrabbed(false);
         }
         if(manageCameraLook) cam.Look();
 
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::G) && changeMode.getElapsedTime().asSeconds() > 0.3)
+        if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::G }))
+            objectMode = !objectMode;
+
+        if(objectMode)
         {
-            objectMovement = !objectMovement;
-            changeMode.restart();
+        	if(Shortcut({ sf::Keyboard::X })) axis = 0;
+        	if(Shortcut({ sf::Keyboard::Y })) axis = 1;
+        	if(Shortcut({ sf::Keyboard::Z })) axis = 2;
+
+        	if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::M })) param = 0;
+        	if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::R })) param = 1;
+        	if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::S })) param = 2;
         }
 
 		ListenerWrapper::SetPosition(cam.GetPosition());
