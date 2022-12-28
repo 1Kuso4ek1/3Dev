@@ -108,6 +108,13 @@ bool Shortcut(std::vector<sf::Keyboard::Key> keys, float delay = 0.3)
 	return ret;
 }
 
+struct
+{
+	std::string name;
+	int variantIndex = -1;
+	std::variant<std::shared_ptr<Model>, std::shared_ptr<Shape>> object;
+} buffer;
+
 int main()
 {
     Json::Value properties;
@@ -776,9 +783,9 @@ int main()
   	    });
     });
 
-    saveButton->onPress([&]()
-    {
-        if(!filenameEdit->getText().empty())
+	auto saveProject = [&]()
+	{
+		if(!filenameEdit->getText().empty())
         {
             auto path = filenameEdit->getText().toStdString(), scPath = path;
             scene.Save(path, true);
@@ -808,7 +815,9 @@ int main()
             SaveProperties(properties);
             Log::Write(filenameEdit->getText().toStdString() + " saved", Log::Type::Info);
         }
-    });
+	};
+
+    saveButton->onPress(saveProject);
 
     engine.EventLoop([&](sf::Event& event)
     {
@@ -1262,6 +1271,45 @@ int main()
 
         if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::G }))
             objectMode = !objectMode;
+
+        if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::S }))
+        	saveProject();
+
+        if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::C }))
+        {
+        	if(sceneTree->getSelectedItem()[1] == "Models")
+			{
+				buffer.name = sceneTree->getSelectedItem()[2].toStdString();
+				buffer.variantIndex = 0;
+				buffer.object = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+			}
+			else if(sceneTree->getSelectedItem()[1] == "Shapes")
+			{
+				buffer.name = sceneTree->getSelectedItem()[2].toStdString();
+				buffer.variantIndex = 1;
+				buffer.object = scene.GetShape(sceneTree->getSelectedItem()[2].toStdString());
+			}
+        }
+
+        if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::V }))
+        {
+        	if(buffer.variantIndex == 0)
+        	{
+				auto a = scene.CloneModel(std::get<0>(buffer.object).get(), false, buffer.name + "-copy");
+				a->Move(a->GetSize());
+				std::string name = scene.GetLastAdded();
+		    	sceneTree->addItem({ "Scene", "Models", name });
+		    	sceneTree->selectItem({ "Scene", "Models", name });
+			}
+			else if(buffer.variantIndex == 1)
+			{
+				auto a = scene.CloneShape(std::get<1>(buffer.object).get(), false, buffer.name + "-copy");
+				a->Move(a->GetSize());
+				std::string name = scene.GetLastAdded();
+		    	sceneTree->addItem({ "Scene", "Shapes", name });
+		    	sceneTree->selectItem({ "Scene", "Shapes", name });
+			}
+        }
 
         if(objectMode)
         {
