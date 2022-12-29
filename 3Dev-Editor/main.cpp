@@ -123,6 +123,20 @@ int main()
         properties = ParseProperties();
     else
     {
+    	std::filesystem::create_directory(homeFolder);
+    	std::filesystem::create_directory(homeFolder + "log");
+    	std::filesystem::create_directory(homeFolder + "gui");
+        std::filesystem::create_directory(homeFolder + "gui/themes");
+        std::filesystem::create_directory(homeFolder + "default");
+
+        std::filesystem::copy("../default/hdri.hdr", homeFolder + "default/hdri.hdr");
+        std::filesystem::copy("../gui/menu.txt", homeFolder + "gui/menu.txt");
+        std::filesystem::copy("../gui/loading.txt", homeFolder + "gui/loading.txt");
+        std::filesystem::copy("../gui/editor.txt", homeFolder + "gui/editor.txt");
+        std::filesystem::copy("../gui/themes/Black.txt", homeFolder + "gui/themes/Black.txt");
+        std::filesystem::copy("../gui/themes/Black.png", homeFolder + "gui/themes/Black.png");
+        std::filesystem::copy("../icon.png", homeFolder + "icon.png");
+
         DefaultProperties();
         Log::Write("properties.json created.", Log::Type::Info);
         properties = ParseProperties();
