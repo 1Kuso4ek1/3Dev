@@ -1280,14 +1280,14 @@ int main()
 
         	engine.GetWindow().setMouseCursorVisible(true);
         	engine.GetWindow().setMouseCursorGrabbed(false);
+
+        	if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::S }))
+        		saveProject();
         }
         if(manageCameraLook) cam.Look();
 
         if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::G }))
             objectMode = !objectMode;
-
-        if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::S }))
-        	saveProject();
 
         if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::C }))
         {
