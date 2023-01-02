@@ -148,6 +148,8 @@ bool ScriptManager::LoadScript(std::string filename)
 
 void ScriptManager::Build()
 {
+    sf::Clock time;
+
     engine->DiscardModule("module");
     builder.StartNewModule(engine, "module");
 
@@ -156,6 +158,11 @@ void ScriptManager::Build()
 
     int ret = builder.BuildModule();
     buildSucceded = (ret >= 0);
+
+    if(buildSucceded)
+        Log::Write("Build completed successfully in " + std::to_string(time.restart().asSeconds()) + " s", Log::Type::Info);
+    else
+        Log::Write("Build failed", Log::Type::Error);
 }
 
 bool ScriptManager::IsBuildSucceded()
@@ -262,7 +269,12 @@ void ScriptManager::RegisterModel()
         { "Quaternion GetOrientation()", WRAP_MFN(Model, GetOrientation) },
         { "Vector3 GetSize()", WRAP_MFN(Model, GetSize) },
         { "RigidBody@ GetRigidBody()", WRAP_MFN(Model, GetRigidBody) },
-        { "int GetMeshesCount()", WRAP_MFN(Model, GetMeshesCount) }
+        { "void PlayAnimation(int = 0)", WRAP_MFN(Model, PlayAnimation) },
+        { "void StopAnimation(int = 0)", WRAP_MFN(Model, StopAnimation) },
+        { "void PauseAnimation(int = 0)", WRAP_MFN(Model, PauseAnimation) },
+        { "void AutoUpdateAnimation(bool = true)", WRAP_MFN(Model, AutoUpdateAnimation) },
+        { "int GetMeshesCount()", WRAP_MFN(Model, GetMeshesCount) },
+        { "int GetAnimationsCount()", WRAP_MFN(Model, GetAnimationsCount) }
     }, {});
 }
 
@@ -361,6 +373,8 @@ void ScriptManager::RegisterSceneManager()
         { "Shape@ CloneShape(Shape@, bool = true, string = \"shape\")", WRAP_MFN(SceneManager, CloneShape) },
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
         { "PhysicsManager@ GetPhysicsManager()", WRAP_MFN(SceneManager, GetPhysicsManagerPtr) },
+        { "void Save(string filename)", WRAP_MFN(SceneManager, Save) },
+        { "void Load(string filename)", WRAP_MFN(SceneManager, Load) },
         { "ModelGroup GetModelGroup(string)", WRAP_MFN(SceneManager, GetModelPtrGroup) },
         { "ShapeGroup GetShapeGroup(string)", WRAP_MFN(SceneManager, GetShapePtrGroup) },
         { "void UpdatePhysics(bool)", WRAP_MFN(SceneManager, UpdatePhysics) },

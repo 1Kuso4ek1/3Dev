@@ -246,6 +246,8 @@ void SceneManager::Save(std::string filename, bool relativePaths)
 
 void SceneManager::Load(std::string filename)
 {
+    RemoveAllObjects();
+
     Json::Value data;
     Json::CharReaderBuilder rbuilder;
 
