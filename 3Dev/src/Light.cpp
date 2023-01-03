@@ -1,19 +1,19 @@
 #include "Light.hpp"
 
-Light::Light(rp3d::Vector3 color, rp3d::Vector3 position, bool castShadows) 
+Light::Light(const rp3d::Vector3& color, const rp3d::Vector3& position, bool castShadows) 
 			: castShadows(castShadows), color(color), position(position) {}
 
-void Light::SetColor(rp3d::Vector3 color)
+void Light::SetColor(const rp3d::Vector3& color)
 {
 	this->color = color;
 }
 
-void Light::SetPosition(rp3d::Vector3 position)
+void Light::SetPosition(const rp3d::Vector3& position)
 {
 	this->position = position;
 }
 
-void Light::SetDirection(rp3d::Vector3 direction)
+void Light::SetDirection(const rp3d::Vector3& direction)
 {
 	this->direction = direction;
 }
@@ -79,4 +79,56 @@ float Light::GetCutoff()
 float Light::GetOuterCutoff()
 {
 	return outerCutoff;
+}
+
+Json::Value Light::Serialize()
+{
+	Json::Value data;
+
+	data["position"]["x"] = position.x;
+	data["position"]["y"] = position.y;
+	data["position"]["z"] = position.z;
+
+	data["direction"]["x"] = direction.x;
+	data["direction"]["y"] = direction.y;
+	data["direction"]["z"] = direction.z;
+
+	data["color"]["r"] = color.x;
+	data["color"]["g"] = color.y;
+	data["color"]["b"] = color.z;
+
+	data["attenuation"]["constant"] = constant;
+	data["attenuation"]["linear"] = linear;
+	data["attenuation"]["quadratic"] = quadratic;
+
+	data["cutoff"] = cutoff;
+	data["outerCutoff"] = outerCutoff;
+
+	data["castShadows"] = castShadows;
+
+	return data;
+}
+
+void Light::Deserialize(Json::Value data)
+{
+	position.x = data["position"]["x"].asFloat();
+	position.y = data["position"]["y"].asFloat();
+	position.z = data["position"]["z"].asFloat();
+
+	direction.x = data["direction"]["x"].asFloat();
+	direction.y = data["direction"]["y"].asFloat();
+	direction.z = data["direction"]["z"].asFloat();
+
+	color.x = data["color"]["r"].asFloat();
+	color.y = data["color"]["g"].asFloat();
+	color.z = data["color"]["b"].asFloat();
+
+	constant = data["attenuation"]["constant"].asFloat();
+	linear = data["attenuation"]["linear"].asFloat();
+	quadratic = data["attenuation"]["quadratic"].asFloat();
+
+	cutoff = data["cutoff"].asFloat();
+	outerCutoff = data["outerCutoff"].asFloat();
+
+	castShadows = data["castShadows"].asBool();
 }

@@ -236,6 +236,15 @@ void SceneManager::Save(std::string filename, bool relativePaths)
             data["objects"]["models"][counter]["material"][i]["name"] = materialNames[i];
         counter++;
     }
+    counter = 0;
+
+    for(auto& i : lights)
+    {
+        data["lights"][counter] = i.second->Serialize();
+        data["lights"][counter]["name"] = i.first;
+        counter++;
+    }
+    counter = 0;
 
     data["camera"] = camera->Serialize();
 
@@ -270,8 +279,8 @@ void SceneManager::Load(std::string filename)
         materials[name]->Deserialize(data["materials"][counter]);
         counter++;
     }
-
     counter = 0;
+    
     while(!data["objects"]["shapes"][counter].empty())
     {
         auto name = data["objects"]["shapes"][counter]["name"].asString();
@@ -281,8 +290,8 @@ void SceneManager::Load(std::string filename)
         AddObject(shape, name, false);
         counter++;
     }
-
     counter = 0;
+    
     while(!data["objects"]["models"][counter].empty())
     {
         auto name = data["objects"]["models"][counter]["name"].asString();
@@ -296,6 +305,15 @@ void SceneManager::Load(std::string filename)
                                                aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, pManagers.begin()->second.get());
         model->Deserialize(data["objects"]["models"][counter]);
         AddObject(model, name, false);
+        counter++;
+    }
+    counter = 0;
+
+    while(!data["lights"][counter].empty())
+    {
+        auto name = data["lights"][counter]["name"].asString();
+        lights[name] = new Light(rp3d::Vector3::zero(), rp3d::Vector3::zero());
+        lights[name]->Deserialize(data["lights"][counter]);
         counter++;
     }
 

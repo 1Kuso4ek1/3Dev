@@ -34,15 +34,19 @@ public:
 
     std::vector<std::string> GetScripts();
 
+    std::unordered_map<std::string, void*> GetGlobalVariables();
+
 private:
     void RegisterVector3();
     void RegisterQuaternion();
     void RegisterModel();
     void RegisterShape();
+    void RegisterLight();
     void RegisterRigidBody();
     void RegisterCamera();
     void RegisterSceneManager();
     void RegisterSfKeyboard();
+    void RegisterSfMouse();
     void RegisterPhysicsManager();
     void RegisterTransform();
     void RegisterRandom();
@@ -55,6 +59,8 @@ private:
     asIScriptEngine* engine;
     asIScriptContext* context;
     std::pair<asIScriptFunction*, std::string> function = { nullptr, "" };
+
+    std::unordered_map<std::string, void*> globalVariables;
 
     CScriptBuilder builder;
 

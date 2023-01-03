@@ -14,16 +14,16 @@ public:
 	 * @param position position of the light
 	 * @param castsShadows if true, this light will cast shadows
 	 */
-	Light(rp3d::Vector3 color, rp3d::Vector3 position, bool castShadows = false);
+	Light(const rp3d::Vector3& color, const rp3d::Vector3& position, bool castShadows = false);
 	
 	// @param color color of the light
-	void SetColor(rp3d::Vector3 color);
+	void SetColor(const rp3d::Vector3& color);
 
 	// @param position position of the light
-	void SetPosition(rp3d::Vector3 position);
+	void SetPosition(const rp3d::Vector3& position);
 
 	// @param direction direction of the light
-	void SetDirection(rp3d::Vector3 direction);
+	void SetDirection(const rp3d::Vector3& direction);
 
 	/*
 	 * Set light attenuation, calculated with formula "1.0 / (x + y * dist + z * dist * dist)"
@@ -66,6 +66,9 @@ public:
 
 	// @return light outerCutoff
 	float GetOuterCutoff();
+
+	Json::Value Serialize();
+	void Deserialize(Json::Value data);
 
 private:
 	rp3d::Vector3 position, direction, color;

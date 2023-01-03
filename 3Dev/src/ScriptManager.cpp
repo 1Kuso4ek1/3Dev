@@ -24,8 +24,10 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterCamera();
     RegisterModel();
     RegisterShape();
+    RegisterLight();
     RegisterSceneManager();
     RegisterSfKeyboard();
+    RegisterSfMouse();
     RegisterRandom();
     RegisterClock();
 
@@ -160,7 +162,12 @@ void ScriptManager::Build()
     buildSucceded = (ret >= 0);
 
     if(buildSucceded)
+    {
         Log::Write("Build completed successfully in " + std::to_string(time.restart().asSeconds()) + " s", Log::Type::Info);
+        auto mod = builder.GetModule();
+        for(int i = 0; i < mod->GetGlobalVarCount(); i++)
+            globalVariables[std::string(mod->GetGlobalVarDeclaration(i))] = mod->GetAddressOfGlobalVar(i);
+    }
     else
         Log::Write("Build failed", Log::Type::Error);
 }
@@ -192,6 +199,11 @@ void ScriptManager::RemoveScript(std::string filename)
 std::vector<std::string> ScriptManager::GetScripts()
 {
     return scripts;
+}
+
+std::unordered_map<std::string, void*> ScriptManager::GetGlobalVariables()
+{
+    return globalVariables;
 }
 
 void ScriptManager::RegisterVector3()
@@ -299,6 +311,26 @@ void ScriptManager::RegisterShape()
     }, {});
 }
 
+void ScriptManager::RegisterLight()
+{
+    AddType("Light", sizeof(Light),
+    {
+        { "void SetPosition(const Vector3& in)", WRAP_MFN(Light, SetPosition) },
+        { "void SetDirection(const Vector3& in)", WRAP_MFN(Light, SetDirection) },
+        { "void SetColor(const Vector3& in)", WRAP_MFN(Light, SetColor) },
+        { "void SetAttenuation(float, float, float)", WRAP_MFN(Light, SetAttenuation) },
+        { "void SetCutoff(float)", WRAP_MFN(Light, SetCutoff) },
+        { "void SetOuterCutoff(float)", WRAP_MFN(Light, SetCutoff) },
+        { "bool IsCastingShadows()", WRAP_MFN(Light, IsCastingShadows) },
+        { "Vector3 GetPosition()", WRAP_MFN(Light, GetPosition) },
+        { "Vector3 GetDirection()", WRAP_MFN(Light, GetDirection) },
+        { "Vector3 GetColor()", WRAP_MFN(Light, GetColor) },
+        { "Vector3 GetAttenuation()", WRAP_MFN(Light, GetAttenuation) },
+        { "float GetCutoff()", WRAP_MFN(Light, GetCutoff) },
+        { "float GetOuterCutoff()", WRAP_MFN(Light, GetOuterCutoff) }
+    }, {});
+}
+
 void ScriptManager::RegisterRigidBody()
 {
     AddValueType("AABB", sizeof(rp3d::AABB), asGetTypeTraits<rp3d::AABB>() | asOBJ_POD, {}, {});
@@ -369,6 +401,7 @@ void ScriptManager::RegisterSceneManager()
     {
         { "Model@ GetModel(string)", WRAP_MFN(SceneManager, GetModelPtr) },
         { "Shape@ GetShape(string)", WRAP_MFN(SceneManager, GetShapePtr) },
+        { "Light@ GetLight(string)", WRAP_MFN(SceneManager, GetLight) },
         { "Model@ CloneModel(Model@, bool = true, string = \"model\")", WRAP_MFN(SceneManager, CloneModel) },
         { "Shape@ CloneShape(Shape@, bool = true, string = \"shape\")", WRAP_MFN(SceneManager, CloneShape) },
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
@@ -396,6 +429,14 @@ void ScriptManager::RegisterSfKeyboard()
                      "Left", "Right", "Up", "Down", "Numpad0", "Numpad1", "Numpad2", "Numpad3", "Numpad4", "Numpad5",
                      "Numpad6", "Numpad7", "Numpad8", "Numpad9", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9",
                      "F10", "F11", "F12", "F13", "F14", "F15", "Pause" });
+    SetDefaultNamespace("");
+}
+
+void ScriptManager::RegisterSfMouse()
+{
+    SetDefaultNamespace("Mouse");
+    AddFunction("bool isButtonPressed(int)", WRAP_FN(sf::Keyboard::isKeyPressed));
+    AddEnum("Button", { "Left", "Right", "Middle", "XButton1", "XButton2" });
     SetDefaultNamespace("");
 }
 

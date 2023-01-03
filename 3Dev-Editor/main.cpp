@@ -245,6 +245,9 @@ int main()
 
 	auto buildButton = editor.get<tgui::Button>("build");
     auto startStopButton = editor.get<tgui::Button>("startStop");
+    auto variablesList = editor.get<tgui::ListBox>("variables");
+    auto valueEdit = editor.get<tgui::EditBox>("value");
+    auto setValue = editor.get<tgui::Button>("setValue");
     auto removeScriptButton = editor.get<tgui::Button>("removeScript");
 
     auto filenameEdit = editor.get<tgui::EditBox>("filename");
@@ -342,7 +345,7 @@ int main()
     Camera cam(&engine.GetWindow());
     cam.SetViewportSize({ 840, 492 });
 
-    Light shadowSource({ 0, 0, 0 }, { 50.1, 100.0, 50.1 }, true);
+    Light shadowSource({ 0, 0, 0 }, { 50.1, 100.0, -50.1 }, true);
     shadowSource.SetDirection({ 0.0, -1.0, 0.0 });
 
     Material skyboxMaterial(
@@ -356,7 +359,7 @@ int main()
 
 	rp3d::PhysicsWorld::WorldSettings st;
     auto man = std::make_shared<PhysicsManager>(st);
-    
+
     progressBar->setValue(40);
     progressBar->setText("Loading scene");
     
@@ -368,13 +371,14 @@ int main()
 
 	scene.AddPhysicsManager(man);
 	scene.SetCamera(&cam);
-	scene.AddLight(&shadowSource);
     scene.SetSkybox(skybox);
     scene.UpdatePhysics(false);
 
 	if(!projectFilename.empty())
 	{
         scene.Load(projectFilename);
+        if(scene.GetNames()[3].empty())
+            scene.AddLight(&shadowSource, "shadowSource");
         auto names = scene.GetNames();
         for(auto& i : names[0]) sceneTree->addItem({ "Scene", "Models", i });
         for(auto& i : names[1]) sceneTree->addItem({ "Scene", "Shapes", i });
@@ -383,12 +387,15 @@ int main()
             materialBox->addItem(i);
             sceneTree->addItem({ "Scene", "Materials", i });
         }
+        for(auto& i : names[3]) sceneTree->addItem({ "Scene", "Lights", i });
     }
     else
     {
+        scene.AddLight(&shadowSource, "shadowSource");
         scene.AddMaterial(defaultMaterial, "default");
         materialBox->addItem("default");
         sceneTree->addItem({ "Scene", "Materials", "default" });
+        sceneTree->addItem({ "Scene", "Lights", "shadowSource" });
     }
     
     progressBar->setValue(70);
@@ -442,20 +449,15 @@ int main()
     	std::string name = scene.GetLastAdded();
     	sceneTree->addItem({ "Scene", "Models", name });
     	sceneTree->selectItem({ "Scene", "Models", name });
-    	/*materialsNames[model] = { "" };
-    	materialsNames[model].resize(model->GetMeshesCount(), "empty");
-    	materialsNames[model][0] = "default";*/
     });
 
     shapeButton->onPress([&]()
     {
 		auto shape = std::make_shared<Shape>(rp3d::Vector3{ 1, 1, 1 }, scene.GetMaterial(scene.GetNames()[2][0]).get(), man.get());
-		//shape->GetRigidBody()->setIsActive(false);
     	scene.AddObject(shape);
     	std::string name = scene.GetLastAdded();
     	sceneTree->addItem({ "Scene", "Shapes", name });
     	sceneTree->selectItem({ "Scene", "Shapes", name });
-    	//materialsNames[scene.GetShape(name)] = { "default" };
     });
 
     materialButton->onPress([&]()
@@ -753,6 +755,10 @@ int main()
 	buildButton->onPress([&]()
     {
     	scman.Build();
+        variablesList->removeAllItems();
+        auto variables = scman.GetGlobalVariables();
+        for(auto& i : variables)
+            variablesList->addItem(i.first);
     });
 
 	startStopButton->onPress([&]()
@@ -773,6 +779,26 @@ int main()
 			    scene.LoadState();
 			}
 		}
+    });
+
+    setValue->onPress([&]()
+    {
+        auto selected = variablesList->getSelectedItem().toStdString();
+        void* var = scman.GetGlobalVariables()[selected];
+
+        auto type = selected.substr(0, selected.find(' '));
+        if(type == "int") *(int32_t*)(var) = valueEdit->getText().toInt();
+        if(type == "int8") *(int8_t*)(var) = valueEdit->getText().toInt();
+        if(type == "int16") *(int16_t*)(var) = valueEdit->getText().toInt();
+        if(type == "int64") *(int64_t*)(var) = valueEdit->getText().toInt();
+        if(type == "uint") *(uint32_t*)(var) = valueEdit->getText().toUInt();
+        if(type == "uint8") *(uint8_t*)(var) = valueEdit->getText().toUInt();
+        if(type == "uint16") *(uint16_t*)(var) = valueEdit->getText().toUInt();
+        if(type == "uint64") *(uint64_t*)(var) = valueEdit->getText().toUInt();
+        if(type == "float") *(float*)(var) = valueEdit->getText().toFloat();
+        if(type == "double") *(double*)(var) = valueEdit->getText().toFloat();
+        if(type == "bool") *(bool*)(var) = valueEdit->getText() == "true" ? true : false;
+        if(type == "string") *(std::string*)(var) = valueEdit->getText().toStdString();
     });
 
     removeScriptButton->onPress([&]()
@@ -1345,7 +1371,7 @@ int main()
 
 		shadows.Update();
 
-        scene.Draw(Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main));
+        scene.Draw();
 
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 0.5);
