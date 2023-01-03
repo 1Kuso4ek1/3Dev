@@ -228,7 +228,7 @@ void Model::Rotate(const rp3d::Quaternion& orientation)
 
 void Model::Expand(const rp3d::Vector3& size)
 {
-	this->size += size;
+	SetSize(this->size + size);
 }
 
 void Model::CreateBoxShape(int mesh, rp3d::Transform tr)
