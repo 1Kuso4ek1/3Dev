@@ -31,7 +31,6 @@ add_library(3Dev
 	src/Light.cpp
 	src/Model.cpp
 	src/Shader.cpp
-	src/Shape.cpp
 	src/Material.cpp
 	src/Engine.cpp
 	src/Framebuffer.cpp
@@ -133,7 +132,6 @@ install(FILES
   	include/Material.hpp
   	include/Model.hpp
   	include/Shader.hpp
-  	include/Shape.hpp
   	include/Framebuffer.hpp
   	include/Mesh.hpp
   	include/PhysicsManager.hpp

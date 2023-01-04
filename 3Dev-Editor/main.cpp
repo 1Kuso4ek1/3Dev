@@ -15,6 +15,8 @@ sf::Clock shortcutDelay;
 
 std::string lastPath = std::filesystem::current_path().string();
 
+bool disableShortcuts = false;
+
 void SaveProperties(Json::Value data)
 {
     std::ofstream file(homeFolder + "properties.json");
@@ -100,7 +102,7 @@ std::shared_ptr<tgui::ColorPicker> CreateColorPicker(std::string title, tgui::Co
 
 bool Shortcut(std::vector<sf::Keyboard::Key> keys, float delay = 0.3)
 {
-	bool ret = true && shortcutDelay.getElapsedTime().asSeconds() > delay;
+	bool ret = true && shortcutDelay.getElapsedTime().asSeconds() > delay && !disableShortcuts;
 	for(auto& i : keys)
 		ret &= sf::Keyboard::isKeyPressed(i);
 	if(ret)
@@ -111,8 +113,7 @@ bool Shortcut(std::vector<sf::Keyboard::Key> keys, float delay = 0.3)
 struct
 {
 	std::string name;
-	int variantIndex = -1;
-	std::variant<std::shared_ptr<Model>, std::shared_ptr<Shape>> object;
+	std::shared_ptr<Model> object;
 } buffer;
 
 int main()
@@ -186,7 +187,6 @@ int main()
     auto sceneTree = editor.get<tgui::TreeView>("scene");
 
     sceneTree->addItem({ "Scene", "Models" });
-    sceneTree->addItem({ "Scene", "Shapes" });
     sceneTree->addItem({ "Scene", "Materials" });
     sceneTree->addItem({ "Scene", "Lights" });
 	sceneTree->addItem({ "Scene", "Scripts" });
@@ -355,7 +355,8 @@ int main()
 
     auto defaultMaterial = std::make_shared<Material>();
 
-    auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 1, 1, 1 }, &skyboxMaterial);
+    auto skybox = std::make_shared<Model>(true);
+    skybox->SetMaterial({ &skyboxMaterial });
 
 	rp3d::PhysicsWorld::WorldSettings st;
     auto man = std::make_shared<PhysicsManager>(st);
@@ -377,17 +378,16 @@ int main()
 	if(!projectFilename.empty())
 	{
         scene.Load(projectFilename);
-        if(scene.GetNames()[3].empty())
+        if(scene.GetNames()[2].empty())
             scene.AddLight(&shadowSource, "shadowSource");
         auto names = scene.GetNames();
         for(auto& i : names[0]) sceneTree->addItem({ "Scene", "Models", i });
-        for(auto& i : names[1]) sceneTree->addItem({ "Scene", "Shapes", i });
-        for(auto& i : names[2])
+        for(auto& i : names[1])
         {
             materialBox->addItem(i);
             sceneTree->addItem({ "Scene", "Materials", i });
         }
-        for(auto& i : names[3]) sceneTree->addItem({ "Scene", "Lights", i });
+        for(auto& i : names[2]) sceneTree->addItem({ "Scene", "Lights", i });
     }
     else
     {
@@ -441,11 +441,10 @@ int main()
     modelButton->onPress([&]()
     {
     	auto model = std::make_shared<Model>();
-    	model->SetMaterial({ scene.GetMaterial(scene.GetNames()[2][0]).get() });
+    	model->SetMaterial({ scene.GetMaterial(scene.GetNames()[1][0]).get() });
 		model->SetPhysicsManager(man.get());
 		model->CreateRigidBody();
-		//model->GetRigidBody()->setIsActive(false);
-    	scene.AddObject(model);
+    	scene.AddModel(model);
     	std::string name = scene.GetLastAdded();
     	sceneTree->addItem({ "Scene", "Models", name });
     	sceneTree->selectItem({ "Scene", "Models", name });
@@ -453,11 +452,15 @@ int main()
 
     shapeButton->onPress([&]()
     {
-		auto shape = std::make_shared<Shape>(rp3d::Vector3{ 1, 1, 1 }, scene.GetMaterial(scene.GetNames()[2][0]).get(), man.get());
-    	scene.AddObject(shape);
+        auto model = std::make_shared<Model>(true);
+		model->SetMaterial({ scene.GetMaterial(scene.GetNames()[2][0]).get() });
+		model->SetPhysicsManager(man.get());
+		model->CreateRigidBody();
+        model->CreateBoxShape();
+        scene.AddModel(model, "cube");
     	std::string name = scene.GetLastAdded();
-    	sceneTree->addItem({ "Scene", "Shapes", name });
-    	sceneTree->selectItem({ "Scene", "Shapes", name });
+    	sceneTree->addItem({ "Scene", "Models", name });
+    	sceneTree->selectItem({ "Scene", "Models", name });
     });
 
     materialButton->onPress([&]()
@@ -741,14 +744,7 @@ int main()
 
     deleteButton->onPress([&]()
     {
-    	if(sceneTree->getSelectedItem()[1] == "Models")
-    	{
-    		scene.RemoveObject(scene.GetModel(sceneTree->getSelectedItem()[2].toStdString()));
-    	}
-    	else if(sceneTree->getSelectedItem()[1] == "Shapes")
-    	{
-    	    scene.RemoveObject(scene.GetShape(sceneTree->getSelectedItem()[2].toStdString()));
-    	}
+    	scene.RemoveModel(scene.GetModel(sceneTree->getSelectedItem()[2].toStdString()));
     	sceneTree->removeItem(sceneTree->getSelectedItem(), false);
     });
 
@@ -883,30 +879,24 @@ int main()
 			Log::ClearMessagesList();
 		}
 
-    	sceneTree->setEnabled(!openFileDialog);
+        disableShortcuts = !engine.GetWindow().hasFocus();
+
+    	sceneTree->setEnabled(!openFileDialog && !colorPicker);
     	openFileButton->setEnabled(!openFileDialog);
 
 		if(sceneTree->getSelectedItem().size() > 2)
 		{
 			////////////// OBJECTS //////////////
-			int variantIndex = -1;
-			std::variant<std::shared_ptr<Model>, std::shared_ptr<Shape>> object;
+			std::shared_ptr<Model> object;
 
 			if(sceneTree->getSelectedItem()[1] == "Models")
 			{
-				variantIndex = 0;
 				openFileButton->setEnabled(true);
 				openFileButton->setVisible(true);
 				object = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
 			}
-			else if(sceneTree->getSelectedItem()[1] == "Shapes")
-			{
-				variantIndex = 1;
-				openFileButton->setEnabled(false);
-				openFileButton->setVisible(false);
-				object = scene.GetShape(sceneTree->getSelectedItem()[2].toStdString());
-			}
-			if(variantIndex != -1)
+			
+			if(object)
 			{
 				if(objectMode)
 				{
@@ -916,43 +906,21 @@ int main()
 					{
 					case 0:
 						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-						{
-							if(variantIndex == 0) std::get<0>(object)->Move(m);
-							else std::get<1>(object)->Move(m);
-						}
+							object->Move(m);
 						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-						{
-							if(variantIndex == 0) std::get<0>(object)->Move(-m);
-							else std::get<1>(object)->Move(-m);
-						}
+							object->Move(-m);
 						break;
 					case 1:
 						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-						{
-							if(variantIndex == 0)
-								std::get<0>(object)->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
-							else
-								std::get<1>(object)->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
-						}
+							object->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
 						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-						{
-							if(variantIndex == 0)
-								std::get<0>(object)->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
-							else
-								std::get<1>(object)->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
-						}
+							object->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
 						break;
 					case 2:
 						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-						{
-							if(variantIndex == 0) std::get<0>(object)->Expand(m);
-							else std::get<1>(object)->Expand(m);
-						}
+							object->Expand(m);
 						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-						{
-							if(variantIndex == 0) std::get<0>(object)->Expand(-m);
-							else std::get<1>(object)->Expand(-m);
-						}
+							object->Expand(-m);
 						break;
 					}
 				}
@@ -968,32 +936,16 @@ int main()
 
 				if((!nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem()[2]) || objectMode)
 				{
-					rp3d::Vector3 position;
-					rp3d::Quaternion orientation;
-					rp3d::Vector3 size;
+					rp3d::Vector3 position = object->GetPosition();
+					rp3d::Quaternion orientation = object->GetOrientation();
+					rp3d::Vector3 size = object->GetSize();
 
 					materialsList->removeAllItems();
-					if(variantIndex == 0)
-					{
-						position = std::get<0>(object)->GetPosition();
-						orientation = std::get<0>(object)->GetOrientation();
-						size = std::get<0>(object)->GetSize();
-						auto mtl = std::get<0>(object)->GetMaterial();
-						for(int i = 0; i < mtl.size(); i++)
-							materialsList->addItem(scene.GetName(mtl[i]), tgui::String(i));
-                        bodyTypeBox->setSelectedItemByIndex((int)std::get<0>(object)->GetRigidBody()->getType());
-                        isDrawableBox->setChecked(std::get<0>(object)->IsDrawable());
-					}
-					else
-					{
-						position = std::get<1>(object)->GetPosition();
-						orientation = std::get<1>(object)->GetOrientation();
-						size = std::get<1>(object)->GetSize();
-
-						materialsList->addItem(scene.GetName(std::get<1>(object)->GetMaterial()), "0");
-                        bodyTypeBox->setSelectedItemByIndex((int)std::get<1>(object)->GetRigidBody()->getType());
-                        isDrawableBox->setChecked(std::get<1>(object)->IsDrawable());
-					}
+                    auto mtl = object->GetMaterial();
+                    for(int i = 0; i < mtl.size(); i++)
+                        materialsList->addItem(scene.GetName(mtl[i]), tgui::String(i));
+                    bodyTypeBox->setSelectedItemByIndex((int)object->GetRigidBody()->getType());
+                    isDrawableBox->setChecked(object->IsDrawable());
 
 					nameEdit->setText(sceneTree->getSelectedItem()[2]);
 					posEditX->setText(tgui::String(position.x));
@@ -1012,20 +964,11 @@ int main()
 			    }
 			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem()[2])
 			    {
-			    	if(variantIndex == 0)
-			    	{
-			    		scene.SetModelName(sceneTree->getSelectedItem()[2].toStdString(), nameEdit->getText().toStdString());
-			    		sceneTree->removeItem(sceneTree->getSelectedItem(), false);
-			    		sceneTree->addItem({ "Scene", "Models", nameEdit->getText() });
-			    		sceneTree->selectItem({ "Scene", "Models", nameEdit->getText() });
-			    	}
-			    	else if(variantIndex == 1)
-			    	{
-				    	scene.SetShapeName(sceneTree->getSelectedItem()[2].toStdString(), nameEdit->getText().toStdString());
-				    	sceneTree->removeItem(sceneTree->getSelectedItem(), false);
-				    	sceneTree->addItem({ "Scene", "Shapes", nameEdit->getText() });
-				    	sceneTree->selectItem({ "Scene", "Shapes", nameEdit->getText() });
-				    }
+                    scene.SetModelName(sceneTree->getSelectedItem()[2].toStdString(), nameEdit->getText().toStdString());
+                    sceneTree->removeItem(sceneTree->getSelectedItem(), false);
+                    sceneTree->addItem({ "Scene", "Models", nameEdit->getText() });
+                    sceneTree->selectItem({ "Scene", "Models", nameEdit->getText() });
+                
 				    nameEdit->setFocused(false);
 			    }
 
@@ -1044,48 +987,24 @@ int main()
 			    size.y = sizeEditY->getText().toFloat();
 			    size.z = sizeEditZ->getText().toFloat();
 
-			    if(variantIndex == 0)
-				{
-					if(!objectMode)
-					{
-						std::get<0>(object)->SetPosition(pos);
-						std::get<0>(object)->SetOrientation(rp3d::Quaternion::fromEulerAngles(euler));
-						std::get<0>(object)->SetSize(size);
-					}
+                if(!objectMode)
+                {
+                    object->SetPosition(pos);
+                    object->SetOrientation(rp3d::Quaternion::fromEulerAngles(euler));
+                    object->SetSize(size);
+                }
 
-					if(!materialBox->getSelectedItem().empty())
-					{
-						if(materialBox->getSelectedItem() != materialsList->getSelectedItem())
-						{
-							std::get<0>(object)->GetMaterial()[materialsList->getSelectedItemId().toInt()] = scene.GetMaterial(materialBox->getSelectedItem().toStdString()).get();
-							materialsList->changeItemById(materialsList->getSelectedItemId(), materialBox->getSelectedItem());
-						}
-					}
-					if((int)std::get<0>(object)->GetRigidBody()->getType() != bodyTypeBox->getSelectedItemIndex())
-                        std::get<0>(object)->GetRigidBody()->setType(rp3d::BodyType(bodyTypeBox->getSelectedItemIndex()));
-                    std::get<0>(object)->SetIsDrawable(isDrawableBox->isChecked());
-				}
-				else
-				{
-					if(!objectMode)
-					{
-						std::get<1>(object)->SetPosition(pos);
-						std::get<1>(object)->SetOrientation(rp3d::Quaternion::fromEulerAngles(euler));
-						std::get<1>(object)->SetSize(size);
-					}
-
-					if(!materialBox->getSelectedItem().empty())
-					{
-						if(materialBox->getSelectedItem() != materialsList->getSelectedItem())
-						{
-							std::get<1>(object)->SetMaterial(scene.GetMaterial(materialBox->getSelectedItem().toStdString()).get());
-							materialsList->changeItemById(materialsList->getSelectedItemId(), materialBox->getSelectedItem());
-						}
-					}
-					if((int)std::get<1>(object)->GetRigidBody()->getType() != bodyTypeBox->getSelectedItemIndex())
-                        std::get<1>(object)->GetRigidBody()->setType(rp3d::BodyType(bodyTypeBox->getSelectedItemIndex()));
-                    std::get<1>(object)->SetIsDrawable(isDrawableBox->isChecked());
-				}
+                if(!materialBox->getSelectedItem().empty())
+                {
+                    if(materialBox->getSelectedItem() != materialsList->getSelectedItem())
+                    {
+                        object->GetMaterial()[materialsList->getSelectedItemId().toInt()] = scene.GetMaterial(materialBox->getSelectedItem().toStdString()).get();
+                        materialsList->changeItemById(materialsList->getSelectedItemId(), materialBox->getSelectedItem());
+                    }
+                }
+                if((int)object->GetRigidBody()->getType() != bodyTypeBox->getSelectedItemIndex())
+                    object->GetRigidBody()->setType(rp3d::BodyType(bodyTypeBox->getSelectedItemIndex()));
+                object->SetIsDrawable(isDrawableBox->isChecked());
 
 				if(!materialsList->getSelectedItem().empty())
 					materialBox->setSelectedItem(materialsList->getSelectedItem());
@@ -1320,34 +1239,19 @@ int main()
         	if(sceneTree->getSelectedItem()[1] == "Models")
 			{
 				buffer.name = sceneTree->getSelectedItem()[2].toStdString();
-				buffer.variantIndex = 0;
 				buffer.object = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
-			}
-			else if(sceneTree->getSelectedItem()[1] == "Shapes")
-			{
-				buffer.name = sceneTree->getSelectedItem()[2].toStdString();
-				buffer.variantIndex = 1;
-				buffer.object = scene.GetShape(sceneTree->getSelectedItem()[2].toStdString());
 			}
         }
 
         if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::V }))
         {
-        	if(buffer.variantIndex == 0)
+        	if(buffer.object)
         	{
-				auto a = scene.CloneModel(std::get<0>(buffer.object).get(), false, buffer.name + "-copy");
+				auto a = scene.CloneModel(buffer.object.get(), false, buffer.name + "-copy");
 				a->Move(a->GetSize());
 				std::string name = scene.GetLastAdded();
 		    	sceneTree->addItem({ "Scene", "Models", name });
 		    	sceneTree->selectItem({ "Scene", "Models", name });
-			}
-			else if(buffer.variantIndex == 1)
-			{
-				auto a = scene.CloneShape(std::get<1>(buffer.object).get(), false, buffer.name + "-copy");
-				a->Move(a->GetSize());
-				std::string name = scene.GetLastAdded();
-		    	sceneTree->addItem({ "Scene", "Shapes", name });
-		    	sceneTree->selectItem({ "Scene", "Shapes", name });
 			}
         }
 

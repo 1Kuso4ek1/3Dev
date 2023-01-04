@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    uint32_t w = 1280, h = 720, b = 1024;
+    uint32_t w = 1280, h = 720, b = 1024, r = 4096;
     float exp = 1.5;
     std::string env = std::string(getenv("HOME")) + "/.3Dev-Editor/default/hdri.hdr", out = "output.png", scenePath;
 
@@ -45,6 +45,7 @@ int main(int argc, char* argv[])
     if(!GetArgument(argc, argv, "-w").empty()) w = std::stoi(GetArgument(argc, argv, "-w"));
     if(!GetArgument(argc, argv, "-h").empty()) h = std::stoi(GetArgument(argc, argv, "-h"));
     if(!GetArgument(argc, argv, "-b").empty()) b = std::stoi(GetArgument(argc, argv, "-b"));
+    if(!GetArgument(argc, argv, "-r").empty()) r = std::stoi(GetArgument(argc, argv, "-r"));
     if(!GetArgument(argc, argv, "-x").empty()) exp = std::stof(GetArgument(argc, argv, "-x"));
     if(!GetArgument(argc, argv, "-o").empty()) out = GetArgument(argc, argv, "-o");
     if(!GetArgument(argc, argv, "-e").empty()) env = GetArgument(argc, argv, "-e");
@@ -63,7 +64,7 @@ int main(int argc, char* argv[])
     rp3d::PhysicsWorld::WorldSettings st;
     auto man = std::make_shared<PhysicsManager>(st);
 
-    Light shadowSource({ 0, 0, 0 }, { 50.1, 100.0, 50.1 }, true);
+    Light shadowSource({ 0, 0, 0 }, { 50.1, 100.0, -50.1 }, true);
     shadowSource.SetDirection({ 0.0, -1.0, 0.0 });
 
     Material skyboxMaterial(
@@ -71,7 +72,8 @@ int main(int argc, char* argv[])
         { Renderer::GetInstance()->GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap }
     });
 
-    auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 1, 1, 1 }, &skyboxMaterial);
+    auto skybox = std::make_shared<Model>(true);
+    skybox->SetMaterial({ &skyboxMaterial });
 
     auto path = std::filesystem::current_path();
 
@@ -79,15 +81,17 @@ int main(int argc, char* argv[])
 
     scene.AddPhysicsManager(man);
     scene.SetCamera(&cam);
-    scene.AddLight(&shadowSource);
     scene.SetSkybox(skybox);
     scene.UpdatePhysics(false);
 
     scene.Load(scenePath);
+    
+    if(scene.GetNames()[3].empty())
+        scene.AddLight(&shadowSource);
 
     std::filesystem::current_path(path);
 
-    ShadowManager shadows(&scene, glm::ivec2(4096, 4096));
+    ShadowManager shadows(&scene, glm::ivec2(r, r));
 
     Framebuffer render(nullptr, w, h), renderTr(nullptr, w, h);
 

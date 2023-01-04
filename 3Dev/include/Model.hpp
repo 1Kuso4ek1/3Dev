@@ -48,8 +48,9 @@ struct Animation
 class Model
 {
 public:
+	Model(bool defaultCubeMesh = false);
 	Model(Model* model);
-	Model(Shader* shader = nullptr);
+	Model(Shader* shader);
 	Model(std::vector<std::shared_ptr<Mesh>> meshes, Shader* shader = nullptr);
 	Model(std::string filename, std::vector<Material*> mat, unsigned int flags = aiProcess_Triangulate | aiProcess_FlipUVs,
 		  PhysicsManager* man = nullptr, Shader* shader = nullptr, Matrices* m = nullptr);
@@ -57,6 +58,7 @@ public:
 	void Load(std::string filename, unsigned int flags = 0);
 
 	void Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass = false);
+	void DrawSkybox();
 
 	void SetPosition(const rp3d::Vector3& position);
 	void SetOrientation(const rp3d::Quaternion& orientation);
@@ -162,6 +164,6 @@ private:
 
 	std::string filename;
 
-	rp3d::Vector3 size;
+	rp3d::Vector3 size{ 1, 1, 1 };
 	rp3d::Transform transform;
 };

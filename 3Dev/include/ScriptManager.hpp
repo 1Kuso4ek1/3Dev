@@ -40,7 +40,6 @@ private:
     void RegisterVector3();
     void RegisterQuaternion();
     void RegisterModel();
-    void RegisterShape();
     void RegisterLight();
     void RegisterRigidBody();
     void RegisterCamera();

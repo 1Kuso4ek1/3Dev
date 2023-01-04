@@ -66,17 +66,32 @@ int main()
         { Renderer::GetInstance()->GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap }
     });
 
-    // All the shapes
-    auto s = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, man.get());
+    auto s = std::make_shared<Model>(true);
+    s->SetPhysicsManager(man.get());
+    s->CreateRigidBody();
+    s->CreateBoxShape();
+    s->SetMaterial({ &material });
+    s->SetSize({ 3, 3, 3 });
     s->SetPosition({ 10, 30, 10 });
 
-    auto s1 = std::make_shared<Shape>(rp3d::Vector3{ 3, 3, 3 }, &material, man.get());
+    auto s1 = std::make_shared<Model>(true);
+    s1->SetPhysicsManager(man.get());
+    s1->CreateRigidBody();
+    s1->CreateBoxShape();
+    s1->SetMaterial({ &material });
+    s1->SetSize({ 3, 3, 3 });
     s1->SetPosition({ 10, 36, 10 });
 
-    auto s2 = std::make_shared<Shape>(rp3d::Vector3{ 1.5, 1.5, 3 }, &material, man.get());
+    auto s2 = std::make_shared<Model>(true);
+    s2->SetPhysicsManager(man.get());
+    s2->CreateRigidBody();
+    s2->CreateBoxShape();
+    s2->SetMaterial({ &material });
+    s2->SetSize({ 1.5, 1.5, 3 });
     s2->SetPosition({ 10, 13, 10 });
 
-    auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 1, 1, 1 }, &skyboxMaterial);
+    auto skybox = std::make_shared<Model>(true);
+    skybox->SetMaterial({ &skyboxMaterial });
 
     // Loading a sphere model
     auto sphere = std::make_shared<Model>("../sphere.obj", std::vector<Material*>{ &sphereMaterial }, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, man.get());
@@ -93,12 +108,12 @@ int main()
 
     SceneManager scene;
 
-    scene.AddObject(s);
-    scene.AddObject(s1);
-    scene.AddObject(s2);
+    scene.AddModel(s);
+    scene.AddModel(s1);
+    scene.AddModel(s2);
 
-    scene.AddObject(sphere, "sphere");
-    scene.AddObject(terrain);
+    scene.AddModel(sphere, "sphere");
+    scene.AddModel(terrain);
     scene.AddPhysicsManager(man);
 
     scene.AddLight(&l);

@@ -57,6 +57,7 @@ aiAABB Mesh::GetAABB()
 
 void Mesh::CreateCube()
 {
+	aabb = aiAABB({ -1, -1, -1 }, { 1, 1, 1 });
 	data = 
 	{
 		{ glm::vec3(1, 1, -1), glm::vec3(0, 1, 0), glm::vec2(0, 0) },

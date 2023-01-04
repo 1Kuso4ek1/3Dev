@@ -23,7 +23,6 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterPhysicsManager();
     RegisterCamera();
     RegisterModel();
-    RegisterShape();
     RegisterLight();
     RegisterSceneManager();
     RegisterSfKeyboard();
@@ -290,27 +289,6 @@ void ScriptManager::RegisterModel()
     }, {});
 }
 
-void ScriptManager::RegisterShape()
-{
-    AddType("Shape", sizeof(Shape),
-    {
-        { "void SetPosition(const Vector3& in)", WRAP_MFN(Shape, SetPosition) },
-        { "void SetOrientation(const Quaternion& in)", WRAP_MFN(Shape, SetOrientation) },
-        { "void SetSize(const Vector3& in)", WRAP_MFN(Shape, SetSize) },
-        { "void SetPhysicsManager(PhysicsManager@)", WRAP_MFN(Shape, SetPhysicsManager) },
-        { "void SetIsDrawable(bool)", WRAP_MFN(Shape, SetIsDrawable) },
-        { "void CreateRigidBody()", WRAP_MFN(Shape, CreateRigidBody) },
-        { "void Move(const Vector3& in)", WRAP_MFN(Shape, Move) },
-        { "void Rotate(const Quaternion& in)", WRAP_MFN(Shape, Rotate) },
-        { "void Expand(const Vector3& in)", WRAP_MFN(Shape, Expand) },
-        { "bool IsDrawable()", WRAP_MFN(Shape, IsDrawable) },
-        { "Vector3 GetPosition()", WRAP_MFN(Shape, GetPosition) },
-        { "Quaternion GetOrientation()", WRAP_MFN(Shape, GetOrientation) },
-        { "Vector3 GetSize()", WRAP_MFN(Shape, GetSize) },
-        { "RigidBody@ GetRigidBody()", WRAP_MFN(Shape, GetRigidBody) }
-    }, {});
-}
-
 void ScriptManager::RegisterLight()
 {
     AddType("Light", sizeof(Light),
@@ -391,25 +369,16 @@ void ScriptManager::RegisterSceneManager()
         { "Model@ opIndex(uint)", WRAP_MFN(Group<Model>, operator[]) }
     }, {});
 
-    AddValueType("ShapeGroup", sizeof(Group<Shape>), asGetTypeTraits<Group<Shape>>() | asOBJ_POD,
-    {
-        { "uint Size()", WRAP_MFN(Group<Shape>, Size) },
-        { "Shape@ opIndex(uint)", WRAP_MFN(Group<Shape>, operator[]) }
-    }, {});
-
     AddType("SceneManager", sizeof(SceneManager),
     {
         { "Model@ GetModel(string)", WRAP_MFN(SceneManager, GetModelPtr) },
-        { "Shape@ GetShape(string)", WRAP_MFN(SceneManager, GetShapePtr) },
         { "Light@ GetLight(string)", WRAP_MFN(SceneManager, GetLight) },
         { "Model@ CloneModel(Model@, bool = true, string = \"model\")", WRAP_MFN(SceneManager, CloneModel) },
-        { "Shape@ CloneShape(Shape@, bool = true, string = \"shape\")", WRAP_MFN(SceneManager, CloneShape) },
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
         { "PhysicsManager@ GetPhysicsManager()", WRAP_MFN(SceneManager, GetPhysicsManagerPtr) },
         { "void Save(string filename)", WRAP_MFN(SceneManager, Save) },
         { "void Load(string filename)", WRAP_MFN(SceneManager, Load) },
         { "ModelGroup GetModelGroup(string)", WRAP_MFN(SceneManager, GetModelPtrGroup) },
-        { "ShapeGroup GetShapeGroup(string)", WRAP_MFN(SceneManager, GetShapePtrGroup) },
         { "void UpdatePhysics(bool)", WRAP_MFN(SceneManager, UpdatePhysics) },
         { "void SaveState()", WRAP_MFN(SceneManager, SaveState) },
         { "void LoadState()", WRAP_MFN(SceneManager, LoadState) }

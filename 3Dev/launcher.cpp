@@ -40,7 +40,8 @@ int main()
         { Renderer::GetInstance()->GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap }
     });
 
-    auto skybox = std::make_shared<Shape>(rp3d::Vector3{ 1, 1, 1 }, &skyboxMaterial);
+    auto skybox = std::make_shared<Model>(true);
+    skybox->SetMaterial({ &skyboxMaterial });
 
     SceneManager scene;
     scene.AddPhysicsManager(man);

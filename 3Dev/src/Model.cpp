@@ -1,5 +1,14 @@
 #include "Model.hpp"
 
+Model::Model(bool defaultCubeMesh)
+{
+	if(defaultCubeMesh)
+	{
+		meshes.emplace_back(std::make_shared<Mesh>());
+		meshes.back()->CreateCube();
+	}
+}
+
 Model::Model(Model* model)
 {
 	autoUpdateAnimation = model->autoUpdateAnimation;
@@ -121,8 +130,9 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
                 lights[i]->Update(shader, i);
 
             shader->SetUniform3f("campos", cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
-            shader->SetUniformMatrix4("transformation", meshes[mesh]->GetTransformation());
-            shader->SetVectorOfUniformMatrix4("pose", meshes[mesh]->GetPose().size(), meshes[mesh]->GetPose());
+            shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
+			if(meshes[mesh]->GetPose().size())
+            	shader->SetVectorOfUniformMatrix4("pose", meshes[mesh]->GetPose().size(), meshes[mesh]->GetPose());
             shader->SetUniform1i("bones", !meshes[mesh]->GetBones().empty());
             shader->SetUniform1i("drawTransparency", transparencyPass);
 
@@ -145,6 +155,26 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
             mat[mesh]->ResetShader(shader);
         }
     }
+
+	m->PopMatrix();
+}
+
+void Model::DrawSkybox()
+{
+	if(!drawable || !mat[0]->Contains(Material::Type::Cubemap)) return;
+
+	auto shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Skybox);
+
+	m->PushMatrix();
+
+	shader->Bind();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, std::get<1>(mat[0]->GetParameter(Material::Type::Cubemap)));
+
+	shader->SetUniform1i("cubemap", 0);
+	m->UpdateShader(shader);
+
+	meshes[0]->Draw();
 
 	m->PopMatrix();
 }
@@ -202,6 +232,8 @@ void Model::SetShader(Shader* shader)
 void Model::SetPhysicsManager(PhysicsManager* man)
 {
 	this->man = man;
+	shapes.resize(meshes.size(), (rp3d::BoxShape*)(nullptr));
+    colliders.resize(meshes.size(), nullptr);
 }
 
 void Model::SetIsDrawable(bool drawable)

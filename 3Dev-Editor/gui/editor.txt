@@ -218,7 +218,7 @@ ChildWindow.ChildWindow1 {
         Position = (0, 60);
         Renderer = &1;
         Size = (220, 37);
-        Text = Shape;
+        Text = Cube;
         TextSize = 13;
     }
 

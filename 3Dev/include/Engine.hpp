@@ -3,7 +3,6 @@
 #include "Camera.hpp"
 #include "Model.hpp"
 #include "Light.hpp"
-#include "Shape.hpp"
 #include "Shader.hpp"
 #include "Matrices.hpp"
 #include "Framebuffer.hpp"
