@@ -453,7 +453,7 @@ int main()
     shapeButton->onPress([&]()
     {
         auto model = std::make_shared<Model>(true);
-		model->SetMaterial({ scene.GetMaterial(scene.GetNames()[2][0]).get() });
+		model->SetMaterial({ scene.GetMaterial(scene.GetNames()[1][0]).get() });
 		model->SetPhysicsManager(man.get());
 		model->CreateRigidBody();
         model->CreateBoxShape();

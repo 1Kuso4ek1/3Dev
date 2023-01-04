@@ -105,8 +105,6 @@ void Model::Load(std::string filename, unsigned int flags)
 
 void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
 {
-    if(!drawable) return;
-
 	m->PushMatrix();
 
 	if(body) transform = body->getTransform();
@@ -200,14 +198,17 @@ void Model::SetSize(const rp3d::Vector3& size)
             switch(cstype)
             {
             case CollisionShapeType::Box:
-                std::get<0>(shapes[i])->setHalfExtents(std::get<0>(shapes[i])->getHalfExtents() * size);
+                //std::get<0>(shapes[i])->setHalfExtents(std::get<0>(shapes[i])->getHalfExtents() * size);
+				CreateBoxShape();
 				break;
             case CollisionShapeType::Sphere:
-                std::get<1>(shapes[i])->setRadius(std::get<1>(shapes[i])->getRadius() * size.x);
+                //std::get<1>(shapes[i])->setRadius(std::get<1>(shapes[i])->getRadius() * size.x);
+				CreateSphereShape();
 				break;
             case CollisionShapeType::Capsule:
-                std::get<2>(shapes[i])->setRadius(std::get<2>(shapes[i])->getRadius() * size.x);
-				std::get<2>(shapes[i])->setHeight(std::get<2>(shapes[i])->getHeight() * size.y);
+                /*std::get<2>(shapes[i])->setRadius(std::get<2>(shapes[i])->getRadius() * size.x);
+				std::get<2>(shapes[i])->setHeight(std::get<2>(shapes[i])->getHeight() * size.y);*/
+				CreateCapsuleShape();
 				break;
             case CollisionShapeType::Concave:
                 std::get<3>(shapes[i])->setScale(size);
