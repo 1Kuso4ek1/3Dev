@@ -97,14 +97,18 @@ Renderer.7 {
 
 Renderer.8 {
     TextColor = rgb(190, 190, 190);
-    TextColorHover = rgb(250, 250, 250);
-    Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
-    TextureDisabled = None;
-    TextureDown = "themes/Black.png" Part(0, 74, 45, 50) Middle(10, 0) Smooth;
-    TextureDownFocused = None;
-    TextureDownHover = None;
-    TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
-    TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
+    TextureBackground = None;
+
+    Scrollbar {
+        TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+        TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+        TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+        TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+        TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+        TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+        TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+        TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+    }
 }
 
 Renderer.9 {
@@ -124,22 +128,6 @@ Renderer.9 {
 }
 
 Renderer.10 {
-    TextColor = rgb(190, 190, 190);
-    TextureBackground = None;
-
-    Scrollbar {
-        TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
-        TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
-        TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
-        TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
-        TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
-        TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
-        TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
-        TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
-    }
-}
-
-Renderer.11 {
     CaretColor = rgb(110, 110, 255);
     DefaultTextColor = rgb(120, 120, 120);
     Padding = (6, 4, 6, 4);
@@ -152,7 +140,7 @@ Renderer.11 {
     TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
 }
 
-Renderer.12 {
+Renderer.11 {
     TextColor = rgb(190, 190, 190);
     TextureBackground = None;
 
@@ -166,6 +154,48 @@ Renderer.12 {
         TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
         TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
     }
+}
+
+Renderer.12 {
+    CaretColor = rgb(110, 110, 255);
+    DefaultTextColor = rgb(120, 120, 120);
+    Padding = (6, 4, 6, 4);
+    SelectedTextBackgroundColor = rgb( 10, 110, 255);
+    SelectedTextColor = White;
+    TextColor = rgb(190, 190, 190);
+    Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
+    TextureDisabled = None;
+    TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
+    TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
+}
+
+Renderer.13 {
+    TextColor = rgb(190, 190, 190);
+    TextureBackground = None;
+
+    Scrollbar {
+        TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+        TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+        TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+        TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+        TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+        TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+        TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+        TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+    }
+}
+
+Renderer.14 {
+    CaretColor = rgb(110, 110, 255);
+    DefaultTextColor = rgb(120, 120, 120);
+    Padding = (6, 4, 6, 4);
+    SelectedTextBackgroundColor = rgb( 10, 110, 255);
+    SelectedTextColor = White;
+    TextColor = rgb(190, 190, 190);
+    Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
+    TextureDisabled = None;
+    TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
+    TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
 }
 
 ChildWindow.ChildWindow1 {
@@ -940,6 +970,7 @@ ChildWindow.objectEditorWindow {
         Position = (10, 10);
         Renderer = &4;
         Size = (200, 360);
+        Visible = false;
 
         Label.Label11 {
             AutoSize = true;
@@ -1080,7 +1111,6 @@ ChildWindow.objectEditorWindow {
         Position = (10, 10);
         Renderer = &4;
         Size = (200, 420);
-        Visible = false;
 
         EditBox.lightName {
             Size = (200, 24);
@@ -1100,7 +1130,7 @@ ChildWindow.objectEditorWindow {
             }
         }
 
-        EditBox.EditBox2 {
+        EditBox.lposX {
             DefaultText = 0;
             InputValidator = Float;
             Position = (0, 30);
@@ -1121,7 +1151,7 @@ ChildWindow.objectEditorWindow {
             }
         }
 
-        EditBox.EditBox3 {
+        EditBox.lposY {
             DefaultText = 0;
             InputValidator = Float;
             Position = (50, 30);
@@ -1142,7 +1172,7 @@ ChildWindow.objectEditorWindow {
             }
         }
 
-        EditBox.EditBox4 {
+        EditBox.lposZ {
             DefaultText = 0;
             InputValidator = Float;
             Position = (100, 30);
@@ -1187,7 +1217,7 @@ ChildWindow.objectEditorWindow {
             }
         }
 
-        EditBox.EditBox5 {
+        EditBox.lrotX {
             DefaultText = 0;
             InputValidator = Float;
             Position = (0, 60);
@@ -1208,7 +1238,7 @@ ChildWindow.objectEditorWindow {
             }
         }
 
-        EditBox.EditBox6 {
+        EditBox.lrotY {
             DefaultText = 0;
             InputValidator = Float;
             Position = (50, 60);
@@ -1229,7 +1259,7 @@ ChildWindow.objectEditorWindow {
             }
         }
 
-        EditBox.EditBox7 {
+        EditBox.lrotZ {
             DefaultText = 0;
             InputValidator = Float;
             Position = (100, 60);
@@ -1274,18 +1304,10 @@ ChildWindow.objectEditorWindow {
             }
         }
 
-        Button.Button1 {
-            Position = (50, 110);
-            Renderer = &8;
-            Size = (101, 22);
-            Text = Pick;
-            TextSize = 13;
-        }
-
         Label.Label22 {
             AutoSize = true;
             Position = (81, 90);
-            Renderer = &9;
+            Renderer = &8;
             Size = (37.2, 18);
             Text = Color;
             TextSize = 13;
@@ -1294,7 +1316,7 @@ ChildWindow.objectEditorWindow {
         Label.Label23 {
             AutoSize = true;
             Position = (60, 137);
-            Renderer = &9;
+            Renderer = &8;
             Size = (79.2, 18);
             Text = Attenuation;
             TextSize = 13;
@@ -1303,7 +1325,7 @@ ChildWindow.objectEditorWindow {
         Label.Label24 {
             AutoSize = true;
             Position = (0, 163);
-            Renderer = &9;
+            Renderer = &8;
             Size = (63.2, 18);
             Text = Constant;
             TextSize = 13;
@@ -1312,7 +1334,7 @@ ChildWindow.objectEditorWindow {
         Label.Label25 {
             AutoSize = true;
             Position = (0, 193);
-            Renderer = &10;
+            Renderer = &9;
             Size = (45.2, 18);
             Text = Linear;
             TextSize = 13;
@@ -1321,14 +1343,14 @@ ChildWindow.objectEditorWindow {
         Label.Label26 {
             AutoSize = true;
             Position = (0, 223);
-            Renderer = &10;
+            Renderer = &9;
             Size = (67.2, 18);
             Text = Quadratic;
             TextSize = 13;
         }
 
-        EditBox.EditBox8 {
-            DefaultText = 0;
+        EditBox.constAtt {
+            DefaultText = 1;
             InputValidator = Float;
             Position = (120, 160);
             Size = (70, 22);
@@ -1348,34 +1370,45 @@ ChildWindow.objectEditorWindow {
             }
         }
 
-        EditBox.EditBox9 {
+        EditBox.linAtt {
             DefaultText = 0;
             InputValidator = Float;
             Position = (120, 190);
-            Renderer = &11;
+            Renderer = &10;
             Size = (70, 22);
             TextSize = 13;
         }
 
-        EditBox.EditBox10 {
+        EditBox.quadAtt {
             DefaultText = 0;
             InputValidator = Float;
             Position = (120, 220);
-            Renderer = &11;
+            Renderer = &10;
             Size = (70, 22);
             TextSize = 13;
         }
 
-        Button.Button2 {
-            Position = (0, 320);
-            Renderer = &8;
+        Button.ldelete {
+            Position = (0, 390);
             Size = (74, 22);
             Text = Delete;
             TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextColorHover = rgb(250, 250, 250);
+                Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
+                TextureDisabled = None;
+                TextureDown = "themes/Black.png" Part(0, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureDownFocused = None;
+                TextureDownHover = None;
+                TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
+            }
         }
 
-        CheckBox.CheckBox1 {
-            Position = (100, 270);
+        CheckBox.castShadows {
+            Position = (100, 355);
             Size = (18, 18);
             TextSize = 13;
 
@@ -1395,8 +1428,8 @@ ChildWindow.objectEditorWindow {
 
         Label.Label27 {
             AutoSize = true;
-            Position = (0, 270);
-            Renderer = &12;
+            Position = (0, 355);
+            Renderer = &11;
             Size = (93.2, 18);
             Text = "Cast shadows";
             TextSize = 13;
@@ -1404,10 +1437,106 @@ ChildWindow.objectEditorWindow {
 
         Label.Label28 {
             AutoSize = true;
-            Position = (70, 250);
-            Renderer = &12;
+            Position = (70, 330);
+            Renderer = &11;
             Size = (61.2, 18);
             Text = Shadows;
+            TextSize = 13;
+        }
+
+        EditBox.r {
+            DefaultText = 0;
+            InputValidator = Float;
+            Position = (0, 110);
+            Renderer = &12;
+            Size = (40, 24);
+            TextSize = 13;
+        }
+
+        EditBox.g {
+            DefaultText = 0;
+            InputValidator = Float;
+            Position = (50, 110);
+            Renderer = &12;
+            Size = (40, 24);
+            TextSize = 13;
+        }
+
+        EditBox.b {
+            DefaultText = 0;
+            InputValidator = Float;
+            Position = (100, 110);
+            Renderer = &12;
+            Size = (40, 24);
+            TextSize = 13;
+        }
+
+        Label.Label29 {
+            HorizontalAlignment = Center;
+            Position = (140, 112);
+            Size = (68.2, 18);
+            Text = rgb;
+            TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextureBackground = None;
+
+                Scrollbar {
+                    TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+                    TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+                    TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+                    TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+                }
+            }
+        }
+
+        Label.Label30 {
+            AutoSize = true;
+            Position = (80, 247);
+            Renderer = &13;
+            Size = (44.2, 18);
+            Text = Cutoff;
+            TextSize = 13;
+        }
+
+        Label.Label31 {
+            AutoSize = true;
+            Position = (0, 272);
+            Renderer = &13;
+            Size = (38.2, 18);
+            Text = Inner;
+            TextSize = 13;
+        }
+
+        Label.Label32 {
+            AutoSize = true;
+            Position = (0, 303);
+            Renderer = &13;
+            Size = (41.2, 18);
+            Text = Outer;
+            TextSize = 13;
+        }
+
+        EditBox.innerCutoff {
+            DefaultText = 0;
+            InputValidator = Float;
+            Position = (120, 270);
+            Renderer = &14;
+            Size = (70, 22);
+            TextSize = 13;
+        }
+
+        EditBox.outerCutoff {
+            DefaultText = 0;
+            InputValidator = Float;
+            Position = (120, 300);
+            Renderer = &14;
+            Size = (70, 22);
             TextSize = 13;
         }
     }

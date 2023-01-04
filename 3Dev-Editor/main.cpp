@@ -192,6 +192,7 @@ int main()
 	sceneTree->addItem({ "Scene", "Scripts" });
 
     auto objectEditorGroup = editor.get<tgui::Group>("objectEditor");
+    auto lightEditorGroup = editor.get<tgui::Group>("lightEditor");
     auto materialEditorGroup = editor.get<tgui::Group>("materialEditor");
 	auto scriptsGroup = editor.get<tgui::Group>("scriptsGroup");
 	auto sceneGroup = editor.get<tgui::Group>("sceneGroup");
@@ -242,6 +243,31 @@ int main()
     auto aoTextureButton = editor.get<tgui::Button>("loadAo");
     auto emissionTextureButton = editor.get<tgui::Button>("loadEmission");
     auto opacityTextureButton = editor.get<tgui::Button>("loadOpacity");
+
+    auto lightNameEdit = editor.get<tgui::EditBox>("lightName");
+
+    auto lposEditX = editor.get<tgui::EditBox>("lposX");
+    auto lposEditY = editor.get<tgui::EditBox>("lposY");
+    auto lposEditZ = editor.get<tgui::EditBox>("lposZ");
+
+    auto lrotEditX = editor.get<tgui::EditBox>("lrotX");
+    auto lrotEditY = editor.get<tgui::EditBox>("lrotY");
+    auto lrotEditZ = editor.get<tgui::EditBox>("lrotZ");
+
+    auto rEdit = editor.get<tgui::EditBox>("r");
+    auto gEdit = editor.get<tgui::EditBox>("g");
+    auto bEdit = editor.get<tgui::EditBox>("b");
+
+    auto constAttEdit = editor.get<tgui::EditBox>("constAtt");
+    auto linAttEdit = editor.get<tgui::EditBox>("linAtt");
+    auto quadAttEdit = editor.get<tgui::EditBox>("quadAtt");
+
+    auto innerCutoffEdit = editor.get<tgui::EditBox>("innerCutoff");
+    auto outerCutoffEdit = editor.get<tgui::EditBox>("outerCutoff");
+
+    auto castShadowsBox = editor.get<tgui::CheckBox>("castShadows");
+
+    auto ldeleteButton = editor.get<tgui::Button>("ldelete");
 
 	auto buildButton = editor.get<tgui::Button>("build");
     auto startStopButton = editor.get<tgui::Button>("startStop");
@@ -463,6 +489,15 @@ int main()
     	sceneTree->selectItem({ "Scene", "Models", name });
     });
 
+    lightButton->onPress([&]()
+    {
+        auto light = new Light(rp3d::Vector3(0, 0, 0), rp3d::Vector3::zero());
+        scene.AddLight(light);
+        std::string name = scene.GetLastAdded();
+    	sceneTree->addItem({ "Scene", "Lights", name });
+    	sceneTree->selectItem({ "Scene", "Lights", name });
+    });
+
     materialButton->onPress([&]()
     {
     	scene.AddMaterial(std::make_shared<Material>());
@@ -514,6 +549,14 @@ int main()
 			    for(int i = 0; i < model->GetMeshesCount(); i++)
                     model->CreateConcaveShape(i);
 			}
+    });
+
+    ldeleteButton->onPress([&]()
+    {
+        auto light = scene.GetLight(sceneTree->getSelectedItem()[2].toStdString());
+    	scene.RemoveLight(light);
+        delete light;
+    	sceneTree->removeItem(sceneTree->getSelectedItem(), false);
     });
 
     colorPickerButton->onPress([&]()
@@ -901,7 +944,6 @@ int main()
 				if(objectMode)
 				{
 					rp3d::Vector3 m(axis == 0 ? 0.1 : 0, axis == 1 ? 0.1 : 0, axis == 2 ? 0.1 : 0);
-					rp3d::Vector3 r(axis == 0 ? 0.05 : 0, axis == 1 ? 0.05 : 0, axis == 2 ? 0.05 : 0);
 					switch(param)
 					{
 					case 0:
@@ -925,8 +967,10 @@ int main()
 					}
 				}
 			
-				objectEditorGroup->setEnabled(true);
-				objectEditorGroup->setVisible(true);
+				objectEditorGroup->setEnabled(false);
+				objectEditorGroup->setVisible(false);
+                lightEditorGroup->setEnabled(false);
+				lightEditorGroup->setVisible(false);
 				materialEditorGroup->setEnabled(false);
 				materialEditorGroup->setVisible(false);
 				scriptsGroup->setEnabled(false);
@@ -1012,11 +1056,126 @@ int main()
 		    }
 		    /////////////////////////////////////
 
+            /////////////// LIGHTS //////////////
+            if(sceneTree->getSelectedItem()[1] == "Lights")
+		    {
+                lightEditorGroup->setEnabled(true);
+				lightEditorGroup->setVisible(true);
+				materialEditorGroup->setEnabled(false);
+				materialEditorGroup->setVisible(false);
+				objectEditorGroup->setEnabled(false);
+				objectEditorGroup->setVisible(false);
+				scriptsGroup->setEnabled(false);
+				scriptsGroup->setVisible(false);
+				sceneGroup->setEnabled(false);
+				sceneGroup->setVisible(false);
+
+                auto light = scene.GetLight(sceneTree->getSelectedItem()[2].toStdString());
+
+                if(objectMode)
+				{
+					rp3d::Vector3 m(axis == 0 ? 0.1 : 0, axis == 1 ? 0.1 : 0, axis == 2 ? 0.1 : 0);
+					switch(param)
+					{
+					case 0:
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+							light->SetPosition(light->GetPosition() + m);
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+							light->SetPosition(light->GetPosition() - m);
+						break;
+					case 1:
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+							light->SetDirection(light->GetDirection() + m);
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+							light->SetDirection(light->GetDirection() - m);
+						break;
+					}
+				}
+
+                if((!lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem()[2]) || objectMode)
+				{
+					rp3d::Vector3 position = light->GetPosition();
+					rp3d::Vector3 direction = light->GetDirection();
+                    rp3d::Vector3 color = light->GetColor();
+                    rp3d::Vector3 attenuation = light->GetAttenuation();
+                    float innerCutoff = light->GetCutoff();
+                    float outerCutoff = light->GetOuterCutoff();
+
+                    castShadowsBox->setChecked(light->IsCastingShadows());
+
+					lightNameEdit->setText(sceneTree->getSelectedItem()[2]);
+
+					lposEditX->setText(tgui::String(position.x));
+				    lposEditY->setText(tgui::String(position.y));
+				    lposEditZ->setText(tgui::String(position.z));
+
+				    lrotEditX->setText(tgui::String(direction.x));
+	  			    lrotEditY->setText(tgui::String(direction.y));
+	  			    lrotEditZ->setText(tgui::String(direction.z));
+
+                    rEdit->setText(tgui::String(color.x));
+	  			    gEdit->setText(tgui::String(color.y));
+	  			    bEdit->setText(tgui::String(color.z));
+
+                    constAttEdit->setText(tgui::String(attenuation.x));
+	  			    linAttEdit->setText(tgui::String(attenuation.y));
+	  			    quadAttEdit->setText(tgui::String(attenuation.z));
+
+                    innerCutoffEdit->setText(tgui::String(innerCutoff));
+                    outerCutoffEdit->setText(tgui::String(outerCutoff));
+			    }
+
+			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem()[2])
+			    {
+                    scene.SetLightName(sceneTree->getSelectedItem()[2].toStdString(), lightNameEdit->getText().toStdString());
+                    sceneTree->removeItem(sceneTree->getSelectedItem(), false);
+                    sceneTree->addItem({ "Scene", "Lights", lightNameEdit->getText() });
+                    sceneTree->selectItem({ "Scene", "Lights", lightNameEdit->getText() });
+                
+				    lightNameEdit->setFocused(false);
+			    }
+
+			    rp3d::Vector3 pos;
+			    pos.x = lposEditX->getText().toFloat();
+			    pos.y = lposEditY->getText().toFloat();
+			    pos.z = lposEditZ->getText().toFloat();
+
+			    rp3d::Vector3 dir;
+			    dir.x = lrotEditX->getText().toFloat();
+			    dir.y = lrotEditY->getText().toFloat();
+			    dir.z = lrotEditZ->getText().toFloat();
+
+                rp3d::Vector3 color;
+			    color.x = rEdit->getText().toInt();
+			    color.y = gEdit->getText().toInt();
+			    color.z = bEdit->getText().toInt();
+
+                rp3d::Vector3 att;
+                att.x = constAttEdit->getText().toInt();
+			    att.y = linAttEdit->getText().toInt();
+			    att.z = quadAttEdit->getText().toInt();
+
+                if(!objectMode)
+                {
+                    light->SetPosition(pos);
+                    light->SetDirection(dir);
+                    light->SetColor(color);
+                    light->SetAttenuation(att.x, att.y, att.z);
+                    light->SetCutoff(innerCutoffEdit->getText().toFloat());
+                    light->SetOuterCutoff(outerCutoffEdit->getText().toFloat());
+                }
+
+                light->SetIsCastingShadows(castShadowsBox->isChecked());
+            }
+            /////////////////////////////////////
+
 		    ///////////// MATERIALS /////////////
 		    if(sceneTree->getSelectedItem()[1] == "Materials")
 		    {
 				materialEditorGroup->setEnabled(true);
 				materialEditorGroup->setVisible(true);
+                lightEditorGroup->setEnabled(false);
+				lightEditorGroup->setVisible(false);
 				objectEditorGroup->setEnabled(false);
 				objectEditorGroup->setVisible(false);
 				scriptsGroup->setEnabled(false);
@@ -1173,12 +1332,14 @@ int main()
 			////////////// SCRIPTS //////////////
 			if(sceneTree->getSelectedItem()[1] == "Scripts")
 			{
+                scriptsGroup->setEnabled(true);
+				scriptsGroup->setVisible(true);
+                lightEditorGroup->setEnabled(false);
+				lightEditorGroup->setVisible(false);
 				materialEditorGroup->setEnabled(false);
 				materialEditorGroup->setVisible(false);
 				objectEditorGroup->setEnabled(false);
 				objectEditorGroup->setVisible(false);
-				scriptsGroup->setEnabled(true);
-				scriptsGroup->setVisible(true);
 				sceneGroup->setEnabled(false);
 				sceneGroup->setVisible(false);
 			}
@@ -1186,6 +1347,8 @@ int main()
 		else
 		{
             nameEdit->setText("");
+            lightEditorGroup->setEnabled(false);
+			lightEditorGroup->setVisible(false);
 			objectEditorGroup->setEnabled(false);
 			objectEditorGroup->setVisible(false);
 			materialEditorGroup->setEnabled(false);

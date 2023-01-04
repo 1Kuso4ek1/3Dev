@@ -39,6 +39,8 @@ public:
 
 	// @param outerCutoff new light outerCutoff value
 	void SetOuterCutoff(float outerCutoff);
+
+	void SetIsCastingShadows(bool castShadows);
 	
 	/*
 	 * Used to update the shader (used only in Model and Shape classes)

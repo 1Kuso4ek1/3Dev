@@ -35,6 +35,11 @@ void Light::SetOuterCutoff(float outerCutoff)
 	this->outerCutoff = outerCutoff;
 }
 
+void Light::SetIsCastingShadows(bool castShadows)
+{
+	this->castShadows = castShadows;
+}
+
 void Light::Update(Shader* shader, int lightnum) 
 {
 	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].color", color.x, color.y, color.z);

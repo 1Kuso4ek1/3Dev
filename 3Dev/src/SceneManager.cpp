@@ -96,6 +96,7 @@ void SceneManager::AddLight(Light* light, std::string name)
 
     lastAdded = name + (nameCount ? std::to_string(nameCount) : "");
     lights[lastAdded] = light;
+    lightsVector.push_back(light);
 }
 
 template<class... Args>
@@ -273,6 +274,7 @@ void SceneManager::Load(std::string filename)
         auto name = data["lights"][counter]["name"].asString();
         lights[name] = new Light(rp3d::Vector3::zero(), rp3d::Vector3::zero());
         lights[name]->Deserialize(data["lights"][counter]);
+        lightsVector.push_back(lights[name]);
         counter++;
     }
 
