@@ -67,7 +67,12 @@ std::shared_ptr<tgui::FileDialog> CreateFileDialog(std::string title, int fileTy
     else if(fileType == 3)
         dialog->setFileTypeFilters(
 		{
-			{ "Images", { "*.jpg", "*.jpeg", "*.png", "*.bmp",  } }
+			{ "Images", { "*.jpg", "*.jpeg", "*.png", "*.bmp"  } }
+		});
+    else if(fileType == 4)
+        dialog->setFileTypeFilters(
+		{
+			{ "Sounds", { "*.ogg", "*.wav"  } }
 		});
     dialog->setPath(lastPath);
 	dialog->setFileMustExist(fileMustExist);
@@ -182,6 +187,7 @@ int main()
     auto sphereColliderButton = editor.get<tgui::Button>("sphereCollider");
     auto capsuleColliderButton = editor.get<tgui::Button>("capsuleCollider");
     auto concaveColliderButton = editor.get<tgui::Button>("concaveCollider");
+    auto soundButton = editor.get<tgui::Button>("createSound");
 	auto scriptButton = editor.get<tgui::Button>("createScript");
 
     auto sceneTree = editor.get<tgui::TreeView>("scene");
@@ -189,11 +195,13 @@ int main()
     sceneTree->addItem({ "Scene", "Models" });
     sceneTree->addItem({ "Scene", "Materials" });
     sceneTree->addItem({ "Scene", "Lights" });
+    sceneTree->addItem({ "Scene", "Sounds" });
 	sceneTree->addItem({ "Scene", "Scripts" });
 
     auto objectEditorGroup = editor.get<tgui::Group>("objectEditor");
     auto lightEditorGroup = editor.get<tgui::Group>("lightEditor");
     auto materialEditorGroup = editor.get<tgui::Group>("materialEditor");
+    auto soundEditorGroup = editor.get<tgui::Group>("soundEditor");
 	auto scriptsGroup = editor.get<tgui::Group>("scriptsGroup");
 	auto sceneGroup = editor.get<tgui::Group>("sceneGroup");
 
@@ -268,6 +276,23 @@ int main()
     auto castShadowsBox = editor.get<tgui::CheckBox>("castShadows");
 
     auto ldeleteButton = editor.get<tgui::Button>("ldelete");
+
+    auto soundNameEdit = editor.get<tgui::EditBox>("soundName");
+
+    auto sposEditX = editor.get<tgui::EditBox>("sposX");
+    auto sposEditY = editor.get<tgui::EditBox>("sposY");
+    auto sposEditZ = editor.get<tgui::EditBox>("sposZ");
+    auto volumeSlider = editor.get<tgui::Slider>("volume");
+    auto attenuationEdit = editor.get<tgui::EditBox>("attenuation");
+    auto minDistEdit = editor.get<tgui::EditBox>("minDist");
+
+    auto loopBox = editor.get<tgui::CheckBox>("loop");
+
+    auto playButton = editor.get<tgui::Button>("play");
+    auto pauseButton = editor.get<tgui::Button>("pause");
+    auto stopButton = editor.get<tgui::Button>("stop");
+
+    auto sdeleteButton = editor.get<tgui::Button>("sdelete");
 
 	auto buildButton = editor.get<tgui::Button>("build");
     auto startStopButton = editor.get<tgui::Button>("startStop");
@@ -394,12 +419,15 @@ int main()
     loading.draw();
     engine.GetWindow().display();
 
+    auto sman = std::make_shared<SoundManager>();
+
     SceneManager scene;
 
 	scene.AddPhysicsManager(man);
 	scene.SetCamera(&cam);
     scene.SetSkybox(skybox);
     scene.UpdatePhysics(false);
+    scene.SetSoundManager(sman);
 
 	if(!projectFilename.empty())
 	{
@@ -407,6 +435,7 @@ int main()
         if(scene.GetNames()[2].empty())
             scene.AddLight(&shadowSource, "shadowSource");
         auto names = scene.GetNames();
+        auto sounds = sman->GetSounds();
         for(auto& i : names[0]) sceneTree->addItem({ "Scene", "Models", i });
         for(auto& i : names[1])
         {
@@ -414,6 +443,7 @@ int main()
             sceneTree->addItem({ "Scene", "Materials", i });
         }
         for(auto& i : names[2]) sceneTree->addItem({ "Scene", "Lights", i });
+        for(auto& i : sounds) sceneTree->addItem({ "Scene", "Sounds", i });
     }
     else
     {
@@ -549,6 +579,43 @@ int main()
 			    for(int i = 0; i < model->GetMeshesCount(); i++)
                     model->CreateConcaveShape(i);
 			}
+    });
+
+    soundButton->onPress([&]()
+    {
+        openFileDialog = CreateFileDialog("Open file", 4);
+    	editor.add(openFileDialog);
+    	openFileDialog->onClose([&]()
+  	    {
+            if(!openFileDialog->getSelectedPaths().empty())
+            {
+                sman->LoadSound(openFileDialog->getSelectedPaths()[0].asString().toStdString());
+                sceneTree->addItem({ "Scene", "Sounds", sman->GetSounds().back() });
+                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
+            }
+  	    	openFileDialog = nullptr;
+  	    });
+    });
+
+    playButton->onPress([&]()
+    {
+        sman->Play(sceneTree->getSelectedItem()[2].toStdString());
+    });
+
+    pauseButton->onPress([&]()
+    {
+        sman->Pause(sceneTree->getSelectedItem()[2].toStdString());
+    });
+
+    stopButton->onPress([&]()
+    {
+        sman->Stop(sceneTree->getSelectedItem()[2].toStdString());
+    });
+
+    sdeleteButton->onPress([&]()
+    {
+        sman->RemoveSound(sceneTree->getSelectedItem()[2].toStdString());
+    	sceneTree->removeItem(sceneTree->getSelectedItem(), false);
     });
 
     ldeleteButton->onPress([&]()
@@ -967,10 +1034,12 @@ int main()
 					}
 				}
 			
-				objectEditorGroup->setEnabled(false);
-				objectEditorGroup->setVisible(false);
+				objectEditorGroup->setEnabled(true);
+				objectEditorGroup->setVisible(true);
                 lightEditorGroup->setEnabled(false);
 				lightEditorGroup->setVisible(false);
+                soundEditorGroup->setEnabled(false);
+				soundEditorGroup->setVisible(false);
 				materialEditorGroup->setEnabled(false);
 				materialEditorGroup->setVisible(false);
 				scriptsGroup->setEnabled(false);
@@ -1063,6 +1132,8 @@ int main()
 				lightEditorGroup->setVisible(true);
 				materialEditorGroup->setEnabled(false);
 				materialEditorGroup->setVisible(false);
+                soundEditorGroup->setEnabled(false);
+				soundEditorGroup->setVisible(false);
 				objectEditorGroup->setEnabled(false);
 				objectEditorGroup->setVisible(false);
 				scriptsGroup->setEnabled(false);
@@ -1151,9 +1222,9 @@ int main()
 			    color.z = bEdit->getText().toInt();
 
                 rp3d::Vector3 att;
-                att.x = constAttEdit->getText().toInt();
-			    att.y = linAttEdit->getText().toInt();
-			    att.z = quadAttEdit->getText().toInt();
+                att.x = constAttEdit->getText().toFloat();
+			    att.y = linAttEdit->getText().toFloat();
+			    att.z = quadAttEdit->getText().toFloat();
 
                 if(!objectMode)
                 {
@@ -1163,9 +1234,8 @@ int main()
                     light->SetAttenuation(att.x, att.y, att.z);
                     light->SetCutoff(innerCutoffEdit->getText().toFloat());
                     light->SetOuterCutoff(outerCutoffEdit->getText().toFloat());
+                    light->SetIsCastingShadows(castShadowsBox->isChecked());
                 }
-
-                light->SetIsCastingShadows(castShadowsBox->isChecked());
             }
             /////////////////////////////////////
 
@@ -1176,6 +1246,8 @@ int main()
 				materialEditorGroup->setVisible(true);
                 lightEditorGroup->setEnabled(false);
 				lightEditorGroup->setVisible(false);
+                soundEditorGroup->setEnabled(false);
+				soundEditorGroup->setVisible(false);
 				objectEditorGroup->setEnabled(false);
 				objectEditorGroup->setVisible(false);
 				scriptsGroup->setEnabled(false);
@@ -1329,6 +1401,89 @@ int main()
 		    }
 		    /////////////////////////////////////
 
+            ////////////// SOUNDS ///////////////
+            if(sceneTree->getSelectedItem()[1] == "Sounds")
+            {
+                soundEditorGroup->setEnabled(true);
+                soundEditorGroup->setVisible(true);
+                scriptsGroup->setEnabled(false);
+                scriptsGroup->setVisible(false);
+                lightEditorGroup->setEnabled(false);
+                lightEditorGroup->setVisible(false);
+                materialEditorGroup->setEnabled(false);
+                materialEditorGroup->setVisible(false);
+                objectEditorGroup->setEnabled(false);
+                objectEditorGroup->setVisible(false);
+                sceneGroup->setEnabled(false);
+                sceneGroup->setVisible(false);
+
+                auto sound = sceneTree->getSelectedItem()[2].toStdString();
+
+                if(objectMode)
+				{
+					rp3d::Vector3 m(axis == 0 ? 0.1 : 0, axis == 1 ? 0.1 : 0, axis == 2 ? 0.1 : 0);
+					switch(param)
+					{
+					case 0:
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+							sman->SetPosition(sman->GetPosition(sound) + m, sound);
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+							sman->SetPosition(sman->GetPosition(sound) - m, sound);
+						break;
+					}
+				}
+
+                if((!soundNameEdit->isFocused() && soundNameEdit->getText() != sceneTree->getSelectedItem()[2]) || objectMode)
+				{
+					rp3d::Vector3 position = sman->GetPosition(sound);
+                    float attenuation = sman->GetAttenuation(sound);
+                    float minDistance = sman->GetMinDistance(sound);
+                    float volume = sman->GetVolume(sound);
+
+					soundNameEdit->setText(sceneTree->getSelectedItem()[2]);
+
+					sposEditX->setText(tgui::String(position.x));
+				    sposEditY->setText(tgui::String(position.y));
+				    sposEditZ->setText(tgui::String(position.z));
+
+                    volumeSlider->setValue(volume);
+
+                    attenuationEdit->setText(tgui::String(attenuation));
+	  			    minDistEdit->setText(tgui::String(minDistance));
+                    
+                    loopBox->setChecked(sman->GetLoop(sound));
+			    }
+
+			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && soundNameEdit->isFocused() && soundNameEdit->getText() != sceneTree->getSelectedItem()[2])
+			    {
+                    sman->SetName(sceneTree->getSelectedItem()[2].toStdString(), soundNameEdit->getText().toStdString());
+                    sceneTree->removeItem(sceneTree->getSelectedItem(), false);
+                    sceneTree->addItem({ "Scene", "Sounds", soundNameEdit->getText() });
+                    sceneTree->selectItem({ "Scene", "Sounds", soundNameEdit->getText() });
+                
+				    soundNameEdit->setFocused(false);
+			    }
+
+			    rp3d::Vector3 pos;
+			    pos.x = lposEditX->getText().toFloat();
+			    pos.y = lposEditY->getText().toFloat();
+			    pos.z = lposEditZ->getText().toFloat();
+
+                float attenuation = attenuationEdit->getText().toFloat();
+			    float minDist = minDistEdit->getText().toFloat();
+                float volume = volumeSlider->getValue();
+
+                if(!objectMode)
+                {
+                    sman->SetPosition(pos, sound);
+                    sman->SetVolume(volume, sound);
+                    sman->SetAttenuation(attenuation, sound);
+                    sman->SetMinDistance(minDist, sound);
+                    sman->SetLoop(loopBox->isChecked(), sound);
+                }
+            }
+            /////////////////////////////////////
+
 			////////////// SCRIPTS //////////////
 			if(sceneTree->getSelectedItem()[1] == "Scripts")
 			{
@@ -1336,6 +1491,8 @@ int main()
 				scriptsGroup->setVisible(true);
                 lightEditorGroup->setEnabled(false);
 				lightEditorGroup->setVisible(false);
+                soundEditorGroup->setEnabled(false);
+				soundEditorGroup->setVisible(false);
 				materialEditorGroup->setEnabled(false);
 				materialEditorGroup->setVisible(false);
 				objectEditorGroup->setEnabled(false);
@@ -1349,6 +1506,8 @@ int main()
             nameEdit->setText("");
             lightEditorGroup->setEnabled(false);
 			lightEditorGroup->setVisible(false);
+            soundEditorGroup->setEnabled(false);
+			soundEditorGroup->setVisible(false);
 			objectEditorGroup->setEnabled(false);
 			objectEditorGroup->setVisible(false);
 			materialEditorGroup->setEnabled(false);

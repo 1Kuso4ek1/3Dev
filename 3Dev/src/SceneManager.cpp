@@ -193,6 +193,7 @@ void SceneManager::Save(std::string filename, bool relativePaths)
     counter = 0;
 
     data["camera"] = camera->Serialize();
+    data["sounds"] = sManager->Serialize(relativePaths ? filename : "");
 
     std::ofstream file(filename);
     file << data.toStyledString();
@@ -279,6 +280,7 @@ void SceneManager::Load(std::string filename)
     }
 
     camera->Deserialize(data["camera"]);
+    sManager->Deserialize(data["sounds"]);
 }
 
 void SceneManager::SaveState()

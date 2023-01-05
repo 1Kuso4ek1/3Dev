@@ -21,6 +21,7 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterRigidBody();
     RegisterHingeJoint();
     RegisterPhysicsManager();
+    RegisterSoundManager();
     RegisterCamera();
     RegisterModel();
     RegisterLight();
@@ -376,6 +377,7 @@ void ScriptManager::RegisterSceneManager()
         { "Model@ CloneModel(Model@, bool = true, string = \"model\")", WRAP_MFN(SceneManager, CloneModel) },
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
         { "PhysicsManager@ GetPhysicsManager()", WRAP_MFN(SceneManager, GetPhysicsManagerPtr) },
+        { "SoundManager@ GetSoundManager()", WRAP_MFN(SceneManager, GetSoundManagerPtr) },
         { "void Save(string filename)", WRAP_MFN(SceneManager, Save) },
         { "void Load(string filename)", WRAP_MFN(SceneManager, Load) },
         { "ModelGroup GetModelGroup(string)", WRAP_MFN(SceneManager, GetModelPtrGroup) },
@@ -500,4 +502,37 @@ void ScriptManager::RegisterClock()
 
 	AddTypeConstructor("Clock", "void f()", WRAP_OBJ_LAST(MakeType<sf::Clock>));
 	AddTypeDestructor("Clock", "void f()", WRAP_OBJ_LAST(DestroyType<sf::Clock>));
+}
+
+void ScriptManager::RegisterSoundManager()
+{
+    SetDefaultNamespace("Listener");
+    AddFunction("void SetPosition(Vector3)", WRAP_FN(ListenerWrapper::SetPosition));
+    AddFunction("void SetUpVector(Vector3)", WRAP_FN(ListenerWrapper::SetUpVector));
+    AddFunction("void SetOrientation(Quaternion)", WRAP_FN(ListenerWrapper::SetOrientation));
+    AddFunction("void SetGlobalVolume(float)", WRAP_FN(ListenerWrapper::SetGlobalVolume));
+    SetDefaultNamespace("");
+
+    AddType("SoundManager", sizeof(SoundManager),
+    {
+        { "void Play(string, int = 0)", WRAP_MFN(SoundManager, Play) },
+        { "void PlayAt(string, int = 0, Vector3 = Vector3(0, 0, 0))", WRAP_MFN(SoundManager, PlayAt) },
+        { "void PlayMono(string, int = 0)", WRAP_MFN(SoundManager, PlayMono) },
+        { "void Stop(string, int = 0)", WRAP_MFN(SoundManager, Stop) },
+        { "void Pause(string, int = 0)", WRAP_MFN(SoundManager, Pause) },
+        { "void SetPosition(Vector3, string, int = 0)", WRAP_MFN(SoundManager, SetPosition) },
+        { "void SetRelativeToListener(bool, string, int = 0)", WRAP_MFN(SoundManager, SetRelativeToListener) },
+        { "void SetLoop(bool, string, int = 0)", WRAP_MFN(SoundManager, SetLoop) },
+        { "void SetVolume(float, string, int = 0)", WRAP_MFN(SoundManager, SetVolume) },
+        { "void SetMinDistance(float, string, int = 0)", WRAP_MFN(SoundManager, SetMinDistance) },
+        { "void SetAttenuation(float, string, int = 0)", WRAP_MFN(SoundManager, SetAttenuation) },
+        { "Vector3 GetPosition(string, int = 0)", WRAP_MFN(SoundManager, GetPosition) },
+        { "bool GetRelativeToListener(string, int = 0)", WRAP_MFN(SoundManager, GetRelativeToListener) },
+        { "bool GetLoop(string, int = 0)", WRAP_MFN(SoundManager, GetLoop) },
+        { "float GetVolume(string, int = 0)", WRAP_MFN(SoundManager, GetVolume) },
+        { "float GetMinDistance(string, int = 0)", WRAP_MFN(SoundManager, GetMinDistance) },
+        { "float GetAttenuation(string, int = 0)", WRAP_MFN(SoundManager, GetAttenuation) },
+        { "void UpdateAll()", WRAP_MFN_PR(SoundManager, UpdateAll, (), void) },
+        { "void UpdateAll(string)", WRAP_MFN_PR(SoundManager, UpdateAll, (std::string), void) }
+    }, {});
 }

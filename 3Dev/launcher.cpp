@@ -43,12 +43,14 @@ int main()
     auto skybox = std::make_shared<Model>(true);
     skybox->SetMaterial({ &skyboxMaterial });
 
+    auto sman = std::make_shared<SoundManager>();
+
     SceneManager scene;
     scene.AddPhysicsManager(man);
     scene.SetCamera(&cam);
     scene.SetSkybox(skybox);
     scene.AddLight(&l);
-    scene.UpdatePhysics(false);
+    scene.SetSoundManager(sman);
     scene.Load(cfg["scenePath"].asString());
 
     ScriptManager scman;
@@ -68,11 +70,9 @@ int main()
     scman.Build();
     
     if(!scman.IsBuildSucceded())
-      return -1;
+        return -1;
 
     scman.ExecuteFunction("void Start()");
-
-    scene.UpdatePhysics(true);
 
     ShadowManager shadows(&scene, glm::ivec2(cfg["renderer"]["shadowMapResolution"].asInt()));
 
@@ -97,6 +97,9 @@ int main()
         if(manageCameraLook) cam.Look();
 
         scman.ExecuteFunction("void Loop()");
+
+        ListenerWrapper::SetPosition(cam.GetPosition());
+		ListenerWrapper::SetOrientation(cam.GetOrientation());
 
         shadows.Update();
 

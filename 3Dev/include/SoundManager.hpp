@@ -17,14 +17,17 @@ private:
 class SoundManager
 {
 public:
-    void LoadSound(std::string filename, std::string name);
-    void LoadSound(sf::SoundBuffer& buffer, std::string name);
+    void LoadSound(std::string filename, std::string name = "sound");
+    void LoadSound(sf::SoundBuffer& buffer, std::string name = "sound");
 
     void Play(std::string name, int id = 0);
     void PlayAt(std::string name, int id = 0, rp3d::Vector3 pos = { 0, 0, 0 });
     void PlayMono(std::string name, int id = 0);
     void Stop(std::string name, int id = 0);
     void Pause(std::string name, int id = 0);
+
+    void SetName(std::string name, std::string newName);
+    void RemoveSound(std::string name);
 
     void SetPosition(rp3d::Vector3 pos, std::string name, int id = 0);
     void SetRelativeToListener(bool relative, std::string name, int id = 0);
@@ -33,10 +36,20 @@ public:
     void SetMinDistance(float dist, std::string name, int id = 0);
     void SetAttenuation(float attenuation, std::string name, int id = 0);
 
+    rp3d::Vector3 GetPosition(std::string name, int id = 0);
+    bool GetRelativeToListener(std::string name, int id = 0);
+    bool GetLoop(std::string name, int id = 0);
+    float GetVolume(std::string name, int id = 0);
+    float GetMinDistance(std::string name, int id = 0);
+    float GetAttenuation(std::string name, int id = 0);
+
     void UpdateAll();
     void UpdateAll(std::string name);
 
     std::vector<std::string> GetSounds();
+
+    Json::Value Serialize(std::string relativeTo);
+    void Deserialize(Json::Value data);
 
 private:
 

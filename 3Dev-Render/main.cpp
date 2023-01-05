@@ -77,11 +77,14 @@ int main(int argc, char* argv[])
 
     auto path = std::filesystem::current_path();
 
+    auto sman = std::make_shared<SoundManager>();
+
     SceneManager scene;
 
     scene.AddPhysicsManager(man);
     scene.SetCamera(&cam);
     scene.SetSkybox(skybox);
+    scene.SetSoundManager(sman);
     scene.UpdatePhysics(false);
 
     scene.Load(scenePath);

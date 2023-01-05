@@ -52,6 +52,7 @@ private:
     void RegisterRay();
     void RegisterHingeJoint();
     void RegisterClock();
+    void RegisterSoundManager();
 
     bool buildSucceded = false;
 
