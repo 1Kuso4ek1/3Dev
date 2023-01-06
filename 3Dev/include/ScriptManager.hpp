@@ -53,6 +53,8 @@ private:
     void RegisterHingeJoint();
     void RegisterClock();
     void RegisterSoundManager();
+    void RegisterEngine();
+    void RegisterTGUI();
 
     bool buildSucceded = false;
 

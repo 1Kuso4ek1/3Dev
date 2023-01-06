@@ -1,9 +1,4 @@
 #include <Engine.hpp>
-#include <filesystem>
-#define TGUI_USE_STD_FILESYSTEM
-#include <TGUI/TGUI.hpp>
-#include <TGUI/Backend/SFML-OpenGL3.hpp>
-#include <unistd.h>
 
 #ifdef _WIN32
     std::string homeFolder = std::string(getenv("HOMEPATH")) + "/.3Dev-Editor/";
@@ -419,6 +414,8 @@ int main()
     loading.draw();
     engine.GetWindow().display();
 
+    engine.SetGuiViewport({ 220, 25, 840, 520 });
+
     auto sman = std::make_shared<SoundManager>();
 
     SceneManager scene;
@@ -463,12 +460,22 @@ int main()
 
     filenameEdit->setText(projectFilename.empty() ? "scene.json" : projectFilename);
 
-	ScriptManager scman;
-	bool manageCameraMovement = true, manageCameraLook = true, manageCameraMouse = true;
-	bool scriptLaunched = false;
+	bool manageCameraMovement = true, manageCameraLook = true,
+         manageCameraMouse = true, manageSceneRendering = true,
+         updateShadows = true, mouseCursorGrabbed = true,
+         mouseCursorVisible = false;
+
+    bool scriptLaunched = false;
+
+    ScriptManager scman;
+    scman.AddProperty("Engine engine", &engine);
     scman.SetDefaultNamespace("Game");
     scman.AddProperty("SceneManager scene", &scene);
-    scman.AddProperty("Camera camera", &cam);
+    scman.AddProperty("Camera camera", scene.GetCamera());
+    scman.AddProperty("bool mouseCursorGrabbed", &mouseCursorGrabbed);
+    scman.AddProperty("bool mouseCursorVisible", &mouseCursorVisible);
+    scman.AddProperty("bool updateShadows", &updateShadows);
+    scman.AddProperty("bool manageSceneRendering", &manageSceneRendering);
     scman.AddProperty("bool manageCameraMovement", &manageCameraMovement);
     scman.AddProperty("bool manageCameraLook", &manageCameraLook);
     scman.AddProperty("bool manageCameraMouse", &manageCameraMouse);
@@ -881,6 +888,7 @@ int main()
 			else
 			{
 			    manageCameraMovement = manageCameraLook = manageCameraMouse = true;
+                engine.RemoveGui();
 			    scene.UpdatePhysics(false);
 			    scene.LoadState();
 			}
@@ -1595,9 +1603,8 @@ int main()
             engine.GetWindow().setFramerateLimit(60);
         else engine.GetWindow().setFramerateLimit(5);
 
-		shadows.Update();
-
-        scene.Draw();
+		if(updateShadows) shadows.Update();
+        if(manageSceneRendering) scene.Draw();
 
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 0.5);

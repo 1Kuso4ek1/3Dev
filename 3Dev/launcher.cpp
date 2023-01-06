@@ -16,8 +16,7 @@ int main()
     engine.CreateWindow(cfg["window"]["width"].asInt(), cfg["window"]["height"].asInt(), cfg["window"]["title"].asString());
     engine.Init();
 
-    engine.GetWindow().setMouseCursorVisible(false);
-    engine.GetWindow().setMouseCursorGrabbed(true);
+    engine.SetGuiViewport({ 0, 0, cfg["window"]["width"].asFloat(), cfg["window"]["height"].asFloat() });
 
     if(cfg["renderer"]["shadersDir"].asString() != "default")
         Renderer::GetInstance()->SetShadersDirectory(cfg["renderer"]["shadersDir"].asString());
@@ -53,11 +52,20 @@ int main()
     scene.SetSoundManager(sman);
     scene.Load(cfg["scenePath"].asString());
 
+    bool manageCameraMovement = true, manageCameraLook = true,
+         manageCameraMouse = true, manageSceneRendering = true,
+         updateShadows = true, mouseCursorGrabbed = true,
+         mouseCursorVisible = false;
+
     ScriptManager scman;
-	bool manageCameraMovement = true, manageCameraLook = true, manageCameraMouse = true;
+    scman.AddProperty("Engine engine", &engine);
     scman.SetDefaultNamespace("Game");
     scman.AddProperty("SceneManager scene", &scene);
-    scman.AddProperty("Camera camera", &cam);
+    scman.AddProperty("Camera camera", scene.GetCamera());
+    scman.AddProperty("bool mouseCursorGrabbed", &mouseCursorGrabbed);
+    scman.AddProperty("bool mouseCursorVisible", &mouseCursorVisible);
+    scman.AddProperty("bool updateShadows", &updateShadows);
+    scman.AddProperty("bool manageSceneRendering", &manageSceneRendering);
     scman.AddProperty("bool manageCameraMovement", &manageCameraMovement);
     scman.AddProperty("bool manageCameraLook", &manageCameraLook);
     scman.AddProperty("bool manageCameraMouse", &manageCameraMouse);
@@ -91,6 +99,9 @@ int main()
 
     engine.Loop([&]()
     {
+        engine.GetWindow().setMouseCursorVisible(mouseCursorVisible);
+        engine.GetWindow().setMouseCursorGrabbed(mouseCursorGrabbed);
+
         cam.Update();
         if(manageCameraMovement) cam.Move(1);
         if(manageCameraMouse) cam.Mouse();
@@ -101,9 +112,8 @@ int main()
         ListenerWrapper::SetPosition(cam.GetPosition());
 		ListenerWrapper::SetOrientation(cam.GetOrientation());
 
-        shadows.Update();
-
-        scene.Draw();
+        if(updateShadows) shadows.Update();
+        if(manageSceneRendering) scene.Draw();
 
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exposure);

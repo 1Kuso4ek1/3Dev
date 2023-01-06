@@ -36,7 +36,7 @@ target_link_directories(editor
 	${LIGHTLOG_INCLUDE_DIR}/../lib
 )
 
-target_link_libraries(editor PUBLIC 3Dev::3Dev TGUI::TGUI stdc++fs)
+target_link_libraries(editor PUBLIC 3Dev::3Dev TGUI::TGUI)
 
 if(UNIX OR APPLE)
     file(TO_CMAKE_PATH $ENV{HOME} HOME_PATH)

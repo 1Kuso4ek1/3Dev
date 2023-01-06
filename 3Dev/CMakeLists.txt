@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.17)
 project(3Dev VERSION 1.2.0 LANGUAGES CXX)
 
 find_package(SFML 2.5.1 COMPONENTS system window network audio REQUIRED)
+find_package(TGUI REQUIRED)
 find_package(assimp REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(ReactPhysics3D REQUIRED)
@@ -65,8 +66,10 @@ target_link_libraries(3Dev
 	glm::glm
 	assimp::assimp
 	Angelscript::${ANGELSCRIPT_LIBRARY_NAME}
+	TGUI::TGUI
 	sfml-graphics sfml-window sfml-system sfml-audio sfml-network
 	jsoncpp_lib
+	stdc++fs
 )
 
 set_target_properties(3Dev PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)

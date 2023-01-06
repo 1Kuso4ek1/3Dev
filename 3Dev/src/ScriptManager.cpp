@@ -4,8 +4,6 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
 {
     engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
 
-    engine->SetEngineProperty(asEP_COMPILER_WARNINGS, true);
-
     context = engine->CreateContext();
 
     RegisterStdString(engine);
@@ -30,6 +28,8 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterSfMouse();
     RegisterRandom();
     RegisterClock();
+    RegisterTGUI();
+    RegisterEngine();
 
     AddFunction("string to_string(int)", WRAP_FN_PR(std::to_string, (int), std::string));
     AddFunction("string to_string(float)", WRAP_FN_PR(std::to_string, (float), std::string));
@@ -372,6 +372,7 @@ void ScriptManager::RegisterSceneManager()
 
     AddType("SceneManager", sizeof(SceneManager),
     {
+        { "void Draw()", WRAP_MFN(SceneManager, Draw) },
         { "Model@ GetModel(string)", WRAP_MFN(SceneManager, GetModelPtr) },
         { "Light@ GetLight(string)", WRAP_MFN(SceneManager, GetLight) },
         { "Model@ CloneModel(Model@, bool = true, string = \"model\")", WRAP_MFN(SceneManager, CloneModel) },
@@ -535,4 +536,193 @@ void ScriptManager::RegisterSoundManager()
         { "void UpdateAll()", WRAP_MFN_PR(SoundManager, UpdateAll, (), void) },
         { "void UpdateAll(string)", WRAP_MFN_PR(SoundManager, UpdateAll, (std::string), void) }
     }, {});
+}
+
+void ScriptManager::RegisterEngine()
+{
+    AddType("Engine", sizeof(Engine),
+    {
+        { "tgui::Gui@ CreateGui(string)", WRAP_MFN(Engine, CreateGui) },
+        { "void RemoveGui()", WRAP_MFN(Engine, RemoveGui) }
+    }, {});
+}
+
+void ScriptManager::RegisterTGUI()
+{
+    SetDefaultNamespace("tgui");
+    AddValueType("Color", sizeof(tgui::Color), asGetTypeTraits<tgui::Color>() | asOBJ_POD, {}, {});
+    AddTypeConstructor("Color", "void f(uint8, uint8, uint8, uint8 = 255)", WRAP_OBJ_LAST(MakeColor));
+
+    engine->RegisterFuncdef("void OnPress()");
+    AddType("BitmapButton", sizeof(tgui::BitmapButton),
+    {
+        { "void onPress(OnPress@)", WRAP_OBJ_LAST(OnPress) },
+        { "void setImageScaling(float)", WRAP_MFN(tgui::BitmapButton, setImageScaling) },
+        { "void setEnabled(bool)", WRAP_MFN(tgui::BitmapButton, setEnabled) },
+        { "void setText(const string& in)", WRAP_MFN(tgui::BitmapButton, setText) }
+    }, {});
+
+    AddType("Button", sizeof(tgui::Button),
+    {
+        { "void onPress(OnPress@)", WRAP_OBJ_LAST(OnPress) },
+        { "void setEnabled(bool)", WRAP_MFN(tgui::Button, setEnabled) },
+        { "void setText(const string& in)", WRAP_MFN(tgui::Button, setText) }
+    }, {});
+
+    AddType("ChatBox", sizeof(tgui::ChatBox),
+    {
+        { "void addLine(const string& in)", WRAP_MFN_PR(tgui::ChatBox, addLine, (const tgui::String&), void) },
+        { "void addLine(const string& in, Color)", WRAP_MFN_PR(tgui::ChatBox, addLine, (const tgui::String&, tgui::Color), void) },
+        { "bool removeLine(uint)", WRAP_MFN(tgui::ChatBox, removeLine) },
+        { "void removeAllLines()", WRAP_MFN(tgui::ChatBox, removeAllLines) },
+        { "uint getLineAmount()", WRAP_MFN(tgui::ChatBox, getLineAmount) },
+        { "void setEnabled(bool)", WRAP_MFN(tgui::ChatBox, setEnabled) }
+    }, {});
+
+    AddType("CheckBox", sizeof(tgui::CheckBox),
+    {
+        { "void setChecked(bool)", WRAP_MFN(tgui::CheckBox, setChecked) },
+        { "bool isChecked()", WRAP_MFN(tgui::CheckBox, isChecked) },
+        { "void setEnabled(bool)", WRAP_MFN(tgui::CheckBox, setEnabled) }
+    }, {});
+
+    AddType("ChildWindow", sizeof(tgui::ChildWindow),
+    {
+        { "void setEnabled(bool)", WRAP_MFN(tgui::ChildWindow, setEnabled) }
+    }, {});
+
+    AddType("ComboBox", sizeof(tgui::ComboBox),
+    {
+        { "void addItem(const string& in, const string& in = \"\")", WRAP_MFN(tgui::ComboBox, addItem) },
+        { "bool setSelectedItem(const string& in)", WRAP_MFN(tgui::ComboBox, setSelectedItem) },
+        { "bool setSelectedItemById(const string& in)", WRAP_MFN(tgui::ComboBox, setSelectedItemById) },
+        { "bool setSelectedItemByIndex(uint)", WRAP_MFN(tgui::ComboBox, setSelectedItemByIndex) },
+        { "string getSelectedItem()", WRAP_OBJ_LAST(GetSelectedItem<tgui::ComboBox>) },
+        { "void deselectItem()", WRAP_MFN(tgui::ComboBox, deselectItem) },
+        { "void setEnabled(bool)", WRAP_MFN(tgui::ComboBox, setEnabled) }
+    }, {});
+
+    AddType("EditBox", sizeof(tgui::EditBox),
+    {
+        { "string setText(const string& in)", WRAP_MFN(tgui::EditBox, setText) },
+        { "string getText()", WRAP_OBJ_LAST(GetText<tgui::EditBox>) },
+        { "void setEnabled(bool)", WRAP_MFN(tgui::EditBox, setEnabled) }
+    }, {});
+
+    AddType("Group", sizeof(tgui::Group),
+    {
+        { "void setEnabled(bool)", WRAP_MFN(tgui::Group, setEnabled) }
+    }, {});
+
+    AddType("Knob", sizeof(tgui::Knob),
+    {
+        { "void setEnabled(bool)", WRAP_MFN(tgui::Knob, setEnabled) }
+    }, {});
+
+    AddType("Label", sizeof(tgui::Label),
+    {
+        { "void setText(const string& in)", WRAP_MFN(tgui::Label, setText) },
+    }, {});
+
+    AddType("ListBox", sizeof(tgui::ListBox),
+    {
+        { "void setEnabled(bool)", WRAP_MFN(tgui::ListBox, setEnabled) }
+    }, {});
+
+    AddType("ListView", sizeof(tgui::ListView),
+    {
+        { "void setEnabled(bool)", WRAP_MFN(tgui::ListView, setEnabled) }
+    }, {});
+
+    AddType("Panel", sizeof(tgui::Panel),
+    {
+        { "void setEnabled(bool)", WRAP_MFN(tgui::Panel, setEnabled) }
+    }, {});
+
+    AddType("Picture", sizeof(tgui::Picture),
+    {
+
+    }, {});
+
+    AddType("ProgressBar", sizeof(tgui::ProgressBar),
+    {
+        { "void setValue(float)", WRAP_MFN(tgui::ProgressBar, setValue) },
+        { "float getValue()", WRAP_MFN(tgui::ProgressBar, getValue) }
+    }, {});
+
+    AddType("RadioButton", sizeof(tgui::RadioButton),
+    {
+        { "void setChecked(bool)", WRAP_MFN(tgui::RadioButton, setChecked) },
+        { "bool isChecked()", WRAP_MFN(tgui::RadioButton, isChecked) },
+        { "void setEnabled(bool)", WRAP_MFN(tgui::RadioButton, setEnabled) }
+    }, {});
+
+    AddType("RangeSlider", sizeof(tgui::RangeSlider),
+    {
+        { "void setSelectionStart(float)", WRAP_MFN(tgui::RangeSlider, setSelectionStart) },
+        { "void setSelectionEnd(float)", WRAP_MFN(tgui::RangeSlider, setSelectionEnd) },
+        { "float getSelectionStart()", WRAP_MFN(tgui::RangeSlider, getSelectionStart) },
+        { "float getSelectionEnd()", WRAP_MFN(tgui::RangeSlider, getSelectionEnd) },
+        { "void setEnabled(bool)", WRAP_MFN(tgui::RangeSlider, setEnabled) }
+    }, {});
+
+    AddType("Slider", sizeof(tgui::Slider),
+    {
+        { "void setValue(float)", WRAP_MFN(tgui::Slider, setValue) },
+        { "float getValue()", WRAP_MFN(tgui::Slider, getValue) },
+        { "void setEnabled(bool)", WRAP_MFN(tgui::Slider, setEnabled) }
+    }, {});
+
+    AddType("SpinButton", sizeof(tgui::SpinButton),
+    {
+        { "void setEnabled(bool)", WRAP_MFN(tgui::SpinButton, setEnabled) }
+    }, {});
+
+    AddType("SpinControl", sizeof(tgui::SpinControl),
+    {
+        { "void setEnabled(bool)", WRAP_MFN(tgui::SpinControl, setEnabled) }
+    }, {});
+
+    AddType("Tabs", sizeof(tgui::Tabs),
+    {
+        { "void setEnabled(bool)", WRAP_MFN(tgui::Tabs, setEnabled) }
+    }, {});
+
+    AddType("TextArea", sizeof(tgui::TextArea),
+    {
+        { "void setEnabled(bool)", WRAP_MFN(tgui::TextArea, setEnabled) }
+    }, {});
+
+    AddType("TreeView", sizeof(tgui::TreeView),
+    {
+        { "void setEnabled(bool)", WRAP_MFN(tgui::TreeView, setEnabled) }
+    }, {});
+
+    AddType("Gui", sizeof(tgui::Gui),
+    {
+        { "BitmapButton@ getBitmapButton(string)", WRAP_OBJ_LAST(GetWidget<tgui::BitmapButton>) },
+        { "Button@ getButton(string)", WRAP_OBJ_LAST(GetWidget<tgui::Button>) },
+        { "ChatBox@ getChatBox(string)", WRAP_OBJ_LAST(GetWidget<tgui::ChatBox>) },
+        { "CheckBox@ getCheckBox(string)", WRAP_OBJ_LAST(GetWidget<tgui::CheckBox>) },
+        { "ChildWindow@ getChildWindow(string)", WRAP_OBJ_LAST(GetWidget<tgui::ChildWindow>) },
+        { "ComboBox@ getComboBox(string)", WRAP_OBJ_LAST(GetWidget<tgui::ComboBox>) },
+        { "EditBox@ getEditBox(string)", WRAP_OBJ_LAST(GetWidget<tgui::EditBox>) },
+        { "Group@ getGroup(string)", WRAP_OBJ_LAST(GetWidget<tgui::Group>) },
+        { "Knob@ getKnob(string)", WRAP_OBJ_LAST(GetWidget<tgui::Knob>) },
+        { "Label@ getLabel(string)", WRAP_OBJ_LAST(GetWidget<tgui::Label>) },
+        { "ListBox@ getListBox(string)", WRAP_OBJ_LAST(GetWidget<tgui::ListBox>) },
+        { "ListView@ getListView(string)", WRAP_OBJ_LAST(GetWidget<tgui::ListView>) },
+        { "Panel@ getPanel(string)", WRAP_OBJ_LAST(GetWidget<tgui::Panel>) },
+        { "Picture@ getPicture(string)", WRAP_OBJ_LAST(GetWidget<tgui::Picture>) },
+        { "ProgressBar@ getProgressBar(string)", WRAP_OBJ_LAST(GetWidget<tgui::ProgressBar>) },
+        { "RadioButton@ getRadioButton(string)", WRAP_OBJ_LAST(GetWidget<tgui::RadioButton>) },
+        { "RangeSlider@ getRangeSlider(string)", WRAP_OBJ_LAST(GetWidget<tgui::RangeSlider>) },
+        { "Slider@ getSlider(string)", WRAP_OBJ_LAST(GetWidget<tgui::Slider>) },
+        { "SpinButton@ getSpinButton(string)", WRAP_OBJ_LAST(GetWidget<tgui::SpinButton>) },
+        { "SpinControl@ getSpinControl(string)", WRAP_OBJ_LAST(GetWidget<tgui::SpinControl>) },
+        { "Tabs@ getTabs(string)", WRAP_OBJ_LAST(GetWidget<tgui::Tabs>) },
+        { "TextArea@ getTextArea(string)", WRAP_OBJ_LAST(GetWidget<tgui::TextArea>) },
+        { "TreeView@ getTreeView(string)", WRAP_OBJ_LAST(GetWidget<tgui::TreeView>) }
+    }, {});
+    SetDefaultNamespace("");
 }

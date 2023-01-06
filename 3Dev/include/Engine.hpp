@@ -37,6 +37,12 @@ public:
      */
     void CreateWindow(float width, float height, std::string title, sf::Uint32 style = sf::Style::Default);
 
+    tgui::Gui* CreateGui(std::string widgets);
+
+    void RemoveGui();
+
+    void SetGuiViewport(tgui::FloatRect viewport);
+
     /*
      * Set main game loop
      * @param loop function, that will execute every frame
@@ -63,6 +69,9 @@ private:
 
     std::function<void(void)> loop;
     std::function<void(sf::Event&)> eloop;
+
+    std::vector<std::shared_ptr<tgui::Gui>> gui;
+    tgui::FloatRect viewport;
 
     sf::ContextSettings settings;
     sf::Window window;

@@ -28,6 +28,24 @@ void Engine::CreateWindow(float width, float height, std::string title, sf::Uint
     Log::Write("Window successfully created", Log::Type::Info);
 }
 
+tgui::Gui* Engine::CreateGui(std::string widgets)
+{
+    gui.emplace_back(std::make_shared<tgui::Gui>(window));
+    gui.back()->loadWidgetsFromFile(widgets);
+    gui.back()->setAbsoluteViewport(viewport);
+    return gui.back().get();
+}
+
+void Engine::RemoveGui()
+{
+    gui.clear();
+}
+
+void Engine::SetGuiViewport(tgui::FloatRect viewport)
+{
+    this->viewport = viewport;
+}
+
 void Engine::EventLoop(std::function<void(sf::Event&)> eloop)
 {
     this->eloop = eloop;
@@ -49,6 +67,8 @@ void Engine::Launch()
         while(window.pollEvent(event))
         {
             eloop(event);
+            for(auto i : gui)
+                i->handleEvent(event);
             if(event.type == sf::Event::Resized)
                 glViewport(0, 0, (float)event.size.width, (float)event.size.height);
         }
@@ -58,6 +78,9 @@ void Engine::Launch()
         try
         {
             loop();
+
+            for(auto i : gui)
+                i->draw();
         }
         catch(std::exception& e)
         {

@@ -89,3 +89,27 @@ static void MakeHingeJointInfo(rp3d::RigidBody* r, rp3d::RigidBody* r1, const rp
 {
     new(info) rp3d::HingeJointInfo(r, r1, v, v1);
 }
+
+static void MakeGui(sf::Window& window, tgui::Gui* gui) { new(gui) tgui::Gui(window); }
+
+static void OnPress(asIScriptFunction& func, tgui::Button* button)
+{
+    button->onPress([&]()
+    {
+        auto context = (asIScriptContext*)func.GetEngine()->RequestContext();
+        context->Prepare(&func);
+        context->Execute();
+        func.GetEngine()->ReturnContext(context);
+    });
+}
+
+static void MakeColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a, tgui::Color* color) { new(color) tgui::Color(r, g, b, a); }
+
+template<class T>
+static T* GetWidget(std::string name, tgui::Gui* gui) { return gui->get<T>(name).get(); }
+
+template<class T>
+static std::string GetText(T* widget) { return widget->getText().toStdString(); }
+
+template<class T>
+static std::string GetSelectedItem(T* widget) { return widget->getSelectedItem().toStdString(); }

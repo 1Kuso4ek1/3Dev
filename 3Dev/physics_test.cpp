@@ -135,12 +135,20 @@ int main()
 
     sman->PlayAt("sound", 0, sphere->GetPosition());
 
-    bool manageCameraMovement = true, manageCameraLook = true, manageCameraMouse = true;
+    bool manageCameraMovement = true, manageCameraLook = true,
+         manageCameraMouse = true, manageSceneRendering = true,
+         updateShadows = true, mouseCursorGrabbed = true,
+         mouseCursorVisible = false;
 
     ScriptManager scman;
+    scman.AddProperty("Engine engine", &engine);
     scman.SetDefaultNamespace("Game");
     scman.AddProperty("SceneManager scene", &scene);
     scman.AddProperty("Camera camera", scene.GetCamera());
+    scman.AddProperty("bool mouseCursorGrabbed", &mouseCursorGrabbed);
+    scman.AddProperty("bool mouseCursorVisible", &mouseCursorVisible);
+    scman.AddProperty("bool updateShadows", &updateShadows);
+    scman.AddProperty("bool manageSceneRendering", &manageSceneRendering);
     scman.AddProperty("bool manageCameraMovement", &manageCameraMovement);
     scman.AddProperty("bool manageCameraLook", &manageCameraLook);
     scman.AddProperty("bool manageCameraMouse", &manageCameraMouse);
@@ -153,6 +161,9 @@ int main()
     // Main game loop
     engine.Loop([&]()
     {
+        engine.GetWindow().setMouseCursorVisible(mouseCursorVisible);
+        engine.GetWindow().setMouseCursorGrabbed(mouseCursorGrabbed);
+
         // Camera movement, rotation and so on
         cam->Update();
         if(manageCameraMovement) cam->Move(1);
@@ -165,9 +176,8 @@ int main()
         ListenerWrapper::SetPosition(cam->GetPosition());
         ListenerWrapper::SetOrientation(cam->GetOrientation());
 
-        shadows.Update();
-
-        scene.Draw();
+        if(updateShadows) shadows.Update();
+        if(manageSceneRendering) scene.Draw();
 
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 1.0);
