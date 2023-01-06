@@ -303,9 +303,12 @@ void SceneManager::LoadState()
 {
     for(auto& i : savedState)
     {
-        models[i.first]->SetPosition(i.second.pos);
-        models[i.first]->SetSize(i.second.size);
-        models[i.first]->SetOrientation(i.second.orient);
+        if(models.find(i.first) != models.end())
+        {
+            models[i.first]->SetPosition(i.second.pos);
+            models[i.first]->SetSize(i.second.size);
+            models[i.first]->SetOrientation(i.second.orient);
+        }
     }
     
     for(auto& i : temporaryModelCopies)

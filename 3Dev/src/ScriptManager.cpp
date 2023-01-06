@@ -379,6 +379,8 @@ void ScriptManager::RegisterSceneManager()
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
         { "PhysicsManager@ GetPhysicsManager()", WRAP_MFN(SceneManager, GetPhysicsManagerPtr) },
         { "SoundManager@ GetSoundManager()", WRAP_MFN(SceneManager, GetSoundManagerPtr) },
+        { "void RemoveModel(Model@)", WRAP_MFN(SceneManager, RemoveModel) },
+        { "void RemoveLight(Light@)", WRAP_MFN(SceneManager, RemoveModel) },
         { "void Save(string filename)", WRAP_MFN(SceneManager, Save) },
         { "void Load(string filename)", WRAP_MFN(SceneManager, Load) },
         { "ModelGroup GetModelGroup(string)", WRAP_MFN(SceneManager, GetModelPtrGroup) },

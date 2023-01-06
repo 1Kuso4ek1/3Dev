@@ -1012,6 +1012,11 @@ int main()
 				openFileButton->setEnabled(true);
 				openFileButton->setVisible(true);
 				object = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+                if(!object)
+                {
+                    sceneTree->removeItem(sceneTree->getSelectedItem(), false);
+                    sceneTree->selectItem({ "Scene", "Models" });
+                }
 			}
 			
 			if(object)
@@ -1150,99 +1155,106 @@ int main()
 				sceneGroup->setVisible(false);
 
                 auto light = scene.GetLight(sceneTree->getSelectedItem()[2].toStdString());
-
-                if(objectMode)
-				{
-					rp3d::Vector3 m(axis == 0 ? 0.1 : 0, axis == 1 ? 0.1 : 0, axis == 2 ? 0.1 : 0);
-					switch(param)
-					{
-					case 0:
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-							light->SetPosition(light->GetPosition() + m);
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-							light->SetPosition(light->GetPosition() - m);
-						break;
-					case 1:
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-							light->SetDirection(light->GetDirection() + m);
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-							light->SetDirection(light->GetDirection() - m);
-						break;
-					}
-				}
-
-                if((!lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem()[2]) || objectMode)
-				{
-					rp3d::Vector3 position = light->GetPosition();
-					rp3d::Vector3 direction = light->GetDirection();
-                    rp3d::Vector3 color = light->GetColor();
-                    rp3d::Vector3 attenuation = light->GetAttenuation();
-                    float innerCutoff = light->GetCutoff();
-                    float outerCutoff = light->GetOuterCutoff();
-
-                    castShadowsBox->setChecked(light->IsCastingShadows());
-
-					lightNameEdit->setText(sceneTree->getSelectedItem()[2]);
-
-					lposEditX->setText(tgui::String(position.x));
-				    lposEditY->setText(tgui::String(position.y));
-				    lposEditZ->setText(tgui::String(position.z));
-
-				    lrotEditX->setText(tgui::String(direction.x));
-	  			    lrotEditY->setText(tgui::String(direction.y));
-	  			    lrotEditZ->setText(tgui::String(direction.z));
-
-                    rEdit->setText(tgui::String(color.x));
-	  			    gEdit->setText(tgui::String(color.y));
-	  			    bEdit->setText(tgui::String(color.z));
-
-                    constAttEdit->setText(tgui::String(attenuation.x));
-	  			    linAttEdit->setText(tgui::String(attenuation.y));
-	  			    quadAttEdit->setText(tgui::String(attenuation.z));
-
-                    innerCutoffEdit->setText(tgui::String(innerCutoff));
-                    outerCutoffEdit->setText(tgui::String(outerCutoff));
-			    }
-
-			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem()[2])
-			    {
-                    scene.SetLightName(sceneTree->getSelectedItem()[2].toStdString(), lightNameEdit->getText().toStdString());
-                    sceneTree->removeItem(sceneTree->getSelectedItem(), false);
-                    sceneTree->addItem({ "Scene", "Lights", lightNameEdit->getText() });
-                    sceneTree->selectItem({ "Scene", "Lights", lightNameEdit->getText() });
-                
-				    lightNameEdit->setFocused(false);
-			    }
-
-			    rp3d::Vector3 pos;
-			    pos.x = lposEditX->getText().toFloat();
-			    pos.y = lposEditY->getText().toFloat();
-			    pos.z = lposEditZ->getText().toFloat();
-
-			    rp3d::Vector3 dir;
-			    dir.x = lrotEditX->getText().toFloat();
-			    dir.y = lrotEditY->getText().toFloat();
-			    dir.z = lrotEditZ->getText().toFloat();
-
-                rp3d::Vector3 color;
-			    color.x = rEdit->getText().toInt();
-			    color.y = gEdit->getText().toInt();
-			    color.z = bEdit->getText().toInt();
-
-                rp3d::Vector3 att;
-                att.x = constAttEdit->getText().toFloat();
-			    att.y = linAttEdit->getText().toFloat();
-			    att.z = quadAttEdit->getText().toFloat();
-
-                if(!objectMode)
+                if(!light)
                 {
-                    light->SetPosition(pos);
-                    light->SetDirection(dir);
-                    light->SetColor(color);
-                    light->SetAttenuation(att.x, att.y, att.z);
-                    light->SetCutoff(innerCutoffEdit->getText().toFloat());
-                    light->SetOuterCutoff(outerCutoffEdit->getText().toFloat());
-                    light->SetIsCastingShadows(castShadowsBox->isChecked());
+                    sceneTree->removeItem(sceneTree->getSelectedItem(), false);
+                    sceneTree->selectItem({ "Scene", "Lights" });
+                }
+                if(light)
+                {
+                    if(objectMode)
+                    {
+                        rp3d::Vector3 m(axis == 0 ? 0.1 : 0, axis == 1 ? 0.1 : 0, axis == 2 ? 0.1 : 0);
+                        switch(param)
+                        {
+                        case 0:
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                                light->SetPosition(light->GetPosition() + m);
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+                                light->SetPosition(light->GetPosition() - m);
+                            break;
+                        case 1:
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                                light->SetDirection(light->GetDirection() + m);
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+                                light->SetDirection(light->GetDirection() - m);
+                            break;
+                        }
+                    }
+
+                    if((!lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem()[2]) || objectMode)
+                    {
+                        rp3d::Vector3 position = light->GetPosition();
+                        rp3d::Vector3 direction = light->GetDirection();
+                        rp3d::Vector3 color = light->GetColor();
+                        rp3d::Vector3 attenuation = light->GetAttenuation();
+                        float innerCutoff = light->GetCutoff();
+                        float outerCutoff = light->GetOuterCutoff();
+
+                        castShadowsBox->setChecked(light->IsCastingShadows());
+
+                        lightNameEdit->setText(sceneTree->getSelectedItem()[2]);
+
+                        lposEditX->setText(tgui::String(position.x));
+                        lposEditY->setText(tgui::String(position.y));
+                        lposEditZ->setText(tgui::String(position.z));
+
+                        lrotEditX->setText(tgui::String(direction.x));
+                        lrotEditY->setText(tgui::String(direction.y));
+                        lrotEditZ->setText(tgui::String(direction.z));
+
+                        rEdit->setText(tgui::String(color.x));
+                        gEdit->setText(tgui::String(color.y));
+                        bEdit->setText(tgui::String(color.z));
+
+                        constAttEdit->setText(tgui::String(attenuation.x));
+                        linAttEdit->setText(tgui::String(attenuation.y));
+                        quadAttEdit->setText(tgui::String(attenuation.z));
+
+                        innerCutoffEdit->setText(tgui::String(innerCutoff));
+                        outerCutoffEdit->setText(tgui::String(outerCutoff));
+                    }
+
+                    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem()[2])
+                    {
+                        scene.SetLightName(sceneTree->getSelectedItem()[2].toStdString(), lightNameEdit->getText().toStdString());
+                        sceneTree->removeItem(sceneTree->getSelectedItem(), false);
+                        sceneTree->addItem({ "Scene", "Lights", lightNameEdit->getText() });
+                        sceneTree->selectItem({ "Scene", "Lights", lightNameEdit->getText() });
+                    
+                        lightNameEdit->setFocused(false);
+                    }
+
+                    rp3d::Vector3 pos;
+                    pos.x = lposEditX->getText().toFloat();
+                    pos.y = lposEditY->getText().toFloat();
+                    pos.z = lposEditZ->getText().toFloat();
+
+                    rp3d::Vector3 dir;
+                    dir.x = lrotEditX->getText().toFloat();
+                    dir.y = lrotEditY->getText().toFloat();
+                    dir.z = lrotEditZ->getText().toFloat();
+
+                    rp3d::Vector3 color;
+                    color.x = rEdit->getText().toInt();
+                    color.y = gEdit->getText().toInt();
+                    color.z = bEdit->getText().toInt();
+
+                    rp3d::Vector3 att;
+                    att.x = constAttEdit->getText().toFloat();
+                    att.y = linAttEdit->getText().toFloat();
+                    att.z = quadAttEdit->getText().toFloat();
+
+                    if(!objectMode)
+                    {
+                        light->SetPosition(pos);
+                        light->SetDirection(dir);
+                        light->SetColor(color);
+                        light->SetAttenuation(att.x, att.y, att.z);
+                        light->SetCutoff(innerCutoffEdit->getText().toFloat());
+                        light->SetOuterCutoff(outerCutoffEdit->getText().toFloat());
+                        light->SetIsCastingShadows(castShadowsBox->isChecked());
+                    }
                 }
             }
             /////////////////////////////////////
