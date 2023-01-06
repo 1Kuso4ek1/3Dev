@@ -23,6 +23,7 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterCamera();
     RegisterModel();
     RegisterLight();
+    RegisterMaterial();
     RegisterSceneManager();
     RegisterSfKeyboard();
     RegisterSfMouse();
@@ -375,6 +376,7 @@ void ScriptManager::RegisterSceneManager()
         { "void Draw()", WRAP_MFN(SceneManager, Draw) },
         { "Model@ GetModel(string)", WRAP_MFN(SceneManager, GetModelPtr) },
         { "Light@ GetLight(string)", WRAP_MFN(SceneManager, GetLight) },
+        { "Material@ GetMaterial(string)", WRAP_MFN(SceneManager, GetMaterialPtr) },
         { "Model@ CloneModel(Model@, bool = true, string = \"model\")", WRAP_MFN(SceneManager, CloneModel) },
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
         { "PhysicsManager@ GetPhysicsManager()", WRAP_MFN(SceneManager, GetPhysicsManagerPtr) },
@@ -727,4 +729,18 @@ void ScriptManager::RegisterTGUI()
         { "TreeView@ getTreeView(string)", WRAP_OBJ_LAST(GetWidget<tgui::TreeView>) }
     }, {});
     SetDefaultNamespace("");
+}
+
+void ScriptManager::RegisterMaterial()
+{
+    SetDefaultNamespace("MaterialParameter");
+    AddEnum("Type", { "Color", "Normal", "AmbientOcclusion", "Metalness",
+                      "Emission", "Roughness", "Opacity" });
+    SetDefaultNamespace("");
+    AddType("Material", sizeof(Material),
+    {
+        { "void SetParameter(Vector3, int)", WRAP_OBJ_LAST(SetMaterialParameter) },
+        { "Vector3 GetParameter(int)", WRAP_OBJ_LAST(GetMaterialParameter) },
+        { "bool Contains(int)", WRAP_MFN(Material, Contains) }
+    }, {});
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "Utils.hpp"
 #include <scriptbuilder.h>
 #include <scriptstdstring.h>
 #include <scriptarray.h>
@@ -113,3 +114,22 @@ static std::string GetText(T* widget) { return widget->getText().toStdString(); 
 
 template<class T>
 static std::string GetSelectedItem(T* widget) { return widget->getSelectedItem().toStdString(); }
+
+static void SetMaterialParameter(rp3d::Vector3 value, Material::Type parameter, Material* material)
+{
+    material->SetParameter(toglm(value), parameter);
+}
+
+static rp3d::Vector3 GetMaterialParameter(Material::Type parameter, Material* material)
+{
+    if(material->Contains(parameter))
+    {
+        auto value = material->GetParameter(parameter);
+        if(std::holds_alternative<glm::vec3>(value))
+        {
+            auto vec = std::get<0>(value);
+            return rp3d::Vector3(vec.x, vec.y, vec.z);
+        }
+    }
+    return rp3d::Vector3::zero();
+}

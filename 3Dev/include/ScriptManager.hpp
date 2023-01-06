@@ -55,6 +55,7 @@ private:
     void RegisterSoundManager();
     void RegisterEngine();
     void RegisterTGUI();
+    void RegisterMaterial();
 
     bool buildSucceded = false;
 
