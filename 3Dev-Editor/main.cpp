@@ -24,6 +24,7 @@ void DefaultProperties()
     Json::Value p;
     p["logFilename"] = homeFolder + "log/EditorLog.txt";
     p["defaultResorces"] = homeFolder + "default/";
+    p["shadersDir"] = "default";
 
     SaveProperties(p);
 }
@@ -379,6 +380,8 @@ int main()
     loading.draw();
     engine.GetWindow().display();
 
+    if(properties["shadersDir"].asString() != "default")
+        Renderer::GetInstance()->SetShadersDirectory(properties["shadersDir"].asString());
     Renderer::GetInstance()->Init({ 840, 492 }, properties["defaultResorces"].asString() + "hdri.hdr");
     
     progressBar->setValue(20);
