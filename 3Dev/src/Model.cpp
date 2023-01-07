@@ -553,7 +553,9 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 	{
 		glm::vec3 pos = toglm(mesh->mVertices[i]),
 				  norm = toglm(mesh->mNormals[i]);
-		glm::vec2 uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+		glm::vec2 uv(0.0);
+		if(mesh->mTextureCoords[0])
+			uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 		data.emplace_back(pos, norm, uv);
 	}
 	for(int i = 0; i < mesh->mNumFaces; i++)
