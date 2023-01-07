@@ -80,6 +80,8 @@ void Model::Load(std::string filename, unsigned int flags)
 
 	globalInverseTransform = toglm(scene->mRootNode->mTransformation.Inverse());
 
+	meshes.clear();
+
 	ProcessNode(scene->mRootNode, scene);
 	LoadAnimations(scene);
 
@@ -96,7 +98,7 @@ void Model::Load(std::string filename, unsigned int flags)
 	if(mat.empty()) Log::Write("Empty material array passed", Log::Type::Critical);
 	if(mat.size() != meshes.size())
 	{
-		Log::Write("Materials count != meshes count", Log::Type::Warning);
+		//Log::Write("Materials count != meshes count", Log::Type::Warning);
 		mat.resize(meshes.size(), mat.back());
 	}
 
