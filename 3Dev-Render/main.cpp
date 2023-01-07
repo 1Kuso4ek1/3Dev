@@ -37,7 +37,12 @@ int main(int argc, char* argv[])
 
     uint32_t w = 1280, h = 720, b = 1024, r = 4096;
     float exp = 1.5;
-    std::string env = std::string(getenv("HOME")) + "/.3Dev-Editor/default/hdri.hdr", out = "output.png", scenePath;
+    #ifdef _WIN32
+    	std::string env = std::string(getenv("HOMEPATH")) + "/.3Dev-Editor/default/hdri.hdr";
+    #else
+		std::string env = std::string(getenv("HOME")) + "/.3Dev-Editor/default/hdri.hdr";
+    #endif
+    std::string out = "output.png", scenePath;
 
     if(!GetArgument(argc, argv, "-s").empty()) scenePath = GetArgument(argc, argv, "-s");
     else Log::Write("No path to scene given", Log::Type::Critical);

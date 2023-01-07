@@ -58,9 +58,15 @@ template<class T>
 static T* TypeFactory() { return new T(); }
 
 static void MakeVector3(float x, float y, float z, rp3d::Vector3* vec) { new(vec) rp3d::Vector3(x, y, z); }
-static rp3d::Vector3 AddVector3(const rp3d::Vector3& r, rp3d::Vector3* l) { return r + *l; }
+static rp3d::Vector3 AddVector3(const rp3d::Vector3& r, rp3d::Vector3* l) { return *l + r; }
+static rp3d::Vector3 SubVector3(const rp3d::Vector3& r, rp3d::Vector3* l) { return *l - r; }
+static rp3d::Vector3 MulVector3(float r, rp3d::Vector3* l) { return *l * r; }
+static rp3d::Vector3 DivVector3(float r, rp3d::Vector3* l) { return *l / r; }
 
 static void MakeQuaternion(float x, float y, float z, float w, rp3d::Quaternion* q) { new(q) rp3d::Quaternion(x, y, z, w); }
+static rp3d::Quaternion AddQuaternion(const rp3d::Quaternion& r, rp3d::Quaternion* l) { return *l + r; }
+static rp3d::Quaternion SubQuaternion(const rp3d::Quaternion& r, rp3d::Quaternion* l) { return *l - r; }
+static rp3d::Quaternion MulQuaternion(const rp3d::Quaternion& r, rp3d::Quaternion* l) { return *l * r; }
 
 static void MakeAABB(const rp3d::Vector3& min, const rp3d::Vector3& max, rp3d::AABB* aabb) { new(aabb) rp3d::AABB(min, max); }
 static rp3d::AABB& AssignAABB(const rp3d::AABB& src, rp3d::AABB* dst) { dst->mergeWithAABB(src); return *dst; }

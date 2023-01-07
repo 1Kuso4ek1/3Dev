@@ -494,6 +494,12 @@ int main()
         for(auto& i : scripts)
             sceneTree->addItem({ "Scene", "Scripts", i });
     }
+
+    Log::SetSigSegvHandle([&]()
+    {
+        scene.Save(homeFolder + "recover.json", true);
+        scman.Save(homeFolder + "recover_scripts.json", true);
+    });
     
     progressBar->setValue(90);
     progressBar->setText("Finishing");

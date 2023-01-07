@@ -214,11 +214,14 @@ void ScriptManager::RegisterVector3()
         { "float length() const", WRAP_MFN(rp3d::Vector3, length) },
         { "string to_string()", WRAP_MFN(rp3d::Vector3, to_string) },
         { "Vector3& opAssign(const Vector3& in)", WRAP_MFN_PR(rp3d::Vector3, operator=, (const rp3d::Vector3&), rp3d::Vector3&) },
-        { "Vector3 opAdd(const Vector3& in)", WRAP_OBJ_LAST(AddVector3) },
         { "Vector3& opAddAssign(const Vector3& in)", WRAP_MFN_PR(rp3d::Vector3, operator+=, (const rp3d::Vector3&), rp3d::Vector3&) },
         { "Vector3& opSubAssign(const Vector3& in)", WRAP_MFN_PR(rp3d::Vector3, operator-=, (const rp3d::Vector3&), rp3d::Vector3&) },
         { "Vector3& opMulAssign(float)", WRAP_MFN_PR(rp3d::Vector3, operator*=, (float), rp3d::Vector3&) },
         { "Vector3& opDivAssign(float)", WRAP_MFN_PR(rp3d::Vector3, operator/=, (float), rp3d::Vector3&) },
+        { "Vector3 opAdd(const Vector3& in)", WRAP_OBJ_LAST(AddVector3) },
+        { "Vector3 opSub(const Vector3& in)", WRAP_OBJ_LAST(SubVector3) },
+        { "Vector3 opMul(float)", WRAP_OBJ_LAST(MulVector3) },
+        { "Vector3 opDiv(float)", WRAP_OBJ_LAST(DivVector3) },
         { "bool opEquals(const Vector3& in) const", WRAP_MFN_PR(rp3d::Vector3, operator==, (const rp3d::Vector3&) const, bool) }
     },
     {
@@ -244,6 +247,9 @@ void ScriptManager::RegisterQuaternion()
         { "Quaternion& opAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
         { "Quaternion& opAddAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator+=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
         { "Quaternion& opSubAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator-=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
+        { "Quaternion opAdd(const Quaternion& in)", WRAP_OBJ_LAST(AddQuaternion) },
+        { "Quaternion opSub(const Quaternion& in)", WRAP_OBJ_LAST(SubQuaternion) },
+        { "Quaternion opMul(const Quaternion& in)", WRAP_OBJ_LAST(MulQuaternion) },
         { "Quaternion opMul(float)", WRAP_MFN_PR(rp3d::Quaternion, operator*, (float) const, rp3d::Quaternion) },
         { "Quaternion opMul(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator*, (const rp3d::Quaternion&) const, rp3d::Quaternion) },
         { "Vector3 opMul(const Vector3& in)", WRAP_MFN_PR(rp3d::Quaternion, operator*, (const rp3d::Vector3&) const, rp3d::Vector3) },
@@ -358,6 +364,8 @@ void ScriptManager::RegisterCamera()
         { "void AlwaysUp(bool)", WRAP_MFN(Camera, AlwaysUp) },
         { "Vector3 GetPosition()", WRAP_MFN(Camera, GetPosition) },
         { "Quaternion GetOrientation()", WRAP_MFN(Camera, GetOrientation) },
+        { "void GetSpeed(float)", WRAP_MFN(Camera, GetSpeed) },
+        { "void GetFOV(float)", WRAP_MFN(Camera, GetFOV) },
         { "void Look()", WRAP_MFN_PR(Camera, Look, (), void) },
         { "void Look(const Vector3& in)", WRAP_MFN_PR(Camera, Look, (const rp3d::Vector3&), void) }
     }, {});

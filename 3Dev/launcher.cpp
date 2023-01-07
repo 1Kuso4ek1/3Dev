@@ -48,7 +48,8 @@ int main()
     scene.AddPhysicsManager(man);
     scene.SetCamera(&cam);
     scene.SetSkybox(skybox);
-    scene.AddLight(&l);
+    if(scene.GetNames()[2].empty())
+        scene.AddLight(&l);
     scene.SetSoundManager(sman);
     scene.Load(cfg["scenePath"].asString());
 
