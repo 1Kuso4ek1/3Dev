@@ -48,10 +48,10 @@ int main()
     scene.AddPhysicsManager(man);
     scene.SetCamera(&cam);
     scene.SetSkybox(skybox);
-    if(scene.GetNames()[2].empty())
-        scene.AddLight(&l);
     scene.SetSoundManager(sman);
     scene.Load(cfg["scenePath"].asString());
+    if(scene.GetNames()[2].empty())
+        scene.AddLight(&l);
 
     bool manageCameraMovement = true, manageCameraLook = true,
          manageCameraMouse = true, manageSceneRendering = true,
