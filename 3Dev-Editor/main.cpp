@@ -179,11 +179,6 @@ int main()
     auto createButton = menu.get<tgui::Button>("create");
     auto cancelNewButton = menu.get<tgui::Button>("cancelNew");
     
-    /*auto openButton = menu.get<tgui::Button>("open");
-    auto pathEdit = menu.get<tgui::EditBox>("path");
-    auto openFileDialogButton = menu.get<tgui::Button>("openFileDialog");
-    auto projectsComboBox = menu.get<tgui::ComboBox>("projects");*/
-    
     auto progressBar = loading.get<tgui::ProgressBar>("progressBar");
 
 	auto viewportWindow = editor.get<tgui::ChildWindow>("viewport");
@@ -339,58 +334,6 @@ int main()
                                 [recentBox->getSelectedItemIndex()].asString());
 
     std::string projectFilename = "";
-
-    /*projectsComboBox->onItemSelect([&]()
-    {
-        if(projectsComboBox->getSelectedItem() != "New project")
-            pathEdit->setText(properties["recentProjectsPaths"]
-                                        [projectsComboBox->getSelectedItemIndex()].asString());
-        else pathEdit->setText("");
-    });
-
-    openFileDialogButton->onPress([&]()
-    {
-        openFileDialog = CreateFileDialog("Open file", 2);
-    	menu.add(openFileDialog);
-    	openFileDialog->onClose([&]()
-  	    {
-            if(!openFileDialog->getSelectedPaths().empty())
-                pathEdit->setText(openFileDialog->getSelectedPaths()[0].asString());
-  	    	openFileDialog = nullptr;
-  	    });
-    });
-
-    openButton->onPress([&]()
-    {
-    	if(projectsComboBox->getSelectedItem() == "New project" && !pathEdit->getText().empty())
-    		engine.Close();
-        else
-        {
-            if(projectsComboBox->getSelectedItem() != "New project")
-                projectFilename = properties["recentProjectsPaths"]
-                                            [projectsComboBox->getSelectedItemIndex()].asString();
-            if(projectFilename != pathEdit->getText().toStdString())
-                projectFilename = pathEdit->getText().toStdString();
-            engine.Close();
-        }
-    });*/
-
-    /*auto newProjectButton = menu.get<tgui::Button>("newProject");
-    auto loadProjectButton = menu.get<tgui::Button>("loadProject");
-
-    auto newProjectWindow = menu.get<tgui::ChildWindow>("newProjectWindow");
-    auto loadProjectWindow = menu.get<tgui::ChildWindow>("loadWindow");
-
-    auto recentBox = menu.get<tgui::ListBox>("recent");
-    auto pathEdit = menu.get<tgui::EditBox>("path");
-    auto openFileDialogButton = menu.get<tgui::Button>("openFileDialog");
-    auto loadButton = menu.get<tgui::Button>("load");
-    auto cancelLoadButton = menu.get<tgui::Button>("cancelLoad");
-
-    auto projectNameEdit = menu.get<tgui::EditBox>("name");
-    auto folderEdit = menu.get<tgui::EditBox>("folder");
-    auto createButton = menu.get<tgui::Button>("create");
-    auto cancelNewButton = menu.get<tgui::Button>("cancelNew");*/
 
     recentBox->onItemSelect([&]()
     {
