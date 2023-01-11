@@ -26,10 +26,8 @@
 TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)!
 ## Building
 All building instructions are [here](https://1kuso4ek1.github.io/3Dev/build.html)!
-## Projects
-### Bloodbath
-A small online FPS game, it can be downloaded from [itch.io](https://1kuso4ek1.itch.io/bloodbath)!
-![](https://img.itch.zone/aW1hZ2UvMTY4NTY3OC85OTI4NTM5LmpwZw==/original/S2vLBK.jpg)
+## Tutorial
+The tutorial, written in russian is [here](https://telegra.ph/Razrabotka-igr-s-pomoshchyu-3Dev-01-06)!
 ## Screenshots
 ![](./Screenshots/scr.png)
 ![](./Screenshots/scr1.png)
