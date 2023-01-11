@@ -81,6 +81,7 @@ void Model::Load(std::string filename, unsigned int flags)
 	globalInverseTransform = toglm(scene->mRootNode->mTransformation.Inverse());
 
 	meshes.clear();
+	anims.clear();
 
 	ProcessNode(scene->mRootNode, scene);
 	LoadAnimations(scene);
@@ -543,7 +544,9 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 	std::vector<Vertex> data;
 	std::vector<GLuint> indices;
 
-	glm::mat4 tr = globalInverseTransform * toglm(mnode->mTransformation);
+	glm::mat4 tr(1.0);
+	if(mnode->mParent)
+		tr = toglm(mnode->mParent->mTransformation) * toglm(mnode->mTransformation);
 	for(int i = 0; i < 4; i++)
 		tr[i] = glm::normalize(tr[i]);
 

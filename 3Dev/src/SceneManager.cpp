@@ -11,7 +11,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool shadow
     if(updatePhysics && !shadows)
     {
         float time = clock.restart().asSeconds();
-        std::for_each(pManagers.begin(), pManagers.end(), [&](auto p) { p.second->Update(time); });
+        pManager->Update(time);
     }
     else clock.restart();
 
@@ -80,15 +80,6 @@ void SceneManager::AddMaterial(std::shared_ptr<Material> material, std::string n
     materials[lastAdded] = material;
 }
 
-void SceneManager::AddPhysicsManager(std::shared_ptr<PhysicsManager> manager, std::string name)
-{
-    int nameCount = std::count_if(pManagers.begin(), pManagers.end(), [&](auto& p)
-                    { return p.first.find(name) != std::string::npos; });
-
-    lastAdded = name + (nameCount ? std::to_string(nameCount) : "");
-    pManagers[lastAdded] = manager;
-}
-
 void SceneManager::AddLight(Light* light, std::string name)
 {
     int nameCount = std::count_if(lights.begin(), lights.end(), [&](auto& p)
@@ -126,12 +117,6 @@ void SceneManager::RemoveMaterial(std::shared_ptr<Material> material)
         materials.erase(it);
 }
 
-void SceneManager::RemovePhysicsManager(std::shared_ptr<PhysicsManager> manager)
-{
-    auto it = std::find_if(pManagers.begin(), pManagers.end(), [&](auto& p) { return p.second == manager; });
-    if(it != pManagers.end()) pManagers.erase(it);
-}
-
 void SceneManager::RemoveLight(Light* light)
 {
     auto it = std::find_if(lights.begin(), lights.end(), [&](auto& p) { return p.second == light; });
@@ -146,6 +131,7 @@ void SceneManager::RemoveAllObjects()
 {
     models.clear();
     modelGroups.clear();
+    lights.clear();
 }
 
 void SceneManager::Save(std::string filename, bool relativePaths)
@@ -234,7 +220,7 @@ void SceneManager::Load(std::string filename)
         auto material = materials[data["objects"]["shapes"][counter]["material"].asString()].get();
         auto shape = std::make_shared<Model>(true);
         shape->SetMaterial({ material });
-        shape->SetPhysicsManager(pManagers.begin()->second.get());
+        shape->SetPhysicsManager(pManager.get());
         shape->CreateRigidBody();
         shape->CreateBoxShape();
         shape->Deserialize(data["objects"]["shapes"][counter]);
@@ -255,13 +241,12 @@ void SceneManager::Load(std::string filename)
 
         std::shared_ptr<Model> model;
         if(!filename.empty())
-            model = std::make_shared<Model>(filename, material, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes,
-                                            pManagers.begin()->second.get());
+            model = std::make_shared<Model>(filename, material, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, pManager.get());
         else
         {
             model = std::make_shared<Model>(true);
             model->SetMaterial(material);
-            model->SetPhysicsManager(pManagers.begin()->second.get());
+            model->SetPhysicsManager(pManager.get());
             model->CreateRigidBody();
         }
         model->Deserialize(data["objects"]["models"][counter]);
@@ -332,6 +317,11 @@ void SceneManager::SetSkybox(std::shared_ptr<Model> skybox)
     this->skybox = skybox;
 }
 
+void SceneManager::SetPhysicsManager(std::shared_ptr<PhysicsManager> manager)
+{
+    pManager = manager;
+}
+
 void SceneManager::SetSoundManager(std::shared_ptr<SoundManager> manager)
 {
     sManager = manager;
@@ -365,13 +355,9 @@ std::shared_ptr<Material> SceneManager::GetMaterial(std::string name)
     return nullptr;
 }
 
-std::shared_ptr<PhysicsManager> SceneManager::GetPhysicsManager(std::string name)
+std::shared_ptr<PhysicsManager> SceneManager::GetPhysicsManager()
 {
-    if(pManagers.find(name) != pManagers.end())
-        return pManagers[name];
-    Log::Write("Could not find a physics manager with name \""
-                + name + "\", function will return nullptr", Log::Type::Warning);
-    return nullptr;
+    return pManager;
 }
 
 std::shared_ptr<SoundManager> SceneManager::GetSoundManager()
@@ -402,13 +388,9 @@ Material* SceneManager::GetMaterialPtr(std::string name)
     return nullptr;
 }
 
-PhysicsManager* SceneManager::GetPhysicsManagerPtr(std::string name)
+PhysicsManager* SceneManager::GetPhysicsManagerPtr()
 {
-    if(pManagers.find(name) != pManagers.end())
-        return pManagers[name].get();
-    Log::Write("Could not find a physics manager with name \""
-                + name + "\", function will return nullptr", Log::Type::Warning);
-    return nullptr;
+    return pManager.get();
 }
 
 SoundManager* SceneManager::GetSoundManagerPtr()
@@ -493,19 +475,6 @@ void SceneManager::SetMaterialName(std::string name, std::string newName)
         Log::Write("Could not find a material with name \"" + name + "\"", Log::Type::Warning);
 }
 
-void SceneManager::SetPhysicsManagerName(std::string name, std::string newName)
-{
-	auto it = pManagers.find(name);
-	if(it != pManagers.end())
-	{
-		auto n = pManagers.extract(it);
-		n.key() = newName;
-		pManagers.insert(std::move(n));
-	}
-    else
-        Log::Write("Could not find a physics manager with name \"" + name + "\"", Log::Type::Warning);
-}
-
 void SceneManager::SetLightName(std::string name, std::string newName)
 {
 	auto it = lights.find(name);
@@ -519,9 +488,9 @@ void SceneManager::SetLightName(std::string name, std::string newName)
         Log::Write("Could not find a light with name \"" + name + "\"", Log::Type::Warning);
 }
 
-std::array<std::vector<std::string>, 5> SceneManager::GetNames()
+std::array<std::vector<std::string>, 3> SceneManager::GetNames()
 {
-	std::array<std::vector<std::string>, 5> ret;
+	std::array<std::vector<std::string>, 3> ret;
     std::vector<std::string> tmp;
     for(auto& i : models)
         tmp.push_back(i.first);
@@ -532,9 +501,6 @@ std::array<std::vector<std::string>, 5> SceneManager::GetNames()
     for(auto& i : lights)
         tmp.push_back(i.first);
     ret[2] = tmp; tmp.clear();
-    for(auto& i : pManagers)
-        tmp.push_back(i.first);
-    ret[3] = tmp;
     return ret;
 }
 

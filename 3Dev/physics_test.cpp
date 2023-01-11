@@ -114,7 +114,7 @@ int main()
 
     scene.AddModel(sphere, "sphere");
     scene.AddModel(terrain);
-    scene.AddPhysicsManager(man);
+    scene.SetPhysicsManager(man);
 
     scene.AddLight(&l);
 

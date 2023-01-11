@@ -35,8 +35,8 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    uint32_t w = 1280, h = 720, b = 1024, r = 4096;
-    float exp = 1.5;
+    uint32_t w = 1280, h = 720, b = 256, r = 4096;
+    float exp = 1.0;
     #ifdef _WIN32
     	std::string env = std::string(getenv("HOMEPATH")) + "/.3Dev-Editor/default/hdri.hdr";
     #else
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 
     SceneManager scene;
 
-    scene.AddPhysicsManager(man);
+    scene.SetPhysicsManager(man);
     scene.SetCamera(&cam);
     scene.SetSkybox(skybox);
     scene.SetSoundManager(sman);

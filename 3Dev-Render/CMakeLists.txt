@@ -4,6 +4,7 @@ project(render VERSION 1.0.0 LANGUAGES CXX)
 
 find_package(3Dev REQUIRED)
 find_package(SFML 2.5.1 COMPONENTS system window network audio REQUIRED)
+find_package(TGUI REQUIRED)
 find_package(assimp REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(ReactPhysics3D REQUIRED)

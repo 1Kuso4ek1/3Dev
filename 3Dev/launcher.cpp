@@ -45,7 +45,7 @@ int main()
     auto sman = std::make_shared<SoundManager>();
 
     SceneManager scene;
-    scene.AddPhysicsManager(man);
+    scene.SetPhysicsManager(man);
     scene.SetCamera(&cam);
     scene.SetSkybox(skybox);
     scene.SetSoundManager(sman);

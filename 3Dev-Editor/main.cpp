@@ -9,6 +9,7 @@
 sf::Clock shortcutDelay;
 
 std::string lastPath = std::filesystem::current_path().string();
+std::string projectDir;
 
 bool disableShortcuts = false;
 
@@ -161,10 +162,27 @@ int main()
     loading.loadWidgetsFromFile(homeFolder + "gui/loading.txt");
     editor.loadWidgetsFromFile(homeFolder + "gui/editor.txt");
 
-    auto openButton = menu.get<tgui::Button>("open");
+    auto newProjectButton = menu.get<tgui::Button>("newProject");
+    auto loadProjectButton = menu.get<tgui::Button>("loadProject");
+
+    auto newProjectWindow = menu.get<tgui::ChildWindow>("newProjectWindow");
+    auto loadProjectWindow = menu.get<tgui::ChildWindow>("loadWindow");
+
+    auto recentBox = menu.get<tgui::ListBox>("recent");
     auto pathEdit = menu.get<tgui::EditBox>("path");
     auto openFileDialogButton = menu.get<tgui::Button>("openFileDialog");
-    auto projectsComboBox = menu.get<tgui::ComboBox>("projects");
+    auto loadButton = menu.get<tgui::Button>("load");
+    auto cancelLoadButton = menu.get<tgui::Button>("cancelLoad");
+
+    auto projectNameEdit = menu.get<tgui::EditBox>("name");
+    auto folderEdit = menu.get<tgui::EditBox>("folder");
+    auto createButton = menu.get<tgui::Button>("create");
+    auto cancelNewButton = menu.get<tgui::Button>("cancelNew");
+    
+    /*auto openButton = menu.get<tgui::Button>("open");
+    auto pathEdit = menu.get<tgui::EditBox>("path");
+    auto openFileDialogButton = menu.get<tgui::Button>("openFileDialog");
+    auto projectsComboBox = menu.get<tgui::ComboBox>("projects");*/
     
     auto progressBar = loading.get<tgui::ProgressBar>("progressBar");
 
@@ -223,6 +241,7 @@ int main()
     auto isDrawableBox = editor.get<tgui::CheckBox>("isDrawable");
 
     auto openFileButton = editor.get<tgui::Button>("openFile");
+    auto reloadButton = editor.get<tgui::Button>("reload");
     auto deleteButton = editor.get<tgui::Button>("delete");
 
     auto materialNameEdit = editor.get<tgui::EditBox>("matName");
@@ -313,16 +332,16 @@ int main()
 
     for(int i = 0; i < (properties["recentProjects"].size() >= 9 ? 9 : properties["recentProjects"].size()); i++)
         if(!properties["recentProjects"][i].empty())
-            projectsComboBox->addItem(properties["recentProjects"][i].asString());
+            recentBox->addItem(properties["recentProjects"][i].asString());
 
-    projectsComboBox->addItem("New project");
-    projectsComboBox->setSelectedItemByIndex(0);
+    recentBox->addItem("New project");
+    recentBox->setSelectedItemByIndex(0);
     pathEdit->setText(properties["recentProjectsPaths"]
-                                [projectsComboBox->getSelectedItemIndex()].asString());
+                                [recentBox->getSelectedItemIndex()].asString());
 
     std::string projectFilename = "";
 
-    projectsComboBox->onItemSelect([&]()
+    /*projectsComboBox->onItemSelect([&]()
     {
         if(projectsComboBox->getSelectedItem() != "New project")
             pathEdit->setText(properties["recentProjectsPaths"]
@@ -355,6 +374,96 @@ int main()
                 projectFilename = pathEdit->getText().toStdString();
             engine.Close();
         }
+    });*/
+
+    /*auto newProjectButton = menu.get<tgui::Button>("newProject");
+    auto loadProjectButton = menu.get<tgui::Button>("loadProject");
+
+    auto newProjectWindow = menu.get<tgui::ChildWindow>("newProjectWindow");
+    auto loadProjectWindow = menu.get<tgui::ChildWindow>("loadWindow");
+
+    auto recentBox = menu.get<tgui::ListBox>("recent");
+    auto pathEdit = menu.get<tgui::EditBox>("path");
+    auto openFileDialogButton = menu.get<tgui::Button>("openFileDialog");
+    auto loadButton = menu.get<tgui::Button>("load");
+    auto cancelLoadButton = menu.get<tgui::Button>("cancelLoad");
+
+    auto projectNameEdit = menu.get<tgui::EditBox>("name");
+    auto folderEdit = menu.get<tgui::EditBox>("folder");
+    auto createButton = menu.get<tgui::Button>("create");
+    auto cancelNewButton = menu.get<tgui::Button>("cancelNew");*/
+
+    recentBox->onItemSelect([&]()
+    {
+        pathEdit->setText(properties["recentProjectsPaths"]
+                                    [recentBox->getSelectedItemIndex()].asString());
+    });
+
+    newProjectButton->onPress([&]()
+    {
+        newProjectWindow->setEnabled(true);
+        newProjectWindow->setVisible(true);
+    });
+
+    loadProjectButton->onPress([&]()
+    {
+        loadProjectWindow->setEnabled(true);
+        loadProjectWindow->setVisible(true);
+    });
+
+    openFileDialogButton->onPress([&]()
+    {
+        openFileDialog = CreateFileDialog("Open file", 2);
+    	menu.add(openFileDialog);
+    	openFileDialog->onClose([&]()
+  	    {
+            if(!openFileDialog->getSelectedPaths().empty())
+                pathEdit->setText(openFileDialog->getSelectedPaths()[0].asString());
+  	    	openFileDialog = nullptr;
+  	    });
+    });
+
+    loadButton->onPress([&]()
+    {
+        projectFilename = properties["recentProjectsPaths"]
+                                    [recentBox->getSelectedItemIndex()].asString();
+        if(projectFilename != pathEdit->getText().toStdString())
+            projectFilename = pathEdit->getText().toStdString();
+        projectDir = projectFilename.substr(0, projectFilename.find_last_of("/"));
+        if(!std::filesystem::exists(projectDir + "/assets"))
+        {
+            std::filesystem::create_directory(projectDir + "/assets");
+            std::filesystem::create_directory(projectDir + "/assets/models");
+            std::filesystem::create_directory(projectDir + "/assets/textures");
+            std::filesystem::create_directory(projectDir + "/assets/scripts");
+        }
+        engine.Close();
+    });
+
+    createButton->onPress([&]()
+    {
+        if(!std::filesystem::exists(folderEdit->getText().toStdString()))
+            std::filesystem::create_directory(folderEdit->getText().toStdString());
+        lastPath = folderEdit->getText().toStdString() + "/" + projectNameEdit->getText().toStdString();
+        projectDir = lastPath;
+        std::filesystem::create_directory(lastPath);
+        std::filesystem::create_directory(lastPath + "/assets");
+        std::filesystem::create_directory(lastPath + "/assets/models");
+        std::filesystem::create_directory(lastPath + "/assets/textures");
+        std::filesystem::create_directory(lastPath + "/assets/scripts");
+        engine.Close();
+    });
+
+    cancelNewButton->onPress([&]()
+    {
+        newProjectWindow->setEnabled(false);
+        newProjectWindow->setVisible(false);
+    });
+
+    cancelLoadButton->onPress([&]()
+    {
+        loadProjectWindow->setEnabled(false);
+        loadProjectWindow->setVisible(false);
     });
 
     engine.EventLoop([&](sf::Event& event)
@@ -423,7 +532,7 @@ int main()
 
     SceneManager scene;
 
-	scene.AddPhysicsManager(man);
+	scene.SetPhysicsManager(man);
 	scene.SetCamera(&cam);
     scene.SetSkybox(skybox);
     scene.UpdatePhysics(false);
@@ -431,6 +540,7 @@ int main()
 
 	if(!projectFilename.empty())
 	{
+        lastPath = projectFilename.substr(0, projectFilename.find_last_of("/"));
         scene.Load(projectFilename);
         if(scene.GetNames()[2].empty())
             scene.AddLight(&shadowSource, "shadowSource");
@@ -444,6 +554,7 @@ int main()
         }
         for(auto& i : names[2]) sceneTree->addItem({ "Scene", "Lights", i });
         for(auto& i : sounds) sceneTree->addItem({ "Scene", "Sounds", i });
+        filenameEdit->setText(projectFilename.empty() ? "scene.json" : projectFilename);
     }
     else
     {
@@ -452,6 +563,10 @@ int main()
         materialBox->addItem("default");
         sceneTree->addItem({ "Scene", "Materials", "default" });
         sceneTree->addItem({ "Scene", "Lights", "shadowSource" });
+        projectFilename = lastPath + "/" + projectNameEdit->getText().toStdString() + ".json";
+        scene.Save(projectFilename, true);
+        filenameEdit->setText(projectFilename.empty() ? "scene.json" : projectFilename);
+        projectFilename.clear();
     }
     
     progressBar->setValue(70);
@@ -460,8 +575,6 @@ int main()
     glClear(GL_COLOR_BUFFER_BIT);
     loading.draw();
     engine.GetWindow().display();
-
-    filenameEdit->setText(projectFilename.empty() ? "scene.json" : projectFilename);
 
 	bool manageCameraMovement = true, manageCameraLook = true,
          manageCameraMouse = true, manageSceneRendering = true,
@@ -494,11 +607,14 @@ int main()
         for(auto& i : scripts)
             sceneTree->addItem({ "Scene", "Scripts", i });
     }
+    else scman.Save(lastPath + "/" + projectNameEdit->getText().toStdString() + "_scripts.json");
 
     Log::SetSigSegvHandle([&]()
     {
-        scene.Save(homeFolder + "recover.json", true);
-        scman.Save(homeFolder + "recover_scripts.json", true);
+        auto path = filenameEdit->getText().toStdString(), scPath = path;
+        scene.Save(path, true);
+        scPath.insert(scPath.find_last_of('.'), "_scripts");
+        scman.Save(scPath, true);
     });
     
     progressBar->setValue(90);
@@ -674,6 +790,10 @@ int main()
             if(!openFileDialog->getSelectedPaths().empty())
             {
                 auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
+                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
+                if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
+                    std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
+                path = projectDir + "/assets/textures/" + filename;
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
                 auto p = mat->GetParameter(Material::Type::Color);
                 if(std::holds_alternative<GLuint>(p))
@@ -697,6 +817,10 @@ int main()
             if(!openFileDialog->getSelectedPaths().empty())
             {
                 auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
+                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
+                if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
+                    std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
+                path = projectDir + "/assets/textures/" + filename;
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
                 auto p = mat->GetParameter(Material::Type::Metalness);
                 if(std::holds_alternative<GLuint>(p))
@@ -721,6 +845,10 @@ int main()
             if(!openFileDialog->getSelectedPaths().empty())
             {
                 auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
+                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
+                if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
+                    std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
+                path = projectDir + "/assets/textures/" + filename;
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
                 auto p = mat->GetParameter(Material::Type::Roughness);
                 if(std::holds_alternative<GLuint>(p))
@@ -745,6 +873,10 @@ int main()
             if(!openFileDialog->getSelectedPaths().empty())
             {
                 auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
+                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
+                if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
+                    std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
+                path = projectDir + "/assets/textures/" + filename;
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
                 auto p = mat->GetParameter(Material::Type::Normal);
                 if(std::holds_alternative<GLuint>(p))
@@ -768,6 +900,10 @@ int main()
             if(!openFileDialog->getSelectedPaths().empty())
             {
                 auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
+                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
+                if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
+                    std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
+                path = projectDir + "/assets/textures/" + filename;
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
                 auto p = mat->GetParameter(Material::Type::AmbientOcclusion);
                 if(std::holds_alternative<GLuint>(p))
@@ -791,6 +927,10 @@ int main()
             if(!openFileDialog->getSelectedPaths().empty())
             {
                 auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
+                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
+                if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
+                    std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
+                path = projectDir + "/assets/textures/" + filename;
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
                 auto p = mat->GetParameter(Material::Type::Emission);
                 if(std::holds_alternative<GLuint>(p))
@@ -814,6 +954,10 @@ int main()
             if(!openFileDialog->getSelectedPaths().empty())
             {
                 auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
+                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
+                if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
+                    std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
+                path = projectDir + "/assets/textures/" + filename;
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
                 auto p = mat->GetParameter(Material::Type::Opacity);
                 if(std::holds_alternative<GLuint>(p))
@@ -836,7 +980,12 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
-                scman.LoadScript(openFileDialog->getSelectedPaths()[0].asString().toStdString());
+                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
+                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
+                if(!std::filesystem::exists(projectDir + "/assets/scripts/" + filename))
+                    std::filesystem::copy(path, projectDir + "/assets/scripts/" + filename);
+                path = projectDir + "/assets/scripts/" + filename;
+                scman.LoadScript(path);
                 sceneTree->addItem({ "Scene", "Scripts", openFileDialog->getSelectedPaths()[0].getFilename() });
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
@@ -852,9 +1001,13 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
 			{
+                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
+                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
+                if(!std::filesystem::exists(projectDir + "/assets/models/" + filename))
+                    std::filesystem::copy(path, projectDir + "/assets/models/" + filename);
+                path = projectDir + "/assets/models/" + filename;
                 auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
-                model->Load(openFileDialog->getSelectedPaths()[0].asString().toStdString(),
-                            aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
+                model->Load(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
 
                 materialsList->removeAllItems();
                 auto mtl = model->GetMaterial();
@@ -866,6 +1019,13 @@ int main()
             }
   	    	openFileDialog = nullptr;
   	    });
+    });
+
+    reloadButton->onPress([&]()
+    {
+        auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+        if(!model->GetFilename().empty())
+            model->Load(model->GetFilename(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
     });
 
     deleteButton->onPress([&]()

@@ -479,7 +479,6 @@ ChildWindow.objectEditorWindow {
         Position = (10, 10);
         Renderer = &4;
         Size = (200, 420);
-        Visible = false;
 
         EditBox.name {
             Renderer = &5;
@@ -596,7 +595,6 @@ ChildWindow.objectEditorWindow {
         }
 
         Button.openFile {
-            Enabled = false;
             Position = (0, 310);
             Renderer = &1;
             Text = "Open file";
@@ -791,6 +789,24 @@ ChildWindow.objectEditorWindow {
                     TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
                     TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
                 }
+            }
+        }
+
+        Button.reload {
+            Position = (80, 310);
+            Text = Reload;
+            TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextColorHover = rgb(250, 250, 250);
+                Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
+                TextureDisabled = None;
+                TextureDown = "themes/Black.png" Part(0, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureDownFocused = None;
+                TextureDownHover = None;
+                TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
             }
         }
     }
@@ -1588,6 +1604,7 @@ ChildWindow.objectEditorWindow {
         Position = (10, 10);
         Renderer = &4;
         Size = (200, 420);
+        Visible = false;
 
         EditBox.soundName {
             Size = (200, 24);

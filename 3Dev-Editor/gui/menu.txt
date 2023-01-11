@@ -1,5 +1,21 @@
 Renderer.1 {
     TextColor = rgb(190, 190, 190);
+    TextureBackground = None;
+
+    Scrollbar {
+        TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+        TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+        TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+        TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+        TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+        TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+        TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+        TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+    }
+}
+
+Renderer.2 {
+    TextColor = rgb(190, 190, 190);
     TextColorHover = rgb(250, 250, 250);
     Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
     TextureDisabled = None;
@@ -8,6 +24,36 @@ Renderer.1 {
     TextureDownHover = None;
     TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
     TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
+}
+
+Renderer.3 {
+    BackgroundColor = #242424;
+    BorderColor = Black;
+    Borders = (1, 1, 1, 1);
+    DistanceToSide = 5;
+    PaddingBetweenButtons = 2;
+    ShowTextOnTitleButtons = false;
+    TextureBackground = None;
+    TextureTitleBar = "themes/Black.png" Part(0, 580, 75, 25) Middle(25, 0) Smooth;
+    TitleColor = rgb(190, 190, 190);
+
+    MaximizeButton {
+        Texture = "themes/Black.png" Part(0, 330, 15, 15) Smooth;
+        TextureDown = "themes/Black.png" Part(17, 330, 15, 15) Smooth;
+        TextureHover = "themes/Black.png" Part(34, 330, 15, 15) Smooth;
+    }
+
+    MinimizeButton {
+        Texture = "themes/Black.png" Part(81, 330, 15, 15) Smooth;
+        TextureDown = "themes/Black.png" Part(98, 330, 15, 15) Smooth;
+        TextureHover = "themes/Black.png" Part(0, 347, 15, 15) Smooth;
+    }
+
+    CloseButton {
+        Texture = "themes/Black.png" Part(34, 212, 15, 15) Smooth;
+        TextureDown = "themes/Black.png" Part(51, 212, 15, 15) Smooth;
+        TextureHover = "themes/Black.png" Part(68, 212, 15, 15) Smooth;
+    }
 }
 
 ChildWindow.ChildWindow1 {
@@ -48,32 +94,60 @@ ChildWindow.ChildWindow1 {
         }
     }
 
-    Button.open {
-        Position = (580, 360);
+    Picture.Picture1 {
+        Position = (583, 234);
+        Size = (115, 114);
+
+        Renderer {
+            Texture = "../icon.png" Smooth;
+            TransparentTexture = false;
+        }
+    }
+
+    Label.Label1 {
+        HorizontalAlignment = Center;
+        Position = (577, 354);
         Renderer = &1;
-        Size = (121, 22);
-        Text = Open;
+        Size = (126.2, 18);
+        Text = "3Dev Editor 1.1.0";
         TextSize = 13;
     }
 
-    ComboBox.projects {
-        ChangeItemOnScroll = false;
-        ItemsToDisplay = 0;
-        MaximumItems = 10;
-        Position = (560, 300);
-        Size = (160, 24);
+    Button.newProject {
+        Position = (587, 440);
+        Renderer = &2;
+        Size = (107, 40.0328);
+        Text = "New project";
         TextSize = 13;
+    }
 
-        Renderer {
-            Padding = (3, 3, 3, 3);
-            TextColor = rgb(190, 190, 190);
-            TextureArrow = "themes/Black.png" Part(85, 212, 32, 32) Smooth;
-            TextureArrowDisabled = None;
-            TextureArrowHover = "themes/Black.png" Part(0, 246, 32, 32) Smooth;
-            TextureBackground = "themes/Black.png" Part(0, 22, 48, 48) Middle(16) Smooth;
-            TextureBackgroundDisabled = None;
+    Button.loadProject {
+        Position = (587, 490);
+        Renderer = &2;
+        Size = (107, 40.0328);
+        Text = "Load project";
+        TextSize = 13;
+    }
 
-            ListBox {
+    ChildWindow.loadWindow {
+        Position = (490, 380);
+        PositionLocked = true;
+        Renderer = &3;
+        Size = (300, 250);
+        Title = "Load project";
+        TitleAlignment = Center;
+        TitleButtons = None;
+        TitleTextSize = 13;
+        Visible = false;
+
+        ListBox.recent {
+            ItemHeight = 20;
+            MaximumItems = 0;
+            Position = (70, 30);
+            Size = (160, 122);
+            TextSize = 13;
+
+            Renderer {
                 BackgroundColorHover = rgb(100, 100, 100);
                 Padding = (3, 3, 3, 3);
                 SelectedBackgroundColor = rgb( 10, 110, 255);
@@ -95,57 +169,215 @@ ChildWindow.ChildWindow1 {
                 }
             }
         }
-    }
 
-    Label.Label1 {
-        HorizontalAlignment = Center;
-        Position = (560, 270);
-        Size = (158.2, 18);
-        Text = "Recent projects";
-        TextSize = 13;
+        Label.Label2 {
+            AutoSize = true;
+            Position = (126, 10);
+            Size = (48.2, 18);
+            Text = Recent;
+            TextSize = 13;
 
-        Renderer {
-            TextColor = rgb(190, 190, 190);
-            TextureBackground = None;
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextureBackground = None;
 
-            Scrollbar {
-                TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
-                TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
-                TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
-                TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
-                TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
-                TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
-                TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
-                TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+                Scrollbar {
+                    TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+                    TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+                    TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+                    TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+                }
+            }
+        }
+
+        EditBox.path {
+            Position = (70, 160);
+            Size = (120, 22);
+            TextSize = 12;
+
+            Renderer {
+                CaretColor = rgb(110, 110, 255);
+                DefaultTextColor = rgb(120, 120, 120);
+                Padding = (6, 4, 6, 4);
+                SelectedTextBackgroundColor = rgb( 10, 110, 255);
+                SelectedTextColor = White;
+                TextColor = rgb(190, 190, 190);
+                Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
+                TextureDisabled = None;
+                TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
+            }
+        }
+
+        Button.load {
+            Position = (70, 190);
+            Renderer = &2;
+            Size = (69, 20);
+            Text = Load;
+            TextSize = 13;
+        }
+
+        Button.cancelLoad {
+            Position = (160, 190);
+            Size = (69, 20);
+            Text = Cancel;
+            TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextColorHover = rgb(250, 250, 250);
+                Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
+                TextureDisabled = None;
+                TextureDown = "themes/Black.png" Part(0, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureDownFocused = None;
+                TextureDownHover = None;
+                TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
+            }
+        }
+
+        Button.openFileDialog {
+            Position = (200, 160);
+            Size = (31, 22);
+            Text = "...";
+            TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextColorHover = rgb(250, 250, 250);
+                Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
+                TextureDisabled = None;
+                TextureDown = "themes/Black.png" Part(0, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureDownFocused = None;
+                TextureDownHover = None;
+                TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
             }
         }
     }
 
-    EditBox.path {
-        DefaultText = Path;
-        Position = (560, 330);
-        Size = (120, 24);
-        TextSize = 13;
+    ChildWindow.newProjectWindow {
+        Position = (490, 380);
+        PositionLocked = true;
+        Renderer = &3;
+        Size = (300, 250);
+        Title = "New project";
+        TitleAlignment = Center;
+        TitleButtons = None;
+        TitleTextSize = 13;
+        Visible = false;
 
-        Renderer {
-            CaretColor = rgb(110, 110, 255);
-            DefaultTextColor = rgb(120, 120, 120);
-            Padding = (6, 4, 6, 4);
-            SelectedTextBackgroundColor = rgb( 10, 110, 255);
-            SelectedTextColor = White;
-            TextColor = rgb(190, 190, 190);
-            Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
-            TextureDisabled = None;
-            TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
-            TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
+        Button.create {
+            Position = (70, 190);
+            Size = (69, 20);
+            Text = Create;
+            TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextColorHover = rgb(250, 250, 250);
+                Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
+                TextureDisabled = None;
+                TextureDown = "themes/Black.png" Part(0, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureDownFocused = None;
+                TextureDownHover = None;
+                TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
+            }
         }
-    }
 
-    Button.openFileDialog {
-        Position = (690, 330);
-        Renderer = &1;
-        Size = (31, 24);
-        Text = "...";
-        TextSize = 13;
+        EditBox.name {
+            Position = (70, 30);
+            Size = (160, 22);
+            TextSize = 12;
+
+            Renderer {
+                CaretColor = rgb(110, 110, 255);
+                DefaultTextColor = rgb(120, 120, 120);
+                Padding = (6, 4, 6, 4);
+                SelectedTextBackgroundColor = rgb( 10, 110, 255);
+                SelectedTextColor = White;
+                TextColor = rgb(190, 190, 190);
+                Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
+                TextureDisabled = None;
+                TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
+            }
+        }
+
+        Label.Label3 {
+            AutoSize = true;
+            Position = (130, 10);
+            Renderer = &1;
+            Size = (42.2, 18);
+            Text = Name;
+            TextSize = 13;
+        }
+
+        Label.Label4 {
+            AutoSize = true;
+            Position = (130, 60);
+            Size = (42.2, 18);
+            Text = Folder;
+            TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextureBackground = None;
+
+                Scrollbar {
+                    TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+                    TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+                    TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+                    TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+                }
+            }
+        }
+
+        EditBox.folder {
+            Position = (70, 80);
+            Size = (160, 22);
+            TextSize = 12;
+
+            Renderer {
+                CaretColor = rgb(110, 110, 255);
+                DefaultTextColor = rgb(120, 120, 120);
+                Padding = (6, 4, 6, 4);
+                SelectedTextBackgroundColor = rgb( 10, 110, 255);
+                SelectedTextColor = White;
+                TextColor = rgb(190, 190, 190);
+                Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
+                TextureDisabled = None;
+                TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
+            }
+        }
+
+        Button.cancelNew {
+            Position = (160, 190);
+            Size = (69, 20);
+            Text = Cancel;
+            TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextColorHover = rgb(250, 250, 250);
+                Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
+                TextureDisabled = None;
+                TextureDown = "themes/Black.png" Part(0, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureDownFocused = None;
+                TextureDownHover = None;
+                TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
+            }
+        }
     }
 }

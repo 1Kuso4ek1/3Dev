@@ -35,6 +35,12 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     AddFunction("string to_string(int)", WRAP_FN_PR(std::to_string, (int), std::string));
     AddFunction("string to_string(float)", WRAP_FN_PR(std::to_string, (float), std::string));
 
+    AddFunction("int stoi(const string& in)", WRAP_FN_PR(std::stoi, (const std::string&, size_t*, int), int));
+    AddFunction("float stof(const string& in)", WRAP_FN_PR(std::stof, (const std::string&, size_t*), float));
+
+    AddFunction("float radians(float)", WRAP_FN(glm::radians<float>));
+    AddFunction("float degrees(float)", WRAP_FN(glm::degrees<float>));
+
     SetDefaultNamespace("Log");
     AddEnum("Type", { "Critical", "Error", "Warning", "Info" });
     AddFunction("void Write(string, int = Info)", WRAP_FN(Log::Write));
@@ -263,6 +269,7 @@ void ScriptManager::RegisterQuaternion()
     });
 
     AddFunction("Quaternion QuaternionFromEuler(const Vector3& in)", WRAP_FN_PR(rp3d::Quaternion::fromEulerAngles, (const rp3d::Vector3&), rp3d::Quaternion));
+    AddFunction("Quaternion slerp(const Quaternion& in, const Quaternion& in, float)", WRAP_FN(rp3d::Quaternion::slerp));
 
     AddTypeConstructor("Quaternion", "void f()", WRAP_OBJ_LAST(MakeType<rp3d::Quaternion>));
     AddTypeConstructor("Quaternion", "void f(float, float, float, float)", WRAP_OBJ_LAST(MakeQuaternion));
@@ -428,6 +435,7 @@ void ScriptManager::RegisterPhysicsManager()
 {
     AddType("PhysicsManager", sizeof(PhysicsManager),
     {
+        { "void SetTimeStep(float)", WRAP_MFN(PhysicsManager, SetTimeStep) },
         { "HingeJoint@ CreateHingeJoint(HingeJointInfo)", WRAP_MFN(PhysicsManager, CreateHingeJoint) }
     }, {});
 }
