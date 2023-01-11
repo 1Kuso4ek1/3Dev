@@ -334,7 +334,6 @@ int main()
         if(!properties["recentProjects"][i].empty())
             recentBox->addItem(properties["recentProjects"][i].asString());
 
-    recentBox->addItem("New project");
     recentBox->setSelectedItemByIndex(0);
     pathEdit->setText(properties["recentProjectsPaths"]
                                 [recentBox->getSelectedItemIndex()].asString());
