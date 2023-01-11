@@ -325,13 +325,16 @@ int main()
 
     tgui::Color matColor = tgui::Color::White;
 
-    for(int i = 0; i < (properties["recentProjects"].size() >= 9 ? 9 : properties["recentProjects"].size()); i++)
-        if(!properties["recentProjects"][i].empty())
-            recentBox->addItem(properties["recentProjects"][i].asString());
+    if(!properties["recentProjects"].empty())
+    {
+        for(int i = 0; i < properties["recentProjects"].size(); i++)
+            if(!properties["recentProjects"][i].empty())
+                recentBox->addItem(properties["recentProjects"][i].asString());
 
-    recentBox->setSelectedItemByIndex(0);
-    pathEdit->setText(properties["recentProjectsPaths"]
-                                [recentBox->getSelectedItemIndex()].asString());
+        recentBox->setSelectedItemByIndex(0);
+        pathEdit->setText(properties["recentProjectsPaths"]
+                                    [recentBox->getSelectedItemIndex()].asString());
+    }
 
     std::string projectFilename = "";
 
@@ -367,8 +370,9 @@ int main()
 
     loadButton->onPress([&]()
     {
-        projectFilename = properties["recentProjectsPaths"]
-                                    [recentBox->getSelectedItemIndex()].asString();
+        if(!properties["recentProjectsPaths"].empty())
+            projectFilename = properties["recentProjectsPaths"]
+                                        [recentBox->getSelectedItemIndex()].asString();
         if(projectFilename != pathEdit->getText().toStdString())
             projectFilename = pathEdit->getText().toStdString();
         projectDir = projectFilename.substr(0, projectFilename.find_last_of("/"));
