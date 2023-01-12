@@ -320,6 +320,12 @@ int main()
 
     std::shared_ptr<tgui::FileDialog> openFileDialog = nullptr;
 
+    #ifdef _WIN32
+        folderEdit->setText(std::string(getenv("HOMEPATH")));
+    #else
+        folderEdit->setText(std::string(getenv("HOME")));
+    #endif
+
     bool objectMode = false;
     int axis = 0, param = 0;
 
@@ -381,6 +387,7 @@ int main()
             std::filesystem::create_directory(projectDir + "/assets");
             std::filesystem::create_directory(projectDir + "/assets/models");
             std::filesystem::create_directory(projectDir + "/assets/textures");
+            std::filesystem::create_directory(projectDir + "/assets/sounds");
             std::filesystem::create_directory(projectDir + "/assets/scripts");
         }
         engine.Close();
@@ -396,6 +403,7 @@ int main()
         std::filesystem::create_directory(lastPath + "/assets");
         std::filesystem::create_directory(lastPath + "/assets/models");
         std::filesystem::create_directory(lastPath + "/assets/textures");
+        std::filesystem::create_directory(projectDir + "/assets/sounds");
         std::filesystem::create_directory(lastPath + "/assets/scripts");
         engine.Close();
     });
@@ -667,7 +675,12 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
-                sman->LoadSound(openFileDialog->getSelectedPaths()[0].asString().toStdString());
+                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
+                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
+                if(!std::filesystem::exists(projectDir + "/assets/sounds/" + filename))
+                    std::filesystem::copy(path, projectDir + "/assets/sounds/" + filename);
+                path = projectDir + "/assets/sounds/" + filename;
+                sman->LoadSound(path);
                 sceneTree->addItem({ "Scene", "Sounds", sman->GetSounds().back() });
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
@@ -1177,6 +1190,8 @@ int main()
 
 				if((!nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem()[2]) || objectMode)
 				{
+                    materialBox->deselectItem();
+
 					rp3d::Vector3 position = object->GetPosition();
 					rp3d::Quaternion orientation = object->GetOrientation();
 					rp3d::Vector3 size = object->GetSize();
