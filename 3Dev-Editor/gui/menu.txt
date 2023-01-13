@@ -109,7 +109,7 @@ ChildWindow.ChildWindow1 {
         Position = (577, 354);
         Renderer = &1;
         Size = (126.2, 18);
-        Text = "3Dev Editor 1.1.0";
+        Text = "3Dev Editor 1.1.1";
         TextSize = 13;
     }
 
