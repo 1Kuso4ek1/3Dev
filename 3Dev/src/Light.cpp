@@ -178,4 +178,7 @@ void Light::Deserialize(Json::Value data)
 
 	castShadows = data["castShadows"].asBool();
 	perspectiveShadows = data["perspectiveShadows"].asBool();
+
+	if(castShadows)
+		CalcLightSpaceMatrix();
 }
