@@ -7,49 +7,52 @@ ShadowManager::ShadowManager(SceneManager* scene, glm::ivec2 size, Shader* mainS
     if(depthShader) this->depthShader = depthShader;
 
     glEnable(GL_CULL_FACE);
+    //glPolygonOffset(-1, 0.7);
 
-    textures.resize(lights.size(), 0);
-    lightSpaces.resize(lights.size(), glm::mat4(1.0));
-    for(int i = 0; i < lights.size(); i++)
-    	depthBuffers.emplace_back(nullptr, size.x, size.y, true);
+    depthBuffer = std::make_unique<Framebuffer>(nullptr, size.x, size.y, true);
 }
 
 void ShadowManager::Update()
 {
+    if(scene->GetShadowCastingLights().size() != lights.size())
+        lights = scene->GetShadowCastingLights();
+
+    if(lights.empty())
+        return;
+
     scene->SetMainShader(depthShader);
 
+    //glEnable(GL_POLYGON_OFFSET_FILL);
     glCullFace(GL_FRONT);
    	depthShader->Bind();
-    for(int i = 0; i < lights.size(); i++)
+
+    Light* closestLight = lights[0];
+    for(auto i : lights)
     {
-        glm::mat4 lprojection = glm::perspective(glm::radians(90.0), 1.0, 0.01, 500.0);
-        glm::mat4 lview = glm::lookAt(toglm(lights[i]->GetPosition()),
-                                      toglm(lights[i]->GetDirection()),
-                                      glm::vec3(0.0, 1.0, 0.0));
-        glm::mat4 lspace = lprojection * lview;
-        lightSpaces[i] = lspace;
-
-        depthShader->SetUniformMatrix4("light", lspace);
-
-        scene->Draw(&depthBuffers[i], nullptr, true);
-
-        textures[i] = depthBuffers[i].GetTexture(true);
+        if((i->GetPosition() - scene->GetCamera()->GetPosition()).length() <
+           (closestLight->GetPosition() - scene->GetCamera()->GetPosition()).length())
+            closestLight = i;
     }
+    
+    depthShader->SetUniformMatrix4("light", closestLight->GetLightSpaceMatrix());
+
+    scene->Draw(depthBuffer.get(), nullptr, true);
+
+    texture = depthBuffer->GetTexture(true);
 
     scene->SetMainShader(mainShader);
 
     mainShader->Bind();
-    for(int i = 0; i < lights.size(); i++)
-    {
-        mainShader->SetUniformMatrix4("lspace[" + std::to_string(i) + "]", lightSpaces[i]);
-        auto pos = lights[i]->GetPosition();
 
-        glActiveTexture(GL_TEXTURE9 + i);
-        glBindTexture(GL_TEXTURE_2D, textures[i]);
-        mainShader->SetUniform3f("shadows[" + std::to_string(i) + "].sourcepos", pos.x, pos.y, pos.z);
-        mainShader->SetUniform1i("shadows[" + std::to_string(i) + "].shadowmap", 9 + i);
-        mainShader->SetUniform1i("shadows[" + std::to_string(i) + "].isactive", 1);
-    }
+    mainShader->SetUniformMatrix4("lspace", closestLight->GetLightSpaceMatrix());
+    auto pos = closestLight->GetPosition();
+
+    glActiveTexture(GL_TEXTURE9);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    mainShader->SetUniform3f("shadow.sourcepos", pos.x, pos.y, pos.z);
+    mainShader->SetUniform1i("shadow.shadowmap", 9);
+    mainShader->SetUniform1i("shadow.perspective", closestLight->IsCastingPerspectiveShadows());
 
     glCullFace(GL_BACK);
+    //glDisable(GL_POLYGON_OFFSET_FILL);
 }

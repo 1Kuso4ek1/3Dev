@@ -40,7 +40,10 @@ public:
 	// @param outerCutoff new light outerCutoff value
 	void SetOuterCutoff(float outerCutoff);
 
+	void CalcLightSpaceMatrix();
+
 	void SetIsCastingShadows(bool castShadows);
+	void SetIsCastingPerspectiveShadows(bool perspectiveShadows);
 	
 	/*
 	 * Used to update the shader (used only in Model and Shape classes)
@@ -50,6 +53,9 @@ public:
 	void Update(Shader* shader, int lightnum);
 
 	bool IsCastingShadows();
+	bool IsCastingPerspectiveShadows();
+
+	glm::mat4 GetLightSpaceMatrix();
 
 	// @return color of the light
 	rp3d::Vector3 GetColor();
@@ -73,9 +79,11 @@ public:
 	void Deserialize(Json::Value data);
 
 private:
+	glm::mat4 lightSpaceMatrix;
+
 	rp3d::Vector3 position, direction, color;
 
-	bool castShadows = false;
+	bool castShadows = false, perspectiveShadows = true;
 
 	float constant = 1.0, linear = 0.0, quadratic = 0.0;
 	float cutoff = 360.0, outerCutoff = 0.0;

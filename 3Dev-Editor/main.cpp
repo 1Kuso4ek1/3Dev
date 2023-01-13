@@ -284,6 +284,7 @@ int main()
     auto outerCutoffEdit = editor.get<tgui::EditBox>("outerCutoff");
 
     auto castShadowsBox = editor.get<tgui::CheckBox>("castShadows");
+    auto perspectiveShadowsBox = editor.get<tgui::CheckBox>("perspectiveShadows");
 
     auto ldeleteButton = editor.get<tgui::Button>("ldelete");
 
@@ -457,7 +458,7 @@ int main()
     Camera cam(&engine.GetWindow());
     cam.SetViewportSize({ 840, 492 });
 
-    Light shadowSource({ 0, 0, 0 }, { 50.1, 100.0, -50.1 }, true);
+    Light shadowSource({ 0, 0, 0 }, { 30.1, 50.0, -30.1 }, true);
     shadowSource.SetDirection({ 0.0, -1.0, 0.0 });
 
     Material skyboxMaterial(
@@ -483,6 +484,32 @@ int main()
     engine.SetGuiViewport({ 220, 25, 840, 520 });
 
     auto sman = std::make_shared<SoundManager>();
+
+    auto saveRecent = [&](std::string path)
+    {
+        auto filename = std::filesystem::path(path).filename().string();
+        auto it = std::find(properties["recentProjects"].begin(), properties["recentProjects"].end(), filename);
+        if(it == properties["recentProjects"].end())
+        {
+            properties["recentProjects"].insert(0, filename);
+            properties["recentProjectsPaths"].insert(0, path);
+        }
+        else
+        {
+            for(int i = 0; i < properties["recentProjects"].size(); i++)
+            {
+                if(properties["recentProjects"][i] == filename)
+                {
+                    properties["recentProjects"].removeIndex(i, 0);
+                    properties["recentProjectsPaths"].removeIndex(i, 0);
+                }
+            }
+            properties["recentProjects"].insert(0, filename);
+            properties["recentProjectsPaths"].insert(0, path);
+        }
+        SaveProperties(properties);
+        Log::Write(path + " saved", Log::Type::Info);
+    };
 
     SceneManager scene;
 
@@ -519,6 +546,7 @@ int main()
         sceneTree->addItem({ "Scene", "Lights", "shadowSource" });
         projectFilename = lastPath + "/" + projectNameEdit->getText().toStdString() + ".json";
         scene.Save(projectFilename, true);
+        saveRecent(projectFilename);
         filenameEdit->setText(projectFilename.empty() ? "scene.json" : projectFilename);
         projectFilename.clear();
     }
@@ -1070,32 +1098,12 @@ int main()
 		if(!filenameEdit->getText().empty())
         {
             auto path = filenameEdit->getText().toStdString(), scPath = path;
-            scene.Save(path, true);
             scPath.insert(scPath.find_last_of('.'), "_scripts");
+
+            scene.Save(path, true);
             scman.Save(scPath, true);
 
-            auto filename = std::filesystem::path(path).filename().string();
-            auto it = std::find(properties["recentProjects"].begin(), properties["recentProjects"].end(), filename);
-            if(it == properties["recentProjects"].end())
-            {
-                properties["recentProjects"].insert(0, filename);
-                properties["recentProjectsPaths"].insert(0, filenameEdit->getText().toStdString());
-            }
-            else
-            {
-                for(int i = 0; i < properties["recentProjects"].size(); i++)
-                {
-                    if(properties["recentProjects"][i] == filename)
-                    {
-                        properties["recentProjects"].removeIndex(i, 0);
-                        properties["recentProjectsPaths"].removeIndex(i, 0);
-                    }
-                }
-                properties["recentProjects"].insert(0, filename);
-                properties["recentProjectsPaths"].insert(0, filenameEdit->getText().toStdString());
-            }
-            SaveProperties(properties);
-            Log::Write(filenameEdit->getText().toStdString() + " saved", Log::Type::Info);
+            saveRecent(path);
         }
 	};
 
@@ -1322,6 +1330,7 @@ int main()
                         float outerCutoff = light->GetOuterCutoff();
 
                         castShadowsBox->setChecked(light->IsCastingShadows());
+                        perspectiveShadowsBox->setChecked(light->IsCastingPerspectiveShadows());
 
                         lightNameEdit->setText(sceneTree->getSelectedItem()[2]);
 
@@ -1384,6 +1393,7 @@ int main()
                         light->SetCutoff(innerCutoffEdit->getText().toFloat());
                         light->SetOuterCutoff(outerCutoffEdit->getText().toFloat());
                         light->SetIsCastingShadows(castShadowsBox->isChecked());
+                        light->SetIsCastingPerspectiveShadows(perspectiveShadowsBox->isChecked());
                     }
                 }
             }

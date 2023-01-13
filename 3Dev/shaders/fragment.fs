@@ -1,11 +1,8 @@
 #version 330
 
 const int maxLights = 16;
-const int maxShadows = 4;
 const int maxLodLevel = 7;
 const float pi = 3.14159265;
-
-uniform sampler2D shadowmap;
 
 uniform sampler2D albedo;
 uniform sampler2D normalMap;
@@ -34,7 +31,7 @@ in vec3 camposout;
 in vec3 mnormal;
 in vec3 mpos;
 in mat3 tbn;
-in vec4 lspaceout[maxShadows];
+in vec4 lspaceout;
 
 out vec4 color;
 
@@ -43,7 +40,7 @@ struct Shadow
 	//sampler2DShadow shadowmap; Doesn't work on Windows?
 	vec3 sourcepos;
 	sampler2D shadowmap;
-	bool isactive;
+    bool perspective;
 };
 
 struct Light
@@ -60,37 +57,41 @@ struct Light
 };
 
 uniform Light lights[maxLights];
-uniform Shadow shadows[maxShadows];
+uniform Shadow shadow;
 
 float LinearizeDepth(float depth)
 {
-    float z = depth * 2.0 - 1.0;
-    return (2.0 * 0.01 * 500.0) / (500.0 + 0.01 - z * (500.0 - 0.01));
+    if(shadow.perspective)
+    {
+        float z = depth * 2.0 - 1.0;
+        return (2.0 * 0.01 * 500.0) / (500.0 + 0.01 - z * (500.0 - 0.01));
+    }
+    return depth;
 }
 
-float CalcShadow(int i)
+float CalcShadow()
 {
-    if(1.0 - dot(mnormal, normalize(shadows[i].sourcepos - mpos)) >= 1.0) return 0.0;
-    vec3 pcoord = lspaceout[i].xyz / lspaceout[i].w;
+    if(1.0 - dot(mnormal, normalize(shadow.sourcepos - mpos)) >= 1.0) return 0.0;
+    vec3 pcoord = lspaceout.xyz / lspaceout.w;
     pcoord = pcoord * 0.5 + 0.5;
     if(pcoord.z > 1.0)
         return 0.0;
     /* Doesn't work on Windows?
     pcoord.z -= bias;
-    return 1.0 - texture(shadows[i].shadowmap, pcoord);
+    return 1.0 - texture(shadows.shadowmap, pcoord);
     */
     float current = LinearizeDepth(pcoord.z);
-    float shadow = 0.0;
-    /*vec2 pixelsize = 1.0 / textureSize(shadows[i].shadowmap, 0);
+    //float ret = 0.0;
+    /*vec2 pixelsize = 1.0 / textureSize(shadow.shadowmap, 0);
 	for(int x = -1; x <= 1; ++x)
 	{
 		for(int y = -1; y <= 1; ++y)
 		{
-		    float pcf = LinearizeDepth(texture(shadows[i].shadowmap, pcoord.xy + vec2(x, y) * pixelsize).x);
-		    shadow += float(current > pcf);
+		    float pcf = LinearizeDepth(texture(shadow.shadowmap, pcoord.xy + vec2(x, y) * pixelsize).x);
+		    ret += float(current > pcf);
 		}
 	}*/
-    return float(current - 0.2 > LinearizeDepth(texture(shadows[i].shadowmap, pcoord.xy).x));
+    return float(current - 0.05 > LinearizeDepth(texture(shadow.shadowmap, pcoord.xy).x));
 }
 
 float GGX(float ndoth, float rough)
@@ -196,8 +197,7 @@ void main()
         total += CalcLight(lights[i], norm, rough, metal, alb, irr, f0);
         i++;
     }
-    for(i = 0; i < maxShadows && shadows[i].isactive; i++)
-        shadow += CalcShadow(i);
+    shadow = CalcShadow();
 
     vec3 f = FresnelSchlick(max(dot(norm, normalize(camposout - mpos)), 0.0), f0, rough);
     vec3 kspc = f;

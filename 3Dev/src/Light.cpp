@@ -1,7 +1,11 @@
 #include "Light.hpp"
 
 Light::Light(const rp3d::Vector3& color, const rp3d::Vector3& position, bool castShadows) 
-			: castShadows(castShadows), color(color), position(position) {}
+			: castShadows(castShadows), color(color), position(position)
+{
+	if(castShadows)
+		CalcLightSpaceMatrix();
+}
 
 void Light::SetColor(const rp3d::Vector3& color)
 {
@@ -11,11 +15,15 @@ void Light::SetColor(const rp3d::Vector3& color)
 void Light::SetPosition(const rp3d::Vector3& position)
 {
 	this->position = position;
+	if(castShadows)
+		CalcLightSpaceMatrix();
 }
 
 void Light::SetDirection(const rp3d::Vector3& direction)
 {
 	this->direction = direction;
+	if(castShadows)
+		CalcLightSpaceMatrix();
 }
 
 void Light::SetAttenuation(float constant, float linear, float quadratic)
@@ -35,9 +43,31 @@ void Light::SetOuterCutoff(float outerCutoff)
 	this->outerCutoff = outerCutoff;
 }
 
+void Light::CalcLightSpaceMatrix()
+{
+	glm::mat4 projection;
+
+	if(perspectiveShadows)
+		projection = glm::perspective(glm::radians(90.0), 1.0, 0.01, 500.0);
+	else 
+		projection = glm::ortho(-100.0, 100.0, -100.0, 100.0, 0.1, 500.0);
+	
+	glm::mat4 view = glm::lookAt(toglm(position), toglm(direction), glm::vec3(0.0, 1.0, 0.0));
+	lightSpaceMatrix = projection * view;
+}
+
 void Light::SetIsCastingShadows(bool castShadows)
 {
 	this->castShadows = castShadows;
+	if(castShadows)
+		CalcLightSpaceMatrix();
+}
+
+void Light::SetIsCastingPerspectiveShadows(bool perspectiveShadows)
+{
+	this->perspectiveShadows = perspectiveShadows;
+	if(castShadows)
+		CalcLightSpaceMatrix();
 }
 
 void Light::Update(Shader* shader, int lightnum) 
@@ -54,6 +84,16 @@ void Light::Update(Shader* shader, int lightnum)
 bool Light::IsCastingShadows()
 {
 	return castShadows;
+}
+
+bool Light::IsCastingPerspectiveShadows()
+{
+	return perspectiveShadows;
+}
+
+glm::mat4 Light::GetLightSpaceMatrix()
+{
+	return lightSpaceMatrix;
 }
 
 rp3d::Vector3 Light::GetColor() 
@@ -110,6 +150,7 @@ Json::Value Light::Serialize()
 	data["outerCutoff"] = outerCutoff;
 
 	data["castShadows"] = castShadows;
+	data["perspectiveShadows"] = perspectiveShadows;
 
 	return data;
 }
@@ -136,4 +177,5 @@ void Light::Deserialize(Json::Value data)
 	outerCutoff = data["outerCutoff"].asFloat();
 
 	castShadows = data["castShadows"].asBool();
+	perspectiveShadows = data["perspectiveShadows"].asBool();
 }

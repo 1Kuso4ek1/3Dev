@@ -479,6 +479,7 @@ ChildWindow.objectEditorWindow {
         Position = (10, 10);
         Renderer = &4;
         Size = (200, 420);
+        Visible = false;
 
         EditBox.name {
             Renderer = &5;
@@ -1167,8 +1168,7 @@ ChildWindow.objectEditorWindow {
         Enabled = false;
         Position = (10, 10);
         Renderer = &4;
-        Size = (200, 420);
-        Visible = false;
+        Size = (200, 430);
 
         EditBox.lightName {
             Size = (200, 24);
@@ -1447,7 +1447,7 @@ ChildWindow.objectEditorWindow {
         }
 
         Button.ldelete {
-            Position = (0, 390);
+            Position = (0, 400);
             Size = (74, 22);
             Text = Delete;
             TextSize = 13;
@@ -1466,7 +1466,7 @@ ChildWindow.objectEditorWindow {
         }
 
         CheckBox.castShadows {
-            Position = (100, 355);
+            Position = (150, 355);
             Size = (18, 18);
             TextSize = 13;
 
@@ -1596,6 +1596,49 @@ ChildWindow.objectEditorWindow {
             Renderer = &14;
             Size = (70, 22);
             TextSize = 13;
+        }
+
+        Label.Label38 {
+            AutoSize = true;
+            Position = (0, 375);
+            Size = (139.2, 18);
+            Text = "Perspective shadows";
+            TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextureBackground = None;
+
+                Scrollbar {
+                    TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+                    TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+                    TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+                    TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+                }
+            }
+        }
+
+        CheckBox.perspectiveShadows {
+            Position = (150, 375);
+            Size = (18, 18);
+            TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextColorHover = rgb(250, 250, 250);
+                TextureChecked = "themes/Black.png" Part(47, 126, 32, 32) Smooth;
+                TextureCheckedDisabled = None;
+                TextureCheckedFocused = "themes/Black.png" Part(81, 126, 32, 32) Smooth;
+                TextureCheckedHover = "themes/Black.png" Part(0, 178, 32, 32) Smooth;
+                TextureUnchecked = "themes/Black.png" Part(34, 178, 32, 32) Smooth;
+                TextureUncheckedDisabled = None;
+                TextureUncheckedFocused = "themes/Black.png" Part(68, 178, 32, 32) Smooth;
+                TextureUncheckedHover = "themes/Black.png" Part(0, 212, 32, 32) Smooth;
+            }
         }
     }
 
