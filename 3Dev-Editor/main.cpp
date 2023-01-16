@@ -1467,7 +1467,7 @@ int main()
 				    materialNameEdit->setFocused(false);
 				    materialBox->removeAllItems();
 				    auto names = scene.GetNames();
-                    for(auto& i : names[2]) materialBox->addItem(i);
+                    for(auto& i : names[1]) materialBox->addItem(i);
 			    }
 
 			    std::optional<glm::vec3> color, ctmp, emission, etmp;
