@@ -1,4 +1,5 @@
 #version 330
+precision mediump float;
 
 const float maxTreshold = 0.5;
 const float mulReduce = 1.0 / 8.0;

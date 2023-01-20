@@ -1,4 +1,5 @@
 #version 330
+precision mediump float;
 
 const int maxLights = 16;
 const int maxLodLevel = 7;
@@ -64,7 +65,7 @@ float LinearizeDepth(float depth)
     if(shadow.perspective)
     {
         float z = depth * 2.0 - 1.0;
-        return (2.0 * 0.01 * 500.0) / (500.0 + 0.01 - z * (500.0 - 0.01));
+        return (2.0 * 0.01 * 1000.0) / (1000.0 + 0.01 - z * (1000.0 - 0.01));
     }
     return depth;
 }
@@ -91,14 +92,14 @@ float CalcShadow()
 		    ret += float(current > pcf);
 		}
 	}*/
-    return float(current - 0.05 > LinearizeDepth(texture(shadow.shadowmap, pcoord.xy).x));
+    return float(current - (shadow.perspective ? 0.05 : 0.00001) > LinearizeDepth(texture(shadow.shadowmap, pcoord.xy).x));
 }
 
 float GGX(float ndoth, float rough)
 {
-    float dn = pi * pow(pow(ndoth, 2) * (pow(rough, 4) - 1.0) + 1.0, 2);
+    float dn = pi * pow(pow(ndoth, 2.0) * (pow(rough, 4.0) - 1.0) + 1.0, 2.0);
 
-    return pow(rough, 4) / dn;
+    return pow(rough, 4.0) / dn;
 }
 
 float GeometrySchlick(float ndotv, float rough)
@@ -141,7 +142,7 @@ vec3 CalcLight(Light light, vec3 norm, float rough, float metal, vec3 albedo, ve
     float ndotv = max(dot(norm, v), 0.0);
     float ndotl = max(dot(norm, l), 0.0);
 
-    //attenuation = 1.0 / pow(length(l), 2);
+    //attenuation = 1.0 / pow(length(l), 2.0);
 
     vec3 rad = light.color * attenuation * intensity;
 
@@ -172,7 +173,7 @@ void main()
         discard;
     if(drawTransparency && alpha == 1.0)
     {
-        color = vec4(0.0, 0.0, 0.0, 1.0 * pow(10, -20)); // need to set gl_FragDepth to something
+        color = vec4(0.0, 0.0, 0.0, 1.0 * pow(10.0, -20.0)); // need to set gl_FragDepth to something
         return;
     }
 

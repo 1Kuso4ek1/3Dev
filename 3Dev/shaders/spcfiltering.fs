@@ -1,4 +1,5 @@
 #version 330
+precision mediump float;
 
 const float pi = 3.14159265;
 
@@ -22,9 +23,9 @@ float RadicalInverse(uint bits)
 
 float GGX(float ndoth)
 {
-    float dn = pi * pow(pow(ndoth, 2) * (pow(roughness, 4) - 1.0) + 1.0, 2);
+    float dn = pi * pow(pow(ndoth, 2.0) * (pow(roughness, 4.0) - 1.0) + 1.0, 2.0);
     
-    return pow(roughness, 4) / dn;
+    return pow(roughness, 4.0) / dn;
 }
 
 vec2 Hammersley(uint i, uint n)
@@ -35,8 +36,8 @@ vec2 Hammersley(uint i, uint n)
 vec3 ImportanceSample(vec2 xi, vec3 n)
 {
     float phi = 2.0 * pi * xi.x;
-    float cosTh = sqrt((1.0 - xi.y) / (1.0 + (pow(roughness, 4) - 1.0) * xi.y));
-    float sinTh = sqrt(1.0 - pow(cosTh, 2));
+    float cosTh = sqrt((1.0 - xi.y) / (1.0 + (pow(roughness, 4.0) - 1.0) * xi.y));
+    float sinTh = sqrt(1.0 - pow(cosTh, 2.0));
 	
     vec3 h = vec3(cos(phi) * sinTh, sin(phi) * sinTh, cosTh);
 	
@@ -69,7 +70,7 @@ void main()
         float ggx = GGX(dot(n, h));
         float pdf = (ggx * dot(n, h) / (4.0 * dot(h, v))) + 0.0001;
 
-        float t = 4.0 * pi / (6.0 * pow(size, 2));
+        float t = 4.0 * pi / (6.0 * pow(size, 2.0));
         float s = 1.0 / (float(samples) * pdf + 0.0001);
 
         float level = (roughness == 0.0 ? 0.0 : 0.5 * log2(s / t)); 

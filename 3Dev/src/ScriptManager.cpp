@@ -314,6 +314,7 @@ void ScriptManager::RegisterLight()
         { "void SetAttenuation(float, float, float)", WRAP_MFN(Light, SetAttenuation) },
         { "void SetCutoff(float)", WRAP_MFN(Light, SetCutoff) },
         { "void SetOuterCutoff(float)", WRAP_MFN(Light, SetCutoff) },
+        { "void SetIsCastingShadows(bool)", WRAP_MFN(Light, SetIsCastingShadows) },
         { "bool IsCastingShadows()", WRAP_MFN(Light, IsCastingShadows) },
         { "Vector3 GetPosition()", WRAP_MFN(Light, GetPosition) },
         { "Vector3 GetDirection()", WRAP_MFN(Light, GetDirection) },

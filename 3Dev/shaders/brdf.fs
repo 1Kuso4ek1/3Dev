@@ -1,4 +1,5 @@
 #version 330
+precision mediump float;
 
 const float pi = 3.14159265;
 uniform uint samples = 1024u;
@@ -41,7 +42,7 @@ vec3 ImportanceSample(vec2 xi, vec3 n, float roughness)
 
 float GeometrySchlick(float ndotv, float roughness)
 {
-    float k = pow(roughness, 2) / 2.0;
+    float k = pow(roughness, 2.0) / 2.0;
 
     return ndotv / ndotv * (1.0 - k) + k;
 }
@@ -56,7 +57,7 @@ float GeometrySmith(float ndotv, float ndotl, float roughness)
 
 vec2 BRDF(float ndotv, float roughness)
 {
-    vec3 v = vec3(sqrt(1.0 - pow(ndotv, 2)), 0.0, ndotv);
+    vec3 v = vec3(sqrt(1.0 - pow(ndotv, 2.0)), 0.0, ndotv);
 
     vec2 ab = vec2(0.0);
 

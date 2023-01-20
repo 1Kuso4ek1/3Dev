@@ -1,4 +1,5 @@
 #version 330
+precision mediump float;
 
 const float pi = 3.14159265;
 
