@@ -1,7 +1,7 @@
 #version 330
 precision mediump float;
 
-const int maxLights = 16;
+const int maxLights = 32;
 const int maxLodLevel = 7;
 const float pi = 3.14159265;
 

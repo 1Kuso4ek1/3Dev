@@ -127,8 +127,10 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
         {
             shader->Bind();
             mat[mesh]->UpdateShader(shader);
-            for(int i = 0; i < lights.size(); i++)
-                lights[i]->Update(shader, i);
+            for(int i = 0; i < 32; i++)
+				if(i >= lights.size())
+					shader->SetUniform1i("lights[" + std::to_string(i) + "].isactive", 0);
+				else lights[i]->Update(shader, i);
 
             shader->SetUniform3f("campos", cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
             shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
