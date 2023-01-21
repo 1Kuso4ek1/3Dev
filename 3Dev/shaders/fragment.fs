@@ -104,7 +104,7 @@ float GGX(float ndoth, float rough)
 
 float GeometrySchlick(float ndotv, float rough)
 {
-    float k = pow(rough + 1.0, 2) / 8.0;
+    float k = pow(rough + 1.0, 2.0) / 8.0;
     float dn = ndotv * (1.0 - k) + k;
 
     return ndotv / dn;

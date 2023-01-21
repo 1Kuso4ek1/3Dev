@@ -1,19 +1,23 @@
 #include <Framebuffer.hpp>
 
-Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, GLint filter) : shader(shader), size(w, h)
+Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, GLint filter, GLint wrap) : shader(shader), size(w, h)
 {
 	CalcPixelSize(glm::vec2(w, h));
-    if(!isDepth) texture = TextureManager::GetInstance()->CreateTexture(w, h, false, filter);
-	depth = TextureManager::GetInstance()->CreateTexture(w, h, true, isDepth ? GL_LINEAR : GL_NEAREST);
+    if(!isDepth) texture = TextureManager::GetInstance()->CreateTexture(w, h, false, filter, wrap);
+	
+	depth = TextureManager::GetInstance()->CreateTexture(w, h, true, isDepth ? GL_LINEAR : GL_NEAREST, wrap);
     glGenFramebuffers(1, &fbo);
-    Bind();
+    
+	Bind();
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
-    if(!isDepth) glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+    
+	if(!isDepth) glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
 	else glDrawBuffer(GL_NONE);
+	
 	int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if(status != GL_FRAMEBUFFER_COMPLETE)
         Log::Write("framebuffer status isn't GL_FRAMEBUFFER_COMPLETE", Log::Type::Error);
-    Unbind();
+	Unbind();
 
 	glGenBuffers(1, &vbo);
 	glGenBuffers(1, &ebo);

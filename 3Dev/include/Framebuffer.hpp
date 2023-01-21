@@ -17,7 +17,7 @@ public:
      * @param w width of the framebuffer texture
      * @param h height of the framebuffer texture
      */
-    Framebuffer(Shader* shader, int w, int h, bool isDepth = false, GLint filter = GL_NEAREST);
+    Framebuffer(Shader* shader, int w, int h, bool isDepth = false, GLint filter = GL_NEAREST, GLint wrap = GL_CLAMP_TO_EDGE);
     ~Framebuffer();
 
     /*
