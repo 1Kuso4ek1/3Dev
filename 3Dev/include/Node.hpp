@@ -9,6 +9,8 @@ public:
 
     Node* GetParent();
     virtual rp3d::Transform GetTransform() = 0;
+    
+    static rp3d::Transform GetFinalTransform(Node* node, rp3d::Transform tr = rp3d::Transform::identity());
 
 protected:
     Node* parent = nullptr;

@@ -14,3 +14,10 @@ Node* Node::GetParent()
 {
     return parent;
 }
+
+rp3d::Transform Node::GetFinalTransform(Node* node, rp3d::Transform tr)
+{
+    if(node->GetParent())
+        tr = tr * Node::GetFinalTransform(node->GetParent(), node->GetParent()->GetTransform());
+    return tr;
+}
