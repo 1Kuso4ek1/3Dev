@@ -21,9 +21,9 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterPhysicsManager();
     RegisterSoundManager();
     RegisterCamera();
+    RegisterMaterial();
     RegisterModel();
     RegisterLight();
-    RegisterMaterial();
     RegisterSceneManager();
     RegisterSfKeyboard();
     RegisterSfMouse();

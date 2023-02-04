@@ -7,6 +7,7 @@
 #include "Mesh.hpp"
 #include "PhysicsManager.hpp"
 #include "Renderer.hpp"
+#include "Node.hpp"
 
 struct Keyframe
 {
@@ -45,7 +46,7 @@ struct Animation
 	sf::Clock time;
 };
 
-class Model
+class Model : public Node
 {
 public:
 	Model(bool defaultCubeMesh = false);
@@ -93,6 +94,7 @@ public:
 
 	bool IsDrawable();
 
+	rp3d::Transform GetTransform() override;
 	rp3d::Vector3 GetPosition();
 	rp3d::Quaternion GetOrientation();
 	rp3d::Vector3 GetSize();

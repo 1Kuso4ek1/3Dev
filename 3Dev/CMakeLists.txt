@@ -43,6 +43,7 @@ add_library(3Dev
 	src/Renderer.cpp
 	src/ScriptManager.cpp
 	src/TextureManager.cpp
+	src/Node.cpp
 	libraries/Angelscript/sdk/add_on/scriptbuilder/scriptbuilder.cpp
 	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.cpp
 	libraries/Angelscript/sdk/add_on/scriptarray/scriptarray.cpp
@@ -144,6 +145,7 @@ install(FILES
 	include/Renderer.hpp
 	include/ScriptManager.hpp
 	include/TextureManager.hpp
+	include/Node.hpp
 	include/stb_image.hpp
 	libraries/Angelscript/sdk/add_on/scriptbuilder/scriptbuilder.h
 	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.h

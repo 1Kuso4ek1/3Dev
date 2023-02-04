@@ -110,12 +110,16 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
 {
 	m->PushMatrix();
 
+	auto parentTransform = rp3d::Transform::identity();
+	if(parent)
+		parentTransform = parent->GetTransform();
+
 	if(body) transform = body->getTransform();
 	rp3d::Vector3 tmp; float a;
-	transform.getOrientation().getRotationAngleAxis(a, tmp);
+	(transform.getOrientation() * parentTransform.getOrientation()).getRotationAngleAxis(a, tmp);
 
-	m->Translate(toglm(transform.getPosition()));
-	m->Rotate(a, glm::axis(toglm(transform.getOrientation()))); // Using toglm(tmp) as second argument breaks everything and gives the matrix of nan
+	m->Translate(toglm((parentTransform * transform).getPosition()));
+	m->Rotate(a, glm::axis(toglm((parentTransform * transform).getOrientation()))); // Using toglm(tmp) as second argument breaks everything and gives the matrix of nan
 	m->Scale(toglm(size));
 
 	if(autoUpdateAnimation)
@@ -474,6 +478,11 @@ int Model::GetAnimationsCount()
 bool Model::IsDrawable()
 {
     return drawable;
+}
+
+rp3d::Transform Model::GetTransform()
+{
+	return transform;
 }
 
 rp3d::Vector3 Model::GetPosition()

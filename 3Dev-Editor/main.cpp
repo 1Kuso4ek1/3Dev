@@ -608,12 +608,16 @@ int main()
 
     ShadowManager shadows(&scene, glm::ivec2(1024, 1024));
 
+    std::vector<std::vector<tgui::String>> selectedWithShift;
+
     modelButton->onPress([&]()
     {
     	auto model = std::make_shared<Model>();
     	model->SetMaterial({ scene.GetMaterial(scene.GetNames()[1][0]).get() });
 		model->SetPhysicsManager(man.get());
 		model->CreateRigidBody();
+        /*scene.GetModel(scene.GetNames()[0][0])->AddChild(model.get());
+        model->SetParent(scene.GetModel(scene.GetNames()[0][0]).get());*/
     	scene.AddModel(model);
     	std::string name = scene.GetLastAdded();
     	sceneTree->addItem({ "Scene", "Models", name });
@@ -627,6 +631,8 @@ int main()
 		model->SetPhysicsManager(man.get());
 		model->CreateRigidBody();
         model->CreateBoxShape();
+        /*scene.GetModel(scene.GetNames()[0][0])->AddChild(model.get());
+        model->SetParent(scene.GetModel(scene.GetNames()[0][0]).get());*/
         scene.AddModel(model, "cube");
     	std::string name = scene.GetLastAdded();
     	sceneTree->addItem({ "Scene", "Models", name });
@@ -656,7 +662,7 @@ int main()
         if(sceneTree->getSelectedItem().size() > 2)
 			if(sceneTree->getSelectedItem()[1] == "Models")
 			{
-			    auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+			    auto model = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
 			    for(int i = 0; i < model->GetMeshesCount(); i++)
                     model->CreateBoxShape(i);
 			}
@@ -667,7 +673,7 @@ int main()
         if(sceneTree->getSelectedItem().size() > 2)
 			if(sceneTree->getSelectedItem()[1] == "Models")
 			{
-			    auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+			    auto model = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
 			    for(int i = 0; i < model->GetMeshesCount(); i++)
                     model->CreateSphereShape(i);
 			}
@@ -678,7 +684,7 @@ int main()
         if(sceneTree->getSelectedItem().size() > 2)
 			if(sceneTree->getSelectedItem()[1] == "Models")
 			{
-			    auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+			    auto model = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
 			    for(int i = 0; i < model->GetMeshesCount(); i++)
                     model->CreateCapsuleShape(i);
 			}
@@ -689,7 +695,7 @@ int main()
         if(sceneTree->getSelectedItem().size() > 2)
 			if(sceneTree->getSelectedItem()[1] == "Models")
 			{
-			    auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+			    auto model = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
 			    for(int i = 0; i < model->GetMeshesCount(); i++)
                     model->CreateConcaveShape(i);
 			}
@@ -718,28 +724,28 @@ int main()
 
     playButton->onPress([&]()
     {
-        sman->Play(sceneTree->getSelectedItem()[2].toStdString());
+        sman->Play(sceneTree->getSelectedItem().back().toStdString());
     });
 
     pauseButton->onPress([&]()
     {
-        sman->Pause(sceneTree->getSelectedItem()[2].toStdString());
+        sman->Pause(sceneTree->getSelectedItem().back().toStdString());
     });
 
     stopButton->onPress([&]()
     {
-        sman->Stop(sceneTree->getSelectedItem()[2].toStdString());
+        sman->Stop(sceneTree->getSelectedItem().back().toStdString());
     });
 
     sdeleteButton->onPress([&]()
     {
-        sman->RemoveSound(sceneTree->getSelectedItem()[2].toStdString());
+        sman->RemoveSound(sceneTree->getSelectedItem().back().toStdString());
     	sceneTree->removeItem(sceneTree->getSelectedItem(), false);
     });
 
     ldeleteButton->onPress([&]()
     {
-        auto light = scene.GetLight(sceneTree->getSelectedItem()[2].toStdString());
+        auto light = scene.GetLight(sceneTree->getSelectedItem().back().toStdString());
     	scene.RemoveLight(light);
         delete light;
     	sceneTree->removeItem(sceneTree->getSelectedItem(), false);
@@ -781,7 +787,7 @@ int main()
                 if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
                     std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
                 path = projectDir + "/assets/textures/" + filename;
-                auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
+                auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
                 auto p = mat->GetParameter(Material::Type::Color);
                 if(std::holds_alternative<GLuint>(p))
                 {
@@ -808,7 +814,7 @@ int main()
                 if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
                     std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
                 path = projectDir + "/assets/textures/" + filename;
-                auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
+                auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
                 auto p = mat->GetParameter(Material::Type::Metalness);
                 if(std::holds_alternative<GLuint>(p))
                 {
@@ -836,7 +842,7 @@ int main()
                 if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
                     std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
                 path = projectDir + "/assets/textures/" + filename;
-                auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
+                auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
                 auto p = mat->GetParameter(Material::Type::Roughness);
                 if(std::holds_alternative<GLuint>(p))
                 {
@@ -864,7 +870,7 @@ int main()
                 if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
                     std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
                 path = projectDir + "/assets/textures/" + filename;
-                auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
+                auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
                 auto p = mat->GetParameter(Material::Type::Normal);
                 if(std::holds_alternative<GLuint>(p))
                 {
@@ -891,7 +897,7 @@ int main()
                 if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
                     std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
                 path = projectDir + "/assets/textures/" + filename;
-                auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
+                auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
                 auto p = mat->GetParameter(Material::Type::AmbientOcclusion);
                 if(std::holds_alternative<GLuint>(p))
                 {
@@ -918,7 +924,7 @@ int main()
                 if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
                     std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
                 path = projectDir + "/assets/textures/" + filename;
-                auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
+                auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
                 auto p = mat->GetParameter(Material::Type::Emission);
                 if(std::holds_alternative<GLuint>(p))
                 {
@@ -945,7 +951,7 @@ int main()
                 if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
                     std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
                 path = projectDir + "/assets/textures/" + filename;
-                auto mat = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
+                auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
                 auto p = mat->GetParameter(Material::Type::Opacity);
                 if(std::holds_alternative<GLuint>(p))
                 {
@@ -980,6 +986,36 @@ int main()
   	    });
 	});
 
+    sceneTree->onItemSelect([&]()
+    {
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+        {
+            selectedWithShift.push_back(sceneTree->getSelectedItem());
+            if(selectedWithShift.size() == 2)
+            {
+                auto parent = selectedWithShift[1];
+                auto child = selectedWithShift[0];
+                if(parent.size() > 2 && child.size() > 2)
+                    if(parent[1] == "Models")
+                    {
+                        if(child[1] == "Models")
+                        {
+                            auto parentModel = scene.GetModel(parent.back().toStdString());
+                            auto childModel = scene.GetModel(child.back().toStdString());
+                            parentModel->AddChild(childModel.get());
+                            childModel->SetParent(parentModel.get());
+                            childModel->SetPosition(childModel->GetPosition() - parentModel->GetPosition());
+                            sceneTree->removeItem(child, false);
+                            parent.push_back(child.back());
+                            sceneTree->addItem(parent);
+                        }
+                    }
+                selectedWithShift.clear();
+            }
+        }
+        else selectedWithShift.clear();
+    });
+
     openFileButton->onPress([&]()
     {
     	openFileDialog = CreateFileDialog("Open file", 0);
@@ -993,7 +1029,7 @@ int main()
                 if(!std::filesystem::exists(projectDir + "/assets/models/" + filename))
                     std::filesystem::copy(path, projectDir + "/assets/models/" + filename);
                 path = projectDir + "/assets/models/" + filename;
-                auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+                auto model = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
                 model->Load(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
 
                 materialsList->removeAllItems();
@@ -1010,14 +1046,14 @@ int main()
 
     reloadButton->onPress([&]()
     {
-        auto model = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+        auto model = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
         if(!model->GetFilename().empty())
             model->Load(model->GetFilename(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
     });
 
     deleteButton->onPress([&]()
     {
-    	scene.RemoveModel(scene.GetModel(sceneTree->getSelectedItem()[2].toStdString()));
+    	scene.RemoveModel(scene.GetModel(sceneTree->getSelectedItem().back().toStdString()));
     	sceneTree->removeItem(sceneTree->getSelectedItem(), false);
     });
 
@@ -1073,7 +1109,7 @@ int main()
 
     removeScriptButton->onPress([&]()
 	{
-        scman.RemoveScript(sceneTree->getSelectedItem()[2].toStdString());
+        scman.RemoveScript(sceneTree->getSelectedItem().back().toStdString());
         sceneTree->removeItem(sceneTree->getSelectedItem(), false);
 	});
 
@@ -1147,7 +1183,7 @@ int main()
 			{
 				openFileButton->setEnabled(true);
 				openFileButton->setVisible(true);
-				object = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+				object = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
                 if(!object)
                 {
                     sceneTree->removeItem(sceneTree->getSelectedItem(), false);
@@ -1196,7 +1232,7 @@ int main()
 				sceneGroup->setEnabled(false);
 				sceneGroup->setVisible(false);
 
-				if((!nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem()[2]) || objectMode)
+				if((!nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem().back()) || objectMode)
 				{
                     materialBox->deselectItem();
 
@@ -1211,7 +1247,7 @@ int main()
                     bodyTypeBox->setSelectedItemByIndex((int)object->GetRigidBody()->getType());
                     isDrawableBox->setChecked(object->IsDrawable());
 
-					nameEdit->setText(sceneTree->getSelectedItem()[2]);
+					nameEdit->setText(sceneTree->getSelectedItem().back());
 					posEditX->setText(tgui::String(position.x));
 				    posEditY->setText(tgui::String(position.y));
 				    posEditZ->setText(tgui::String(position.z));
@@ -1226,9 +1262,9 @@ int main()
 				    sizeEditY->setText(tgui::String(size.y));
 				    sizeEditZ->setText(tgui::String(size.z));
 			    }
-			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem()[2])
+			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem().back())
 			    {
-                    scene.SetModelName(sceneTree->getSelectedItem()[2].toStdString(), nameEdit->getText().toStdString());
+                    scene.SetModelName(sceneTree->getSelectedItem().back().toStdString(), nameEdit->getText().toStdString());
                     sceneTree->removeItem(sceneTree->getSelectedItem(), false);
                     sceneTree->addItem({ "Scene", "Models", nameEdit->getText() });
                     sceneTree->selectItem({ "Scene", "Models", nameEdit->getText() });
@@ -1292,7 +1328,7 @@ int main()
 				sceneGroup->setEnabled(false);
 				sceneGroup->setVisible(false);
 
-                auto light = scene.GetLight(sceneTree->getSelectedItem()[2].toStdString());
+                auto light = scene.GetLight(sceneTree->getSelectedItem().back().toStdString());
                 if(!light)
                 {
                     sceneTree->removeItem(sceneTree->getSelectedItem(), false);
@@ -1320,7 +1356,7 @@ int main()
                         }
                     }
 
-                    if((!lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem()[2]) || objectMode)
+                    if((!lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem().back()) || objectMode)
                     {
                         rp3d::Vector3 position = light->GetPosition();
                         rp3d::Vector3 direction = light->GetDirection();
@@ -1332,7 +1368,7 @@ int main()
                         castShadowsBox->setChecked(light->IsCastingShadows());
                         perspectiveShadowsBox->setChecked(light->IsCastingPerspectiveShadows());
 
-                        lightNameEdit->setText(sceneTree->getSelectedItem()[2]);
+                        lightNameEdit->setText(sceneTree->getSelectedItem().back());
 
                         lposEditX->setText(tgui::String(position.x));
                         lposEditY->setText(tgui::String(position.y));
@@ -1354,9 +1390,9 @@ int main()
                         outerCutoffEdit->setText(tgui::String(outerCutoff));
                     }
 
-                    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem()[2])
+                    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem().back())
                     {
-                        scene.SetLightName(sceneTree->getSelectedItem()[2].toStdString(), lightNameEdit->getText().toStdString());
+                        scene.SetLightName(sceneTree->getSelectedItem().back().toStdString(), lightNameEdit->getText().toStdString());
                         sceneTree->removeItem(sceneTree->getSelectedItem(), false);
                         sceneTree->addItem({ "Scene", "Lights", lightNameEdit->getText() });
                         sceneTree->selectItem({ "Scene", "Lights", lightNameEdit->getText() });
@@ -1415,10 +1451,10 @@ int main()
 				sceneGroup->setEnabled(false);
 				sceneGroup->setVisible(false);
 
-				auto material = scene.GetMaterial(sceneTree->getSelectedItem()[2].toStdString());
-				if(materialNameEdit->getText() != sceneTree->getSelectedItem()[2] && !materialNameEdit->isFocused())
+				auto material = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
+				if(materialNameEdit->getText() != sceneTree->getSelectedItem().back() && !materialNameEdit->isFocused())
 				{
-					materialNameEdit->setText(sceneTree->getSelectedItem()[2]);
+					materialNameEdit->setText(sceneTree->getSelectedItem().back());
 
 					std::optional<glm::vec3> color;
 					float metal = -1.0;
@@ -1458,9 +1494,9 @@ int main()
 				    opacityEdit->setText(tgui::String(opacity));   opacitySlider->setValue(opacity < 0.0 ? 0.0 : opacity);
 			    }
 
-			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && materialNameEdit->isFocused() && materialNameEdit->getText() != sceneTree->getSelectedItem()[2])
+			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && materialNameEdit->isFocused() && materialNameEdit->getText() != sceneTree->getSelectedItem().back())
 			    {
-		    		scene.SetMaterialName(sceneTree->getSelectedItem()[2].toStdString(), materialNameEdit->getText().toStdString());
+		    		scene.SetMaterialName(sceneTree->getSelectedItem().back().toStdString(), materialNameEdit->getText().toStdString());
 		    		sceneTree->removeItem(sceneTree->getSelectedItem(), false);
 		    		sceneTree->addItem({ "Scene", "Materials", materialNameEdit->getText() });
 		    		sceneTree->selectItem({ "Scene", "Materials", materialNameEdit->getText() });
@@ -1577,7 +1613,7 @@ int main()
                 sceneGroup->setEnabled(false);
                 sceneGroup->setVisible(false);
 
-                auto sound = sceneTree->getSelectedItem()[2].toStdString();
+                auto sound = sceneTree->getSelectedItem().back().toStdString();
 
                 if(objectMode)
 				{
@@ -1593,14 +1629,14 @@ int main()
 					}
 				}
 
-                if((!soundNameEdit->isFocused() && soundNameEdit->getText() != sceneTree->getSelectedItem()[2]) || objectMode)
+                if((!soundNameEdit->isFocused() && soundNameEdit->getText() != sceneTree->getSelectedItem().back()) || objectMode)
 				{
 					rp3d::Vector3 position = sman->GetPosition(sound);
                     float attenuation = sman->GetAttenuation(sound);
                     float minDistance = sman->GetMinDistance(sound);
                     float volume = sman->GetVolume(sound);
 
-					soundNameEdit->setText(sceneTree->getSelectedItem()[2]);
+					soundNameEdit->setText(sceneTree->getSelectedItem().back());
 
 					sposEditX->setText(tgui::String(position.x));
 				    sposEditY->setText(tgui::String(position.y));
@@ -1614,9 +1650,9 @@ int main()
                     loopBox->setChecked(sman->GetLoop(sound));
 			    }
 
-			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && soundNameEdit->isFocused() && soundNameEdit->getText() != sceneTree->getSelectedItem()[2])
+			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && soundNameEdit->isFocused() && soundNameEdit->getText() != sceneTree->getSelectedItem().back())
 			    {
-                    sman->SetName(sceneTree->getSelectedItem()[2].toStdString(), soundNameEdit->getText().toStdString());
+                    sman->SetName(sceneTree->getSelectedItem().back().toStdString(), soundNameEdit->getText().toStdString());
                     sceneTree->removeItem(sceneTree->getSelectedItem(), false);
                     sceneTree->addItem({ "Scene", "Sounds", soundNameEdit->getText() });
                     sceneTree->selectItem({ "Scene", "Sounds", soundNameEdit->getText() });
@@ -1720,8 +1756,8 @@ int main()
         {
         	if(sceneTree->getSelectedItem()[1] == "Models")
 			{
-				buffer.name = sceneTree->getSelectedItem()[2].toStdString();
-				buffer.object = scene.GetModel(sceneTree->getSelectedItem()[2].toStdString());
+				buffer.name = sceneTree->getSelectedItem().back().toStdString();
+				buffer.object = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
 			}
         }
 

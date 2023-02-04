@@ -1,5 +1,6 @@
 #pragma once
 #include "Utils.hpp"
+#include "Node.hpp"
 #include "Camera.hpp"
 #include "Model.hpp"
 #include "Light.hpp"
