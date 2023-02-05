@@ -531,7 +531,7 @@ int main()
         for(auto& i : names[0])
         {
             auto node = scene.GetModel(i);
-            if(!node->GetParent() || !node->GetChildren().empty())
+            if(!node->GetParent() || node->GetParent() == &cam || !node->GetChildren().empty())
                 sceneTree->addItem({ "Scene", "Models", i });
             if(!node->GetChildren().empty())
             {

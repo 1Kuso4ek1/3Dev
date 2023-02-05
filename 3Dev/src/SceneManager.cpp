@@ -179,6 +179,8 @@ void SceneManager::Save(std::string filename, bool relativePaths)
             auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == i.second->GetParent(); });
             if(it != models.end())
                 data["objects"]["models"][counter]["parent"] = it->first;
+            if(i.second->GetParent() == camera)
+                data["objects"]["models"][counter]["parent"] = "camera";
         }
 
         counter++;
@@ -291,12 +293,16 @@ void SceneManager::Load(std::string filename)
             auto it = models.find(i.asString());
             if(it != models.end())
                 model->AddChild(it->second.get());
+            if(i == "camera")
+                model->AddChild(camera);
         }
         if(!data["objects"]["models"][counter]["parent"].empty())
         {
             auto it = models.find(data["objects"]["models"][counter]["parent"].asString());
             if(it != models.end())
                 model->SetParent(it->second.get());
+            if(data["objects"]["models"][counter]["parent"].asString() == "camera")
+                model->SetParent(camera);
         }
         counter++;
     }
