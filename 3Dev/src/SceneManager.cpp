@@ -171,6 +171,8 @@ void SceneManager::Save(std::string filename, bool relativePaths)
             auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == i.second->GetChildren()[j]; });
             if(it != models.end())
                 data["objects"]["models"][counter]["children"][j] = it->first;
+            if(i.second->GetChildren()[j] == camera)
+                data["objects"]["models"][counter]["children"][j] = "camera";
         }
         if(i.second->GetParent())
         {
@@ -192,6 +194,20 @@ void SceneManager::Save(std::string filename, bool relativePaths)
     counter = 0;
 
     data["camera"] = camera->Serialize();
+
+    for(int j = 0; j < camera->GetChildren().size(); j++)
+    {
+        auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == camera->GetChildren()[j]; });
+        if(it != models.end())
+            data["camera"]["children"][j] = it->first;
+    }
+    if(camera->GetParent())
+    {
+        auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == camera->GetParent(); });
+        if(it != models.end())
+            data["camera"]["parent"] = it->first;
+    }
+
     data["sounds"] = sManager->Serialize(relativePaths ? filename : "");
 
     std::ofstream file(filename);
@@ -296,6 +312,20 @@ void SceneManager::Load(std::string filename)
     }
 
     camera->Deserialize(data["camera"]);
+
+    for(auto& i : data["camera"]["children"])
+    {
+        auto it = models.find(i.asString());
+        if(it != models.end())
+            camera->AddChild(it->second.get());
+    }
+    if(!data["camera"]["parent"].empty())
+    {
+        auto it = models.find(data["camera"]["parent"].asString());
+        if(it != models.end())
+            camera->SetParent(it->second.get());
+    }
+
     sManager->Deserialize(data["sounds"]);
 }
 

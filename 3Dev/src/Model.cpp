@@ -112,9 +112,14 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
 
 	auto tr = Node::GetFinalTransform(this);
 
-	if(body) transform = body->getTransform();
+	if(body)
+	{
+		if(tr == rp3d::Transform::identity())
+			transform = body->getTransform();
+		else body->setTransform(tr * transform);
+	}
 	rp3d::Vector3 tmp; float a;
-	(transform.getOrientation() * tr.getOrientation()).getRotationAngleAxis(a, tmp);
+	(tr.getOrientation() * transform.getOrientation()).getRotationAngleAxis(a, tmp);
 
 	m->Translate(toglm((tr * transform).getPosition()));
 	m->Rotate(a, glm::axis(toglm((tr * transform).getOrientation()))); // Using toglm(tmp) as second argument breaks everything and gives the matrix of nan

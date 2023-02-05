@@ -205,6 +205,7 @@ int main()
     sceneTree->addItem({ "Scene", "Materials" });
     sceneTree->addItem({ "Scene", "Lights" });
     sceneTree->addItem({ "Scene", "Sounds" });
+    sceneTree->addItem({ "Scene", "Camera" });
 	sceneTree->addItem({ "Scene", "Scripts" });
 
     auto objectEditorGroup = editor.get<tgui::Group>("objectEditor");
@@ -626,8 +627,6 @@ int main()
     	model->SetMaterial({ scene.GetMaterial(scene.GetNames()[1][0]).get() });
 		model->SetPhysicsManager(man.get());
 		model->CreateRigidBody();
-        /*scene.GetModel(scene.GetNames()[0][0])->AddChild(model.get());
-        model->SetParent(scene.GetModel(scene.GetNames()[0][0]).get());*/
     	scene.AddModel(model);
     	std::string name = scene.GetLastAdded();
     	sceneTree->addItem({ "Scene", "Models", name });
@@ -641,8 +640,6 @@ int main()
 		model->SetPhysicsManager(man.get());
 		model->CreateRigidBody();
         model->CreateBoxShape();
-        /*scene.GetModel(scene.GetNames()[0][0])->AddChild(model.get());
-        model->SetParent(scene.GetModel(scene.GetNames()[0][0]).get());*/
         scene.AddModel(model, "cube");
     	std::string name = scene.GetLastAdded();
     	sceneTree->addItem({ "Scene", "Models", name });
@@ -1005,8 +1002,8 @@ int main()
             {
                 auto parent = selectedWithShift[1];
                 auto child = selectedWithShift[0];
-                if(parent.size() > 2 && child.size() > 2)
-                    if(parent[1] == "Models")
+                //if(parent.size() > 2 && child.size() > 2)
+                    if(parent[1] == "Models" && parent.size() > 2)
                     {
                         if(child[1] == "Models")
                         {
@@ -1018,6 +1015,22 @@ int main()
                             sceneTree->removeItem(child, false);
                             parent.push_back(child.back());
                             sceneTree->addItem(parent);
+                        }
+                        else if(child[1] == "Camera")
+                        {
+                            auto parentModel = scene.GetModel(parent.back().toStdString());
+                            parentModel->AddChild(&cam);
+                            cam.SetParent(parentModel.get());
+                        }
+                    }
+                    if(parent[1] == "Camera")
+                    {
+                        if(child[1] == "Models" && child.size() > 2)
+                        {
+                            auto childModel = scene.GetModel(child.back().toStdString());
+                            cam.AddChild(childModel.get());
+                            childModel->SetParent(&cam);
+                            childModel->SetPosition(childModel->GetPosition() - cam.GetPosition());
                         }
                     }
                 selectedWithShift.clear();

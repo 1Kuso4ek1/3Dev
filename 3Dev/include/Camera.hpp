@@ -1,8 +1,10 @@
 #pragma once
 #include "Utils.hpp"
+#include "Node.hpp"
 #include "Renderer.hpp"
 
-class Camera {
+class Camera : public Node
+{
 public:
 	Camera(sf::Window* window, rp3d::Vector3 pos = rp3d::Vector3::zero(), float speed = 1, float fov = 80, float near = 0.01, float far = 1000.0, Matrices* m = nullptr);
 	Camera(sf::Vector2u viewportSize, rp3d::Vector3 pos = rp3d::Vector3::zero(), float speed = 1, float fov = 80, float near = 0.01, float far = 1000.0, Matrices* m = nullptr);
@@ -24,6 +26,8 @@ public:
 	void SetNear(float near);
 	void SetFar(float far);
 	void AlwaysUp(bool a);
+
+	rp3d::Transform GetTransform() override;
 
 	rp3d::Vector3 GetPosition();
 	rp3d::Quaternion GetOrientation();
