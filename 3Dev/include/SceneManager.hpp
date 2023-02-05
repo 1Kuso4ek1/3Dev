@@ -50,6 +50,11 @@ public:
     std::shared_ptr<PhysicsManager> GetPhysicsManager();
     std::shared_ptr<SoundManager> GetSoundManager();
 
+    std::string GetModelName(std::shared_ptr<Model> model);
+    std::string GetModelName(Model* model);
+    std::string GetMaterialName(std::shared_ptr<Material> mat);
+    std::string GetMaterialName(Material* mat);
+
     std::vector<std::shared_ptr<Model>> GetModelGroup(std::string name);
 
     // For angelscript
@@ -66,9 +71,6 @@ public:
     Light* GetLight(std::string name);
 
     std::vector<Light*> GetShadowCastingLights();
-
-    std::string GetName(std::shared_ptr<Material> mat);
-    std::string GetName(Material* mat);
 
 	// @return array of names, 0 - models, 1 - materials, 2 - lights
     std::array<std::vector<std::string>, 3> GetNames();

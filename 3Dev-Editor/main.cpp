@@ -527,7 +527,17 @@ int main()
             scene.AddLight(&shadowSource, "shadowSource");
         auto names = scene.GetNames();
         auto sounds = sman->GetSounds();
-        for(auto& i : names[0]) sceneTree->addItem({ "Scene", "Models", i });
+        for(auto& i : names[0])
+        {
+            auto node = scene.GetModel(i);
+            if(!node->GetParent() || !node->GetChildren().empty())
+                sceneTree->addItem({ "Scene", "Models", i });
+            if(!node->GetChildren().empty())
+            {
+                for(auto j : node->GetChildren())
+                    sceneTree->addItem({ "Scene", "Models", i, scene.GetModelName((Model*)(j)) });
+            }
+        }
         for(auto& i : names[1])
         {
             materialBox->addItem(i);
@@ -1035,7 +1045,7 @@ int main()
                 materialsList->removeAllItems();
                 auto mtl = model->GetMaterial();
                 for(int i = 0; i < mtl.size(); i++)
-                    materialsList->addItem(scene.GetName(mtl[i]), tgui::String(i));
+                    materialsList->addItem(scene.GetMaterialName(mtl[i]), tgui::String(i));
                 if(model->GetAnimationsCount())
                     model->PlayAnimation();
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
@@ -1243,7 +1253,7 @@ int main()
 					materialsList->removeAllItems();
                     auto mtl = object->GetMaterial();
                     for(int i = 0; i < mtl.size(); i++)
-                        materialsList->addItem(scene.GetName(mtl[i]), tgui::String(i));
+                        materialsList->addItem(scene.GetMaterialName(mtl[i]), tgui::String(i));
                     bodyTypeBox->setSelectedItemByIndex((int)object->GetRigidBody()->getType());
                     isDrawableBox->setChecked(object->IsDrawable());
 

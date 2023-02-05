@@ -15,6 +15,11 @@ Node* Node::GetParent()
     return parent;
 }
 
+std::vector<Node*> Node::GetChildren()
+{
+    return children;
+}
+
 rp3d::Transform Node::GetFinalTransform(Node* node, rp3d::Transform tr)
 {
     if(node->GetParent())

@@ -162,10 +162,23 @@ void SceneManager::Save(std::string filename, bool relativePaths)
         data["objects"]["models"][counter]["name"] = i.first;
         std::vector<std::string> materialNames;
         auto mat = i.second->GetMaterial();
-        for(auto& i : mat)
-            materialNames.push_back(GetName(i));
-        for(int i = 0; i < materialNames.size(); i++)
-            data["objects"]["models"][counter]["material"][i]["name"] = materialNames[i];
+        for(auto& j : mat)
+            materialNames.push_back(GetMaterialName(j));
+        for(int j = 0; j < materialNames.size(); j++)
+            data["objects"]["models"][counter]["material"][j]["name"] = materialNames[j];
+        for(int j = 0; j < i.second->GetChildren().size(); j++)
+        {
+            auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == i.second->GetChildren()[j]; });
+            if(it != models.end())
+                data["objects"]["models"][counter]["children"][j] = it->first;
+        }
+        if(i.second->GetParent())
+        {
+            auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == i.second->GetParent(); });
+            if(it != models.end())
+                data["objects"]["models"][counter]["parent"] = it->first;
+        }
+
         counter++;
     }
     counter = 0;
@@ -251,6 +264,24 @@ void SceneManager::Load(std::string filename)
         }
         model->Deserialize(data["objects"]["models"][counter]);
         AddModel(model, name, false);
+        counter++;
+    }
+    counter = 0;
+    while(!data["objects"]["models"][counter].empty())
+    {
+        auto model = GetModel(data["objects"]["models"][counter]["name"].asString());
+        for(auto& i : data["objects"]["models"][counter]["children"])
+        {
+            auto it = models.find(i.asString());
+            if(it != models.end())
+                model->AddChild(it->second.get());
+        }
+        if(!data["objects"]["models"][counter]["parent"].empty())
+        {
+            auto it = models.find(data["objects"]["models"][counter]["parent"].asString());
+            if(it != models.end())
+                model->SetParent(it->second.get());
+        }
         counter++;
     }
     counter = 0;
@@ -363,6 +394,38 @@ std::shared_ptr<PhysicsManager> SceneManager::GetPhysicsManager()
 std::shared_ptr<SoundManager> SceneManager::GetSoundManager()
 {
     return sManager;
+}
+
+std::string SceneManager::GetModelName(std::shared_ptr<Model> model)
+{
+    return std::find_if(models.begin(), models.end(), [&](auto m)
+            {
+                return m.second == model;
+            })->first;
+}
+
+std::string SceneManager::GetModelName(Model* model)
+{
+    return std::find_if(models.begin(), models.end(), [&](auto m)
+            {
+                return m.second.get() == model;
+            })->first;
+}
+
+std::string SceneManager::GetMaterialName(std::shared_ptr<Material> mat)
+{
+    return std::find_if(materials.begin(), materials.end(), [&](auto m)
+            {
+                return m.second == mat;
+            })->first;
+}
+
+std::string SceneManager::GetMaterialName(Material* mat)
+{
+    return std::find_if(materials.begin(), materials.end(), [&](auto m)
+            {
+                return m.second.get() == mat;
+            })->first;
 }
 
 std::vector<std::shared_ptr<Model>> SceneManager::GetModelGroup(std::string name)
@@ -502,22 +565,6 @@ std::array<std::vector<std::string>, 3> SceneManager::GetNames()
         tmp.push_back(i.first);
     ret[2] = tmp; tmp.clear();
     return ret;
-}
-
-std::string SceneManager::GetName(std::shared_ptr<Material> mat)
-{
-    return std::find_if(materials.begin(), materials.end(), [&](auto m)
-            {
-                return m.second == mat;
-            })->first;
-}
-
-std::string SceneManager::GetName(Material* mat)
-{
-    return std::find_if(materials.begin(), materials.end(), [&](auto m)
-            {
-                return m.second.get() == mat;
-            })->first;
 }
 
 void SceneManager::RemoveFromTheGroup(std::string group, std::shared_ptr<Model> model)
