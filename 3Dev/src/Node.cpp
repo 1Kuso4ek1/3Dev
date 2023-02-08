@@ -2,12 +2,19 @@
 
 void Node::SetParent(Node* parent)
 {
-    this->parent = parent;
+    if(this->parent == parent)
+        this->parent = nullptr;
+    else
+        this->parent = parent;
 }
 
 void Node::AddChild(Node* child)
 {
-    children.push_back(child);
+    auto it = std::find(children.begin(), children.end(), child);
+    if(it != children.end())
+        children.erase(it);
+    else
+        children.push_back(child);
 }
 
 Node* Node::GetParent()

@@ -1012,9 +1012,17 @@ int main()
                             parentModel->AddChild(childModel.get());
                             childModel->SetParent(parentModel.get());
                             childModel->SetPosition(childModel->GetPosition() - parentModel->GetPosition());
-                            sceneTree->removeItem(child, false);
-                            parent.push_back(child.back());
-                            sceneTree->addItem(parent);
+                            if(childModel->GetParent())
+                            {
+                                sceneTree->removeItem(child, false);
+                                parent.push_back(child.back());
+                                sceneTree->addItem(parent);
+                            }
+                            else
+                            {
+                                sceneTree->removeItem(child, false);
+                                sceneTree->addItem({ "Scene", "Models", child.back() });
+                            }
                         }
                         else if(child[1] == "Lights")
                         {
