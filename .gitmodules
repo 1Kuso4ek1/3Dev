@@ -12,13 +12,16 @@
 	url = https://github.com/texus/TGUI.git
 [submodule "3Dev/libraries/SFML"]
 	path = 3Dev/libraries/SFML
-	url = https://github.com/SFML/SFML
+	url = https://github.com/SFML/SFML.git
 [submodule "3Dev/libraries/glm"]
 	path = 3Dev/libraries/glm
-	url = https://github.com/g-truc/glm
+	url = https://github.com/g-truc/glm.git
 [submodule "3Dev/libraries/assimp"]
 	path = 3Dev/libraries/assimp
-	url = https://github.com/assimp/assimp
+	url = https://github.com/assimp/assimp.git
 [submodule "3Dev/libraries/jsoncpp"]
 	path = 3Dev/libraries/jsoncpp
-	url = https://github.com/open-source-parsers/jsoncpp
+	url = https://github.com/open-source-parsers/jsoncpp.git
+[submodule "3Dev/libraries/stb"]
+	path = 3Dev/libraries/stb
+	url = https://github.com/nothings/stb.git

@@ -1,6 +1,6 @@
 #pragma once
 #include "Utils.hpp"
-#include "stb_image.hpp"
+#include <stb_image.h>
 
 class TextureManager
 {
