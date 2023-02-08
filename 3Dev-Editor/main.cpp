@@ -1016,6 +1016,13 @@ int main()
                             parent.push_back(child.back());
                             sceneTree->addItem(parent);
                         }
+                        else if(child[1] == "Lights")
+                        {
+                            auto parentModel = scene.GetModel(parent.back().toStdString());
+                            auto childLight = scene.GetLight(child.back().toStdString());
+                            parentModel->AddChild(childLight);
+                            childLight->SetParent(parentModel.get());
+                        }
                         else if(child[1] == "Camera")
                         {
                             auto parentModel = scene.GetModel(parent.back().toStdString());
@@ -1023,7 +1030,7 @@ int main()
                             cam.SetParent(parentModel.get());
                         }
                     }
-                    if(parent[1] == "Camera")
+                    else if(parent[1] == "Camera")
                     {
                         if(child[1] == "Models" && child.size() > 2)
                         {
@@ -1031,6 +1038,29 @@ int main()
                             cam.AddChild(childModel.get());
                             childModel->SetParent(&cam);
                             childModel->SetPosition(childModel->GetPosition() - cam.GetPosition());
+                        }
+                        else if(child[1] == "Lights")
+                        {
+                            auto childLight = scene.GetLight(child.back().toStdString());
+                            cam.AddChild(childLight);
+                            childLight->SetParent(&cam);
+                        }
+                    }
+                    else if(parent[1] == "Lights")
+                    {
+                        if(child[1] == "Models" && child.size() > 2)
+                        {
+                            auto parentLight = scene.GetLight(parent.back().toStdString());
+                            auto childModel = scene.GetModel(child.back().toStdString());
+                            parentLight->AddChild(childModel.get());
+                            childModel->SetParent(parentLight);
+                            childModel->SetPosition(childModel->GetPosition() - parentLight->GetPosition());
+                        }
+                        else if(child[1] == "Camera")
+                        {
+                            auto parentLight = scene.GetLight(parent.back().toStdString());
+                            parentLight->AddChild(&cam);
+                            cam.SetParent(parentLight);
                         }
                     }
                 selectedWithShift.clear();

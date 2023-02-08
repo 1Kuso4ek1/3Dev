@@ -60,10 +60,12 @@ void SceneManager::AddModel(std::shared_ptr<Model> model, std::string name, bool
 
         lastAdded = n.first + (nameCount ? std::to_string(nameCount) : "") + (n.second.empty() ? "" : ":") + n.second;
         models[lastAdded] = model;
+        nodes[name] = (Node*)(model.get());
     }
     else
     {
         models[name] = model;
+        nodes[name] = (Node*)(model.get());
         lastAdded = name;
     }
 
@@ -86,6 +88,7 @@ void SceneManager::AddLight(Light* light, std::string name)
                     { return p.first.find(name) != std::string::npos; });
 
     lastAdded = name + (nameCount ? std::to_string(nameCount) : "");
+    nodes[lastAdded] = (Node*)(light);
     lights[lastAdded] = light;
     lightsVector.push_back(light);
 }
@@ -191,6 +194,20 @@ void SceneManager::Save(std::string filename, bool relativePaths)
     {
         data["lights"][counter] = i.second->Serialize();
         data["lights"][counter]["name"] = i.first;
+
+        for(int j = 0; j < i.second->GetChildren().size(); j++)
+        {
+            auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == i.second->GetChildren()[j]; });
+            if(it != models.end())
+                data["lights"][counter]["children"][j] = it->first;
+        }
+        if(i.second->GetParent())
+        {
+            auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == i.second->GetParent(); });
+            if(it != models.end())
+                data["lights"][counter]["parent"] = it->first;
+        }
+
         counter++;
     }
     counter = 0;
@@ -285,28 +302,6 @@ void SceneManager::Load(std::string filename)
         counter++;
     }
     counter = 0;
-    while(!data["objects"]["models"][counter].empty())
-    {
-        auto model = GetModel(data["objects"]["models"][counter]["name"].asString());
-        for(auto& i : data["objects"]["models"][counter]["children"])
-        {
-            auto it = models.find(i.asString());
-            if(it != models.end())
-                model->AddChild(it->second.get());
-            if(i == "camera")
-                model->AddChild(camera);
-        }
-        if(!data["objects"]["models"][counter]["parent"].empty())
-        {
-            auto it = models.find(data["objects"]["models"][counter]["parent"].asString());
-            if(it != models.end())
-                model->SetParent(it->second.get());
-            if(data["objects"]["models"][counter]["parent"].asString() == "camera")
-                model->SetParent(camera);
-        }
-        counter++;
-    }
-    counter = 0;
 
     while(!data["lights"][counter].empty())
     {
@@ -319,17 +314,55 @@ void SceneManager::Load(std::string filename)
 
     camera->Deserialize(data["camera"]);
 
+    while(!data["objects"]["models"][counter].empty())
+    {
+        auto model = GetModel(data["objects"]["models"][counter]["name"].asString());
+        for(auto& i : data["objects"]["models"][counter]["children"])
+        {
+            auto it = nodes.find(i.asString());
+            if(it != nodes.end())
+                model->AddChild(it->second);
+        }
+        if(!data["objects"]["models"][counter]["parent"].empty())
+        {
+            auto it = nodes.find(data["objects"]["models"][counter]["parent"].asString());
+            if(it != nodes.end())
+                model->SetParent(it->second);
+        }
+        counter++;
+    }
+    counter = 0;
+
+    while(!data["lights"][counter].empty())
+    {
+        auto light = GetLight(data["lights"][counter]["name"].asString());
+        for(auto& i : data["lights"][counter]["children"])
+        {
+            auto it = nodes.find(i.asString());
+            if(it != nodes.end())
+                light->AddChild(it->second);
+        }
+        if(!data["lights"][counter]["parent"].empty())
+        {
+            auto it = nodes.find(data["lights"][counter]["parent"].asString());
+            if(it != nodes.end())
+                light->SetParent(it->second);
+        }
+        counter++;
+    }
+    counter = 0;
+
     for(auto& i : data["camera"]["children"])
     {
-        auto it = models.find(i.asString());
-        if(it != models.end())
-            camera->AddChild(it->second.get());
+        auto it = nodes.find(i.asString());
+        if(it != nodes.end())
+            camera->AddChild(it->second);
     }
     if(!data["camera"]["parent"].empty())
     {
-        auto it = models.find(data["camera"]["parent"].asString());
-        if(it != models.end())
-            camera->SetParent(it->second.get());
+        auto it = nodes.find(data["camera"]["parent"].asString());
+        if(it != nodes.end())
+            camera->SetParent(it->second);
     }
 
     sManager->Deserialize(data["sounds"]);
@@ -377,6 +410,7 @@ void SceneManager::SetMainShader(Shader* shader)
 void SceneManager::SetCamera(Camera* camera)
 {
     this->camera = camera;
+    nodes["camera"] = (Node*)(camera);
 }
 
 void SceneManager::SetSkybox(std::shared_ptr<Model> skybox)
@@ -430,6 +464,15 @@ std::shared_ptr<PhysicsManager> SceneManager::GetPhysicsManager()
 std::shared_ptr<SoundManager> SceneManager::GetSoundManager()
 {
     return sManager;
+}
+
+Node* SceneManager::GetNode(std::string name)
+{
+    if(nodes.find(name) != nodes.end())
+        return nodes[name];
+    Log::Write("Could not find a node with name \""
+                + name + "\", function will return nullptr", Log::Type::Warning);
+    return nullptr;
 }
 
 std::string SceneManager::GetModelName(std::shared_ptr<Model> model)

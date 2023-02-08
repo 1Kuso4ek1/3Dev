@@ -1,11 +1,12 @@
 #pragma once
 #include "Utils.hpp"
 #include "Shader.hpp"
+#include "Node.hpp"
 
 /*
  * This class is used to create, modify and use a light.
  */
-class Light
+class Light : public Node
 {
 public:
 	/*
@@ -68,6 +69,8 @@ public:
 
 	// @return vector that contains (constant, linear, quadratic)
 	rp3d::Vector3 GetAttenuation();
+
+	rp3d::Transform GetTransform() override;
 
 	// @return light cutoff
 	float GetCutoff();

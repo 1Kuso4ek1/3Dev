@@ -50,6 +50,8 @@ public:
     std::shared_ptr<PhysicsManager> GetPhysicsManager();
     std::shared_ptr<SoundManager> GetSoundManager();
 
+    Node* GetNode(std::string name);
+
     std::string GetModelName(std::shared_ptr<Model> model);
     std::string GetModelName(Model* model);
     std::string GetMaterialName(std::shared_ptr<Material> mat);
@@ -103,6 +105,7 @@ private:
 
     std::unordered_map<std::string, std::vector<std::shared_ptr<Model>>> modelGroups;
 
+    std::unordered_map<std::string, Node*> nodes;
     std::unordered_map<std::string, std::shared_ptr<Model>> models;
     std::unordered_map<std::string, std::shared_ptr<Material>> materials; // for editor and scene saving
     std::unordered_map<std::string, Light*> lights;

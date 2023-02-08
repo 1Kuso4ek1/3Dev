@@ -72,8 +72,11 @@ void Light::SetIsCastingPerspectiveShadows(bool perspectiveShadows)
 
 void Light::Update(Shader* shader, int lightnum) 
 {
+	auto tr = Node::GetFinalTransform(this);
+	auto pos = (GetTransform() * tr).getPosition();
+
 	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].color", color.x, color.y, color.z);
-	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].position", position.x, position.y, position.z);
+	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].position", pos.x, pos.y, pos.z);
 	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].direction", direction.x, direction.y, direction.z);
 	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].attenuation", constant, linear, quadratic);
 	shader->SetUniform1f("lights[" + std::to_string(lightnum) + "].cutoff", glm::cos(glm::radians(cutoff)));
@@ -114,6 +117,11 @@ rp3d::Vector3 Light::GetDirection()
 rp3d::Vector3 Light::GetAttenuation()
 {
 	return rp3d::Vector3(constant, linear, quadratic);
+}
+
+rp3d::Transform Light::GetTransform()
+{
+	return rp3d::Transform(position, rp3d::Quaternion::identity());
 }
 
 float Light::GetCutoff()
