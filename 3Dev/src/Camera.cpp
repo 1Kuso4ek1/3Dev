@@ -24,23 +24,26 @@ void Camera::Update(bool force)
 	}
 }
 
-rp3d::Vector3 Camera::Move(float time)
+rp3d::Vector3 Camera::Move(float time, bool onlyOffset)
 {
-	auto vec = pos;
+	rp3d::Vector3 offset;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		pos += (orient * rp3d::Vector3(0, 0, -1)) * speed * time;
+		offset += (orient * rp3d::Vector3(0, 0, -1)) * speed * time;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		pos -= (orient * rp3d::Vector3(0, 0, -1)) * speed * time;
+		offset -= (orient * rp3d::Vector3(0, 0, -1)) * speed * time;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		pos += (orient * rp3d::Vector3(1, 0, 0)) * speed * time;
+		offset += (orient * rp3d::Vector3(1, 0, 0)) * speed * time;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		pos -= (orient * rp3d::Vector3(1, 0, 0)) * speed * time;
+		offset -= (orient * rp3d::Vector3(1, 0, 0)) * speed * time;
 
-	return pos - vec;
+	if(!onlyOffset)
+		pos += offset;
+
+	return offset;
 }
 
 void Camera::Mouse()

@@ -364,7 +364,7 @@ void ScriptManager::RegisterCamera()
 {
     AddType("Camera", sizeof(Camera),
     {
-        { "Vector3 Move(float)", WRAP_MFN(Camera, Move) },
+        { "Vector3 Move(float, bool = false)", WRAP_MFN(Camera, Move) },
         { "void SetPosition(const Vector3& in)", WRAP_MFN(Camera, SetPosition) },
         { "void SetOrientation(const Quaternion& in)", WRAP_MFN(Camera, SetOrientation) },
         { "void SetSpeed(float)", WRAP_MFN(Camera, SetSpeed) },

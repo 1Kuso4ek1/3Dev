@@ -11,7 +11,7 @@ public:
 
 	void Update(bool force = false);
 
-	rp3d::Vector3 Move(float time);
+	rp3d::Vector3 Move(float time, bool onlyOffset = false);
 	void Mouse();
 
 	void Look();
