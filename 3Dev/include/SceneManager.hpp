@@ -54,6 +54,7 @@ public:
 
     std::string GetModelName(std::shared_ptr<Model> model);
     std::string GetModelName(Model* model);
+    std::string GetNodeName(Node* node);
     std::string GetMaterialName(std::shared_ptr<Material> mat);
     std::string GetMaterialName(Material* mat);
 

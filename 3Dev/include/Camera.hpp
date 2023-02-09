@@ -29,7 +29,7 @@ public:
 
 	rp3d::Transform GetTransform() override;
 
-	rp3d::Vector3 GetPosition();
+	rp3d::Vector3 GetPosition(bool world = false);
 	rp3d::Quaternion GetOrientation();
 
 	float GetSpeed();

@@ -201,12 +201,10 @@ int main()
 
     auto sceneTree = editor.get<tgui::TreeView>("scene");
 
-    sceneTree->addItem({ "Scene", "Models" });
+    sceneTree->addItem({ "Scene", "Objects", "camera" });
     sceneTree->addItem({ "Scene", "Materials" });
-    sceneTree->addItem({ "Scene", "Lights" });
     sceneTree->addItem({ "Scene", "Sounds" });
-    sceneTree->addItem({ "Scene", "Camera" });
-	sceneTree->addItem({ "Scene", "Scripts" });
+	sceneTree->addItem({ "Scripts" });
 
     auto objectEditorGroup = editor.get<tgui::Group>("objectEditor");
     auto lightEditorGroup = editor.get<tgui::Group>("lightEditor");
@@ -214,6 +212,10 @@ int main()
     auto soundEditorGroup = editor.get<tgui::Group>("soundEditor");
 	auto scriptsGroup = editor.get<tgui::Group>("scriptsGroup");
 	auto sceneGroup = editor.get<tgui::Group>("sceneGroup");
+
+    std::vector<tgui::Group::Ptr> groups = { objectEditorGroup, lightEditorGroup,
+                                             materialEditorGroup, soundEditorGroup,
+                                             scriptsGroup, sceneGroup };
 
 	auto nameEdit = editor.get<tgui::EditBox>("name");
 
@@ -531,12 +533,12 @@ int main()
         for(auto& i : names[0])
         {
             auto node = scene.GetModel(i);
-            if(!node->GetParent() || node->GetParent() == &cam || !node->GetChildren().empty())
-                sceneTree->addItem({ "Scene", "Models", i });
+            if(!node->GetParent() || !node->GetChildren().empty())
+                sceneTree->addItem({ "Scene", "Objects", i });
             if(!node->GetChildren().empty())
             {
                 for(auto j : node->GetChildren())
-                    sceneTree->addItem({ "Scene", "Models", i, scene.GetModelName((Model*)(j)) });
+                    sceneTree->addItem({ "Scene", "Objects", i, scene.GetNodeName(j) });
             }
         }
         for(auto& i : names[1])
@@ -544,7 +546,17 @@ int main()
             materialBox->addItem(i);
             sceneTree->addItem({ "Scene", "Materials", i });
         }
-        for(auto& i : names[2]) sceneTree->addItem({ "Scene", "Lights", i });
+        for(auto& i : names[2])
+        {
+            auto node = scene.GetLight(i);
+            if(!node->GetParent() || !node->GetChildren().empty())
+                sceneTree->addItem({ "Scene", "Objects", i });
+            if(!node->GetChildren().empty())
+            {
+                for(auto j : node->GetChildren())
+                    sceneTree->addItem({ "Scene", "Objects", i, scene.GetNodeName(j) });
+            }
+        }
         for(auto& i : sounds) sceneTree->addItem({ "Scene", "Sounds", i });
         filenameEdit->setText(projectFilename.empty() ? "scene.json" : projectFilename);
     }
@@ -554,7 +566,7 @@ int main()
         scene.AddMaterial(defaultMaterial, "default");
         materialBox->addItem("default");
         sceneTree->addItem({ "Scene", "Materials", "default" });
-        sceneTree->addItem({ "Scene", "Lights", "shadowSource" });
+        sceneTree->addItem({ "Scene", "Objects", "shadowSource" });
         projectFilename = lastPath + "/" + projectNameEdit->getText().toStdString() + ".json";
         scene.Save(projectFilename, true);
         saveRecent(projectFilename);
@@ -598,7 +610,7 @@ int main()
         scman.Load(scPath);
         auto scripts = scman.GetScripts();
         for(auto& i : scripts)
-            sceneTree->addItem({ "Scene", "Scripts", i });
+            sceneTree->addItem({ "Scripts", i });
     }
     else scman.Save(lastPath + "/" + projectNameEdit->getText().toStdString() + "_scripts.json");
 
@@ -629,8 +641,8 @@ int main()
 		model->CreateRigidBody();
     	scene.AddModel(model);
     	std::string name = scene.GetLastAdded();
-    	sceneTree->addItem({ "Scene", "Models", name });
-    	sceneTree->selectItem({ "Scene", "Models", name });
+    	sceneTree->addItem({ "Scene", "Objects", name });
+    	sceneTree->selectItem({ "Scene", "Objects", name });
     });
 
     shapeButton->onPress([&]()
@@ -642,8 +654,8 @@ int main()
         model->CreateBoxShape();
         scene.AddModel(model, "cube");
     	std::string name = scene.GetLastAdded();
-    	sceneTree->addItem({ "Scene", "Models", name });
-    	sceneTree->selectItem({ "Scene", "Models", name });
+    	sceneTree->addItem({ "Scene", "Objects", name });
+    	sceneTree->selectItem({ "Scene", "Objects", name });
     });
 
     lightButton->onPress([&]()
@@ -651,8 +663,8 @@ int main()
         auto light = new Light(rp3d::Vector3(0, 0, 0), rp3d::Vector3::zero());
         scene.AddLight(light);
         std::string name = scene.GetLastAdded();
-    	sceneTree->addItem({ "Scene", "Lights", name });
-    	sceneTree->selectItem({ "Scene", "Lights", name });
+    	sceneTree->addItem({ "Scene", "Objects", name });
+    	sceneTree->selectItem({ "Scene", "Objects", name });
     });
 
     materialButton->onPress([&]()
@@ -667,7 +679,7 @@ int main()
     boxColliderButton->onPress([&]()
     {
         if(sceneTree->getSelectedItem().size() > 2)
-			if(sceneTree->getSelectedItem()[1] == "Models")
+			if(sceneTree->getSelectedItem()[1] == "Objects")
 			{
 			    auto model = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
 			    for(int i = 0; i < model->GetMeshesCount(); i++)
@@ -678,7 +690,7 @@ int main()
     sphereColliderButton->onPress([&]()
     {
         if(sceneTree->getSelectedItem().size() > 2)
-			if(sceneTree->getSelectedItem()[1] == "Models")
+			if(sceneTree->getSelectedItem()[1] == "Objects")
 			{
 			    auto model = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
 			    for(int i = 0; i < model->GetMeshesCount(); i++)
@@ -689,7 +701,7 @@ int main()
     capsuleColliderButton->onPress([&]()
     {
         if(sceneTree->getSelectedItem().size() > 2)
-			if(sceneTree->getSelectedItem()[1] == "Models")
+			if(sceneTree->getSelectedItem()[1] == "Objects")
 			{
 			    auto model = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
 			    for(int i = 0; i < model->GetMeshesCount(); i++)
@@ -700,7 +712,7 @@ int main()
     concaveColliderButton->onPress([&]()
     {
         if(sceneTree->getSelectedItem().size() > 2)
-			if(sceneTree->getSelectedItem()[1] == "Models")
+			if(sceneTree->getSelectedItem()[1] == "Objects")
 			{
 			    auto model = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
 			    for(int i = 0; i < model->GetMeshesCount(); i++)
@@ -986,7 +998,7 @@ int main()
                     std::filesystem::copy(path, projectDir + "/assets/scripts/" + filename);
                 path = projectDir + "/assets/scripts/" + filename;
                 scman.LoadScript(path);
-                sceneTree->addItem({ "Scene", "Scripts", openFileDialog->getSelectedPaths()[0].getFilename() });
+                sceneTree->addItem({ "Scripts", openFileDialog->getSelectedPaths()[0].getFilename() });
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
@@ -1002,75 +1014,24 @@ int main()
             {
                 auto parent = selectedWithShift[1];
                 auto child = selectedWithShift[0];
-                //if(parent.size() > 2 && child.size() > 2)
-                    if(parent[1] == "Models" && parent.size() > 2)
+                auto parentNode = scene.GetNode(parent.back().toStdString());
+                auto childNode = scene.GetNode(child.back().toStdString());
+                if(parentNode && childNode)
+                {
+                    parentNode->AddChild(childNode);
+                    childNode->SetParent(parentNode);
+                    if(childNode->GetParent())
                     {
-                        if(child[1] == "Models")
-                        {
-                            auto parentModel = scene.GetModel(parent.back().toStdString());
-                            auto childModel = scene.GetModel(child.back().toStdString());
-                            parentModel->AddChild(childModel.get());
-                            childModel->SetParent(parentModel.get());
-                            childModel->SetPosition(childModel->GetPosition() - parentModel->GetPosition());
-                            if(childModel->GetParent())
-                            {
-                                sceneTree->removeItem(child, false);
-                                parent.push_back(child.back());
-                                sceneTree->addItem(parent);
-                            }
-                            else
-                            {
-                                sceneTree->removeItem(child, false);
-                                sceneTree->addItem({ "Scene", "Models", child.back() });
-                            }
-                        }
-                        else if(child[1] == "Lights")
-                        {
-                            auto parentModel = scene.GetModel(parent.back().toStdString());
-                            auto childLight = scene.GetLight(child.back().toStdString());
-                            parentModel->AddChild(childLight);
-                            childLight->SetParent(parentModel.get());
-                        }
-                        else if(child[1] == "Camera")
-                        {
-                            auto parentModel = scene.GetModel(parent.back().toStdString());
-                            parentModel->AddChild(&cam);
-                            cam.SetParent(parentModel.get());
-                        }
+                        sceneTree->removeItem(child, false);
+                        parent.push_back(child.back());
+                        sceneTree->addItem(parent);
                     }
-                    else if(parent[1] == "Camera")
+                    else
                     {
-                        if(child[1] == "Models" && child.size() > 2)
-                        {
-                            auto childModel = scene.GetModel(child.back().toStdString());
-                            cam.AddChild(childModel.get());
-                            childModel->SetParent(&cam);
-                            childModel->SetPosition(childModel->GetPosition() - cam.GetPosition());
-                        }
-                        else if(child[1] == "Lights")
-                        {
-                            auto childLight = scene.GetLight(child.back().toStdString());
-                            cam.AddChild(childLight);
-                            childLight->SetParent(&cam);
-                        }
+                        sceneTree->removeItem(child, false);
+                        sceneTree->addItem({ "Scene", "Objects", child.back() });
                     }
-                    else if(parent[1] == "Lights")
-                    {
-                        if(child[1] == "Models" && child.size() > 2)
-                        {
-                            auto parentLight = scene.GetLight(parent.back().toStdString());
-                            auto childModel = scene.GetModel(child.back().toStdString());
-                            parentLight->AddChild(childModel.get());
-                            childModel->SetParent(parentLight);
-                            childModel->SetPosition(childModel->GetPosition() - parentLight->GetPosition());
-                        }
-                        else if(child[1] == "Camera")
-                        {
-                            auto parentLight = scene.GetLight(parent.back().toStdString());
-                            parentLight->AddChild(&cam);
-                            cam.SetParent(parentLight);
-                        }
-                    }
+                }
                 selectedWithShift.clear();
             }
         }
@@ -1234,23 +1195,28 @@ int main()
 
     	sceneTree->setEnabled(!openFileDialog && !colorPicker);
     	openFileButton->setEnabled(!openFileDialog);
+        
+        auto findNode = [&](std::string name, std::vector<std::string> arr) -> bool
+        {
+            return std::find(arr.begin(), arr.end(), name) != arr.end();
+        };
 
 		if(sceneTree->getSelectedItem().size() > 2)
 		{
 			////////////// OBJECTS //////////////
 			std::shared_ptr<Model> object;
 
-			if(sceneTree->getSelectedItem()[1] == "Models")
-			{
-				openFileButton->setEnabled(true);
-				openFileButton->setVisible(true);
-				object = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
+			if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[0]))
+            {
+                openFileButton->setEnabled(true);
+                openFileButton->setVisible(true);
+                object = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
                 if(!object)
                 {
                     sceneTree->removeItem(sceneTree->getSelectedItem(), false);
-                    sceneTree->selectItem({ "Scene", "Models" });
+                    sceneTree->selectItem({ "Scene", "Objects" });
                 }
-			}
+            }
 			
 			if(object)
 			{
@@ -1280,18 +1246,9 @@ int main()
 					}
 				}
 			
+                std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == objectEditorGroup) return; g->setEnabled(false); g->setVisible(false); });
 				objectEditorGroup->setEnabled(true);
 				objectEditorGroup->setVisible(true);
-                lightEditorGroup->setEnabled(false);
-				lightEditorGroup->setVisible(false);
-                soundEditorGroup->setEnabled(false);
-				soundEditorGroup->setVisible(false);
-				materialEditorGroup->setEnabled(false);
-				materialEditorGroup->setVisible(false);
-				scriptsGroup->setEnabled(false);
-				scriptsGroup->setVisible(false);
-				sceneGroup->setEnabled(false);
-				sceneGroup->setVisible(false);
 
 				if((!nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem().back()) || objectMode)
 				{
@@ -1327,8 +1284,8 @@ int main()
 			    {
                     scene.SetModelName(sceneTree->getSelectedItem().back().toStdString(), nameEdit->getText().toStdString());
                     sceneTree->removeItem(sceneTree->getSelectedItem(), false);
-                    sceneTree->addItem({ "Scene", "Models", nameEdit->getText() });
-                    sceneTree->selectItem({ "Scene", "Models", nameEdit->getText() });
+                    sceneTree->addItem({ "Scene", "Objects", nameEdit->getText() });
+                    sceneTree->selectItem({ "Scene", "Objects", nameEdit->getText() });
                 
 				    nameEdit->setFocused(false);
 			    }
@@ -1374,26 +1331,17 @@ int main()
 		    /////////////////////////////////////
 
             /////////////// LIGHTS //////////////
-            if(sceneTree->getSelectedItem()[1] == "Lights")
+            else if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[2]))
 		    {
+                std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == lightEditorGroup) return; g->setEnabled(false); g->setVisible(false); });
                 lightEditorGroup->setEnabled(true);
 				lightEditorGroup->setVisible(true);
-				materialEditorGroup->setEnabled(false);
-				materialEditorGroup->setVisible(false);
-                soundEditorGroup->setEnabled(false);
-				soundEditorGroup->setVisible(false);
-				objectEditorGroup->setEnabled(false);
-				objectEditorGroup->setVisible(false);
-				scriptsGroup->setEnabled(false);
-				scriptsGroup->setVisible(false);
-				sceneGroup->setEnabled(false);
-				sceneGroup->setVisible(false);
 
                 auto light = scene.GetLight(sceneTree->getSelectedItem().back().toStdString());
                 if(!light)
                 {
                     sceneTree->removeItem(sceneTree->getSelectedItem(), false);
-                    sceneTree->selectItem({ "Scene", "Lights" });
+                    sceneTree->selectItem({ "Scene", "Objects" });
                 }
                 if(light)
                 {
@@ -1455,8 +1403,8 @@ int main()
                     {
                         scene.SetLightName(sceneTree->getSelectedItem().back().toStdString(), lightNameEdit->getText().toStdString());
                         sceneTree->removeItem(sceneTree->getSelectedItem(), false);
-                        sceneTree->addItem({ "Scene", "Lights", lightNameEdit->getText() });
-                        sceneTree->selectItem({ "Scene", "Lights", lightNameEdit->getText() });
+                        sceneTree->addItem({ "Scene", "Objects", lightNameEdit->getText() });
+                        sceneTree->selectItem({ "Scene", "Objects", lightNameEdit->getText() });
                     
                         lightNameEdit->setFocused(false);
                     }
@@ -1497,20 +1445,11 @@ int main()
             /////////////////////////////////////
 
 		    ///////////// MATERIALS /////////////
-		    if(sceneTree->getSelectedItem()[1] == "Materials")
+		    else if(sceneTree->getSelectedItem()[1] == "Materials")
 		    {
+                std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == materialEditorGroup) return; g->setEnabled(false); g->setVisible(false); });
 				materialEditorGroup->setEnabled(true);
 				materialEditorGroup->setVisible(true);
-                lightEditorGroup->setEnabled(false);
-				lightEditorGroup->setVisible(false);
-                soundEditorGroup->setEnabled(false);
-				soundEditorGroup->setVisible(false);
-				objectEditorGroup->setEnabled(false);
-				objectEditorGroup->setVisible(false);
-				scriptsGroup->setEnabled(false);
-				scriptsGroup->setVisible(false);
-				sceneGroup->setEnabled(false);
-				sceneGroup->setVisible(false);
 
 				auto material = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
 				if(materialNameEdit->getText() != sceneTree->getSelectedItem().back() && !materialNameEdit->isFocused())
@@ -1659,20 +1598,11 @@ int main()
 		    /////////////////////////////////////
 
             ////////////// SOUNDS ///////////////
-            if(sceneTree->getSelectedItem()[1] == "Sounds")
+            else if(sceneTree->getSelectedItem()[1] == "Sounds")
             {
+                std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == soundEditorGroup) return; g->setEnabled(false); g->setVisible(false); });
                 soundEditorGroup->setEnabled(true);
                 soundEditorGroup->setVisible(true);
-                scriptsGroup->setEnabled(false);
-                scriptsGroup->setVisible(false);
-                lightEditorGroup->setEnabled(false);
-                lightEditorGroup->setVisible(false);
-                materialEditorGroup->setEnabled(false);
-                materialEditorGroup->setVisible(false);
-                objectEditorGroup->setEnabled(false);
-                objectEditorGroup->setVisible(false);
-                sceneGroup->setEnabled(false);
-                sceneGroup->setVisible(false);
 
                 auto sound = sceneTree->getSelectedItem().back().toStdString();
 
@@ -1740,40 +1670,37 @@ int main()
                 }
             }
             /////////////////////////////////////
-
-			////////////// SCRIPTS //////////////
-			if(sceneTree->getSelectedItem()[1] == "Scripts")
-			{
+            else
+            {
+                nameEdit->setText("");
+                std::for_each(groups.begin(), groups.end(), [&](auto g) { g->setEnabled(false); g->setVisible(false); });
+            }
+		}
+        ////////////// SCRIPTS //////////////
+        else if(!sceneTree->getSelectedItem().empty())
+        {
+            if(sceneTree->getSelectedItem().size() > 1 &&
+               sceneTree->getSelectedItem()[0] == "Scripts")
+            {
+                std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == scriptsGroup) return; g->setEnabled(false); g->setVisible(false); });
                 scriptsGroup->setEnabled(true);
-				scriptsGroup->setVisible(true);
-                lightEditorGroup->setEnabled(false);
-				lightEditorGroup->setVisible(false);
-                soundEditorGroup->setEnabled(false);
-				soundEditorGroup->setVisible(false);
-				materialEditorGroup->setEnabled(false);
-				materialEditorGroup->setVisible(false);
-				objectEditorGroup->setEnabled(false);
-				objectEditorGroup->setVisible(false);
-				sceneGroup->setEnabled(false);
-				sceneGroup->setVisible(false);
-			}
-		}
-		else
-		{
+                scriptsGroup->setVisible(true);
+            }
+            /////////////////////////////////////
+            else if(sceneTree->getSelectedItem()[0] == "Scene")
+            {
+                nameEdit->setText("");
+                std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == sceneGroup) return; g->setEnabled(false); g->setVisible(false); });
+                sceneGroup->setEnabled(true);
+                sceneGroup->setVisible(true);
+            }
+        }
+        else
+        {
             nameEdit->setText("");
-            lightEditorGroup->setEnabled(false);
-			lightEditorGroup->setVisible(false);
-            soundEditorGroup->setEnabled(false);
-			soundEditorGroup->setVisible(false);
-			objectEditorGroup->setEnabled(false);
-			objectEditorGroup->setVisible(false);
-			materialEditorGroup->setEnabled(false);
-			materialEditorGroup->setVisible(false);
-			scriptsGroup->setEnabled(false);
-			scriptsGroup->setVisible(false);
-			sceneGroup->setEnabled(true);
-			sceneGroup->setVisible(true);
-		}
+            std::for_each(groups.begin(), groups.end(), [&](auto g) { g->setEnabled(false); g->setVisible(false); });
+        }
+
 		if(scriptLaunched)
 			scman.ExecuteFunction(loopDecl);
 
@@ -1815,7 +1742,7 @@ int main()
 
         if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::C }))
         {
-        	if(sceneTree->getSelectedItem()[1] == "Models")
+        	if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[0]))
 			{
 				buffer.name = sceneTree->getSelectedItem().back().toStdString();
 				buffer.object = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
@@ -1829,8 +1756,8 @@ int main()
 				auto a = scene.CloneModel(buffer.object.get(), false, buffer.name + "-copy");
 				a->Move(a->GetSize());
 				std::string name = scene.GetLastAdded();
-		    	sceneTree->addItem({ "Scene", "Models", name });
-		    	sceneTree->selectItem({ "Scene", "Models", name });
+		    	sceneTree->addItem({ "Scene", "Objects", name });
+		    	sceneTree->selectItem({ "Scene", "Objects", name });
 			}
         }
 

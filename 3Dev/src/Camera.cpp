@@ -63,17 +63,17 @@ void Camera::Mouse()
 
 void Camera::Look()
 {
-	auto tr = Node::GetFinalTransform(this);
+	auto position = GetPosition(true);
 	rp3d::Vector3 v = orient * rp3d::Vector3(0, 0, -1), tmpv;
 	float tmp;
 	if(!alwaysUp) orient.getRotationAngleAxis(tmp, tmpv);
-	m->GetView() = glm::lookAt(toglm((tr * GetTransform()).getPosition()), toglm((tr * GetTransform()).getPosition() + v), alwaysUp ? glm::vec3(0.0, 1.0, 0.0) : toglm(tmpv));
+	m->GetView() = glm::lookAt(toglm(position), toglm(position + v), alwaysUp ? glm::vec3(0.0, 1.0, 0.0) : toglm(tmpv));
 }
 
 void Camera::Look(const rp3d::Vector3& vec)
 {
-	auto tr = Node::GetFinalTransform(this);
-	m->GetView() = glm::lookAt(toglm((tr * GetTransform()).getPosition()), toglm(vec), glm::vec3(0, 1, 0));
+	auto position = GetPosition(true);
+	m->GetView() = glm::lookAt(toglm(position), toglm(vec), glm::vec3(0, 1, 0));
 }
 
 void Camera::SetViewportSize(sf::Vector2u size)
@@ -126,9 +126,11 @@ rp3d::Transform Camera::GetTransform()
 	return rp3d::Transform(pos, orient);
 }
 
-rp3d::Vector3 Camera::GetPosition()
+rp3d::Vector3 Camera::GetPosition(bool world)
 {
-	return pos;
+	if(!world)
+		return pos;
+	return (Node::GetFinalTransform(this) * GetTransform()).getPosition();
 }
 
 rp3d::Quaternion Camera::GetOrientation()

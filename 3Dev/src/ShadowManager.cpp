@@ -29,8 +29,8 @@ void ShadowManager::Update()
     Light* closestLight = lights[0];
     for(auto i : lights)
     {
-        if((i->GetPosition() - scene->GetCamera()->GetPosition()).length() <
-           (closestLight->GetPosition() - scene->GetCamera()->GetPosition()).length())
+        if((i->GetPosition() - scene->GetCamera()->GetPosition(true)).length() <
+           (closestLight->GetPosition() - scene->GetCamera()->GetPosition(true)).length())
             closestLight = i;
     }
     

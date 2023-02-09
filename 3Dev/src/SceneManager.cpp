@@ -60,7 +60,7 @@ void SceneManager::AddModel(std::shared_ptr<Model> model, std::string name, bool
 
         lastAdded = n.first + (nameCount ? std::to_string(nameCount) : "") + (n.second.empty() ? "" : ":") + n.second;
         models[lastAdded] = model;
-        nodes[name] = (Node*)(model.get());
+        nodes[lastAdded] = (Node*)(model.get());
     }
     else
     {
@@ -308,6 +308,7 @@ void SceneManager::Load(std::string filename)
         auto name = data["lights"][counter]["name"].asString();
         lights[name] = new Light(rp3d::Vector3::zero(), rp3d::Vector3::zero());
         lights[name]->Deserialize(data["lights"][counter]);
+        nodes[name] = lights[name];
         lightsVector.push_back(lights[name]);
         counter++;
     }
@@ -491,6 +492,14 @@ std::string SceneManager::GetModelName(Model* model)
             })->first;
 }
 
+std::string SceneManager::GetNodeName(Node* node)
+{
+    return std::find_if(nodes.begin(), nodes.end(), [&](auto n)
+            {
+                return n.second == node;
+            })->first;
+}
+
 std::string SceneManager::GetMaterialName(std::shared_ptr<Material> mat)
 {
     return std::find_if(materials.begin(), materials.end(), [&](auto m)
@@ -583,6 +592,7 @@ std::vector<Light*> SceneManager::GetShadowCastingLights()
 void SceneManager::SetModelName(std::string name, std::string newName)
 {
 	auto it = models.find(name);
+    auto itn = nodes.find(name);
 	if(it != models.end())
 	{
         auto p = ParseName(name);
@@ -599,6 +609,10 @@ void SceneManager::SetModelName(std::string name, std::string newName)
 		auto n = models.extract(it);
 		n.key() = newName;
 		models.insert(std::move(n));
+
+        auto n1 = nodes.extract(itn);
+		n1.key() = newName;
+		nodes.insert(std::move(n1));
 	}
     else
         Log::Write("Could not find a model with name \"" + name + "\"", Log::Type::Warning);
@@ -620,11 +634,16 @@ void SceneManager::SetMaterialName(std::string name, std::string newName)
 void SceneManager::SetLightName(std::string name, std::string newName)
 {
 	auto it = lights.find(name);
+    auto itn = nodes.find(name);
 	if(it != lights.end())
 	{
 		auto n = lights.extract(it);
 		n.key() = newName;
 		lights.insert(std::move(n));
+
+        auto n1 = nodes.extract(itn);
+		n1.key() = newName;
+		nodes.insert(std::move(n1));
 	}
     else
         Log::Write("Could not find a light with name \"" + name + "\"", Log::Type::Warning);

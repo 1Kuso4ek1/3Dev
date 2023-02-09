@@ -30,6 +30,6 @@ std::vector<Node*> Node::GetChildren()
 rp3d::Transform Node::GetFinalTransform(Node* node, rp3d::Transform tr)
 {
     if(node->GetParent())
-        tr = tr * Node::GetFinalTransform(node->GetParent(), node->GetParent()->GetTransform());
+        tr = Node::GetFinalTransform(node->GetParent(), node->GetParent()->GetTransform()) * tr;
     return tr;
 }
