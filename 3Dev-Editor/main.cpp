@@ -614,7 +614,7 @@ int main()
     }
     else scman.Save(lastPath + "/" + projectNameEdit->getText().toStdString() + "_scripts.json");
 
-    Log::SetSigSegvHandle([&]()
+    Log::SetCrashHandle([&]()
     {
         auto path = filenameEdit->getText().toStdString(), scPath = path;
         scene.Save(path, true);
