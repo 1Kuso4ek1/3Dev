@@ -201,11 +201,6 @@ int main()
 
     auto sceneTree = editor.get<tgui::TreeView>("scene");
 
-    sceneTree->addItem({ "Scene", "Objects" });
-    sceneTree->addItem({ "Scene", "Materials" });
-    sceneTree->addItem({ "Scene", "Sounds" });
-	sceneTree->addItem({ "Scripts" });
-
     auto objectEditorGroup = editor.get<tgui::Group>("objectEditor");
     auto lightEditorGroup = editor.get<tgui::Group>("lightEditor");
     auto materialEditorGroup = editor.get<tgui::Group>("materialEditor");
