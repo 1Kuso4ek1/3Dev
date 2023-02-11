@@ -201,7 +201,7 @@ int main()
 
     auto sceneTree = editor.get<tgui::TreeView>("scene");
 
-    sceneTree->addItem({ "Scene", "Objects", "camera" });
+    sceneTree->addItem({ "Scene", "Objects" });
     sceneTree->addItem({ "Scene", "Materials" });
     sceneTree->addItem({ "Scene", "Sounds" });
 	sceneTree->addItem({ "Scripts" });
@@ -522,42 +522,60 @@ int main()
     scene.UpdatePhysics(false);
     scene.SetSoundManager(sman);
 
-	if(!projectFilename.empty())
-	{
-        lastPath = projectFilename.substr(0, projectFilename.find_last_of("/"));
-        scene.Load(projectFilename);
-        if(scene.GetNames()[2].empty())
-            scene.AddLight(&shadowSource, "shadowSource");
+    auto readSceneTree = [&]()
+    {
         auto names = scene.GetNames();
         auto sounds = sman->GetSounds();
-        for(auto& i : names[0])
+        std::vector<std::pair<std::string, std::vector<tgui::String>>> used;
+        std::vector<std::string> pending;
+        for(auto& i : names[3])
+            if(!scene.GetNode(i)->GetParent())
+                pending.push_back(i);
+
+        while(!pending.empty())
         {
-            auto node = scene.GetModel(i);
-            if(!node->GetParent() || !node->GetChildren().empty())
-                sceneTree->addItem({ "Scene", "Objects", i });
-            if(!node->GetChildren().empty())
+            std::vector<std::string> next;
+            for(auto& i : pending)
             {
-                for(auto j : node->GetChildren())
-                    sceneTree->addItem({ "Scene", "Objects", i, scene.GetNodeName(j) });
+                auto node = scene.GetNode(i);
+
+                if(!node->GetParent())
+                {
+                    sceneTree->addItem({ "Scene", "Objects", i });
+                    used.push_back({ i, { "Scene", "Objects", i } });
+                }
+                else
+                {
+                    auto it = std::find_if(used.begin(), used.end(), [&](auto& a)
+                                   { return scene.GetNodeName(node->GetParent()) == a.first; });
+                    auto item = it->second;
+                    item.push_back(i);
+                    sceneTree->addItem(item);
+                    used.push_back({ i, item });
+                }
+                auto children = node->GetChildren();
+                for(auto j : children)
+                    next.push_back(scene.GetNodeName(j));
             }
+            pending = next;
         }
         for(auto& i : names[1])
         {
             materialBox->addItem(i);
             sceneTree->addItem({ "Scene", "Materials", i });
         }
-        for(auto& i : names[2])
-        {
-            auto node = scene.GetLight(i);
-            if(!node->GetParent() || !node->GetChildren().empty())
-                sceneTree->addItem({ "Scene", "Objects", i });
-            if(!node->GetChildren().empty())
-            {
-                for(auto j : node->GetChildren())
-                    sceneTree->addItem({ "Scene", "Objects", i, scene.GetNodeName(j) });
-            }
-        }
         for(auto& i : sounds) sceneTree->addItem({ "Scene", "Sounds", i });
+    };
+
+	if(!projectFilename.empty())
+	{
+        lastPath = projectFilename.substr(0, projectFilename.find_last_of("/"));
+        scene.Load(projectFilename);
+        if(scene.GetNames()[2].empty())
+            scene.AddLight(&shadowSource, "shadowSource");
+
+        readSceneTree();
+        
         filenameEdit->setText(projectFilename.empty() ? "scene.json" : projectFilename);
     }
     else
@@ -1012,25 +1030,19 @@ int main()
             selectedWithShift.push_back(sceneTree->getSelectedItem());
             if(selectedWithShift.size() == 2)
             {
-                auto parent = selectedWithShift[1];
-                auto child = selectedWithShift[0];
-                auto parentNode = scene.GetNode(parent.back().toStdString());
-                auto childNode = scene.GetNode(child.back().toStdString());
+                auto parentNode = scene.GetNode(selectedWithShift[1].back().toStdString());
+                auto childNode = scene.GetNode(selectedWithShift[0].back().toStdString());
+
                 if(parentNode && childNode)
                 {
                     parentNode->AddChild(childNode);
                     childNode->SetParent(parentNode);
-                    if(childNode->GetParent())
-                    {
-                        sceneTree->removeItem(child, false);
-                        parent.push_back(child.back());
-                        sceneTree->addItem(parent);
-                    }
-                    else
-                    {
-                        sceneTree->removeItem(child, false);
-                        sceneTree->addItem({ "Scene", "Objects", child.back() });
-                    }
+                    
+                    sceneTree->removeAllItems();
+                    readSceneTree();
+                    auto scripts = scman.GetScripts();
+                    for(auto& i : scripts)
+                        sceneTree->addItem({ "Scripts", i });
                 }
                 selectedWithShift.clear();
             }
@@ -1283,9 +1295,11 @@ int main()
 			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem().back())
 			    {
                     scene.SetModelName(sceneTree->getSelectedItem().back().toStdString(), nameEdit->getText().toStdString());
-                    sceneTree->removeItem(sceneTree->getSelectedItem(), false);
-                    sceneTree->addItem({ "Scene", "Objects", nameEdit->getText() });
-                    sceneTree->selectItem({ "Scene", "Objects", nameEdit->getText() });
+                    sceneTree->removeAllItems();
+                    readSceneTree();
+                    auto scripts = scman.GetScripts();
+                    for(auto& i : scripts)
+                        sceneTree->addItem({ "Scripts", i });
                 
 				    nameEdit->setFocused(false);
 			    }
@@ -1402,9 +1416,11 @@ int main()
                     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem().back())
                     {
                         scene.SetLightName(sceneTree->getSelectedItem().back().toStdString(), lightNameEdit->getText().toStdString());
-                        sceneTree->removeItem(sceneTree->getSelectedItem(), false);
-                        sceneTree->addItem({ "Scene", "Objects", lightNameEdit->getText() });
-                        sceneTree->selectItem({ "Scene", "Objects", lightNameEdit->getText() });
+                        sceneTree->removeAllItems();
+                        readSceneTree();
+                        auto scripts = scman.GetScripts();
+                        for(auto& i : scripts)
+                            sceneTree->addItem({ "Scripts", i });
                     
                         lightNameEdit->setFocused(false);
                     }

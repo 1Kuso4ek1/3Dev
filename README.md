@@ -1,6 +1,6 @@
 # 3Dev
-![](https://img.shields.io/badge/3Dev-1.2.4-blue)
-![](https://img.shields.io/badge/3Dev_Editor-1.1.1-blue)
+![](https://img.shields.io/badge/3Dev-1.2.5-blue)
+![](https://img.shields.io/badge/3Dev_Editor-1.2.0-blue)
 ![](https://img.shields.io/badge/language-C++-green)
 ![](https://img.shields.io/github/license/1kuso4ek1/3Dev)
 ![](https://img.shields.io/github/issues/1kuso4ek1/3Dev)
@@ -22,6 +22,7 @@
 - Audio
 - Scripting with Angelscript
 - 3Dev Editor
+- Node-based hierarchy
 ## TODO
 TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)!
 ## Building

@@ -75,8 +75,8 @@ public:
 
     std::vector<Light*> GetShadowCastingLights();
 
-	// @return array of names, 0 - models, 1 - materials, 2 - lights
-    std::array<std::vector<std::string>, 3> GetNames();
+	// @return array of names, 0 - models, 1 - materials, 2 - lights, 3 - nodes
+    std::array<std::vector<std::string>, 4> GetNames();
 
 private:
     struct State

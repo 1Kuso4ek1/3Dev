@@ -170,21 +170,9 @@ void SceneManager::Save(std::string filename, bool relativePaths)
         for(int j = 0; j < materialNames.size(); j++)
             data["objects"]["models"][counter]["material"][j]["name"] = materialNames[j];
         for(int j = 0; j < i.second->GetChildren().size(); j++)
-        {
-            auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == i.second->GetChildren()[j]; });
-            if(it != models.end())
-                data["objects"]["models"][counter]["children"][j] = it->first;
-            if(i.second->GetChildren()[j] == camera)
-                data["objects"]["models"][counter]["children"][j] = "camera";
-        }
+            data["objects"]["models"][counter]["children"][j] = GetNodeName(i.second->GetChildren()[j]);
         if(i.second->GetParent())
-        {
-            auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == i.second->GetParent(); });
-            if(it != models.end())
-                data["objects"]["models"][counter]["parent"] = it->first;
-            if(i.second->GetParent() == camera)
-                data["objects"]["models"][counter]["parent"] = "camera";
-        }
+            data["objects"]["models"][counter]["parent"] = GetNodeName(i.second->GetParent());
 
         counter++;
     }
@@ -196,17 +184,9 @@ void SceneManager::Save(std::string filename, bool relativePaths)
         data["lights"][counter]["name"] = i.first;
 
         for(int j = 0; j < i.second->GetChildren().size(); j++)
-        {
-            auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == i.second->GetChildren()[j]; });
-            if(it != models.end())
-                data["lights"][counter]["children"][j] = it->first;
-        }
+            data["lights"][counter]["children"][j] = GetNodeName(i.second->GetChildren()[j]);
         if(i.second->GetParent())
-        {
-            auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == i.second->GetParent(); });
-            if(it != models.end())
-                data["lights"][counter]["parent"] = it->first;
-        }
+            data["lights"][counter]["parent"] = GetNodeName(i.second->GetParent());
 
         counter++;
     }
@@ -215,17 +195,9 @@ void SceneManager::Save(std::string filename, bool relativePaths)
     data["camera"] = camera->Serialize();
 
     for(int j = 0; j < camera->GetChildren().size(); j++)
-    {
-        auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == camera->GetChildren()[j]; });
-        if(it != models.end())
-            data["camera"]["children"][j] = it->first;
-    }
+        data["camera"]["children"][j] = GetNodeName(camera->GetChildren()[j]);
     if(camera->GetParent())
-    {
-        auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == camera->GetParent(); });
-        if(it != models.end())
-            data["camera"]["parent"] = it->first;
-    }
+        data["camera"]["parent"] = GetNodeName(camera->GetParent());
 
     data["sounds"] = sManager->Serialize(relativePaths ? filename : "");
 
@@ -312,6 +284,7 @@ void SceneManager::Load(std::string filename)
         lightsVector.push_back(lights[name]);
         counter++;
     }
+    counter = 0;
 
     camera->Deserialize(data["camera"]);
 
@@ -319,17 +292,9 @@ void SceneManager::Load(std::string filename)
     {
         auto model = GetModel(data["objects"]["models"][counter]["name"].asString());
         for(auto& i : data["objects"]["models"][counter]["children"])
-        {
-            auto it = nodes.find(i.asString());
-            if(it != nodes.end())
-                model->AddChild(it->second);
-        }
+            model->AddChild(GetNode(i.asString()));
         if(!data["objects"]["models"][counter]["parent"].empty())
-        {
-            auto it = nodes.find(data["objects"]["models"][counter]["parent"].asString());
-            if(it != nodes.end())
-                model->SetParent(it->second);
-        }
+            model->SetParent(GetNode(data["objects"]["models"][counter]["parent"].asString()));
         counter++;
     }
     counter = 0;
@@ -338,33 +303,17 @@ void SceneManager::Load(std::string filename)
     {
         auto light = GetLight(data["lights"][counter]["name"].asString());
         for(auto& i : data["lights"][counter]["children"])
-        {
-            auto it = nodes.find(i.asString());
-            if(it != nodes.end())
-                light->AddChild(it->second);
-        }
+            light->AddChild(GetNode(i.asString()));
         if(!data["lights"][counter]["parent"].empty())
-        {
-            auto it = nodes.find(data["lights"][counter]["parent"].asString());
-            if(it != nodes.end())
-                light->SetParent(it->second);
-        }
+            light->SetParent(GetNode(data["lights"][counter]["parent"].asString()));
         counter++;
     }
     counter = 0;
 
     for(auto& i : data["camera"]["children"])
-    {
-        auto it = nodes.find(i.asString());
-        if(it != nodes.end())
-            camera->AddChild(it->second);
-    }
+        camera->AddChild(GetNode(i.asString()));
     if(!data["camera"]["parent"].empty())
-    {
-        auto it = nodes.find(data["camera"]["parent"].asString());
-        if(it != nodes.end())
-            camera->SetParent(it->second);
-    }
+        camera->SetParent(GetNode(data["camera"]["parent"].asString()));
 
     sManager->Deserialize(data["sounds"]);
 }
@@ -649,9 +598,9 @@ void SceneManager::SetLightName(std::string name, std::string newName)
         Log::Write("Could not find a light with name \"" + name + "\"", Log::Type::Warning);
 }
 
-std::array<std::vector<std::string>, 3> SceneManager::GetNames()
+std::array<std::vector<std::string>, 4> SceneManager::GetNames()
 {
-	std::array<std::vector<std::string>, 3> ret;
+	std::array<std::vector<std::string>, 4> ret;
     std::vector<std::string> tmp;
     for(auto& i : models)
         tmp.push_back(i.first);
@@ -662,6 +611,9 @@ std::array<std::vector<std::string>, 3> SceneManager::GetNames()
     for(auto& i : lights)
         tmp.push_back(i.first);
     ret[2] = tmp; tmp.clear();
+    for(auto& i : nodes)
+        tmp.push_back(i.first);
+    ret[3] = tmp; tmp.clear();
     return ret;
 }
 
