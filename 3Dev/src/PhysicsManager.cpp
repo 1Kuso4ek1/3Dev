@@ -64,6 +64,11 @@ rp3d::HingeJoint* PhysicsManager::CreateHingeJoint(rp3d::HingeJointInfo info)
     return dynamic_cast<rp3d::HingeJoint*>(world->createJoint(info));
 }
 
+rp3d::FixedJoint* PhysicsManager::CreateFixedJoint(rp3d::FixedJointInfo info)
+{
+    return dynamic_cast<rp3d::FixedJoint*>(world->createJoint(info));
+}
+
 rp3d::SliderJoint* PhysicsManager::CreateSliderJoint(rp3d::SliderJointInfo info)
 {
     return dynamic_cast<rp3d::SliderJoint*>(world->createJoint(info));

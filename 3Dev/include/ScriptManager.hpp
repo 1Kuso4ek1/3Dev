@@ -50,7 +50,7 @@ private:
     void RegisterTransform();
     void RegisterRandom();
     void RegisterRay();
-    void RegisterHingeJoint();
+    void RegisterJoints();
     void RegisterClock();
     void RegisterSoundManager();
     void RegisterEngine();

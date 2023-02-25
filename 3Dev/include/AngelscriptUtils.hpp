@@ -97,6 +97,21 @@ static void MakeHingeJointInfo(rp3d::RigidBody* r, rp3d::RigidBody* r1, const rp
     new(info) rp3d::HingeJointInfo(r, r1, v, v1);
 }
 
+static void MakeBallAndSocketJointInfo(rp3d::RigidBody* r, rp3d::RigidBody* r1, const rp3d::Vector3& v, rp3d::BallAndSocketJointInfo* info)
+{
+    new(info) rp3d::BallAndSocketJointInfo(r, r1, v);
+}
+
+static void MakeFixedJointInfo(rp3d::RigidBody* r, rp3d::RigidBody* r1, const rp3d::Vector3& v, rp3d::FixedJointInfo* info)
+{
+    new(info) rp3d::FixedJointInfo(r, r1, v);
+}
+
+static void MakeSliderJointInfo(rp3d::RigidBody* r, rp3d::RigidBody* r1, const rp3d::Vector3& v, const rp3d::Vector3& v1, rp3d::SliderJointInfo* info)
+{
+    new(info) rp3d::SliderJointInfo(r, r1, v, v1);
+}
+
 static void MakeGui(sf::Window& window, tgui::Gui* gui) { new(gui) tgui::Gui(window); }
 
 static void OnPress(asIScriptFunction& func, tgui::Button* button)
@@ -138,4 +153,10 @@ static rp3d::Vector3 GetMaterialParameter(Material::Type parameter, Material* ma
         }
     }
     return rp3d::Vector3::zero();
+}
+
+static void SetPhysicalMaterial(const rp3d::Material& mat, rp3d::RigidBody* b)
+{
+    for(int i = 0; i < b->getNbColliders(); i++)    
+        b->getCollider(i)->setMaterial(mat);
 }

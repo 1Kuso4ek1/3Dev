@@ -83,6 +83,8 @@ public:
      */
     rp3d::HingeJoint* CreateHingeJoint(rp3d::HingeJointInfo info);
 
+    rp3d::FixedJoint* CreateFixedJoint(rp3d::FixedJointInfo info);
+
     /*
      * @param info information about slider joint
      * @return pointer to the slider joint object

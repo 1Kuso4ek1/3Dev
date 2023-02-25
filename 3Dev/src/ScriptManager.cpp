@@ -17,7 +17,7 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterTransform();
     RegisterRay();
     RegisterRigidBody();
-    RegisterHingeJoint();
+    RegisterJoints();
     RegisterPhysicsManager();
     RegisterSoundManager();
     RegisterCamera();
@@ -331,6 +331,17 @@ void ScriptManager::RegisterRigidBody()
 
     AddTypeConstructor("AABB", "void f(const Vector3& in, const Vector3& in)", WRAP_OBJ_LAST(MakeAABB));
 
+    AddValueType("PhysicalMaterial", sizeof(rp3d::Material), asGetTypeTraits<rp3d::Material>() | asOBJ_POD,
+    {
+        { "float getBounciness()", WRAP_MFN(rp3d::Material, getBounciness) },
+        { "void setBounciness(float)", WRAP_MFN(rp3d::Material, setBounciness) },
+        { "float getFrictionCoefficient()", WRAP_MFN(rp3d::Material, getFrictionCoefficient) },
+        { "void setFrictionCoefficient(float)", WRAP_MFN(rp3d::Material, setFrictionCoefficient) },
+        { "float getMassDensity()", WRAP_MFN(rp3d::Material, getMassDensity) },
+        { "void setMassDensity(float)", WRAP_MFN(rp3d::Material, setMassDensity) },
+        { "string to_string()", WRAP_MFN(rp3d::Material, to_string) }
+    }, {});
+
     AddEnum("BodyType", { "STATIC", "KINEMATIC", "DYNAMIC" });
     AddType("RigidBody", sizeof(rp3d::RigidBody),
     {
@@ -352,6 +363,7 @@ void ScriptManager::RegisterRigidBody()
         { "bool isActive()", WRAP_MFN(rp3d::RigidBody, isActive) },
         { "void setIsActive(bool)", WRAP_MFN(rp3d::RigidBody, setIsActive) },
         { "void setType(BodyType)", WRAP_MFN(rp3d::RigidBody, setType) },
+        { "void setMaterial(const PhysicalMaterial& in)", WRAP_OBJ_LAST(SetPhysicalMaterial) },
         { "AABB getAABB()", WRAP_MFN(rp3d::RigidBody, getAABB) },
         { "bool testAABBOverlap(const AABB& in)", WRAP_MFN(rp3d::RigidBody, testAABBOverlap) },
         { "bool raycast(const Ray& in, RaycastInfo& out)", WRAP_MFN(rp3d::RigidBody, raycast) }
@@ -437,7 +449,10 @@ void ScriptManager::RegisterPhysicsManager()
     AddType("PhysicsManager", sizeof(PhysicsManager),
     {
         { "void SetTimeStep(float)", WRAP_MFN(PhysicsManager, SetTimeStep) },
-        { "HingeJoint@ CreateHingeJoint(HingeJointInfo)", WRAP_MFN(PhysicsManager, CreateHingeJoint) }
+        { "HingeJoint@ CreateHingeJoint(HingeJointInfo)", WRAP_MFN(PhysicsManager, CreateHingeJoint) },
+        { "BallAndSocketJoint@ CreateBallAndSocketJoint(BallAndSocketJointInfo)", WRAP_MFN(PhysicsManager, CreateBallAndSocketJoint) },
+        { "FixedJoint@ CreateFixedJoint(FixedJointInfo)", WRAP_MFN(PhysicsManager, CreateFixedJoint) },
+        { "SliderJoint@ CreateSliderJoint(SliderJointInfo)", WRAP_MFN(PhysicsManager, CreateSliderJoint) }
     }, {});
 }
 
@@ -494,7 +509,7 @@ void ScriptManager::RegisterRay()
     AddTypeDestructor("RaycastInfo", "void f()", WRAP_OBJ_LAST(DestroyType<rp3d::RaycastInfo>));
 }
 
-void ScriptManager::RegisterHingeJoint()
+void ScriptManager::RegisterJoints()
 {
     AddValueType("HingeJointInfo", sizeof(rp3d::HingeJointInfo), asGetTypeTraits<rp3d::HingeJointInfo>() | asOBJ_POD, {}, {});
 
@@ -502,6 +517,32 @@ void ScriptManager::RegisterHingeJoint()
     AddTypeDestructor("HingeJointInfo", "void f()", WRAP_OBJ_LAST(DestroyType<rp3d::HingeJointInfo>));
 
     AddType("HingeJoint", sizeof(rp3d::HingeJoint), {}, {});
+
+    AddValueType("BallAndSocketJointInfo", sizeof(rp3d::BallAndSocketJointInfo), asGetTypeTraits<rp3d::BallAndSocketJointInfo>() | asOBJ_POD, {},
+    {
+        { "bool isUsingLocalSpaceAnchors", asOFFSET(rp3d::BallAndSocketJointInfo, isUsingLocalSpaceAnchors) },
+        { "Vector3 anchorPointBody1LocalSpace", asOFFSET(rp3d::BallAndSocketJointInfo, anchorPointBody1LocalSpace) },
+        { "Vector3 anchorPointBody2LocalSpace", asOFFSET(rp3d::BallAndSocketJointInfo, anchorPointBody2LocalSpace) }
+    });
+
+    AddTypeConstructor("BallAndSocketJointInfo", "void f(RigidBody@, RigidBody@, const Vector3& in)", WRAP_OBJ_LAST(MakeBallAndSocketJointInfo));
+    AddTypeDestructor("BallAndSocketJointInfo", "void f()", WRAP_OBJ_LAST(DestroyType<rp3d::BallAndSocketJointInfo>));
+
+    AddType("BallAndSocketJoint", sizeof(rp3d::BallAndSocketJoint), {}, {});
+
+    AddValueType("FixedJointInfo", sizeof(rp3d::FixedJointInfo), asGetTypeTraits<rp3d::FixedJointInfo>() | asOBJ_POD, {}, {});
+
+    AddTypeConstructor("FixedJointInfo", "void f(RigidBody@, RigidBody@, const Vector3& in)", WRAP_OBJ_LAST(MakeFixedJointInfo));
+    AddTypeDestructor("FixedJointInfo", "void f()", WRAP_OBJ_LAST(DestroyType<rp3d::FixedJointInfo>));
+
+    AddType("FixedJoint", sizeof(rp3d::FixedJoint), {}, {});
+
+    AddValueType("SliderJointInfo", sizeof(rp3d::SliderJointInfo), asGetTypeTraits<rp3d::SliderJointInfo>() | asOBJ_POD, {}, {});
+
+    AddTypeConstructor("SliderJointInfo", "void f(RigidBody@, RigidBody@, const Vector3& in, const Vector3& in)", WRAP_OBJ_LAST(MakeSliderJointInfo));
+    AddTypeDestructor("SliderJointInfo", "void f()", WRAP_OBJ_LAST(DestroyType<rp3d::SliderJointInfo>));
+
+    AddType("SliderJoint", sizeof(rp3d::SliderJoint), {}, {});
 }
 
 void ScriptManager::RegisterClock()
