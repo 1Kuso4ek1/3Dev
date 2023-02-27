@@ -255,6 +255,34 @@ void Model::SetIsDrawable(bool drawable)
     this->drawable = drawable;
 }
 
+void Model::AddChild(Node* child)
+{
+	auto it = std::find(children.begin(), children.end(), child);
+    if(it != children.end())
+	{
+		if(child->GetRigidBody() && body)
+		{
+			child->GetRigidBody()->setIsActive(true);
+			for(int i = 0; i < body->getNbColliders(); i++)
+			{
+				if(std::find(colliders.begin(), colliders.end(), body->getCollider(i)) == colliders.end()) // TODO: remove it?
+					body->removeCollider(body->getCollider(i));
+			}
+		}
+        children.erase(it);
+	}
+    else
+	{
+		if(child->GetRigidBody() && body)
+		{
+			child->GetRigidBody()->setIsActive(false);
+			for(int i = 0; i < child->GetRigidBody()->getNbColliders(); i++)
+				body->addCollider(child->GetRigidBody()->getCollider(i)->getCollisionShape(), child->GetTransform());
+		}
+		children.push_back(child);
+	}
+}
+
 void Model::CreateRigidBody()
 {
 	if(man) body = man->CreateRigidBody(transform);

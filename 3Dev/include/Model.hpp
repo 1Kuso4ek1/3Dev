@@ -68,6 +68,7 @@ public:
 	void SetShader(Shader* shader);
 	void SetPhysicsManager(PhysicsManager* man);
 	void SetIsDrawable(bool drawable);
+	void AddChild(Node* child) override;
 
 	void CreateRigidBody();
 
@@ -102,7 +103,7 @@ public:
 	Animation::State GetAnimationState(int anim = 0);
 
 	Shader* GetShader();
-	rp3d::RigidBody* GetRigidBody();
+	rp3d::RigidBody* GetRigidBody() override;
 
 	std::vector<Bone>& GetBones(int mesh = 0);
 	std::vector<glm::mat4>& GetPose(int mesh = 0);

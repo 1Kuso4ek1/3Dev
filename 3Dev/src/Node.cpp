@@ -17,6 +17,11 @@ void Node::AddChild(Node* child)
         children.push_back(child);
 }
 
+rp3d::RigidBody* Node::GetRigidBody()
+{
+    return nullptr;
+}
+
 Node* Node::GetParent()
 {
     return parent;
