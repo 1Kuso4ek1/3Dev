@@ -7,6 +7,8 @@ public:
     void SetParent(Node* parent);
     virtual void AddChild(Node* child);
 
+    virtual void Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass = false);
+
     Node* GetParent();
     std::vector<Node*> GetChildren();
 

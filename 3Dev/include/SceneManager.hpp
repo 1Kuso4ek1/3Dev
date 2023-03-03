@@ -111,7 +111,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Material>> materials; // for editor and scene saving
     std::unordered_map<std::string, Light*> lights;
 
-    std::vector<Light*> lightsVector; // for drawing
+    std::vector<Node*> lightsVector; // for drawing
 
     std::unordered_map<std::string, State> savedState;
 

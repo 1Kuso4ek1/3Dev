@@ -17,6 +17,11 @@ void Node::AddChild(Node* child)
         children.push_back(child);
 }
 
+void Node::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
+{
+    return;
+}
+
 rp3d::RigidBody* Node::GetRigidBody()
 {
     return nullptr;

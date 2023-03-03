@@ -160,3 +160,9 @@ static void SetPhysicalMaterial(const rp3d::Material& mat, rp3d::RigidBody* b)
     for(int i = 0; i < b->getNbColliders(); i++)    
         b->getCollider(i)->setMaterial(mat);
 }
+
+static rp3d::Vector3 EulerFromQuaternion(const rp3d::Quaternion& orientation)
+{
+    glm::vec3 euler = glm::eulerAngles(toglm(orientation));
+    return rp3d::Vector3(euler.x, euler.y, euler.z);
+}

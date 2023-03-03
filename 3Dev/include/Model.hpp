@@ -58,7 +58,7 @@ public:
 
 	void Load(std::string filename, unsigned int flags = 0);
 
-	void Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass = false);
+	void Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass = false) override;
 	void DrawSkybox();
 
 	void SetPosition(const rp3d::Vector3& position);
@@ -155,6 +155,7 @@ private:
 							 rp3d::ConcaveMeshShape*,
 							 rp3d::ConvexMeshShape*>> shapes;
 	std::vector<rp3d::Collider*> colliders;
+	std::unordered_map<Node*, std::vector<rp3d::Collider*>> childrenColliders;
 	rp3d::RigidBody* body = nullptr;
 	CollisionShapeType cstype = CollisionShapeType::Nothing;
 

@@ -22,7 +22,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool shadow
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-    std::for_each(models.begin(), models.end(), [&](auto p) { p.second->Draw(camera, lightsVector); });
+    std::for_each(models.begin(), models.end(), [&](auto p) 
+        { if(!p.second->GetParent()) p.second->Draw(camera, lightsVector); });
 
     if(skybox)
     {

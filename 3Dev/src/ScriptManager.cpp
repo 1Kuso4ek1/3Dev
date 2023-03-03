@@ -269,6 +269,7 @@ void ScriptManager::RegisterQuaternion()
     });
 
     AddFunction("Quaternion QuaternionFromEuler(const Vector3& in)", WRAP_FN_PR(rp3d::Quaternion::fromEulerAngles, (const rp3d::Vector3&), rp3d::Quaternion));
+    AddFunction("Vector3 EulerFromQuaternion(const Quaternion& in)", WRAP_FN(EulerFromQuaternion));
     AddFunction("Quaternion slerp(const Quaternion& in, const Quaternion& in, float)", WRAP_FN(rp3d::Quaternion::slerp));
 
     AddTypeConstructor("Quaternion", "void f()", WRAP_OBJ_LAST(MakeType<rp3d::Quaternion>));

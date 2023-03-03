@@ -106,7 +106,7 @@ void Model::Load(std::string filename, unsigned int flags)
 	this->filename = filename;
 }
 
-void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
+void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
 {
 	m->PushMatrix();
 
@@ -137,9 +137,9 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
             for(int i = 0; i < 32; i++)
 				if(i >= lights.size())
 					shader->SetUniform1i("lights[" + std::to_string(i) + "].isactive", 0);
-				else lights[i]->Update(shader, i);
+				else dynamic_cast<Light*>(lights[i])->Update(shader, i);
 
-			auto camPos = cam->GetPosition(true);
+			auto camPos = dynamic_cast<Camera*>(cam)->GetPosition(true);
             shader->SetUniform3f("campos", camPos.x, camPos.y, camPos.z);
             shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
 			if(meshes[mesh]->GetPose().size())
@@ -168,6 +168,9 @@ void Model::Draw(Camera* cam, std::vector<Light*> lights, bool transparencyPass)
     }
 
 	m->PopMatrix();
+
+	for(auto i : children)
+		i->Draw(cam, lights, transparencyPass);
 }
 
 void Model::DrawSkybox()
@@ -263,11 +266,9 @@ void Model::AddChild(Node* child)
 		if(child->GetRigidBody() && body)
 		{
 			child->GetRigidBody()->setIsActive(true);
-			for(int i = 0; i < body->getNbColliders(); i++)
-			{
-				if(std::find(colliders.begin(), colliders.end(), body->getCollider(i)) == colliders.end()) // TODO: remove it?
-					body->removeCollider(body->getCollider(i));
-			}
+			for(auto& i : childrenColliders[child])
+				body->removeCollider(i);
+			childrenColliders.erase(childrenColliders.find(child));
 		}
         children.erase(it);
 	}
@@ -277,7 +278,7 @@ void Model::AddChild(Node* child)
 		{
 			child->GetRigidBody()->setIsActive(false);
 			for(int i = 0; i < child->GetRigidBody()->getNbColliders(); i++)
-				body->addCollider(child->GetRigidBody()->getCollider(i)->getCollisionShape(), child->GetTransform());
+				childrenColliders[child].push_back(body->addCollider(child->GetRigidBody()->getCollider(i)->getCollisionShape(), child->GetTransform()));
 		}
 		children.push_back(child);
 	}
