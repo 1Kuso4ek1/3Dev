@@ -28,10 +28,11 @@ int main(int argc, char* argv[])
                   << "  -s <file>         Path to the scene file" << std::endl
                   << "  -o <file>         Name for the output image (output.png is default)" << std::endl
                   << "  -e <file>         Path to the hdri environment (${HOME}/.3Dev-Editor/default/hdri.hdr is default)" << std::endl
-                  << "  -w <number>       Width of the output (1280 is default)" << std::endl
-                  << "  -h <number>       Height of the output (720 is default)" << std::endl
-                  << "  -b <number>       Size of a skybox side (1024 is default)" << std::endl
-                  << "  -x <number>       Exposure (1.5 is default)" << std::endl;
+                  << "  -w <int>          Width of the output (1280 is default)" << std::endl
+                  << "  -h <int>          Height of the output (720 is default)" << std::endl
+                  << "  -b <int>          Size of a skybox side (512 is default)" << std::endl
+                  << "  -x <float>        Exposure (1.5 is default)" << std::endl
+                  << "  -r <number>       Shadow map resolution (4096 is default)" << std::endl;
         return 0;
     }
 

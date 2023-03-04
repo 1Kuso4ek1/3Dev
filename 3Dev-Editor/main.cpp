@@ -1791,7 +1791,7 @@ int main()
         else engine.GetWindow().setFramerateLimit(5);
 
 		if(updateShadows) shadows.Update();
-        if(manageSceneRendering) scene.Draw();
+        if(manageSceneRendering) scene.Draw(nullptr, nullptr, !updateShadows);
 
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 0.5);

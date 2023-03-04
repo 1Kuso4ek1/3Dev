@@ -1,6 +1,6 @@
 #include <SceneManager.hpp>
 
-void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool shadows)
+void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool updatePhysics)
 {
     if(!fbo) fbo = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main);
 
@@ -8,7 +8,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool shadow
     auto size = fbo->GetSize();
     glViewport(0, 0, size.x, size.y);
 
-    if(updatePhysics && !shadows)
+    if(this->updatePhysics && updatePhysics)
     {
         float time = clock.restart().asSeconds();
         pManager->Update(time);
