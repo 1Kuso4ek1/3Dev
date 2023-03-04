@@ -613,6 +613,13 @@ void ScriptManager::RegisterEngine()
 void ScriptManager::RegisterTGUI()
 {
     SetDefaultNamespace("tgui");
+
+    AddValueType("String", sizeof(tgui::String), asGetTypeTraits<tgui::String>() | asOBJ_POD,
+    {
+        { "string toStdString()", WRAP_MFN(tgui::String, toStdString) }
+    }, {});
+    AddTypeConstructor("String", "void f(const string& in)", WRAP_OBJ_LAST(MakeString));
+
     AddValueType("Color", sizeof(tgui::Color), asGetTypeTraits<tgui::Color>() | asOBJ_POD, {}, {});
     AddTypeConstructor("Color", "void f(uint8, uint8, uint8, uint8 = 255)", WRAP_OBJ_LAST(MakeColor));
 
@@ -622,20 +629,20 @@ void ScriptManager::RegisterTGUI()
         { "void onPress(OnPress@)", WRAP_OBJ_LAST(OnPress) },
         { "void setImageScaling(float)", WRAP_MFN(tgui::BitmapButton, setImageScaling) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::BitmapButton, setEnabled) },
-        { "void setText(const string& in)", WRAP_MFN(tgui::BitmapButton, setText) }
+        { "void setText(const String& in)", WRAP_MFN(tgui::BitmapButton, setText) }
     }, {});
 
     AddType("Button", sizeof(tgui::Button),
     {
         { "void onPress(OnPress@)", WRAP_OBJ_LAST(OnPress) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Button, setEnabled) },
-        { "void setText(const string& in)", WRAP_MFN(tgui::Button, setText) }
+        { "void setText(const String& in)", WRAP_MFN(tgui::Button, setText) }
     }, {});
 
     AddType("ChatBox", sizeof(tgui::ChatBox),
     {
-        { "void addLine(const string& in)", WRAP_MFN_PR(tgui::ChatBox, addLine, (const tgui::String&), void) },
-        { "void addLine(const string& in, Color)", WRAP_MFN_PR(tgui::ChatBox, addLine, (const tgui::String&, tgui::Color), void) },
+        { "void addLine(const String& in)", WRAP_MFN_PR(tgui::ChatBox, addLine, (const tgui::String&), void) },
+        { "void addLine(const String& in, Color)", WRAP_MFN_PR(tgui::ChatBox, addLine, (const tgui::String&, tgui::Color), void) },
         { "bool removeLine(uint)", WRAP_MFN(tgui::ChatBox, removeLine) },
         { "void removeAllLines()", WRAP_MFN(tgui::ChatBox, removeAllLines) },
         { "uint getLineAmount()", WRAP_MFN(tgui::ChatBox, getLineAmount) },
@@ -656,19 +663,19 @@ void ScriptManager::RegisterTGUI()
 
     AddType("ComboBox", sizeof(tgui::ComboBox),
     {
-        { "void addItem(const string& in, const string& in = \"\")", WRAP_MFN(tgui::ComboBox, addItem) },
-        { "bool setSelectedItem(const string& in)", WRAP_MFN(tgui::ComboBox, setSelectedItem) },
-        { "bool setSelectedItemById(const string& in)", WRAP_MFN(tgui::ComboBox, setSelectedItemById) },
+        { "void addItem(const String& in, const string& in = \"\")", WRAP_MFN(tgui::ComboBox, addItem) },
+        { "bool setSelectedItem(const String& in)", WRAP_MFN(tgui::ComboBox, setSelectedItem) },
+        { "bool setSelectedItemById(const String& in)", WRAP_MFN(tgui::ComboBox, setSelectedItemById) },
         { "bool setSelectedItemByIndex(uint)", WRAP_MFN(tgui::ComboBox, setSelectedItemByIndex) },
-        { "string getSelectedItem()", WRAP_OBJ_LAST(GetSelectedItem<tgui::ComboBox>) },
+        { "String getSelectedItem()", WRAP_MFN(tgui::ComboBox, getSelectedItem) },
         { "void deselectItem()", WRAP_MFN(tgui::ComboBox, deselectItem) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ComboBox, setEnabled) }
     }, {});
 
     AddType("EditBox", sizeof(tgui::EditBox),
     {
-        { "string setText(const string& in)", WRAP_MFN(tgui::EditBox, setText) },
-        { "string getText()", WRAP_OBJ_LAST(GetText<tgui::EditBox>) },
+        { "void setText(const String& in)", WRAP_MFN(tgui::EditBox, setText) },
+        { "String getText()", WRAP_MFN(tgui::EditBox, getText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::EditBox, setEnabled) }
     }, {});
 
@@ -684,7 +691,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("Label", sizeof(tgui::Label),
     {
-        { "void setText(const string& in)", WRAP_MFN(tgui::Label, setText) },
+        { "void setText(const String& in)", WRAP_MFN(tgui::Label, setText) },
     }, {});
 
     AddType("ListBox", sizeof(tgui::ListBox),

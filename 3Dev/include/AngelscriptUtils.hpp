@@ -126,15 +126,10 @@ static void OnPress(asIScriptFunction& func, tgui::Button* button)
 }
 
 static void MakeColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a, tgui::Color* color) { new(color) tgui::Color(r, g, b, a); }
+static void MakeString(const std::string& str, tgui::String* string) { new(string) tgui::String(str); }
 
 template<class T>
 static T* GetWidget(std::string name, tgui::Gui* gui) { return gui->get<T>(name).get(); }
-
-template<class T>
-static std::string GetText(T* widget) { return widget->getText().toStdString(); }
-
-template<class T>
-static std::string GetSelectedItem(T* widget) { return widget->getSelectedItem().toStdString(); }
 
 static void SetMaterialParameter(rp3d::Vector3 value, Material::Type parameter, Material* material)
 {
