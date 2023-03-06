@@ -174,6 +174,16 @@ void SoundManager::SetAttenuation(float attenuation, std::string name, int id)
     }
 }
 
+void SoundManager::SetPitch(float pitch, std::string name, int id)
+{
+    auto it = std::find(buffers.begin(), buffers.end(), name);
+    if(it != buffers.end())
+    {
+        it->pitch = pitch;
+        it->UpdateActiveSound(sounds, id);
+    }
+}
+
 rp3d::Vector3 SoundManager::GetPosition(std::string name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
@@ -219,6 +229,14 @@ float SoundManager::GetAttenuation(std::string name, int id)
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
         return it->attenuation;
+    return 0;
+}
+
+float SoundManager::GetPitch(std::string name, int id)
+{
+    auto it = std::find(buffers.begin(), buffers.end(), name);
+    if(it != buffers.end())
+        return it->pitch;
     return 0;
 }
 

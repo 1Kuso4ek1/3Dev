@@ -353,6 +353,8 @@ void ScriptManager::RegisterRigidBody()
         { "Vector3 getAngularVelocity()", WRAP_MFN(rp3d::RigidBody, getAngularVelocity) },
         { "void setAngularVelocity(const Vector3& in)", WRAP_MFN(rp3d::RigidBody, setAngularVelocity) },
         { "void setAngularLockAxisFactor(const Vector3& in)", WRAP_MFN(rp3d::RigidBody, setAngularLockAxisFactor) },
+        { "void setLinearLockAxisFactor(const Vector3& in)", WRAP_MFN(rp3d::RigidBody, setLinearLockAxisFactor) },
+        { "void setLocalCenterOfMass(const Vector3& in)", WRAP_MFN(rp3d::RigidBody, setLocalCenterOfMass) },
         { "void applyLocalForceAtCenterOfMass(const Vector3& in)", WRAP_MFN(rp3d::RigidBody, applyLocalForceAtCenterOfMass) },
         { "void applyWorldForceAtCenterOfMass(const Vector3& in)", WRAP_MFN(rp3d::RigidBody, applyWorldForceAtCenterOfMass) },
         { "void applyLocalForceAtLocalPosition(const Vector3& in, const Vector3& in)", WRAP_MFN(rp3d::RigidBody, applyLocalForceAtLocalPosition) },
@@ -590,12 +592,14 @@ void ScriptManager::RegisterSoundManager()
         { "void SetVolume(float, string, int = 0)", WRAP_MFN(SoundManager, SetVolume) },
         { "void SetMinDistance(float, string, int = 0)", WRAP_MFN(SoundManager, SetMinDistance) },
         { "void SetAttenuation(float, string, int = 0)", WRAP_MFN(SoundManager, SetAttenuation) },
+        { "void SetPitch(float, string, int = 0)", WRAP_MFN(SoundManager, SetPitch) },
         { "Vector3 GetPosition(string, int = 0)", WRAP_MFN(SoundManager, GetPosition) },
         { "bool GetRelativeToListener(string, int = 0)", WRAP_MFN(SoundManager, GetRelativeToListener) },
         { "bool GetLoop(string, int = 0)", WRAP_MFN(SoundManager, GetLoop) },
         { "float GetVolume(string, int = 0)", WRAP_MFN(SoundManager, GetVolume) },
         { "float GetMinDistance(string, int = 0)", WRAP_MFN(SoundManager, GetMinDistance) },
         { "float GetAttenuation(string, int = 0)", WRAP_MFN(SoundManager, GetAttenuation) },
+        { "float GetPitch(string, int = 0)", WRAP_MFN(SoundManager, GetPitch) },
         { "void UpdateAll()", WRAP_MFN_PR(SoundManager, UpdateAll, (), void) },
         { "void UpdateAll(string)", WRAP_MFN_PR(SoundManager, UpdateAll, (std::string), void) }
     }, {});

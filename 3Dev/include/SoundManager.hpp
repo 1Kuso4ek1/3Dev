@@ -35,6 +35,7 @@ public:
     void SetVolume(float volume, std::string name, int id = 0);
     void SetMinDistance(float dist, std::string name, int id = 0);
     void SetAttenuation(float attenuation, std::string name, int id = 0);
+    void SetPitch(float pitch, std::string name, int id = 0);
 
     rp3d::Vector3 GetPosition(std::string name, int id = 0);
     bool GetRelativeToListener(std::string name, int id = 0);
@@ -42,6 +43,7 @@ public:
     float GetVolume(std::string name, int id = 0);
     float GetMinDistance(std::string name, int id = 0);
     float GetAttenuation(std::string name, int id = 0);
+    float GetPitch(std::string name, int id = 0);
 
     void UpdateAll();
     void UpdateAll(std::string name);
@@ -66,7 +68,7 @@ private:
 
         std::string name, filename;
 
-        float volume = 100, minDistance = 0, attenuation = 1;
+        float volume = 100, minDistance = 0, attenuation = 1, pitch = 1;
         bool loop = false, relativeToListener = false;
         
         rp3d::Vector3 pos;
@@ -81,6 +83,7 @@ private:
                 it->second->setVolume(volume);
                 it->second->setMinDistance(minDistance);
                 it->second->setAttenuation(attenuation);
+                it->second->setPitch(pitch);
                 it->second->setLoop(loop);
                 it->second->setRelativeToListener(relativeToListener);
                 it->second->setPosition(pos.x, pos.y, pos.z);
@@ -101,6 +104,7 @@ private:
                     it->second->setVolume(volume);
                     it->second->setMinDistance(minDistance);
                     it->second->setAttenuation(attenuation);
+                    it->second->setPitch(pitch);
                     it->second->setLoop(loop);
                     it->second->setRelativeToListener(relativeToListener);
                     it->second->setPosition(pos.x, pos.y, pos.z);
