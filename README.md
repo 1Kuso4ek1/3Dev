@@ -11,7 +11,7 @@
 ## Features
 - Rigid body physics
 - Loading a lot of model formats (.obj, .dae, .fbx and much more...)
-- Skeletal animation
+- Skeletal animation (troubleshooting below)
 - Post processing support
 - HDR, tone mapping and gamma-correction
 - FXAA
@@ -34,3 +34,13 @@ All building instructions are [here](https://1kuso4ek1.github.io/3Dev/build.html
 ![](./Screenshots/scr1.png)
 ![](./Screenshots/scr2.png)
 ![](./Screenshots/scr3.png)
+## Troubleshooting
+### Skeletal animation
+There's an issue: animations are just weird. Soon I will start working on a brand new animation system (3Dev 1.3.0), but for now, that's what you must do to get decent results:  
+1. Open your model in blender  
+2. Select 'weights paint' mode  
+3. Go weights -> Limit total -> Set limit to 1  ![image](https://user-images.githubusercontent.com/53074863/223760687-35435c8a-a78a-4c09-9f71-93a57250ccaa.png)  
+4. Export  
+5. Open it in the editor  
+6. Enjoy!  
+![image](https://user-images.githubusercontent.com/53074863/223761197-f381b4ef-311a-4653-835d-afd9d60c32b2.png)
