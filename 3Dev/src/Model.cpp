@@ -632,7 +632,7 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 		{
 			int id = bone->mWeights[j].mVertexId;
 			float weight = bone->mWeights[j].mWeight;
-			if(nbones[id] < 4)
+			if(nbones[id] < 2)
 			{
 				data[id].ids[nbones[id]] = i;
 				data[id].weights[nbones[id]] = weight;
