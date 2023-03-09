@@ -280,6 +280,8 @@ void ScriptManager::RegisterQuaternion()
 
 void ScriptManager::RegisterModel()
 {
+    AddEnum("AnimationState", { "Stopped", "Playing", "Paused" });
+
     AddType("Model", sizeof(Model),
     {
         { "void SetPosition(const Vector3& in)", WRAP_MFN(Model, SetPosition) },
@@ -296,9 +298,11 @@ void ScriptManager::RegisterModel()
         { "Quaternion GetOrientation()", WRAP_MFN(Model, GetOrientation) },
         { "Vector3 GetSize()", WRAP_MFN(Model, GetSize) },
         { "RigidBody@ GetRigidBody()", WRAP_MFN(Model, GetRigidBody) },
+        { "AnimationState GetAnimationState(int = 0)", WRAP_MFN(Model, GetAnimationState) },
         { "void PlayAnimation(int = 0)", WRAP_MFN(Model, PlayAnimation) },
         { "void StopAnimation(int = 0)", WRAP_MFN(Model, StopAnimation) },
         { "void PauseAnimation(int = 0)", WRAP_MFN(Model, PauseAnimation) },
+        { "void RepeatAnimation(bool, int = 0)", WRAP_MFN(Model, RepeatAnimation) },
         { "void AutoUpdateAnimation(bool = true)", WRAP_MFN(Model, AutoUpdateAnimation) },
         { "int GetMeshesCount()", WRAP_MFN(Model, GetMeshesCount) },
         { "int GetAnimationsCount()", WRAP_MFN(Model, GetAnimationsCount) }

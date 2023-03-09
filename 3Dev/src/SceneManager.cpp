@@ -24,6 +24,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 
     std::for_each(models.begin(), models.end(), [&](auto p) 
         { if(!p.second->GetParent()) p.second->Draw(camera, lightsVector); });
+    camera->Draw(camera, lightsVector);
 
     if(skybox)
     {
@@ -44,7 +45,9 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     size = transparency->GetSize();
     glViewport(0, 0, size.x, size.y);
 
-    std::for_each(models.begin(), models.end(), [&](auto p) { p.second->Draw(camera, lightsVector, true); });
+    std::for_each(models.begin(), models.end(), [&](auto p)
+        { if(!p.second->GetParent()) p.second->Draw(camera, lightsVector, true); });
+    camera->Draw(camera, lightsVector, true);
 
     transparency->Unbind();
     glEnable(GL_CULL_FACE);

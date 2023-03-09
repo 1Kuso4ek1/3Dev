@@ -486,6 +486,17 @@ void Model::PauseAnimation(int anim)
 	anims[anim].lastTime = anims[anim].GetTime();
 }
 
+void Model::RepeatAnimation(bool repeat, int anim)
+{
+	if(anim >= anims.size())
+    {
+        Log::Write("RepeatAnimation(): int anim is out of anims array bounds", Log::Type::Error);
+        return;
+    }
+
+	anims[anim].repeat = repeat;
+}
+
 void Model::AutoUpdateAnimation(bool update)
 {
 	autoUpdateAnimation = update;
@@ -725,8 +736,17 @@ void Model::CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 par
 
 				if(i.state == Animation::State::Playing && time >= i.duration)
 				{
-					time = i.time.restart().asSeconds() * i.tps;
-					i.lastTime = 0;
+					if(i.repeat)
+					{
+						time = i.time.restart().asSeconds() * i.tps;
+						i.lastTime = 0;
+					}
+					else
+					{
+						time = i.duration - 0.01;
+						i.state = Animation::State::Paused;
+						i.lastTime = i.duration - 0.01;
+					}
 				}
 
 				float dt = fmod(time, i.duration);

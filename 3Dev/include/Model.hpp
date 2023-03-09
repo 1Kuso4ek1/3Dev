@@ -86,8 +86,8 @@ public:
 	void StopAnimation(int anim = 0);
 	void PauseAnimation(int anim = 0);
 
+	void RepeatAnimation(bool repeat, int anim = 0);
 	void AutoUpdateAnimation(bool update = true);
-
 	void UpdateAnimation();
 
 	int GetMeshesCount();

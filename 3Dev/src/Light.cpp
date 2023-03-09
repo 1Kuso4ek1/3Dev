@@ -73,7 +73,7 @@ void Light::SetIsCastingPerspectiveShadows(bool perspectiveShadows)
 void Light::Update(Shader* shader, int lightnum) 
 {
 	auto tr = Node::GetFinalTransform(this);
-	auto pos = (GetTransform() * tr).getPosition();
+	auto pos = (tr * GetTransform()).getPosition();
 
 	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].color", color.x, color.y, color.z);
 	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].position", pos.x, pos.y, pos.z);
