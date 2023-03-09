@@ -9,6 +9,12 @@ Model::Model(bool defaultCubeMesh)
 	}
 }
 
+Model::~Model()
+{
+	if(man && body)
+		man->GetWorld()->destroyRigidBody(body);
+}
+
 Model::Model(Model* model)
 {
 	autoUpdateAnimation = model->autoUpdateAnimation;
