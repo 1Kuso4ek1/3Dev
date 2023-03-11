@@ -80,7 +80,8 @@ Model::Model(std::string filename, std::vector<Material*> mat, unsigned int flag
 void Model::Load(std::string filename, unsigned int flags)
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(filename, flags);
+	importer.SetPropertyInteger(AI_CONFIG_PP_LBW_MAX_WEIGHTS, 1);
+	const aiScene* scene = importer.ReadFile(filename, flags | aiProcess_LimitBoneWeights);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		Log::Write("Error while importing '" + filename + "': " + importer.GetErrorString(), Log::Type::Critical);
 
@@ -649,7 +650,7 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 		{
 			int id = bone->mWeights[j].mVertexId;
 			float weight = bone->mWeights[j].mWeight;
-			if(nbones[id] < 2)
+			if(nbones[id] < 4)
 			{
 				data[id].ids[nbones[id]] = i;
 				data[id].weights[nbones[id]] = weight;
