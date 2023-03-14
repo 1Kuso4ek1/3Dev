@@ -144,15 +144,9 @@ void ScriptManager::Load(std::string filename)
         scripts.push_back(std::filesystem::absolute(data["scripts"][i].asString()).string());
 }
 
-bool ScriptManager::LoadScript(std::string filename)
+void ScriptManager::LoadScript(std::string filename)
 {
-    CScriptBuilder temp;
-    temp.StartNewModule(engine, "temp");
-    temp.AddSectionFromFile(filename.c_str());
-    bool ret = temp.BuildModule() >= 0;
     scripts.push_back(filename);
-    engine->DiscardModule("temp");
-    return ret;
 }
 
 void ScriptManager::Build()

@@ -24,7 +24,7 @@ public:
     void Save(std::string filename, bool relativePaths = false);
     void Load(std::string filename);
 
-    bool LoadScript(std::string filename);
+    void LoadScript(std::string filename);
     void Build();
     bool IsBuildSucceded();
 
