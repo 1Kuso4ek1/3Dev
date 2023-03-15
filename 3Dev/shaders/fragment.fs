@@ -210,6 +210,7 @@ void main()
     vec3 diffuse = irr * alb;
     vec3 ambient = ((kdif * diffuse) + spc) * ao;
 
-    total += ambient;
-    color = vec4((emission + total) * (1.0 - shadow + ambient), (alpha < 1.0 ? alpha + ((total.x + total.y, + total.z) / 3.0) : 1.0));
+    total += ambient / 2;
+	total += emission;
+    color = vec4(total * (1.0 - shadow) + ambient / 2, (alpha < 1.0 ? alpha + ((total.x + total.y, + total.z) / 3.0) : 1.0));
 }
