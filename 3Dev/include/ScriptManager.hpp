@@ -56,6 +56,7 @@ private:
     void RegisterEngine();
     void RegisterTGUI();
     void RegisterMaterial();
+    void RegisterNetwork();
 
     bool buildSucceded = false;
 

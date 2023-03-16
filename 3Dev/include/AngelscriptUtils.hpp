@@ -161,3 +161,8 @@ static rp3d::Vector3 EulerFromQuaternion(const rp3d::Quaternion& orientation)
     glm::vec3 euler = glm::eulerAngles(toglm(orientation));
     return rp3d::Vector3(euler.x, euler.y, euler.z);
 }
+
+static void MakeIpAddress(const std::string& str, sf::IpAddress* addr)
+{
+    new(addr) sf::IpAddress(str);
+}

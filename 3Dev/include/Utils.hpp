@@ -11,6 +11,7 @@
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics/Image.hpp>
+#include <SFML/Network.hpp>
 
 #include <assimp/BaseImporter.h>
 #include <assimp/Importer.hpp>
