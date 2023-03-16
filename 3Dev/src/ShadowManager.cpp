@@ -34,6 +34,8 @@ void ShadowManager::Update()
             closestLight = i;
     }
     
+    if(closestLight->GetParent())
+        closestLight->CalcLightSpaceMatrix();
     depthShader->SetUniformMatrix4("light", closestLight->GetLightSpaceMatrix());
 
     scene->Draw(depthBuffer.get(), nullptr);

@@ -47,12 +47,15 @@ void Light::CalcLightSpaceMatrix()
 {
 	glm::mat4 projection;
 
+	auto tr = Node::GetFinalTransform(this);
+	auto pos = (tr * GetTransform()).getPosition();
+
 	if(perspectiveShadows)
 		projection = glm::perspective(glm::radians(90.0), 1.0, 0.01, 1000.0);
 	else 
 		projection = glm::ortho(-40.0, 40.0, -40.0, 40.0, 0.01, 1000.0);
 	
-	glm::mat4 view = glm::lookAt(toglm(position), toglm(direction), glm::vec3(0.0, 1.0, 0.0));
+	glm::mat4 view = glm::lookAt(toglm(pos), toglm(direction), glm::vec3(0.0, 1.0, 0.0));
 	lightSpaceMatrix = projection * view;
 }
 

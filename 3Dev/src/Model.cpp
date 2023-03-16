@@ -99,9 +99,10 @@ void Model::Load(std::string filename, unsigned int flags)
         colliders.resize(meshes.size(), nullptr);
     }
 
-	Log::Write("Meshes loaded: " + std::to_string(meshes.size()), Log::Type::Info);
-	Log::Write("Bones loaded: " + std::to_string(meshes[0]->GetBones().size()), Log::Type::Info);
-	Log::Write("Animations loaded: " + std::to_string(anims.size()), Log::Type::Info);
+	Log::Write("Model " + filename + " loaded:\n" + 
+			   "        Meshes: " + std::to_string(meshes.size()) + '\n' +
+			   "        Bones: " + std::to_string(meshes[0]->GetBones().size()) + '\n' +
+			   "        Animations: " + std::to_string(anims.size()), Log::Type::Info);
 
 	if(mat.empty()) Log::Write("Empty material array passed", Log::Type::Critical);
 	if(mat.size() != meshes.size())
@@ -666,10 +667,6 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 		if(total > 0.0f)
 			data[i].weights /= total;
 	}
-
-	Log::Write("Mesh vertices: " + std::to_string(mesh->mNumVertices), Log::Type::Info);
-	Log::Write("Mesh faces: " + std::to_string(mesh->mNumFaces), Log::Type::Info);
-	Log::Write("Mesh bones: " + std::to_string(mesh->mNumBones), Log::Type::Info);
 
 	std::vector<Bone> bones;
 	FindBoneNodes(node, boneMap, bones);
