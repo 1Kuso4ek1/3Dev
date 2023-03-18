@@ -634,10 +634,9 @@ int main()
         auto scripts = scman.GetScripts();
         for(auto& i : scripts)
         {
-            std::string filename = i.substr(i.find_last_of("/") + 1, i.size());
+            std::string filename = std::filesystem::path(i).filename().string();
             sceneTree->addItem({ "Scripts", filename });
             std::ifstream file(i);
-            //code[filename] = std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
             std::copy(std::istreambuf_iterator<char>(file),
                       std::istreambuf_iterator<char>(),
                       std::back_inserter(code[filename]));
