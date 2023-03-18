@@ -59,6 +59,7 @@ install(FILES
 install(FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/themes/Black.txt
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/themes/Black.png
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/themes/SourceCodePro-Regular.ttf
     DESTINATION ${HOME_PATH}/.3Dev-Editor/gui/themes
 )
 

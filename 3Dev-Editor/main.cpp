@@ -13,6 +13,9 @@ std::string projectDir;
 
 bool disableShortcuts = false;
 
+std::unordered_map<std::string, std::string> code;
+std::string currentFile;
+
 void SaveProperties(Json::Value data)
 {
     std::ofstream file(homeFolder + "properties.json");
@@ -186,6 +189,10 @@ int main()
 
     viewportWindow->add(viewport);
 
+    auto codeEditor = editor.get<tgui::ChildWindow>("codeEditor");
+    auto codeArea = editor.get<tgui::TextArea>("code");
+    auto fileTabs = editor.get<tgui::Tabs>("fileTabs");
+
 	auto messagesBox = editor.get<tgui::ChatBox>("messages");
 
     auto modelButton = editor.get<tgui::Button>("createModel");
@@ -308,6 +315,7 @@ int main()
     auto variablesList = editor.get<tgui::ListBox>("variables");
     auto valueEdit = editor.get<tgui::EditBox>("value");
     auto setValue = editor.get<tgui::Button>("setValue");
+    auto editScriptButton = editor.get<tgui::Button>("editScript");
     auto removeScriptButton = editor.get<tgui::Button>("removeScript");
 
     auto filenameEdit = editor.get<tgui::EditBox>("filename");
@@ -316,6 +324,8 @@ int main()
 
     auto modeLabel = editor.get<tgui::Label>("mode");
     modeLabel->moveToFront();
+
+    codeArea->enableMonospacedFontOptimization();
 
     std::shared_ptr<tgui::FileDialog> openFileDialog = nullptr;
 
@@ -623,7 +633,17 @@ int main()
         scman.Load(scPath);
         auto scripts = scman.GetScripts();
         for(auto& i : scripts)
-            sceneTree->addItem({ "Scripts", i });
+        {
+            std::string filename = i.substr(i.find_last_of("/") + 1, i.size());
+            sceneTree->addItem({ "Scripts", filename });
+            std::ifstream file(i);
+            //code[filename] = std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+            std::copy(std::istreambuf_iterator<char>(file),
+                      std::istreambuf_iterator<char>(),
+                      std::back_inserter(code[filename]));
+            codeArea->setText(code[filename]);
+            fileTabs->add(filename);
+        }
     }
     else scman.Save(lastPath + "/" + projectNameEdit->getText().toStdString() + "_scripts.json");
 
@@ -999,7 +1019,7 @@ int main()
 
 	scriptButton->onPress([&]()
 	{
-		openFileDialog = CreateFileDialog("Open file", 1);
+		openFileDialog = CreateFileDialog("Save file", 1, "Save", false);
     	editor.add(openFileDialog);
     	openFileDialog->onClose([&]()
   	    {
@@ -1007,12 +1027,28 @@ int main()
             {
                 auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
                 std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
-                if(!std::filesystem::exists(projectDir + "/assets/scripts/" + filename))
-                    std::filesystem::copy(path, projectDir + "/assets/scripts/" + filename);
                 path = projectDir + "/assets/scripts/" + filename;
+                if(!std::filesystem::exists(path))
+                {
+                    code[filename] = "";
+                    fileTabs->add(filename);
+                }
+                else
+                {
+                    std::ifstream file(path);
+                    std::copy(std::istreambuf_iterator<char>(file),
+                              std::istreambuf_iterator<char>(),
+                              std::back_inserter(code[filename]));
+                    fileTabs->add(filename);
+                    codeArea->setText(code[filename]);
+                }
                 scman.LoadScript(path);
-                sceneTree->addItem({ "Scripts", openFileDialog->getSelectedPaths()[0].getFilename() });
+                sceneTree->addItem({ "Scripts", filename });
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
+                currentFile = filename;
+
+                codeEditor->setVisible(true);
+                codeEditor->setEnabled(true);
             }
   	    	openFileDialog = nullptr;
   	    });
@@ -1136,10 +1172,42 @@ int main()
         if(type == "string") *(std::string*)(var) = valueEdit->getText().toStdString();
     });
 
+    auto saveFile = [&]()
+    {
+        if(currentFile.empty())
+            currentFile = fileTabs->getSelected().toStdString();
+        std::ofstream file(projectDir + "/assets/scripts/" + currentFile);
+        file << codeArea->getText().toStdString();
+        file.close();
+        code[currentFile] = codeArea->getText().toStdString();
+    };
+
+    fileTabs->onTabSelect([&]()
+    {
+        if(!currentFile.empty())
+            saveFile();
+        currentFile = fileTabs->getSelected().toStdString();
+        codeArea->setText(code[currentFile]);
+    });
+
+    editScriptButton->onPress([&]()
+	{
+        codeEditor->setVisible(true);
+        codeEditor->setEnabled(true);
+        fileTabs->select(sceneTree->getSelectedItem().back().toStdString());
+	});
+
     removeScriptButton->onPress([&]()
 	{
-        scman.RemoveScript(sceneTree->getSelectedItem().back().toStdString());
+        scman.RemoveScript(std::filesystem::absolute("assets/scripts/" + sceneTree->getSelectedItem().back().toStdString()).string());
+        fileTabs->remove(sceneTree->getSelectedItem().back().toStdString());
+        code[sceneTree->getSelectedItem().back().toStdString()] = "";
         sceneTree->removeItem(sceneTree->getSelectedItem(), false);
+        if(fileTabs->getTabsCount() == 0 && codeEditor->isEnabled())
+        {
+            codeEditor->setVisible(false);
+            codeEditor->setEnabled(false);
+        }
 	});
 
     fileDialogButton->onPress([&]()
@@ -1174,9 +1242,30 @@ int main()
 
     saveButton->onPress(saveProject);
 
+    codeEditor->onEscapeKeyPress([&]()
+    {
+        codeEditor->setVisible(false);
+        codeEditor->setEnabled(false);
+    });
+
     engine.EventLoop([&](sf::Event& event)
     {
+        bool focusCodeArea = false;
+        if(codeArea->isFocused())
+        {
+            if(Shortcut({ sf::Keyboard::Tab }, 0.1))
+            {
+                auto pos = codeArea->getCaretPosition();
+                auto text = codeArea->getText().toStdString();
+                text.insert(pos, "    ");
+                codeArea->setText(text);
+                codeArea->setCaretPosition(pos + 4);
+                focusCodeArea = true;
+            }
+        }
     	editor.handleEvent(event);
+        if(focusCodeArea)
+            codeArea->setFocused(true);
     	if(event.type == sf::Event::Closed)
     		engine.Close();
     });
@@ -1744,43 +1833,51 @@ int main()
         	engine.GetWindow().setMouseCursorGrabbed(false);
 
         	if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::S }))
-        		saveProject();
+            {
+                if(!codeEditor->isFocused())
+        		    saveProject();
+                else
+                    saveFile();
+            }
         }
         if(manageCameraLook) cam.Look();
 
-        if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::G }))
-            objectMode = !objectMode;
-
-        if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::C }))
+        if(viewportWindow->isFocused())
         {
-        	if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[0]))
-			{
-				buffer.name = sceneTree->getSelectedItem().back().toStdString();
-				buffer.object = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
-			}
-        }
+            if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::G }))
+                objectMode = !objectMode;
 
-        if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::V }))
-        {
-        	if(buffer.object)
-        	{
-				auto a = scene.CloneModel(buffer.object.get(), false, buffer.name + "-copy");
-				a->Move(a->GetSize());
-				std::string name = scene.GetLastAdded();
-		    	sceneTree->addItem({ "Scene", "Objects", name });
-		    	sceneTree->selectItem({ "Scene", "Objects", name });
-			}
-        }
+            if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::C }))
+            {
+                if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[0]))
+                {
+                    buffer.name = sceneTree->getSelectedItem().back().toStdString();
+                    buffer.object = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
+                }
+            }
 
-        if(objectMode)
-        {
-        	if(Shortcut({ sf::Keyboard::X })) axis = 0;
-        	if(Shortcut({ sf::Keyboard::Y })) axis = 1;
-        	if(Shortcut({ sf::Keyboard::Z })) axis = 2;
+            if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::V }))
+            {
+                if(buffer.object)
+                {
+                    auto a = scene.CloneModel(buffer.object.get(), false, buffer.name + "-copy");
+                    a->Move(a->GetSize());
+                    std::string name = scene.GetLastAdded();
+                    sceneTree->addItem({ "Scene", "Objects", name });
+                    sceneTree->selectItem({ "Scene", "Objects", name });
+                }
+            }
 
-        	if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::M })) param = 0;
-        	if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::R })) param = 1;
-        	if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::S })) param = 2;
+            if(objectMode)
+            {
+                if(Shortcut({ sf::Keyboard::X })) axis = 0;
+                if(Shortcut({ sf::Keyboard::Y })) axis = 1;
+                if(Shortcut({ sf::Keyboard::Z })) axis = 2;
+
+                if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::M })) param = 0;
+                if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::R })) param = 1;
+                if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::S })) param = 2;
+            }
         }
 
 		ListenerWrapper::SetPosition(cam.GetPosition());
