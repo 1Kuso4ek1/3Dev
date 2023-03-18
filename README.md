@@ -23,6 +23,7 @@
 - Scripting with Angelscript
 - 3Dev Editor
 - Node-based hierarchy
+- Built-in code editor
 ## TODO
 TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)!
 ## Building
