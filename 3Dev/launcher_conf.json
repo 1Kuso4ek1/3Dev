@@ -15,5 +15,10 @@
         "prefilteredSideSize" : 256,
         "shadowMapResolution" : 2048,
         "exposure" : 1.0
+    },
+    "log" :
+    {
+    	"init" : true,
+    	"silent" : true
     }
 }

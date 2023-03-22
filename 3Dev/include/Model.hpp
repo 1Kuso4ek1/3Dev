@@ -66,6 +66,7 @@ public:
 	void SetOrientation(const rp3d::Quaternion& orientation);
 	void SetSize(const rp3d::Vector3& size);
 	void SetMaterial(std::vector<Material*> mat);
+	void SetMaterialSlot(Material* mat, size_t slot = 0);
 	void SetShader(Shader* shader);
 	void SetPhysicsManager(PhysicsManager* man);
 	void SetIsDrawable(bool drawable);
@@ -77,17 +78,17 @@ public:
 	void Rotate(const rp3d::Quaternion& orientation);
 	void Expand(const rp3d::Vector3& size);
 
-	void CreateBoxShape(int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
-	void CreateSphereShape(int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
-	void CreateCapsuleShape(int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
-	void CreateConcaveShape(int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
-	void CreateConvexShape(int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
+	void CreateBoxShape(size_t mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
+	void CreateSphereShape(size_t mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
+	void CreateCapsuleShape(size_t mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
+	void CreateConcaveShape(size_t mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
+	void CreateConvexShape(size_t mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
 
-	void PlayAnimation(int anim = 0);
-	void StopAnimation(int anim = 0);
-	void PauseAnimation(int anim = 0);
+	void PlayAnimation(size_t anim = 0);
+	void StopAnimation(size_t anim = 0);
+	void PauseAnimation(size_t anim = 0);
 
-	void RepeatAnimation(bool repeat, int anim = 0);
+	void RepeatAnimation(bool repeat, size_t anim = 0);
 	void AutoUpdateAnimation(bool update = true);
 	void UpdateAnimation();
 
@@ -101,13 +102,13 @@ public:
 	rp3d::Quaternion GetOrientation();
 	rp3d::Vector3 GetSize();
 
-	Animation::State GetAnimationState(int anim = 0);
+	Animation::State GetAnimationState(size_t anim = 0);
 
 	Shader* GetShader();
 	rp3d::RigidBody* GetRigidBody() override;
 
-	std::vector<Bone>& GetBones(int mesh = 0);
-	std::vector<glm::mat4>& GetPose(int mesh = 0);
+	std::vector<Bone>& GetBones(size_t mesh = 0);
+	std::vector<glm::mat4>& GetPose(size_t mesh = 0);
 
 	std::string GetFilename();
 

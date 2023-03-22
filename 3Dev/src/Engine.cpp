@@ -6,6 +6,12 @@ Engine::Engine(bool initLog, bool silentLog)
         Log::Init("3Dev_log.txt", silentLog);
 }
 
+Engine::~Engine()
+{
+    Renderer::DeleteInstance();
+    TextureManager::DeleteInstance();
+}
+
 void Engine::Init()
 {
     glEnable(GL_BLEND);
@@ -19,13 +25,11 @@ void Engine::Init()
     glEnable(GL_NORMALIZE);
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glewInit();
-    Log::Write("Engine successfully initialized", Log::Type::Info);
 }
 
 void Engine::CreateWindow(float width, float height, std::string title, sf::Uint32 style)
 {
     window.create(sf::VideoMode(width, height), title, style, settings);
-    Log::Write("Window successfully created", Log::Type::Info);
 }
 
 tgui::Gui* Engine::CreateGui(std::string widgets)
@@ -58,8 +62,6 @@ void Engine::Loop(std::function<void(void)> loop)
 
 void Engine::Launch()
 {
-    Log::Write("Engine launched", Log::Type::Info);
-
     running = true;
 
     while(running)
@@ -93,9 +95,6 @@ void Engine::Launch()
 
         window.display();
     }
-
-    Log::Write("Engine closed", Log::Type::Info);
-    Renderer::DeleteInstance();
 }
 
 void Engine::Close()

@@ -138,7 +138,7 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
 
     if(drawable)
     {
-        for(int mesh = 0; mesh < meshes.size(); mesh++)
+        for(size_t mesh = 0; mesh < meshes.size(); mesh++)
         {
             shader->Bind();
             mat[mesh]->UpdateShader(shader);
@@ -249,6 +249,17 @@ void Model::SetMaterial(std::vector<Material*> mat)
 	this->mat = mat;
 }
 
+void Model::SetMaterialSlot(Material* mat, size_t slot)
+{
+	if(slot >= this->mat.size())
+	{
+		Log::Write("SetMaterial(): size_t slot is out of mat array bounds", Log::Type::Error);
+        return;
+	}
+
+	this->mat[slot] = mat;
+}
+
 void Model::SetShader(Shader* shader)
 {
 	this->shader = shader;
@@ -314,11 +325,11 @@ void Model::Expand(const rp3d::Vector3& size)
 	SetSize(this->size + size);
 }
 
-void Model::CreateBoxShape(int mesh, rp3d::Transform tr)
+void Model::CreateBoxShape(size_t mesh, rp3d::Transform tr)
 {
 	if(mesh >= meshes.size())
     {
-        Log::Write("CreateBoxShape(): int mesh is out of meshes array bounds", Log::Type::Error);
+        Log::Write("CreateBoxShape(): size_t mesh is out of meshes array bounds", Log::Type::Error);
         return;
     }
     if(!body)
@@ -338,11 +349,11 @@ void Model::CreateBoxShape(int mesh, rp3d::Transform tr)
 	cstype = CollisionShapeType::Box;
 }
 
-void Model::CreateSphereShape(int mesh, rp3d::Transform tr)
+void Model::CreateSphereShape(size_t mesh, rp3d::Transform tr)
 {
 	if(mesh >= meshes.size())
     {
-        Log::Write("CreateSphereShape(): int mesh is out of meshes array bounds", Log::Type::Error);
+        Log::Write("CreateSphereShape(): size_t mesh is out of meshes array bounds", Log::Type::Error);
         return;
     }
     if(!body)
@@ -362,11 +373,11 @@ void Model::CreateSphereShape(int mesh, rp3d::Transform tr)
 	cstype = CollisionShapeType::Sphere;
 }
 
-void Model::CreateCapsuleShape(int mesh, rp3d::Transform tr)
+void Model::CreateCapsuleShape(size_t mesh, rp3d::Transform tr)
 {
 	if(mesh >= meshes.size())
     {
-        Log::Write("CreateCapsuleShape(): int mesh is out of meshes array bounds", Log::Type::Error);
+        Log::Write("CreateCapsuleShape(): size_t mesh is out of meshes array bounds", Log::Type::Error);
         return;
     }
     if(!body)
@@ -386,11 +397,11 @@ void Model::CreateCapsuleShape(int mesh, rp3d::Transform tr)
 	cstype = CollisionShapeType::Capsule;
 }
 
-void Model::CreateConcaveShape(int mesh, rp3d::Transform tr)
+void Model::CreateConcaveShape(size_t mesh, rp3d::Transform tr)
 {
 	if(mesh >= meshes.size())
     {
-        Log::Write("CreateConcaveShape(): int mesh is out of meshes array bounds", Log::Type::Error);
+        Log::Write("CreateConcaveShape(): size_t mesh is out of meshes array bounds", Log::Type::Error);
         return;
     }
     if(!body)
@@ -404,12 +415,12 @@ void Model::CreateConcaveShape(int mesh, rp3d::Transform tr)
 			body->removeCollider(colliders[mesh]);
 
 	triangles = new rp3d::TriangleVertexArray(
-	meshes[mesh]->GetData().size(), &meshes[mesh]->GetData()[0], sizeof(Vertex),
-	&meshes[mesh]->GetData()[0].normal.x, sizeof(Vertex),
-	meshes[mesh]->GetIndices().size() / 3, &meshes[mesh]->GetIndices()[0], 3 * sizeof(GLuint),
-	rp3d::TriangleVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
-	rp3d::TriangleVertexArray::NormalDataType::NORMAL_FLOAT_TYPE,
-	rp3d::TriangleVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
+				meshes[mesh]->GetData().size(), &meshes[mesh]->GetData()[0], sizeof(Vertex),
+				&meshes[mesh]->GetData()[0].normal.x, sizeof(Vertex),
+				meshes[mesh]->GetIndices().size() / 3, &meshes[mesh]->GetIndices()[0], 3 * sizeof(GLuint),
+				rp3d::TriangleVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
+				rp3d::TriangleVertexArray::NormalDataType::NORMAL_FLOAT_TYPE,
+				rp3d::TriangleVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
 
 	tmesh = man->CreateTriangleMesh();
 	tmesh->addSubpart(triangles);
@@ -419,11 +430,11 @@ void Model::CreateConcaveShape(int mesh, rp3d::Transform tr)
 	cstype = CollisionShapeType::Concave;
 }
 
-void Model::CreateConvexShape(int mesh, rp3d::Transform tr)
+void Model::CreateConvexShape(size_t mesh, rp3d::Transform tr)
 {
     if(mesh >= meshes.size())
     {
-        Log::Write("CreateConvexShape(): int mesh is out of meshes array bounds", Log::Type::Error);
+        Log::Write("CreateConvexShape(): size_t mesh is out of meshes array bounds", Log::Type::Error);
         return;
     }
     if(!body)
@@ -442,11 +453,12 @@ void Model::CreateConvexShape(int mesh, rp3d::Transform tr)
 		faces[i].indexBase = i * 3;
 		faces[i].nbVertices = 3;
 	}
+
 	polygons = new rp3d::PolygonVertexArray(
-	meshes[mesh]->GetData().size(), &meshes[mesh]->GetData()[0], sizeof(Vertex),
-	&meshes[mesh]->GetIndices()[0], 3 * sizeof(GLuint), meshes[mesh]->GetIndices().size() / 3, faces,
-	rp3d::PolygonVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
-	rp3d::PolygonVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
+			   meshes[mesh]->GetData().size(), &meshes[mesh]->GetData()[0], sizeof(Vertex),
+			   &meshes[mesh]->GetIndices()[0], 3 * sizeof(GLuint), meshes[mesh]->GetIndices().size() / 3, faces,
+			   rp3d::PolygonVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
+			   rp3d::PolygonVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
 
 	pmesh = man->CreatePolyhedronMesh(polygons);
 	shapes[mesh] = man->CreateConvexMeshShape(pmesh, size);
@@ -454,11 +466,11 @@ void Model::CreateConvexShape(int mesh, rp3d::Transform tr)
 	cstype = CollisionShapeType::Convex;
 }
 
-void Model::PlayAnimation(int anim)
+void Model::PlayAnimation(size_t anim)
 {
 	if(anim >= anims.size())
     {
-        Log::Write("PlayAnimation(): int anim is out of anims array bounds", Log::Type::Error);
+        Log::Write("PlayAnimation(): size_t anim is out of anims array bounds", Log::Type::Error);
         return;
     }
 
@@ -469,11 +481,11 @@ void Model::PlayAnimation(int anim)
 	anims[anim].time.restart();
 }
 
-void Model::StopAnimation(int anim)
+void Model::StopAnimation(size_t anim)
 {
 	if(anim >= anims.size())
     {
-        Log::Write("StopAnimation(): int anim is out of anims array bounds", Log::Type::Error);
+        Log::Write("StopAnimation(): size_t anim is out of anims array bounds", Log::Type::Error);
         return;
     }
 
@@ -482,11 +494,11 @@ void Model::StopAnimation(int anim)
 		std::fill(i->GetPose().begin(), i->GetPose().end(), glm::mat4(1.0));
 }
 
-void Model::PauseAnimation(int anim)
+void Model::PauseAnimation(size_t anim)
 {
 	if(anim >= anims.size())
     {
-        Log::Write("PauseAnimation(): int anim is out of anims array bounds", Log::Type::Error);
+        Log::Write("PauseAnimation(): size_t anim is out of anims array bounds", Log::Type::Error);
         return;
     }
 
@@ -494,11 +506,11 @@ void Model::PauseAnimation(int anim)
 	anims[anim].lastTime = anims[anim].GetTime();
 }
 
-void Model::RepeatAnimation(bool repeat, int anim)
+void Model::RepeatAnimation(bool repeat, size_t anim)
 {
 	if(anim >= anims.size())
     {
-        Log::Write("RepeatAnimation(): int anim is out of anims array bounds", Log::Type::Error);
+        Log::Write("RepeatAnimation(): size_t anim is out of anims array bounds", Log::Type::Error);
         return;
     }
 
@@ -552,7 +564,7 @@ rp3d::Vector3 Model::GetSize()
 	return size;
 }
 
-Animation::State Model::GetAnimationState(int anim)
+Animation::State Model::GetAnimationState(size_t anim)
 {
 	return anims[anim].state;
 }
@@ -567,18 +579,18 @@ rp3d::RigidBody* Model::GetRigidBody()
 	return body;
 }
 
-std::vector<Bone>& Model::GetBones(int mesh)
+std::vector<Bone>& Model::GetBones(size_t mesh)
 {
 	if(mesh >= meshes.size())
-		Log::Write("int mesh is out of meshes array bounds!", Log::Type::Critical);
+		Log::Write("size_t mesh is out of meshes array bounds!", Log::Type::Critical);
 
 	return meshes[mesh]->GetBones();
 }
 
-std::vector<glm::mat4>& Model::GetPose(int mesh)
+std::vector<glm::mat4>& Model::GetPose(size_t mesh)
 {
 	if(mesh >= meshes.size())
-		Log::Write("int mesh is out of meshes array bounds!", Log::Type::Critical);
+		Log::Write("size_t mesh is out of meshes array bounds!", Log::Type::Critical);
 
 	return meshes[mesh]->GetPose();
 }
