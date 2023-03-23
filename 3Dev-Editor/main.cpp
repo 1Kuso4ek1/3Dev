@@ -1011,6 +1011,7 @@ int main()
                     TextureManager::GetInstance()->DeleteTexture(name);
                 }
                 mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::Opacity);
+                opacitySlider->setValue(1.0);
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
@@ -1682,7 +1683,7 @@ int main()
                             i.first = etmp.value();
                         break;
                     case Material::Type::Opacity:
-                        if(!std::holds_alternative<glm::vec3>(material->GetParameter(Material::Type::Opacity)) && opacity > 0.0)
+                        if(!std::holds_alternative<glm::vec3>(material->GetParameter(Material::Type::Opacity)) && opacity < 1.0)
                         {
                             auto name = TextureManager::GetInstance()->GetName(std::get<1>(i.first));
                             TextureManager::GetInstance()->DeleteTexture(name);
