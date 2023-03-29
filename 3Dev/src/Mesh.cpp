@@ -1,14 +1,14 @@
 #include <Mesh.hpp>
 
-Mesh::Mesh(std::vector<Vertex> data, std::vector<GLuint> indices, aiAABB aabb, std::vector<Bone> bones, glm::mat4 transformation)
-		   : data(data), indices(indices), aabb(aabb), bones(bones), transformation(transformation)
+Mesh::Mesh(std::vector<Vertex> data, std::vector<GLuint> indices, aiAABB aabb, /*std::vector<Bone> bones,*/ glm::mat4 transformation)
+		   : data(data), indices(indices), aabb(aabb), /*bones(bones),*/ transformation(transformation)
 {
 	SetupBuffers();
 
-	int nbones = 0;
+	/*int nbones = 0;
 	for(auto i : bones)
 		nbones += BonesCount(i);
-	pose.resize(nbones, glm::mat4(1.0));
+	pose.resize(nbones, glm::mat4(1.0));*/
 }
 
 Mesh::~Mesh()
@@ -35,7 +35,7 @@ std::vector<GLuint>& Mesh::GetIndices()
     return indices;
 }
 
-std::vector<Bone>& Mesh::GetBones()
+/*std::vector<Bone>& Mesh::GetBones()
 {
 	return bones;
 }
@@ -43,7 +43,7 @@ std::vector<Bone>& Mesh::GetBones()
 std::vector<glm::mat4>& Mesh::GetPose()
 {
 	return pose;
-}
+}*/
 
 glm::mat4 Mesh::GetTransformation()
 {
@@ -95,13 +95,13 @@ void Mesh::CreateCube()
 	SetupBuffers();
 }
 
-int Mesh::BonesCount(Bone& b)
+/*int Mesh::BonesCount(Bone& b)
 {
 	int n = 0; n++;
 	for(auto i : b.children)
 		n += BonesCount(i);
 	return n;
-}
+}*/
 
 void Mesh::SetupBuffers()
 {

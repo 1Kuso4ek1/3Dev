@@ -28,6 +28,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 #include <reactphysics3d/reactphysics3d.h>
 
@@ -67,4 +68,24 @@ static std::pair<int, float> TimeFraction(std::vector<float>& times, float dt)
 	float frac = (dt - times[seg - 1]) / (times[seg] - times[seg - 1]);
 
 	return { seg, frac };
+}
+
+static std::pair<rp3d::Transform, rp3d::Vector3> ToRP3DTransform(const glm::mat4& tr)
+{
+    rp3d::Transform ret;
+    rp3d::Vector3 size;
+
+    glm::vec3 pos, scale, skew;
+    glm::vec4 perspective;
+    glm::quat orient;
+
+    glm::decompose(tr, scale, orient, pos, skew, perspective);
+    orient = glm::conjugate(orient);
+
+    size = { scale.x, scale.y, scale.z };
+
+    ret.setPosition({ pos.x, pos.y, pos.z });
+    ret.setOrientation({ orient.x, orient.y, orient.z, orient.w });
+
+    return { ret, size };
 }

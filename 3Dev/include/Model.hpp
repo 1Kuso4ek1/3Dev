@@ -66,7 +66,7 @@ public:
 	void SetOrientation(const rp3d::Quaternion& orientation);
 	void SetSize(const rp3d::Vector3& size);
 	void SetMaterial(std::vector<Material*> mat);
-	void SetMaterialSlot(Material* mat, size_t slot = 0);
+	void SetMaterialSlot(Material* mat, unsigned int slot = 0);
 	void SetShader(Shader* shader);
 	void SetPhysicsManager(PhysicsManager* man);
 	void SetIsDrawable(bool drawable);
@@ -78,17 +78,17 @@ public:
 	void Rotate(const rp3d::Quaternion& orientation);
 	void Expand(const rp3d::Vector3& size);
 
-	void CreateBoxShape(size_t mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
-	void CreateSphereShape(size_t mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
-	void CreateCapsuleShape(size_t mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
-	void CreateConcaveShape(size_t mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
-	void CreateConvexShape(size_t mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
+	void CreateBoxShape(unsigned int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
+	void CreateSphereShape(unsigned int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
+	void CreateCapsuleShape(unsigned int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
+	void CreateConcaveShape(unsigned int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
+	void CreateConvexShape(unsigned int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
 
-	void PlayAnimation(size_t anim = 0);
-	void StopAnimation(size_t anim = 0);
-	void PauseAnimation(size_t anim = 0);
+	void PlayAnimation(unsigned int anim = 0);
+	void StopAnimation(unsigned int anim = 0);
+	void PauseAnimation(unsigned int anim = 0);
 
-	void RepeatAnimation(bool repeat, size_t anim = 0);
+	void RepeatAnimation(bool repeat, unsigned int anim = 0);
 	void AutoUpdateAnimation(bool update = true);
 	void UpdateAnimation();
 
@@ -102,13 +102,13 @@ public:
 	rp3d::Quaternion GetOrientation();
 	rp3d::Vector3 GetSize();
 
-	Animation::State GetAnimationState(size_t anim = 0);
+	Animation::State GetAnimationState(unsigned int anim = 0);
 
 	Shader* GetShader();
 	rp3d::RigidBody* GetRigidBody() override;
 
-	std::vector<Bone>& GetBones(size_t mesh = 0);
-	std::vector<glm::mat4>& GetPose(size_t mesh = 0);
+	std::vector<std::shared_ptr<Bone>> GetBones();
+	std::vector<glm::mat4>& GetPose();
 
 	std::string GetFilename();
 
@@ -131,15 +131,19 @@ private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
 	void ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode);
 	void LoadAnimations(const aiScene* scene);
-	void FindBoneNodes(aiNode* node, std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap, std::vector<Bone>& bones);
-	void CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 parent = glm::mat4(1.0));
+	void FindBoneNodes(aiNode* node, std::vector<std::shared_ptr<Bone>>& bones);
+	void CalculatePose(Bone* bone);
 
-	bool ProcessBone(aiNode* node, std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap, Bone& out);
+	bool ProcessBone(aiNode* node, std::shared_ptr<Bone>& out);
 
 	bool autoUpdateAnimation = true;
 	bool drawable = true;
 
 	std::vector<std::shared_ptr<Mesh>> meshes;
+	std::vector<std::shared_ptr<Bone>> bones;
+	std::vector<std::shared_ptr<Bone>> bonesChildren;
+	std::vector<glm::mat4> pose;
+	std::unordered_map<std::string, std::pair<int, glm::mat4>> bonemap;
 
 	Matrices* m = Renderer::GetInstance()->GetMatrices();
 	Shader* shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);

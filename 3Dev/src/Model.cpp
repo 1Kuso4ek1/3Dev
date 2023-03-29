@@ -89,9 +89,18 @@ void Model::Load(std::string filename, unsigned int flags)
 
 	meshes.clear();
 	anims.clear();
+	bones.clear();
 
 	ProcessNode(scene->mRootNode, scene);
 	LoadAnimations(scene);
+
+	for(auto i : bones)
+	{
+		//n += Node::GetHierarchySize(i.get());
+		auto ptr = i;
+		this->AddChild(ptr.get());
+	}
+	pose.resize(64);
 
 	if(man)
     {
@@ -101,7 +110,7 @@ void Model::Load(std::string filename, unsigned int flags)
 
 	Log::Write("Model " + filename + " loaded:\n" + 
 			   "        Meshes: " + std::to_string(meshes.size()) + '\n' +
-			   "        Bones: " + std::to_string(meshes[0]->GetBones().size()) + '\n' +
+			   "        Bones: " + std::to_string(bones.size()) + '\n' +
 			   "        Animations: " + std::to_string(anims.size()), Log::Type::Info);
 
 	if(mat.empty()) Log::Write("Empty material array passed", Log::Type::Critical);
@@ -138,7 +147,7 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
 
     if(drawable)
     {
-        for(size_t mesh = 0; mesh < meshes.size(); mesh++)
+        for(unsigned int mesh = 0; mesh < meshes.size(); mesh++)
         {
             shader->Bind();
             mat[mesh]->UpdateShader(shader);
@@ -150,9 +159,9 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
 			auto camPos = dynamic_cast<Camera*>(cam)->GetPosition(true);
             shader->SetUniform3f("campos", camPos.x, camPos.y, camPos.z);
             shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
-			if(meshes[mesh]->GetPose().size())
-            	shader->SetVectorOfUniformMatrix4("pose", meshes[mesh]->GetPose().size(), meshes[mesh]->GetPose());
-            shader->SetUniform1i("bones", !meshes[mesh]->GetBones().empty());
+			if(!pose.empty())
+            	shader->SetVectorOfUniformMatrix4("pose", pose.size(), pose);
+            shader->SetUniform1i("bones", !bones.empty());
             shader->SetUniform1i("drawTransparency", transparencyPass);
 
             m->UpdateShader(shader);
@@ -249,11 +258,11 @@ void Model::SetMaterial(std::vector<Material*> mat)
 	this->mat = mat;
 }
 
-void Model::SetMaterialSlot(Material* mat, size_t slot)
+void Model::SetMaterialSlot(Material* mat, unsigned int slot)
 {
 	if(slot >= this->mat.size())
 	{
-		Log::Write("SetMaterial(): size_t slot is out of mat array bounds", Log::Type::Error);
+		Log::Write("SetMaterial(): unsigned int slot is out of mat array bounds", Log::Type::Error);
         return;
 	}
 
@@ -279,6 +288,21 @@ void Model::SetIsDrawable(bool drawable)
 
 void Model::AddChild(Node* child)
 {
+	for(auto i : bones)
+		if(i.get() == child)
+		{
+			auto it = std::find(children.begin(), children.end(), child);
+			if(it != children.end())
+			{
+				(*it)->SetParent(nullptr);
+				children.erase(it);
+				return;
+			}
+			child->SetParent(this);
+			children.push_back(child);
+			return;
+		}
+
 	auto it = std::find(children.begin(), children.end(), child);
     if(it != children.end())
 	{
@@ -325,11 +349,11 @@ void Model::Expand(const rp3d::Vector3& size)
 	SetSize(this->size + size);
 }
 
-void Model::CreateBoxShape(size_t mesh, rp3d::Transform tr)
+void Model::CreateBoxShape(unsigned int mesh, rp3d::Transform tr)
 {
 	if(mesh >= meshes.size())
     {
-        Log::Write("CreateBoxShape(): size_t mesh is out of meshes array bounds", Log::Type::Error);
+        Log::Write("CreateBoxShape(): unsigned int mesh is out of meshes array bounds", Log::Type::Error);
         return;
     }
     if(!body)
@@ -349,11 +373,11 @@ void Model::CreateBoxShape(size_t mesh, rp3d::Transform tr)
 	cstype = CollisionShapeType::Box;
 }
 
-void Model::CreateSphereShape(size_t mesh, rp3d::Transform tr)
+void Model::CreateSphereShape(unsigned int mesh, rp3d::Transform tr)
 {
 	if(mesh >= meshes.size())
     {
-        Log::Write("CreateSphereShape(): size_t mesh is out of meshes array bounds", Log::Type::Error);
+        Log::Write("CreateSphereShape(): unsigned int mesh is out of meshes array bounds", Log::Type::Error);
         return;
     }
     if(!body)
@@ -373,11 +397,11 @@ void Model::CreateSphereShape(size_t mesh, rp3d::Transform tr)
 	cstype = CollisionShapeType::Sphere;
 }
 
-void Model::CreateCapsuleShape(size_t mesh, rp3d::Transform tr)
+void Model::CreateCapsuleShape(unsigned int mesh, rp3d::Transform tr)
 {
 	if(mesh >= meshes.size())
     {
-        Log::Write("CreateCapsuleShape(): size_t mesh is out of meshes array bounds", Log::Type::Error);
+        Log::Write("CreateCapsuleShape(): unsigned int mesh is out of meshes array bounds", Log::Type::Error);
         return;
     }
     if(!body)
@@ -397,11 +421,11 @@ void Model::CreateCapsuleShape(size_t mesh, rp3d::Transform tr)
 	cstype = CollisionShapeType::Capsule;
 }
 
-void Model::CreateConcaveShape(size_t mesh, rp3d::Transform tr)
+void Model::CreateConcaveShape(unsigned int mesh, rp3d::Transform tr)
 {
 	if(mesh >= meshes.size())
     {
-        Log::Write("CreateConcaveShape(): size_t mesh is out of meshes array bounds", Log::Type::Error);
+        Log::Write("CreateConcaveShape(): unsigned int mesh is out of meshes array bounds", Log::Type::Error);
         return;
     }
     if(!body)
@@ -430,11 +454,11 @@ void Model::CreateConcaveShape(size_t mesh, rp3d::Transform tr)
 	cstype = CollisionShapeType::Concave;
 }
 
-void Model::CreateConvexShape(size_t mesh, rp3d::Transform tr)
+void Model::CreateConvexShape(unsigned int mesh, rp3d::Transform tr)
 {
     if(mesh >= meshes.size())
     {
-        Log::Write("CreateConvexShape(): size_t mesh is out of meshes array bounds", Log::Type::Error);
+        Log::Write("CreateConvexShape(): unsigned int mesh is out of meshes array bounds", Log::Type::Error);
         return;
     }
     if(!body)
@@ -466,11 +490,11 @@ void Model::CreateConvexShape(size_t mesh, rp3d::Transform tr)
 	cstype = CollisionShapeType::Convex;
 }
 
-void Model::PlayAnimation(size_t anim)
+void Model::PlayAnimation(unsigned int anim)
 {
 	if(anim >= anims.size())
     {
-        Log::Write("PlayAnimation(): size_t anim is out of anims array bounds", Log::Type::Error);
+        Log::Write("PlayAnimation(): unsigned int anim is out of anims array bounds", Log::Type::Error);
         return;
     }
 
@@ -481,24 +505,24 @@ void Model::PlayAnimation(size_t anim)
 	anims[anim].time.restart();
 }
 
-void Model::StopAnimation(size_t anim)
+void Model::StopAnimation(unsigned int anim)
 {
 	if(anim >= anims.size())
     {
-        Log::Write("StopAnimation(): size_t anim is out of anims array bounds", Log::Type::Error);
+        Log::Write("StopAnimation(): unsigned int anim is out of anims array bounds", Log::Type::Error);
         return;
     }
 
 	anims[anim].state = Animation::State::Stopped;
 	for(auto& i : meshes)
-		std::fill(i->GetPose().begin(), i->GetPose().end(), glm::mat4(1.0));
+		std::fill(pose.begin(), pose.end(), glm::mat4(1.0));
 }
 
-void Model::PauseAnimation(size_t anim)
+void Model::PauseAnimation(unsigned int anim)
 {
 	if(anim >= anims.size())
     {
-        Log::Write("PauseAnimation(): size_t anim is out of anims array bounds", Log::Type::Error);
+        Log::Write("PauseAnimation(): unsigned int anim is out of anims array bounds", Log::Type::Error);
         return;
     }
 
@@ -506,11 +530,11 @@ void Model::PauseAnimation(size_t anim)
 	anims[anim].lastTime = anims[anim].GetTime();
 }
 
-void Model::RepeatAnimation(bool repeat, size_t anim)
+void Model::RepeatAnimation(bool repeat, unsigned int anim)
 {
 	if(anim >= anims.size())
     {
-        Log::Write("RepeatAnimation(): size_t anim is out of anims array bounds", Log::Type::Error);
+        Log::Write("RepeatAnimation(): unsigned int anim is out of anims array bounds", Log::Type::Error);
         return;
     }
 
@@ -524,9 +548,8 @@ void Model::AutoUpdateAnimation(bool update)
 
 void Model::UpdateAnimation()
 {
-	for(auto mesh : meshes)
-		for(auto i : mesh->GetBones())
-			CalculatePose(i, mesh, mesh->GetTransformation());
+	for(auto i : bones)
+		CalculatePose(i.get());
 }
 
 int Model::GetMeshesCount()
@@ -564,7 +587,7 @@ rp3d::Vector3 Model::GetSize()
 	return size;
 }
 
-Animation::State Model::GetAnimationState(size_t anim)
+Animation::State Model::GetAnimationState(unsigned int anim)
 {
 	return anims[anim].state;
 }
@@ -579,20 +602,14 @@ rp3d::RigidBody* Model::GetRigidBody()
 	return body;
 }
 
-std::vector<Bone>& Model::GetBones(size_t mesh)
+std::vector<std::shared_ptr<Bone>> Model::GetBones()
 {
-	if(mesh >= meshes.size())
-		Log::Write("size_t mesh is out of meshes array bounds!", Log::Type::Critical);
-
-	return meshes[mesh]->GetBones();
+	return bones;
 }
 
-std::vector<glm::mat4>& Model::GetPose(size_t mesh)
+std::vector<glm::mat4>& Model::GetPose()
 {
-	if(mesh >= meshes.size())
-		Log::Write("size_t mesh is out of meshes array bounds!", Log::Type::Critical);
-
-	return meshes[mesh]->GetPose();
+	return pose;
 }
 
 std::string Model::GetFilename()
@@ -625,8 +642,6 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 	for(int i = 0; i < 4; i++)
 		tr[i] = glm::normalize(tr[i]);
 
-	std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap;
-
 	for(int i = 0; i < mesh->mNumVertices; i++)
 	{
 		glm::vec3 pos = toglm(mesh->mVertices[i]),
@@ -643,9 +658,10 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 	std::string a;
 	if(mesh->mNumBones)
 	{
-		a = std::string(mesh->mBones[0]->mName.C_Str());
-		size_t tmp = a.find_first_of('_');
-		a.erase(a.begin() + tmp + 1, a.end());
+		/*a = std::string(mesh->mBones[0]->mName.C_Str());
+		unsigned int tmp = a.find_first_of('_');
+		if(tmp != std::string::npos)
+			a.erase(a.begin() + tmp + 1, a.end());*/
 	}
 
 	for(int i = 0; i < mesh->mNumBones; i++)
@@ -656,7 +672,7 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 			tmp = a + bone->mName.C_Str();
 		else tmp = bone->mName.C_Str();
 
-		boneMap[tmp] = { i, toglm(bone->mOffsetMatrix) };
+		bonemap[tmp] = { i, toglm(bone->mOffsetMatrix) };
 		std::vector<int> nbones;
 		nbones.resize(mesh->mNumVertices, 0);
 		for(int j = 0; j < bone->mNumWeights; j++)
@@ -680,9 +696,8 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 			data[i].weights /= total;
 	}
 
-	std::vector<Bone> bones;
-	FindBoneNodes(node, boneMap, bones);
-	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB, bones, tr));
+	FindBoneNodes(node, bones);
+	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB, /*bones,*/ tr));
 }
 
 void Model::LoadAnimations(const aiScene* scene)
@@ -720,26 +735,30 @@ void Model::LoadAnimations(const aiScene* scene)
 	}
 }
 
-void Model::FindBoneNodes(aiNode* node, std::unordered_map<std::string, std::pair<int, glm::mat4>> boneMap, std::vector<Bone>& bones)
+void Model::FindBoneNodes(aiNode* node, std::vector<std::shared_ptr<Bone>>& bones)
 {
-	Bone tmp;
-	if(ProcessBone(node, boneMap, tmp))
+	std::shared_ptr<Bone> tmp = nullptr;
+	if(ProcessBone(node, tmp))
 	{
 		bones.push_back(tmp);
 		return;
 	}
 
 	for(int i = 0; i < node->mNumChildren; i++)
-		FindBoneNodes(node->mChildren[i], boneMap, bones);
+		FindBoneNodes(node->mChildren[i], bones);
 }
 
-void Model::CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 parent)
+void Model::CalculatePose(Bone* bone/*, std::shared_ptr<Mesh>& mesh, glm::mat4 parent*/)
 {
+	bool foundAnim = false;
 	for(auto i : anims)
+	{
 		if(i.state == Animation::State::Playing || i.state == Animation::State::Paused)
-			if(i.keyframes.find(bone.name) != i.keyframes.end())
+		{
+			foundAnim = true;
+			if(i.keyframes.find(bone->GetName()) != i.keyframes.end())
 			{
-				Keyframe kf = i.keyframes[bone.name];
+				Keyframe kf = i.keyframes[bone->GetName()];
 
 				float time = 0;
 				if(i.state == Animation::State::Playing)
@@ -772,40 +791,83 @@ void Model::CalculatePose(Bone& bone, std::shared_ptr<Mesh>& mesh, glm::mat4 par
 				glm::quat rot = glm::slerp(kf.rotations[fraction.first - 1], kf.rotations[fraction.first], fraction.second);
 				glm::vec3 scale = glm::mix(kf.scales[fraction.first - 1], kf.scales[fraction.first], fraction.second);
 
-				glm::mat4 mpos = glm::translate(glm::mat4(1.0), pos),
+				/*glm::mat4 mpos = glm::translate(glm::mat4(1.0), pos),
 						  mscale = glm::scale(glm::mat4(1.0), scale),
 						  mrot = glm::toMat4(rot);
 
-				glm::mat4 localTransform = mpos * mrot * mscale;
-				glm::mat4 globalTransform = parent * localTransform;
+				glm::mat4 localTransform = mpos * mrot * mscale;*/
+				rp3d::Transform tr;
+				tr.setPosition({ pos.x, pos.y, pos.z });
+				tr.setOrientation({ rot.x, rot.y, rot.z, rot.w });
 
-				mesh->GetPose()[bone.id] = globalInverseTransform * globalTransform * bone.offset;
+				bone->SetTransform(tr);
+				auto globalTransform = Node::GetFinalTransform(bone);
+				auto finalTransform = globalTransform * bone->GetOffset();
+				
+				//auto finalTransform = Node::GetFinalTransform(bone);
+				glm::mat4 boneMat(1.0);
+				//glm::translate(boneMat, toglm(finalTransform.getPosition()));
+				boneMat = glm::toMat4(toglm(finalTransform.getOrientation()));
+				//glm::scale(boneMat, toglm(bone->GetSize()));
+				pose[bone->GetID()] = boneMat;
 
-				for(Bone& child : bone.children)
-					CalculatePose(child, mesh, globalTransform);
+				//mesh->GetPose()[bone->GetID()] = /*globalInverseTransform * */globalTransform * bone.offset;
+
+				for(auto child : bone->GetChildren())
+					CalculatePose(dynamic_cast<Bone*>(child));
 			}
 			else
 			{
-				glm::mat4 globalTransform = parent;
-				mesh->GetPose()[bone.id] = globalInverseTransform * globalTransform * bone.offset;
+				/*auto finalTransform = Node::GetFinalTransform(bone);
+				glm::mat4 boneMat(1.0);
+				glm::translate(boneMat, toglm(finalTransform.getPosition()));
+				boneMat = boneMat * glm::toMat4(toglm(finalTransform.getOrientation()));
+				glm::scale(boneMat, toglm(bone->GetSize()));
+				pose[bone->GetID()] = boneMat;*/
+				/*auto globalTransform = Node::GetFinalTransform(bone) * bone->GetOffset();
+				//bone->SetTransform(rp3d::Transform::identity());
+				//auto finalTransform = Node::GetFinalTransform(bone);
+				glm::mat4 boneMat(1.0);
+				//glm::translate(boneMat, toglm(finalTransform.getPosition()));
+				boneMat = boneMat * glm::toMat4(toglm(globalTransform.getOrientation()));
+				//glm::scale(boneMat, toglm(bone->GetSize()));
+				pose[bone->GetID()] = boneMat;
 
-				for(Bone& child : bone.children)
-					CalculatePose(child, mesh, globalTransform);
+				//auto globalTransform = Node::GetFinalTransform(bone);
+				//mesh->GetPose()[bone->GetID()] = globalInverseTransform * globalTransform * bone.offset;
+
+				for(auto child : bone->GetChildren())
+					CalculatePose(dynamic_cast<Bone*>(child));*/
 			}
+		}
+	}
+	if(!foundAnim)
+	{
+		/*auto globalTransform = Node::GetFinalTransform(bone) * bone->GetOffset();
+		glm::mat4 boneMat(1.0);
+		boneMat = boneMat * glm::toMat4(toglm(globalTransform.getOrientation()));
+		pose[bone->GetID()] = boneMat;
+
+		for(auto child : bone->GetChildren())
+			CalculatePose(dynamic_cast<Bone*>(child));*/
+	}
 }
 
-bool Model::ProcessBone(aiNode* node, std::unordered_map<std::string, std::pair<int, glm::mat4>> bonemap, Bone& out)
+bool Model::ProcessBone(aiNode* node, std::shared_ptr<Bone>& out)
 {
 	if(bonemap.find(node->mName.C_Str()) != bonemap.end())
 	{
-		out.name = node->mName.C_Str();
-		out.id = bonemap[out.name].first;
-		out.offset = bonemap[out.name].second;
+		out = std::make_shared<Bone>(bonemap[node->mName.C_Str()].first, node->mName.C_Str(), bonemap[node->mName.C_Str()].second);
+		
 		for (int i = 0; i < node->mNumChildren; i++)
 		{
-			Bone child;
-			if(ProcessBone(node->mChildren[i], bonemap, child))
-				out.children.push_back(child);
+			std::shared_ptr<Bone> child = nullptr;
+			if(ProcessBone(node->mChildren[i], child))
+			{
+				bonesChildren.push_back(child);
+				child->SetParent(out.get());
+				out->AddChild(child.get());
+			}
 		}
 		return true;
 	}

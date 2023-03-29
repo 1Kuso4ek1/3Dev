@@ -561,7 +561,8 @@ int main()
                 }
                 auto children = node->GetChildren();
                 for(auto j : children)
-                    next.push_back(scene.GetNodeName(j));
+                    if(!scene.GetNodeName(j).empty())
+                        next.push_back(scene.GetNodeName(j));
             }
             pending = next;
         }
