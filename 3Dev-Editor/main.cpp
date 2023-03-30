@@ -561,8 +561,7 @@ int main()
                 }
                 auto children = node->GetChildren();
                 for(auto j : children)
-                    if(!scene.GetNodeName(j).empty())
-                        next.push_back(scene.GetNodeName(j));
+                    next.push_back(scene.GetNodeName(j));
             }
             pending = next;
         }
@@ -1097,8 +1096,11 @@ int main()
                     std::filesystem::copy(path, projectDir + "/assets/models/" + filename);
                 path = projectDir + "/assets/models/" + filename;
                 auto model = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
+                scene.RemoveBones(model);
                 model->Load(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
-
+                scene.StoreBones(model);
+                sceneTree->removeAllItems();
+                readSceneTree();
                 materialsList->removeAllItems();
                 auto mtl = model->GetMaterial();
                 for(int i = 0; i < mtl.size(); i++)
@@ -1844,7 +1846,7 @@ int main()
         }
         if(manageCameraLook) cam.Look();
 
-        if(viewportWindow->isFocused())
+        if(viewport->isFocused() || sceneTree->isFocused())
         {
             if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::G }))
                 objectMode = !objectMode;

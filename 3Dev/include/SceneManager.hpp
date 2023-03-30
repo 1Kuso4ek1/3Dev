@@ -16,6 +16,9 @@ public:
     void AddMaterial(std::shared_ptr<Material>, std::string name = "material");
     void AddLight(Light* light, std::string name = "light");
 
+    void StoreBones(std::shared_ptr<Model> model, Bone* bone = nullptr);
+    void RemoveBones(std::shared_ptr<Model> model, Bone* bone = nullptr);
+
     template<class... Args>
     std::shared_ptr<Model> CreateModel(std::string name, Args&&... args);
 
@@ -107,6 +110,7 @@ private:
     std::unordered_map<std::string, std::vector<std::shared_ptr<Model>>> modelGroups;
 
     std::unordered_map<std::string, Node*> nodes;
+    std::unordered_map<std::string, Bone*> bones;
     std::unordered_map<std::string, std::shared_ptr<Model>> models;
     std::unordered_map<std::string, std::shared_ptr<Material>> materials; // for editor and scene saving
     std::unordered_map<std::string, Light*> lights;

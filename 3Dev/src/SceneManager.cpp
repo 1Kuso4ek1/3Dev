@@ -97,6 +97,44 @@ void SceneManager::AddLight(Light* light, std::string name)
     lightsVector.push_back(light);
 }
 
+void SceneManager::StoreBones(std::shared_ptr<Model> model, Bone* bone)
+{
+    if(!bone)
+        for(auto& i : model->GetBones())
+        {
+            StoreBones(model, i.get());
+            bones[i->GetName()] = i.get();
+            nodes[i->GetName()] = i.get();
+        }
+    else
+        for(auto i : bone->GetChildren())
+        {
+            auto b = dynamic_cast<Bone*>(i);
+            StoreBones(model, b);
+            bones[b->GetName()] = b;
+            nodes[b->GetName()] = b;
+        }
+}
+
+void SceneManager::RemoveBones(std::shared_ptr<Model> model, Bone* bone)
+{
+    if(!bone)
+        for(auto& i : model->GetBones())
+        {
+            RemoveBones(model, i.get());
+            bones.erase(i->GetName());
+            nodes.erase(i->GetName());
+        }
+    else
+        for(auto i : bone->GetChildren())
+        {
+            auto b = dynamic_cast<Bone*>(i);
+            RemoveBones(model, b);
+            bones.erase(b->GetName());
+            nodes.erase(b->GetName());
+        }
+}
+
 template<class... Args>
 std::shared_ptr<Model> SceneManager::CreateModel(std::string name, Args&&... args)
 {
@@ -112,6 +150,7 @@ void SceneManager::RemoveModel(std::shared_ptr<Model> model)
     {
         auto p = ParseName(it->first);
         models.erase(it);
+        RemoveBones(model);
         if(!p.second.empty())
             RemoveFromTheGroup(p.second, model);
     }
@@ -237,21 +276,6 @@ void SceneManager::Load(std::string filename)
         counter++;
     }
     counter = 0;
-    // For old projects with shapes
-    while(!data["objects"]["shapes"][counter].empty())
-    {
-        auto name = data["objects"]["shapes"][counter]["name"].asString();
-        auto material = materials[data["objects"]["shapes"][counter]["material"].asString()].get();
-        auto shape = std::make_shared<Model>(true);
-        shape->SetMaterial({ material });
-        shape->SetPhysicsManager(pManager.get());
-        shape->CreateRigidBody();
-        shape->CreateBoxShape();
-        shape->Deserialize(data["objects"]["shapes"][counter]);
-        AddModel(shape, name, false);
-        counter++;
-    }
-    counter = 0;
     
     while(!data["objects"]["models"][counter].empty())
     {
@@ -274,6 +298,7 @@ void SceneManager::Load(std::string filename)
             model->CreateRigidBody();
         }
         model->Deserialize(data["objects"]["models"][counter]);
+        StoreBones(model);
         AddModel(model, name, false);
         counter++;
     }
@@ -296,7 +321,8 @@ void SceneManager::Load(std::string filename)
     {
         auto model = GetModel(data["objects"]["models"][counter]["name"].asString());
         for(auto& i : data["objects"]["models"][counter]["children"])
-            model->AddChild(GetNode(i.asString()));
+            if(bones.find(i.asString()) == bones.end())
+                model->AddChild(GetNode(i.asString()));
         if(!data["objects"]["models"][counter]["parent"].empty())
             model->SetParent(GetNode(data["objects"]["models"][counter]["parent"].asString()));
         counter++;

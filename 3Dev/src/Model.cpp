@@ -90,6 +90,7 @@ void Model::Load(std::string filename, unsigned int flags)
 	meshes.clear();
 	anims.clear();
 	bones.clear();
+	children.clear();
 
 	ProcessNode(scene->mRootNode, scene);
 	LoadAnimations(scene);
@@ -791,65 +792,57 @@ void Model::CalculatePose(Bone* bone/*, std::shared_ptr<Mesh>& mesh, glm::mat4 p
 				glm::quat rot = glm::slerp(kf.rotations[fraction.first - 1], kf.rotations[fraction.first], fraction.second);
 				glm::vec3 scale = glm::mix(kf.scales[fraction.first - 1], kf.scales[fraction.first], fraction.second);
 
-				/*glm::mat4 mpos = glm::translate(glm::mat4(1.0), pos),
+				glm::mat4 mpos = glm::translate(glm::mat4(1.0), pos),
 						  mscale = glm::scale(glm::mat4(1.0), scale),
 						  mrot = glm::toMat4(rot);
 
-				glm::mat4 localTransform = mpos * mrot * mscale;*/
+				glm::mat4 localTransform = mpos * mrot * mscale;
+
 				rp3d::Transform tr;
 				tr.setPosition({ pos.x, pos.y, pos.z });
 				tr.setOrientation({ rot.x, rot.y, rot.z, rot.w });
 
 				bone->SetTransform(tr);
 				auto globalTransform = Node::GetFinalTransform(bone);
-				auto finalTransform = globalTransform * bone->GetOffset();
-				
-				//auto finalTransform = Node::GetFinalTransform(bone);
-				glm::mat4 boneMat(1.0);
-				//glm::translate(boneMat, toglm(finalTransform.getPosition()));
-				boneMat = glm::toMat4(toglm(finalTransform.getOrientation()));
-				//glm::scale(boneMat, toglm(bone->GetSize()));
-				pose[bone->GetID()] = boneMat;
+				glm::mat4 parent(1.0);
+				parent = glm::translate(parent, toglm(globalTransform.getPosition()));
+				parent = parent * glm::toMat4(toglm(globalTransform.getOrientation()));
 
-				//mesh->GetPose()[bone->GetID()] = /*globalInverseTransform * */globalTransform * bone.offset;
+				/*glm::mat4 boneMat(1.0);
+				boneMat = glm::translate(boneMat, toglm(globalTransform.getPosition()));
+				boneMat = boneMat * glm::toMat4(toglm(globalTransform.getOrientation()));
+				boneMat = glm::scale(boneMat, scale);*/
+				pose[bone->GetID()] = parent * localTransform * bone->GetOffset();
 
 				for(auto child : bone->GetChildren())
 					CalculatePose(dynamic_cast<Bone*>(child));
 			}
 			else
 			{
-				/*auto finalTransform = Node::GetFinalTransform(bone);
-				glm::mat4 boneMat(1.0);
-				glm::translate(boneMat, toglm(finalTransform.getPosition()));
-				boneMat = boneMat * glm::toMat4(toglm(finalTransform.getOrientation()));
-				glm::scale(boneMat, toglm(bone->GetSize()));
-				pose[bone->GetID()] = boneMat;*/
-				/*auto globalTransform = Node::GetFinalTransform(bone) * bone->GetOffset();
-				//bone->SetTransform(rp3d::Transform::identity());
-				//auto finalTransform = Node::GetFinalTransform(bone);
-				glm::mat4 boneMat(1.0);
-				//glm::translate(boneMat, toglm(finalTransform.getPosition()));
-				boneMat = boneMat * glm::toMat4(toglm(globalTransform.getOrientation()));
-				//glm::scale(boneMat, toglm(bone->GetSize()));
-				pose[bone->GetID()] = boneMat;
+				auto globalTransform = Node::GetFinalTransform(bone) * bone->GetTransform();
+				
+				glm::mat4 parent(1.0);
+				parent = glm::translate(parent, toglm(globalTransform.getPosition()));
+				parent = parent * glm::toMat4(toglm(globalTransform.getOrientation()));
 
-				//auto globalTransform = Node::GetFinalTransform(bone);
-				//mesh->GetPose()[bone->GetID()] = globalInverseTransform * globalTransform * bone.offset;
+				pose[bone->GetID()] = parent * bone->GetOffset();
 
 				for(auto child : bone->GetChildren())
-					CalculatePose(dynamic_cast<Bone*>(child));*/
+					CalculatePose(dynamic_cast<Bone*>(child));
 			}
 		}
 	}
 	if(!foundAnim)
 	{
-		/*auto globalTransform = Node::GetFinalTransform(bone) * bone->GetOffset();
-		glm::mat4 boneMat(1.0);
-		boneMat = boneMat * glm::toMat4(toglm(globalTransform.getOrientation()));
-		pose[bone->GetID()] = boneMat;
+		auto globalTransform = Node::GetFinalTransform(bone) * bone->GetTransform();
+		glm::mat4 parent(1.0);
+		parent = glm::translate(parent, toglm(globalTransform.getPosition()));
+		parent = parent * glm::toMat4(toglm(globalTransform.getOrientation()));
+
+		pose[bone->GetID()] = glm::mat4(1.0);//parent * bone->GetOffset();
 
 		for(auto child : bone->GetChildren())
-			CalculatePose(dynamic_cast<Bone*>(child));*/
+			CalculatePose(dynamic_cast<Bone*>(child));
 	}
 }
 

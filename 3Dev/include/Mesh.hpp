@@ -19,10 +19,10 @@ class Bone : public Node
 public:
     Bone(int id, std::string name, glm::mat4 offset) : id(id), name(name)
     {
-        auto tr = ToRP3DTransform(offset);
+        //auto tr = ToRP3DTransform(offset);
 
-        this->offset = tr.first;
-        size = tr.second;
+        this->offset = offset;
+        //size = tr.second;
     }
 
     void SetTransform(const rp3d::Transform& tr)
@@ -47,9 +47,9 @@ public:
 
     void ApplyTransform(const glm::mat4& tr)
     {
-        auto transform = ToRP3DTransform(tr);
+        /*auto transform = ToRP3DTransform(tr);
         this->transform = transform.first * offset;
-        size = transform.second;
+        size = transform.second;*/
     }
 
     int GetID()
@@ -67,7 +67,7 @@ public:
         return size;
     }
 
-    rp3d::Transform GetOffset()
+    glm::mat4 GetOffset()
     {
         return offset;
     }
@@ -81,7 +81,8 @@ private:
     int id = 0;
     std::string name = "";
 
-    rp3d::Transform transform, offset;
+    rp3d::Transform transform;
+    glm::mat4 offset;
     rp3d::Vector3 size;
     //glm::mat4 offset = glm::mat4(1.0);
 
