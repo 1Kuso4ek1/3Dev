@@ -24,6 +24,7 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterMaterial();
     RegisterModel();
     RegisterLight();
+    RegisterBone();
     RegisterSceneManager();
     RegisterSfKeyboard();
     RegisterSfMouse();
@@ -409,6 +410,7 @@ void ScriptManager::RegisterSceneManager()
         { "Model@ GetModel(string)", WRAP_MFN(SceneManager, GetModelPtr) },
         { "Light@ GetLight(string)", WRAP_MFN(SceneManager, GetLight) },
         { "Material@ GetMaterial(string)", WRAP_MFN(SceneManager, GetMaterialPtr) },
+        { "Bone@ GetBone(string)", WRAP_MFN(SceneManager, GetBone) },
         { "Model@ CloneModel(Model@, bool = true, string = \"model\")", WRAP_MFN(SceneManager, CloneModel) },
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
         { "PhysicsManager@ GetPhysicsManager()", WRAP_MFN(SceneManager, GetPhysicsManagerPtr) },
@@ -855,5 +857,21 @@ void ScriptManager::RegisterNetwork()
         { "Status receive(Packet& out, const IpAddress& in, uint)", WRAP_MFN_PR(sf::UdpSocket, receive, (sf::Packet&, sf::IpAddress&, unsigned short&), sf::UdpSocket::Status) },
         { "void setBlocking(bool)", WRAP_MFN(sf::UdpSocket, setBlocking) },
         { "bool isBlocking()", WRAP_MFN(sf::UdpSocket, isBlocking) }
+    }, {});
+}
+
+void ScriptManager::RegisterBone()
+{
+    AddType("Bone", sizeof(Bone),
+    {
+        { "Vector3 GetPosition()", WRAP_MFN(Bone, GetPosition) },
+        { "Quaternion GetOrientation()", WRAP_MFN(Bone, GetOrientation) },
+        { "Vector3 GetSize()", WRAP_MFN(Bone, GetSize) },
+        { "void SetPosition(const Vector3& in)", WRAP_MFN(Bone, SetPosition) },
+        { "void SetOrientation(const Quaternion& in)", WRAP_MFN(Bone, SetOrientation) },
+        { "void SetSize(const Vector3& in)", WRAP_MFN(Bone, SetSize) },
+        { "void Move(const Vector3& in)", WRAP_MFN(Bone, Move) },
+        { "void Rotate(const Quaternion& in)", WRAP_MFN(Bone, Rotate) },
+        { "void Expand(const Vector3& in)", WRAP_MFN(Bone, Expand) }
     }, {});
 }

@@ -212,13 +212,14 @@ int main()
     auto objectEditorGroup = editor.get<tgui::Group>("objectEditor");
     auto lightEditorGroup = editor.get<tgui::Group>("lightEditor");
     auto materialEditorGroup = editor.get<tgui::Group>("materialEditor");
+    auto boneEditorGroup = editor.get<tgui::Group>("boneEditor");
     auto soundEditorGroup = editor.get<tgui::Group>("soundEditor");
 	auto scriptsGroup = editor.get<tgui::Group>("scriptsGroup");
 	auto sceneGroup = editor.get<tgui::Group>("sceneGroup");
 
     std::vector<tgui::Group::Ptr> groups = { objectEditorGroup, lightEditorGroup,
                                              materialEditorGroup, soundEditorGroup,
-                                             scriptsGroup, sceneGroup };
+                                             scriptsGroup, sceneGroup, boneEditorGroup };
 
 	auto nameEdit = editor.get<tgui::EditBox>("name");
 
@@ -310,6 +311,20 @@ int main()
     auto stopButton = editor.get<tgui::Button>("stop");
 
     auto sdeleteButton = editor.get<tgui::Button>("sdelete");
+
+    auto boneNameEdit = editor.get<tgui::EditBox>("boneName");
+
+    auto bposEditX = editor.get<tgui::EditBox>("bposX");
+    auto bposEditY = editor.get<tgui::EditBox>("bposY");
+    auto bposEditZ = editor.get<tgui::EditBox>("bposZ");
+
+    auto brotEditX = editor.get<tgui::EditBox>("brotX");
+    auto brotEditY = editor.get<tgui::EditBox>("brotY");
+    auto brotEditZ = editor.get<tgui::EditBox>("brotZ");
+
+    auto bsizeEditX = editor.get<tgui::EditBox>("bsizeX");
+    auto bsizeEditY = editor.get<tgui::EditBox>("bsizeY");
+    auto bsizeEditZ = editor.get<tgui::EditBox>("bsizeZ");
 
 	auto buildButton = editor.get<tgui::Button>("build");
     auto startStopButton = editor.get<tgui::Button>("startStop");
@@ -1308,8 +1323,6 @@ int main()
 
 			if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[0]))
             {
-                openFileButton->setEnabled(true);
-                openFileButton->setVisible(true);
                 object = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
                 if(!object)
                 {
@@ -1380,6 +1393,7 @@ int main()
 				    sizeEditY->setText(tgui::String(size.y));
 				    sizeEditZ->setText(tgui::String(size.z));
 			    }
+
 			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem().back())
 			    {
                     scene.SetModelName(sceneTree->getSelectedItem().back().toStdString(), nameEdit->getText().toStdString());
@@ -1541,6 +1555,86 @@ int main()
                         light->SetIsCastingShadows(castShadowsBox->isChecked());
                         light->SetIsCastingPerspectiveShadows(perspectiveShadowsBox->isChecked());
                     }
+                }
+            }
+            /////////////////////////////////////
+
+            /////////////// BONES ///////////////
+            else if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[4]))
+            {
+                auto bone = scene.GetBone(sceneTree->getSelectedItem().back().toStdString());
+                if(objectMode)
+				{
+					rp3d::Vector3 m(axis == 0 ? 0.1 : 0, axis == 1 ? 0.1 : 0, axis == 2 ? 0.1 : 0);
+					switch(param)
+					{
+					case 0:
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+							bone->Move(m);
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+							bone->Move(-m);
+						break;
+					case 1:
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+							bone->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+							bone->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
+						break;
+					case 2:
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+							bone->Expand(m);
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+							bone->Expand(-m);
+						break;
+					}
+				}
+			
+                std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == objectEditorGroup) return; g->setEnabled(false); g->setVisible(false); });
+				boneEditorGroup->setEnabled(true);
+				boneEditorGroup->setVisible(true);
+
+				if((!boneNameEdit->isFocused() && boneNameEdit->getText() != sceneTree->getSelectedItem().back()) || objectMode)
+				{
+					rp3d::Vector3 position = bone->GetTransform().getPosition();
+					rp3d::Quaternion orientation = bone->GetTransform().getOrientation();
+					rp3d::Vector3 size = bone->GetSize();
+
+					boneNameEdit->setText(sceneTree->getSelectedItem().back());
+					bposEditX->setText(tgui::String(position.x));
+				    bposEditY->setText(tgui::String(position.y));
+				    bposEditZ->setText(tgui::String(position.z));
+
+					glm::vec3 euler = glm::eulerAngles(toglm(orientation));
+
+				    brotEditX->setText(tgui::String(glm::degrees(euler.x)));
+	  			    brotEditY->setText(tgui::String(glm::degrees(euler.y)));
+	  			    brotEditZ->setText(tgui::String(glm::degrees(euler.z)));
+
+					bsizeEditX->setText(tgui::String(size.x));
+				    bsizeEditY->setText(tgui::String(size.y));
+				    bsizeEditZ->setText(tgui::String(size.z));
+			    }
+
+			    rp3d::Vector3 pos;
+			    pos.x = bposEditX->getText().toFloat();
+			    pos.y = bposEditY->getText().toFloat();
+			    pos.z = bposEditZ->getText().toFloat();
+
+			    rp3d::Vector3 euler;
+			    euler.x = glm::radians(brotEditX->getText().toFloat());
+			    euler.y = glm::radians(brotEditY->getText().toFloat());
+			    euler.z = glm::radians(brotEditZ->getText().toFloat());
+
+			    rp3d::Vector3 size;
+			    size.x = bsizeEditX->getText().toFloat();
+			    size.y = bsizeEditY->getText().toFloat();
+			    size.z = bsizeEditZ->getText().toFloat();
+
+                if(!objectMode)
+                {
+                    bone->SetPosition(pos);
+                    bone->SetOrientation(rp3d::Quaternion::fromEulerAngles(euler));
+                    bone->SetSize(size);
                 }
             }
             /////////////////////////////////////

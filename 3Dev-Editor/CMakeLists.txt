@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.17)
 
-project(editor VERSION 0.1.0 LANGUAGES CXX)
+project(editor VERSION 1.3.0 LANGUAGES CXX)
 
 find_package(3Dev REQUIRED)
 find_package(SFML 2.5.1 COMPONENTS system window network audio REQUIRED)

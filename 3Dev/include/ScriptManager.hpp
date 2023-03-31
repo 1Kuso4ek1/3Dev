@@ -57,6 +57,7 @@ private:
     void RegisterTGUI();
     void RegisterMaterial();
     void RegisterNetwork();
+    void RegisterBone();
 
     bool buildSucceded = false;
 

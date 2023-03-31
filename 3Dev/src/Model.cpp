@@ -515,8 +515,10 @@ void Model::StopAnimation(unsigned int anim)
     }
 
 	anims[anim].state = Animation::State::Stopped;
-	for(auto& i : meshes)
-		std::fill(pose.begin(), pose.end(), glm::mat4(1.0));
+	for(auto& i : bones)
+		i->SetTransform(i->GetIdle());
+	for(auto& i : bonesChildren)
+		i->SetTransform(i->GetIdle());
 }
 
 void Model::PauseAnimation(unsigned int anim)
@@ -830,6 +832,7 @@ void Model::CalculatePose(Bone* bone/*, std::shared_ptr<Mesh>& mesh, glm::mat4 p
 				glm::mat4 finaltr(1.0);
 				finaltr = glm::translate(finaltr, toglm(finalTransform.getPosition()));
 				finaltr = finaltr * glm::toMat4(toglm(finalTransform.getOrientation()));
+				finaltr = glm::scale(finaltr, toglm(bone->GetSize()));
 
 				pose[bone->GetID()] = finaltr * bone->GetOffset();
 
@@ -845,6 +848,7 @@ void Model::CalculatePose(Bone* bone/*, std::shared_ptr<Mesh>& mesh, glm::mat4 p
 		glm::mat4 finaltr(1.0);
 		finaltr = glm::translate(finaltr, toglm(finalTransform.getPosition()));
 		finaltr = finaltr * glm::toMat4(toglm(finalTransform.getOrientation()));
+		finaltr = glm::scale(finaltr, toglm(bone->GetSize()));
 
 		pose[bone->GetID()] = finaltr * bone->GetOffset();
 
@@ -875,6 +879,8 @@ bool Model::ProcessBone(aiNode* node, std::shared_ptr<Bone>& out)
 			}
 			else out->SetTransform(ToRP3DTransform(toglm(node->mTransformation)).first);
 		
+		out->SavePoseAsIdle();
+
 		for (int i = 0; i < node->mNumChildren; i++)
 		{
 			std::shared_ptr<Bone> child = nullptr;

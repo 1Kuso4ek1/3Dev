@@ -244,26 +244,11 @@ void SceneManager::Save(std::string filename, bool relativePaths)
 
     data["sounds"] = sManager->Serialize(relativePaths ? filename : "");
 
-    /*for(auto& i : bones)
+    for(auto& i : bones)
     {
-        for(int j = 0; j < i.second->GetChildren().size(); j++)
-        {
-            auto it = std::find_if(models.begin(), models.end(), [&](auto m) 
-                                    { return m.second.get() == i.second->GetChildren()[j]; });
-            auto it1 = std::find_if(lights.begin(), lights.end(), [&](auto l) 
-                                    { return l.second == i.second->GetChildren()[j]; });
-            if(it != models.end() || i.second->GetChildren()[j] == camera || it1 != lights.end())
-            {
-                data["bones"][counter]["name"] = i.second->GetName();
-                if(it != models.end())
-                    data["bones"][counter]["children"][j] = it->first;
-                if(it1 != lights.end())
-                    data["bones"][counter]["children"][j] = it1->first;
-                if(i.second->GetChildren()[j] == camera)
-                    data["bones"][counter]["children"][j] = "camera";
-            }
-        }
-    }*/
+        data["bones"][counter] = i.second->Serialize();
+        counter++;
+    }
 
     std::ofstream file(filename);
     file << data.toStyledString();
@@ -332,6 +317,14 @@ void SceneManager::Load(std::string filename)
         lights[name]->Deserialize(data["lights"][counter]);
         nodes[name] = lights[name];
         lightsVector.push_back(lights[name]);
+        counter++;
+    }
+    counter = 0;
+
+    while(!data["bones"][counter].empty())
+    {
+        if(bones.find(data["bones"][counter]["name"].asString()) != bones.end())
+            bones[data["bones"][counter]["name"].asString()]->Deserialize(data["bones"][counter]);
         counter++;
     }
     counter = 0;
@@ -585,6 +578,15 @@ Light* SceneManager::GetLight(std::string name)
     return nullptr;
 }
 
+Bone* SceneManager::GetBone(std::string name)
+{
+    if(bones.find(name) != bones.end())
+        return bones[name];
+    Log::Write("Could not find a bone with name \""
+                + name + "\", function will return nullptr", Log::Type::Warning);
+    return nullptr;
+}
+
 std::vector<Light*> SceneManager::GetShadowCastingLights()
 {
     std::vector<Light*> ret;
@@ -654,9 +656,9 @@ void SceneManager::SetLightName(std::string name, std::string newName)
         Log::Write("Could not find a light with name \"" + name + "\"", Log::Type::Warning);
 }
 
-std::array<std::vector<std::string>, 4> SceneManager::GetNames()
+std::array<std::vector<std::string>, 5> SceneManager::GetNames()
 {
-	std::array<std::vector<std::string>, 4> ret;
+	std::array<std::vector<std::string>, 5> ret;
     std::vector<std::string> tmp;
     for(auto& i : models)
         tmp.push_back(i.first);
@@ -670,6 +672,9 @@ std::array<std::vector<std::string>, 4> SceneManager::GetNames()
     for(auto& i : nodes)
         tmp.push_back(i.first);
     ret[3] = tmp; tmp.clear();
+    for(auto& i : bones)
+        tmp.push_back(i.first);
+    ret[4] = tmp;
     return ret;
 }
 

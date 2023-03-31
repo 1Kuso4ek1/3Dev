@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.17)
 
-project(3Dev VERSION 1.2.0 LANGUAGES CXX)
+project(3Dev VERSION 1.3.0 LANGUAGES CXX)
 
 find_package(SFML 2.5.1 COMPONENTS system window network audio REQUIRED)
 find_package(TGUI REQUIRED)
@@ -44,6 +44,7 @@ add_library(3Dev
 	src/ScriptManager.cpp
 	src/TextureManager.cpp
 	src/Node.cpp
+	src/Bone.cpp
 	libraries/Angelscript/sdk/add_on/scriptbuilder/scriptbuilder.cpp
 	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.cpp
 	libraries/Angelscript/sdk/add_on/scriptarray/scriptarray.cpp
@@ -144,6 +145,7 @@ install(FILES
 	include/ScriptManager.hpp
 	include/TextureManager.hpp
 	include/Node.hpp
+	include/Bone.hpp
 	libraries/stb/stb_image.h
 	libraries/Angelscript/sdk/add_on/scriptbuilder/scriptbuilder.h
 	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.h
