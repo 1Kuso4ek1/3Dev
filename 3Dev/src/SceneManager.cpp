@@ -244,6 +244,27 @@ void SceneManager::Save(std::string filename, bool relativePaths)
 
     data["sounds"] = sManager->Serialize(relativePaths ? filename : "");
 
+    /*for(auto& i : bones)
+    {
+        for(int j = 0; j < i.second->GetChildren().size(); j++)
+        {
+            auto it = std::find_if(models.begin(), models.end(), [&](auto m) 
+                                    { return m.second.get() == i.second->GetChildren()[j]; });
+            auto it1 = std::find_if(lights.begin(), lights.end(), [&](auto l) 
+                                    { return l.second == i.second->GetChildren()[j]; });
+            if(it != models.end() || i.second->GetChildren()[j] == camera || it1 != lights.end())
+            {
+                data["bones"][counter]["name"] = i.second->GetName();
+                if(it != models.end())
+                    data["bones"][counter]["children"][j] = it->first;
+                if(it1 != lights.end())
+                    data["bones"][counter]["children"][j] = it1->first;
+                if(i.second->GetChildren()[j] == camera)
+                    data["bones"][counter]["children"][j] = "camera";
+            }
+        }
+    }*/
+
     std::ofstream file(filename);
     file << data.toStyledString();
     file.close();
@@ -323,8 +344,13 @@ void SceneManager::Load(std::string filename)
         for(auto& i : data["objects"]["models"][counter]["children"])
             if(bones.find(i.asString()) == bones.end())
                 model->AddChild(GetNode(i.asString()));
+        auto parent = data["objects"]["models"][counter]["parent"].asString();
         if(!data["objects"]["models"][counter]["parent"].empty())
-            model->SetParent(GetNode(data["objects"]["models"][counter]["parent"].asString()));
+        {
+            model->SetParent(GetNode(parent));
+            if(bones.find(parent) != bones.end())
+                GetNode(parent)->AddChild(model.get());
+        }
         counter++;
     }
     counter = 0;

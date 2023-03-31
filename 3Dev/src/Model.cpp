@@ -92,8 +92,8 @@ void Model::Load(std::string filename, unsigned int flags)
 	bones.clear();
 	children.clear();
 
-	ProcessNode(scene->mRootNode, scene);
 	LoadAnimations(scene);
+	ProcessNode(scene->mRootNode, scene);
 
 	for(auto i : bones)
 	{
@@ -741,7 +741,8 @@ void Model::FindBoneNodes(aiNode* node, std::vector<std::shared_ptr<Bone>>& bone
 	std::shared_ptr<Bone> tmp = nullptr;
 	if(ProcessBone(node, tmp))
 	{
-		bones.push_back(tmp);
+		if(tmp)
+			bones.push_back(tmp);
 		return;
 	}
 
@@ -751,7 +752,16 @@ void Model::FindBoneNodes(aiNode* node, std::vector<std::shared_ptr<Bone>>& bone
 
 void Model::CalculatePose(Bone* bone/*, std::shared_ptr<Mesh>& mesh, glm::mat4 parent*/)
 {
+	auto it = std::find_if(bones.begin(), bones.end(), [&](auto b)
+						  { return b.get() == bone; });
+	auto it1 = std::find_if(bonesChildren.begin(), bonesChildren.end(), [&](auto b)
+						  { return b.get() == bone; });
+	if(it == bones.end() && it1 == bonesChildren.end())
+		return;
+		
 	bool foundAnim = false;
+	rp3d::Transform tmp = transform;
+	transform = rp3d::Transform::identity();
 	for(auto i : anims)
 	{
 		if(i.state == Animation::State::Playing || i.state == Animation::State::Paused)
@@ -808,10 +818,6 @@ void Model::CalculatePose(Bone* bone/*, std::shared_ptr<Mesh>& mesh, glm::mat4 p
 				parent = glm::translate(parent, toglm(globalTransform.getPosition()));
 				parent = parent * glm::toMat4(toglm(globalTransform.getOrientation()));
 
-				/*glm::mat4 boneMat(1.0);
-				boneMat = glm::translate(boneMat, toglm(globalTransform.getPosition()));
-				boneMat = boneMat * glm::toMat4(toglm(globalTransform.getOrientation()));
-				boneMat = glm::scale(boneMat, scale);*/
 				pose[bone->GetID()] = parent * localTransform * bone->GetOffset();
 
 				for(auto child : bone->GetChildren())
@@ -819,13 +825,13 @@ void Model::CalculatePose(Bone* bone/*, std::shared_ptr<Mesh>& mesh, glm::mat4 p
 			}
 			else
 			{
-				auto globalTransform = Node::GetFinalTransform(bone) * bone->GetTransform();
+				auto finalTransform = Node::GetFinalTransform(bone) * bone->GetTransform();
 				
-				glm::mat4 parent(1.0);
-				parent = glm::translate(parent, toglm(globalTransform.getPosition()));
-				parent = parent * glm::toMat4(toglm(globalTransform.getOrientation()));
+				glm::mat4 finaltr(1.0);
+				finaltr = glm::translate(finaltr, toglm(finalTransform.getPosition()));
+				finaltr = finaltr * glm::toMat4(toglm(finalTransform.getOrientation()));
 
-				pose[bone->GetID()] = parent * bone->GetOffset();
+				pose[bone->GetID()] = finaltr * bone->GetOffset();
 
 				for(auto child : bone->GetChildren())
 					CalculatePose(dynamic_cast<Bone*>(child));
@@ -834,23 +840,40 @@ void Model::CalculatePose(Bone* bone/*, std::shared_ptr<Mesh>& mesh, glm::mat4 p
 	}
 	if(!foundAnim)
 	{
-		auto globalTransform = Node::GetFinalTransform(bone) * bone->GetTransform();
-		glm::mat4 parent(1.0);
-		parent = glm::translate(parent, toglm(globalTransform.getPosition()));
-		parent = parent * glm::toMat4(toglm(globalTransform.getOrientation()));
+		auto finalTransform = Node::GetFinalTransform(bone) * bone->GetTransform();
 
-		pose[bone->GetID()] = glm::mat4(1.0);//parent * bone->GetOffset();
+		glm::mat4 finaltr(1.0);
+		finaltr = glm::translate(finaltr, toglm(finalTransform.getPosition()));
+		finaltr = finaltr * glm::toMat4(toglm(finalTransform.getOrientation()));
+
+		pose[bone->GetID()] = finaltr * bone->GetOffset();
 
 		for(auto child : bone->GetChildren())
 			CalculatePose(dynamic_cast<Bone*>(child));
 	}
+	transform = tmp;
 }
 
 bool Model::ProcessBone(aiNode* node, std::shared_ptr<Bone>& out)
 {
 	if(bonemap.find(node->mName.C_Str()) != bonemap.end())
 	{
+		auto it = std::find_if(bones.begin(), bones.end(), [&](auto& b) { return b->GetName() == std::string(node->mName.C_Str()); });
+		if(it != bones.end())
+			return false;
 		out = std::make_shared<Bone>(bonemap[node->mName.C_Str()].first, node->mName.C_Str(), bonemap[node->mName.C_Str()].second);
+		if(!anims.empty())
+			if(anims[0].keyframes.find(out->GetName()) != anims[0].keyframes.end())
+			{
+				Keyframe kf = anims[0].keyframes[out->GetName()];
+				auto pos = kf.positions[0];
+				auto rot = kf.rotations[0];
+				rp3d::Transform tr;
+				tr.setPosition({ pos.x, pos.y, pos.z });
+				tr.setOrientation({ rot.x, rot.y, rot.z, rot.w });
+				out->SetTransform(tr);
+			}
+			else out->SetTransform(ToRP3DTransform(toglm(node->mTransformation)).first);
 		
 		for (int i = 0; i < node->mNumChildren; i++)
 		{

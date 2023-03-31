@@ -7,25 +7,25 @@
 ![](https://img.shields.io/github/downloads/1kuso4ek1/3Dev/total)  
 ![](logo.png)
 ## About
-- 3Dev is a simple and lightweight game engine, which uses SFML, OpenGL, ReactPhysics3D and Assimp
+- 3Dev is a simple, lightweight, crossplatform and easy-to-use game engine with some useful instruments, besides the library itself.
 ## Features
 - Rigid body physics
 - Loading a lot of model formats (.obj, .dae, .fbx and much more...)
 - Skeletal animation
-- Post processing support
-- HDR, tone mapping and gamma-correction
+- HDR with ACES tone mapping
 - FXAA
 - Physically Based Rendering
-- Image Based Lighting
 - Shadow mapping
 - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
-- Audio
+- 3D audio
+- User interface with TGUI
+- Separate console program for scene rendering
 - Scripting with Angelscript
 - 3Dev Editor
 - Node-based hierarchy
 - Built-in code editor
 ## TODO
-TODO list is now in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)!
+TODO list is in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)!
 ## Building
 All building instructions are [here](https://1kuso4ek1.github.io/3Dev/build.html)!
 ## Tutorial

@@ -55,7 +55,6 @@ add_library(3Dev
 
 add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/shaders/\"")
 
-add_executable(physics physics_test.cpp)
 add_executable(launcher launcher.cpp)
 
 target_link_libraries(3Dev
@@ -74,7 +73,6 @@ target_link_libraries(3Dev
 )
 
 set_target_properties(3Dev PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
-set_target_properties(physics PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 set_target_properties(launcher PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 
 target_include_directories(3Dev
@@ -102,7 +100,6 @@ target_link_directories(3Dev
 	${LIGHTLOG_INCLUDE_DIR}/../lib
 )
 
-target_link_libraries(physics PUBLIC 3Dev)
 target_link_libraries(launcher PUBLIC 3Dev)
 
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
