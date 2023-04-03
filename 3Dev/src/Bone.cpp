@@ -13,31 +13,37 @@ void Bone::SetTransform(const rp3d::Transform& tr)
 
 void Bone::SetPosition(const rp3d::Vector3& pos)
 {
+    SavePoseAsIdle();
     transform.setPosition(pos);
 }
 
 void Bone::SetOrientation(const rp3d::Quaternion& orient)
 {
+    SavePoseAsIdle();
     transform.setOrientation(orient);
 }
 
 void Bone::SetSize(const rp3d::Vector3& size)
 {
+    SavePoseAsIdle();
     this->size = size;
 }
 
 void Bone::Move(const rp3d::Vector3& vec)
 {
+    SavePoseAsIdle();
     transform.setPosition(transform.getPosition() + vec);
 }
 
 void Bone::Rotate(const rp3d::Quaternion& quat)
 {
+    SavePoseAsIdle();
     transform.setOrientation(quat * transform.getOrientation());
 }
 
 void Bone::Expand(const rp3d::Vector3& vec)
 {
+    SavePoseAsIdle();
     size += vec;
 }
 

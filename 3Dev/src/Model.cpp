@@ -111,7 +111,7 @@ void Model::Load(std::string filename, unsigned int flags)
 
 	Log::Write("Model " + filename + " loaded:\n" + 
 			   "        Meshes: " + std::to_string(meshes.size()) + '\n' +
-			   "        Bones: " + std::to_string(bones.size()) + '\n' +
+			   "        Bones: " + std::to_string(bones.size() + bonesChildren.size()) + '\n' +
 			   "        Animations: " + std::to_string(anims.size()), Log::Type::Info);
 
 	if(mat.empty()) Log::Write("Empty material array passed", Log::Type::Critical);

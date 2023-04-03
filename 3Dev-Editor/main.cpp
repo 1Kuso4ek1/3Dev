@@ -647,7 +647,8 @@ int main()
                 }
                 auto children = node->GetChildren();
                 for(auto j : children)
-                    next.push_back(scene.GetNodeName(j));
+                    if(!scene.GetNodeName(j).empty())
+                        next.push_back(scene.GetNodeName(j));
             }
             pending = next;
         }
@@ -1319,127 +1320,127 @@ int main()
 		if(sceneTree->getSelectedItem().size() > 2)
 		{
 			////////////// OBJECTS //////////////
-			std::shared_ptr<Model> object;
-
 			if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[0]))
-            {
+			{
+                std::shared_ptr<Model> object;
+                
                 object = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
+
                 if(!object)
                 {
                     sceneTree->removeItem(sceneTree->getSelectedItem(), false);
                     sceneTree->selectItem({ "Scene", "Objects" });
                 }
-            }
-			
-			if(object)
-			{
-				if(objectMode)
-				{
-					rp3d::Vector3 m(axis == 0 ? 0.1 : 0, axis == 1 ? 0.1 : 0, axis == 2 ? 0.1 : 0);
-					switch(param)
-					{
-					case 0:
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-							object->Move(m);
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-							object->Move(-m);
-						break;
-					case 1:
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-							object->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-							object->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
-						break;
-					case 2:
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-							object->Expand(m);
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-							object->Expand(-m);
-						break;
-					}
-				}
-			
-                std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == objectEditorGroup) return; g->setEnabled(false); g->setVisible(false); });
-				objectEditorGroup->setEnabled(true);
-				objectEditorGroup->setVisible(true);
-
-				if((!nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem().back()) || objectMode)
-				{
-                    materialBox->deselectItem();
-
-					rp3d::Vector3 position = object->GetPosition();
-					rp3d::Quaternion orientation = object->GetOrientation();
-					rp3d::Vector3 size = object->GetSize();
-
-					materialsList->removeAllItems();
-                    auto mtl = object->GetMaterial();
-                    for(int i = 0; i < mtl.size(); i++)
-                        materialsList->addItem(scene.GetMaterialName(mtl[i]), tgui::String(i));
-                    bodyTypeBox->setSelectedItemByIndex((int)object->GetRigidBody()->getType());
-                    isDrawableBox->setChecked(object->IsDrawable());
-
-					nameEdit->setText(sceneTree->getSelectedItem().back());
-					posEditX->setText(tgui::String(position.x));
-				    posEditY->setText(tgui::String(position.y));
-				    posEditZ->setText(tgui::String(position.z));
-
-					glm::vec3 euler = glm::eulerAngles(toglm(orientation));
-
-				    rotEditX->setText(tgui::String(glm::degrees(euler.x)));
-	  			    rotEditY->setText(tgui::String(glm::degrees(euler.y)));
-	  			    rotEditZ->setText(tgui::String(glm::degrees(euler.z)));
-
-					sizeEditX->setText(tgui::String(size.x));
-				    sizeEditY->setText(tgui::String(size.y));
-				    sizeEditZ->setText(tgui::String(size.z));
-			    }
-
-			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem().back())
-			    {
-                    scene.SetModelName(sceneTree->getSelectedItem().back().toStdString(), nameEdit->getText().toStdString());
-                    sceneTree->removeAllItems();
-                    readSceneTree();
-                
-				    nameEdit->setFocused(false);
-			    }
-
-			    rp3d::Vector3 pos;
-			    pos.x = posEditX->getText().toFloat();
-			    pos.y = posEditY->getText().toFloat();
-			    pos.z = posEditZ->getText().toFloat();
-
-			    rp3d::Vector3 euler;
-			    euler.x = glm::radians(rotEditX->getText().toFloat());
-			    euler.y = glm::radians(rotEditY->getText().toFloat());
-			    euler.z = glm::radians(rotEditZ->getText().toFloat());
-
-			    rp3d::Vector3 size;
-			    size.x = sizeEditX->getText().toFloat();
-			    size.y = sizeEditY->getText().toFloat();
-			    size.z = sizeEditZ->getText().toFloat();
-
-                if(!objectMode)
+                else
                 {
-                    object->SetPosition(pos);
-                    object->SetOrientation(rp3d::Quaternion::fromEulerAngles(euler));
-                    object->SetSize(size);
-                }
-
-                if(!materialBox->getSelectedItem().empty())
-                {
-                    if(materialBox->getSelectedItem() != materialsList->getSelectedItem())
+                    if(objectMode)
                     {
-                        object->GetMaterial()[materialsList->getSelectedItemId().toInt()] = scene.GetMaterial(materialBox->getSelectedItem().toStdString()).get();
-                        materialsList->changeItemById(materialsList->getSelectedItemId(), materialBox->getSelectedItem());
+                        rp3d::Vector3 m(axis == 0 ? 0.1 : 0, axis == 1 ? 0.1 : 0, axis == 2 ? 0.1 : 0);
+                        switch(param)
+                        {
+                        case 0:
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                                object->Move(m);
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+                                object->Move(-m);
+                            break;
+                        case 1:
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                                object->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+                                object->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
+                            break;
+                        case 2:
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                                object->Expand(m);
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+                                object->Expand(-m);
+                            break;
+                        }
                     }
-                }
-                if((int)object->GetRigidBody()->getType() != bodyTypeBox->getSelectedItemIndex())
-                    object->GetRigidBody()->setType(rp3d::BodyType(bodyTypeBox->getSelectedItemIndex()));
-                object->SetIsDrawable(isDrawableBox->isChecked());
+                
+                    std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == objectEditorGroup) return; g->setEnabled(false); g->setVisible(false); });
+                    objectEditorGroup->setEnabled(true);
+                    objectEditorGroup->setVisible(true);
 
-				if(!materialsList->getSelectedItem().empty())
-					materialBox->setSelectedItem(materialsList->getSelectedItem());
-				else materialBox->deselectItem();
+                    if((!nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem().back()) || objectMode)
+                    {
+                        materialBox->deselectItem();
+
+                        rp3d::Vector3 position = object->GetPosition();
+                        rp3d::Quaternion orientation = object->GetOrientation();
+                        rp3d::Vector3 size = object->GetSize();
+
+                        materialsList->removeAllItems();
+                        auto mtl = object->GetMaterial();
+                        for(int i = 0; i < mtl.size(); i++)
+                            materialsList->addItem(scene.GetMaterialName(mtl[i]), tgui::String(i));
+                        bodyTypeBox->setSelectedItemByIndex((int)object->GetRigidBody()->getType());
+                        isDrawableBox->setChecked(object->IsDrawable());
+
+                        nameEdit->setText(sceneTree->getSelectedItem().back());
+                        posEditX->setText(tgui::String(position.x));
+                        posEditY->setText(tgui::String(position.y));
+                        posEditZ->setText(tgui::String(position.z));
+
+                        glm::vec3 euler = glm::eulerAngles(toglm(orientation));
+
+                        rotEditX->setText(tgui::String(glm::degrees(euler.x)));
+                        rotEditY->setText(tgui::String(glm::degrees(euler.y)));
+                        rotEditZ->setText(tgui::String(glm::degrees(euler.z)));
+
+                        sizeEditX->setText(tgui::String(size.x));
+                        sizeEditY->setText(tgui::String(size.y));
+                        sizeEditZ->setText(tgui::String(size.z));
+                    }
+
+                    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem().back())
+                    {
+                        scene.SetModelName(sceneTree->getSelectedItem().back().toStdString(), nameEdit->getText().toStdString());
+                        sceneTree->removeAllItems();
+                        readSceneTree();
+                    
+                        nameEdit->setFocused(false);
+                    }
+
+                    rp3d::Vector3 pos;
+                    pos.x = posEditX->getText().toFloat();
+                    pos.y = posEditY->getText().toFloat();
+                    pos.z = posEditZ->getText().toFloat();
+
+                    rp3d::Vector3 euler;
+                    euler.x = glm::radians(rotEditX->getText().toFloat());
+                    euler.y = glm::radians(rotEditY->getText().toFloat());
+                    euler.z = glm::radians(rotEditZ->getText().toFloat());
+
+                    rp3d::Vector3 size;
+                    size.x = sizeEditX->getText().toFloat();
+                    size.y = sizeEditY->getText().toFloat();
+                    size.z = sizeEditZ->getText().toFloat();
+
+                    if(!objectMode)
+                    {
+                        object->SetPosition(pos);
+                        object->SetOrientation(rp3d::Quaternion::fromEulerAngles(euler));
+                        object->SetSize(size);
+                    }
+
+                    if(!materialBox->getSelectedItem().empty())
+                    {
+                        if(materialBox->getSelectedItem() != materialsList->getSelectedItem())
+                        {
+                            object->GetMaterial()[materialsList->getSelectedItemId().toInt()] = scene.GetMaterial(materialBox->getSelectedItem().toStdString()).get();
+                            materialsList->changeItemById(materialsList->getSelectedItemId(), materialBox->getSelectedItem());
+                        }
+                    }
+                    if((int)object->GetRigidBody()->getType() != bodyTypeBox->getSelectedItemIndex())
+                        object->GetRigidBody()->setType(rp3d::BodyType(bodyTypeBox->getSelectedItemIndex()));
+                    object->SetIsDrawable(isDrawableBox->isChecked());
+
+                    if(!materialsList->getSelectedItem().empty())
+                        materialBox->setSelectedItem(materialsList->getSelectedItem());
+                    else materialBox->deselectItem();
+                }
 		    }
 		    /////////////////////////////////////
 
@@ -1589,7 +1590,7 @@ int main()
 					}
 				}
 			
-                std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == objectEditorGroup) return; g->setEnabled(false); g->setVisible(false); });
+                std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == boneEditorGroup) return; g->setEnabled(false); g->setVisible(false); });
 				boneEditorGroup->setEnabled(true);
 				boneEditorGroup->setVisible(true);
 

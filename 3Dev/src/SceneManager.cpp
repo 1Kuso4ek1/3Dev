@@ -102,17 +102,17 @@ void SceneManager::StoreBones(std::shared_ptr<Model> model, Bone* bone)
     if(!bone)
         for(auto& i : model->GetBones())
         {
-            StoreBones(model, i.get());
             bones[i->GetName()] = i.get();
             nodes[i->GetName()] = i.get();
+            StoreBones(model, i.get());
         }
     else
         for(auto i : bone->GetChildren())
         {
             auto b = dynamic_cast<Bone*>(i);
-            StoreBones(model, b);
             bones[b->GetName()] = b;
             nodes[b->GetName()] = b;
+            StoreBones(model, b);
         }
 }
 
@@ -492,10 +492,11 @@ std::string SceneManager::GetModelName(Model* model)
 
 std::string SceneManager::GetNodeName(Node* node)
 {
-    return std::find_if(nodes.begin(), nodes.end(), [&](auto n)
-            {
-                return n.second == node;
-            })->first;
+    auto it = std::find_if(nodes.begin(), nodes.end(), [&](auto n)
+                {
+                    return n.second == node;
+                });
+    return it != nodes.end() ? it->first : "";
 }
 
 std::string SceneManager::GetMaterialName(std::shared_ptr<Material> mat)
