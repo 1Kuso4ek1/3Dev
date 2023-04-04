@@ -102,16 +102,16 @@ void SceneManager::StoreBones(std::shared_ptr<Model> model, Bone* bone)
     if(!bone)
         for(auto& i : model->GetBones())
         {
-            bones[i->GetName()] = i.get();
-            nodes[i->GetName()] = i.get();
+            bones[i->GetName() + "-" + GetModelName(model)] = i.get();
+            nodes[i->GetName() + "-" + GetModelName(model)] = i.get();
             StoreBones(model, i.get());
         }
     else
         for(auto i : bone->GetChildren())
         {
             auto b = dynamic_cast<Bone*>(i);
-            bones[b->GetName()] = b;
-            nodes[b->GetName()] = b;
+            bones[b->GetName() + "-" + GetModelName(model)] = b;
+            nodes[b->GetName() + "-" + GetModelName(model)] = b;
             StoreBones(model, b);
         }
 }
@@ -247,6 +247,7 @@ void SceneManager::Save(std::string filename, bool relativePaths)
     for(auto& i : bones)
     {
         data["bones"][counter] = i.second->Serialize();
+        data["bones"][counter]["name"] = i.first;
         counter++;
     }
 
@@ -304,8 +305,8 @@ void SceneManager::Load(std::string filename)
             model->CreateRigidBody();
         }
         model->Deserialize(data["objects"]["models"][counter]);
-        StoreBones(model);
         AddModel(model, name, false);
+        StoreBones(model);
         counter++;
     }
     counter = 0;
@@ -552,6 +553,7 @@ Model* SceneManager::CloneModel(Model* model, bool isTemporary, std::string name
 {
     auto ret = std::make_shared<Model>(model);
     AddModel(ret, name);
+    StoreBones(ret);
     if(isTemporary)
         temporaryModelCopies.push_back(GetLastAdded());
     return ret.get();
@@ -621,6 +623,23 @@ void SceneManager::SetModelName(std::string name, std::string newName)
         auto n1 = nodes.extract(itn);
 		n1.key() = newName;
 		nodes.insert(std::move(n1));
+
+        std::vector<std::string> modelBones;
+
+        for(auto& [boneName, bone] : bones)
+            if(boneName.find(name) != std::string::npos)
+                modelBones.push_back(boneName);
+
+        for(auto& i : modelBones)
+        {
+            auto n = bones.extract(i);
+            n.key() = i.substr(0, i.find(name)) + newName;
+            bones.insert(std::move(n));
+
+            auto n1 = nodes.extract(i);
+            n1.key() = i.substr(0, i.find(name)) + newName;
+            nodes.insert(std::move(n1));
+        }
 	}
     else
         Log::Write("Could not find a model with name \"" + name + "\"", Log::Type::Warning);

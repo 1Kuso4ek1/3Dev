@@ -1968,10 +1968,9 @@ int main()
                 if(buffer.object)
                 {
                     auto a = scene.CloneModel(buffer.object.get(), false, buffer.name + "-copy");
-                    a->Move(a->GetSize());
                     std::string name = scene.GetLastAdded();
-                    sceneTree->addItem({ "Scene", "Objects", name });
-                    sceneTree->selectItem({ "Scene", "Objects", name });
+                    sceneTree->removeAllItems();
+                    readSceneTree();
                 }
             }
         }

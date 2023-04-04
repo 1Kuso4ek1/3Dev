@@ -19,16 +19,18 @@ Model::Model(Model* model)
 {
 	autoUpdateAnimation = model->autoUpdateAnimation;
 	drawable = model->drawable;
-	meshes = model->meshes;
+	//meshes = model->meshes;
 	m = model->m;
 	shader = model->shader;
 	mat = model->mat;
-	anims = model->anims;
+	//anims = model->anims;
 	man = model->man;
-	globalInverseTransform = model->globalInverseTransform;
+	//globalInverseTransform = model->globalInverseTransform;
 	filename = model->filename;
 	size = model->size;
 	transform = model->transform;
+
+	Load(filename, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
 
 	if(man)
 	{
@@ -49,6 +51,7 @@ Model::Model(Model* model)
                 CreateConcaveShape(i); break;
             case CollisionShapeType::Convex:
                 CreateConvexShape(i); break;
+			default: break;
             }
         body->setIsActive(model->body->isActive());
         body->setType(model->body->getType());

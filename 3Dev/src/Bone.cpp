@@ -99,8 +99,6 @@ Json::Value Bone::Serialize()
     auto pos = idle.getPosition();
     auto orient = idle.getOrientation();
 
-    data["name"] = name;
-
     data["position"]["x"] = pos.x;
     data["position"]["y"] = pos.y;
     data["position"]["z"] = pos.z;
