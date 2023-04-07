@@ -2,6 +2,19 @@
 
 void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool updatePhysics)
 {
+    for(auto& i : animations)
+    {
+        auto actions = i.second->Update();
+        for(auto& [name, transform] : actions)
+        {
+            if(nodes.find(name) != nodes.end())
+            {
+                nodes[name]->SetTransform(transform.first);
+                nodes[name]->SetSize(transform.second);
+            }
+        }
+    }
+
     if(!fbo) fbo = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main);
 
     fbo->Bind();
@@ -75,6 +88,9 @@ void SceneManager::AddModel(std::shared_ptr<Model> model, std::string name, bool
 
     if(!n.second.empty())
         modelGroups[n.second].push_back(model);
+
+    for(auto& i : model->GetAnimations())
+        animations[i->GetName()] = i;
 }
 
 void SceneManager::AddMaterial(std::shared_ptr<Material> material, std::string name)

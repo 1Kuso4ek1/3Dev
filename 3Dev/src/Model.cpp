@@ -146,8 +146,8 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
 	m->Rotate(a, glm::axis(toglm((tr * transform).getOrientation()))); // Using toglm(tmp) as second argument breaks everything and gives the matrix of nan
 	m->Scale(toglm(size));
 
-	if(autoUpdateAnimation)
-		UpdateAnimation();
+	for(auto& i : bones)
+		CalculatePose(i.get());
 
     if(drawable)
     {
@@ -212,6 +212,12 @@ void Model::DrawSkybox()
 	meshes[0]->Draw();
 
 	m->PopMatrix();
+}
+
+void Model::SetTransform(const rp3d::Transform& transform)
+{
+	this->transform = transform;
+	if(body) body->setTransform(transform);
 }
 
 void Model::SetPosition(const rp3d::Vector3& position)
@@ -505,8 +511,8 @@ void Model::PlayAnimation(unsigned int anim)
 	for(int i = 0; i < GetAnimationsCount(); i++)
 		StopAnimation(i);
 
-	anims[anim].state = Animation::State::Playing;
-	anims[anim].time.restart();
+	/*anims[anim].state = Animation::State::Playing;
+	anims[anim].time.restart();*/
 }
 
 void Model::StopAnimation(unsigned int anim)
@@ -517,7 +523,7 @@ void Model::StopAnimation(unsigned int anim)
         return;
     }
 
-	anims[anim].state = Animation::State::Stopped;
+	//anims[anim].state = Animation::State::Stopped;
 	for(auto& i : bones)
 		i->SetTransform(i->GetIdle());
 	for(auto& i : bonesChildren)
@@ -532,8 +538,8 @@ void Model::PauseAnimation(unsigned int anim)
         return;
     }
 
-	anims[anim].state = Animation::State::Paused;
-	anims[anim].lastTime = anims[anim].GetTime();
+	/*anims[anim].state = Animation::State::Paused;
+	anims[anim].lastTime = anims[anim].GetTime();*/
 }
 
 void Model::RepeatAnimation(bool repeat, unsigned int anim)
@@ -544,7 +550,7 @@ void Model::RepeatAnimation(bool repeat, unsigned int anim)
         return;
     }
 
-	anims[anim].repeat = repeat;
+	//anims[anim].repeat = repeat;
 }
 
 void Model::AutoUpdateAnimation(bool update)
@@ -595,7 +601,7 @@ rp3d::Vector3 Model::GetSize()
 
 Animation::State Model::GetAnimationState(unsigned int anim)
 {
-	return anims[anim].state;
+	return Animation::State::Stopped;//anims[anim].state;
 }
 
 Shader* Model::GetShader()
@@ -606,6 +612,11 @@ Shader* Model::GetShader()
 rp3d::RigidBody* Model::GetRigidBody()
 {
 	return body;
+}
+
+std::vector<std::shared_ptr<Animation>> Model::GetAnimations()
+{
+	return anims;
 }
 
 std::vector<std::shared_ptr<Bone>> Model::GetBones()
@@ -662,13 +673,6 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 			indices.push_back(mesh->mFaces[i].mIndices[j]);
 
 	std::string a;
-	if(mesh->mNumBones)
-	{
-		/*a = std::string(mesh->mBones[0]->mName.C_Str());
-		unsigned int tmp = a.find_first_of('_');
-		if(tmp != std::string::npos)
-			a.erase(a.begin() + tmp + 1, a.end());*/
-	}
 
 	for(int i = 0; i < mesh->mNumBones; i++)
 	{
@@ -710,11 +714,11 @@ void Model::LoadAnimations(const aiScene* scene)
 {
 	for(int i = 0; i < scene->mNumAnimations; i++)
 	{
-		Animation tmp;
 		auto anim = scene->mAnimations[i];
+		auto tmp = std::make_shared<Animation>(anim->mName.C_Str());
 		float tps = anim->mTicksPerSecond;
-		tmp.tps = (tps > 0 ? tps : 1000.0);
-		tmp.duration = anim->mDuration;
+		tmp->SetTPS(tps > 0 ? tps : 30.0);
+		tmp->SetDuration(anim->mDuration);
 
 		for (int j = 0; j < anim->mNumChannels; j++)
 		{
@@ -735,7 +739,7 @@ void Model::LoadAnimations(const aiScene* scene)
 				kf.scaleStamps.push_back(channel->mScalingKeys[k].mTime);
 				kf.scales.push_back(toglm(channel->mScalingKeys[k].mValue));
 			}
-			tmp.keyframes[channel->mNodeName.C_Str()] = kf;
+			tmp->AddKeyframe(channel->mNodeName.C_Str(), kf);
 		}
 		anims.push_back(tmp);
 	}
@@ -764,10 +768,10 @@ void Model::CalculatePose(Bone* bone/*, std::shared_ptr<Mesh>& mesh, glm::mat4 p
 	if(it == bones.end() && it1 == bonesChildren.end())
 		return;
 		
-	bool foundAnim = false;
+	//bool foundAnim = false;
 	rp3d::Transform tmp = transform;
 	transform = rp3d::Transform::identity();
-	for(auto i : anims)
+	/*for(auto i : anims)
 	{
 		if(i.state == Animation::State::Playing || i.state == Animation::State::Paused)
 		{
@@ -844,7 +848,7 @@ void Model::CalculatePose(Bone* bone/*, std::shared_ptr<Mesh>& mesh, glm::mat4 p
 			}
 		}
 	}
-	if(!foundAnim)
+	if(!foundAnim)*/
 	{
 		auto finalTransform = Node::GetFinalTransform(bone) * bone->GetTransform();
 
@@ -870,9 +874,9 @@ bool Model::ProcessBone(aiNode* node, std::shared_ptr<Bone>& out)
 			return false;
 		out = std::make_shared<Bone>(bonemap[node->mName.C_Str()].first, node->mName.C_Str(), bonemap[node->mName.C_Str()].second);
 		if(!anims.empty())
-			if(anims[0].keyframes.find(out->GetName()) != anims[0].keyframes.end())
+			if(anims[0]->GetKeyframes().find(out->GetName()) != anims[0]->GetKeyframes().end())
 			{
-				Keyframe kf = anims[0].keyframes[out->GetName()];
+				Keyframe kf = anims[0]->GetKeyframes()[out->GetName()];
 				auto pos = kf.positions[0];
 				auto rot = kf.rotations[0];
 				rp3d::Transform tr;

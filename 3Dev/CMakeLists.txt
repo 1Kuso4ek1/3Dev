@@ -45,6 +45,7 @@ add_library(3Dev
 	src/TextureManager.cpp
 	src/Node.cpp
 	src/Bone.cpp
+	src/Animation.cpp
 	libraries/Angelscript/sdk/add_on/scriptbuilder/scriptbuilder.cpp
 	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.cpp
 	libraries/Angelscript/sdk/add_on/scriptarray/scriptarray.cpp
@@ -146,6 +147,7 @@ install(FILES
 	include/TextureManager.hpp
 	include/Node.hpp
 	include/Bone.hpp
+	include/Animation.hpp
 	libraries/stb/stb_image.h
 	libraries/Angelscript/sdk/add_on/scriptbuilder/scriptbuilder.h
 	libraries/Angelscript/sdk/add_on/scriptstdstring/scriptstdstring.h

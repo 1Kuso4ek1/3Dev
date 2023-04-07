@@ -1,5 +1,5 @@
 # 3Dev
-![](https://img.shields.io/badge/3Dev-1.3.0-alpha.1-blue)
+![](https://img.shields.io/badge/3Dev-1.3.0_alpha.1-blue)
 ![](https://img.shields.io/badge/3Dev_Editor-1.3.0-blue)
 ![](https://img.shields.io/badge/language-C++-green)
 ![](https://img.shields.io/github/license/1kuso4ek1/3Dev)

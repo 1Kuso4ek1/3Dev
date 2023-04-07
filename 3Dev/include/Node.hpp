@@ -5,6 +5,8 @@ class Node
 {
 public:
     void SetParent(Node* parent);
+    virtual void SetTransform(const rp3d::Transform& transform);
+    virtual void SetSize(const rp3d::Vector3& size);
     virtual void AddChild(Node* child);
 
     virtual void Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass = false);

@@ -8,43 +8,7 @@
 #include "PhysicsManager.hpp"
 #include "Renderer.hpp"
 #include "Node.hpp"
-
-struct Keyframe
-{
-	std::vector<float> posStamps;
-	std::vector<float> rotStamps;
-	std::vector<float> scaleStamps;
-
-	std::vector<glm::vec3> positions;
-	std::vector<glm::quat> rotations;
-	std::vector<glm::vec3> scales;
-};
-
-struct Animation
-{
-	enum class State
-	{
-		Stopped,
-		Playing,
-		Paused
-	};
-
-	float GetTime()
-	{
-		return time.getElapsedTime().asSeconds() * tps;
-	}
-
-	State state = State::Stopped;
-	bool repeat = true;
-
-	float duration = 0.0;
-	float tps = 1000.0;
-	float lastTime = 0.0;
-
-	std::unordered_map<std::string, Keyframe> keyframes;
-
-	sf::Clock time;
-};
+#include "Animation.hpp"
 
 class Model : public Node
 {
@@ -62,9 +26,10 @@ public:
 	void Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass = false) override;
 	void DrawSkybox();
 
+	void SetTransform(const rp3d::Transform& transform) override;
 	void SetPosition(const rp3d::Vector3& position);
 	void SetOrientation(const rp3d::Quaternion& orientation);
-	void SetSize(const rp3d::Vector3& size);
+	void SetSize(const rp3d::Vector3& size) override;
 	void SetMaterial(std::vector<Material*> mat);
 	void SetMaterialSlot(Material* mat, unsigned int slot = 0);
 	void SetShader(Shader* shader);
@@ -107,6 +72,7 @@ public:
 	Shader* GetShader();
 	rp3d::RigidBody* GetRigidBody() override;
 
+	std::vector<std::shared_ptr<Animation>> GetAnimations();
 	std::vector<std::shared_ptr<Bone>> GetBones();
 	std::vector<glm::mat4>& GetPose();
 
@@ -149,7 +115,7 @@ private:
 	Shader* shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
 
 	std::vector<Material*> mat;
-	std::vector<Animation> anims;
+	std::vector<std::shared_ptr<Animation>> anims;
 
 	PhysicsManager* man;
 

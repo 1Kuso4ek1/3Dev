@@ -8,6 +8,16 @@ void Node::SetParent(Node* parent)
         this->parent = parent;
 }
 
+void Node::SetTransform(const rp3d::Transform& transform)
+{
+    return;
+}
+
+void Node::SetSize(const rp3d::Vector3& size)
+{
+    return;
+}
+
 void Node::AddChild(Node* child)
 {
     auto it = std::find(children.begin(), children.end(), child);
