@@ -1,5 +1,5 @@
 # 3Dev
-![](https://img.shields.io/badge/3Dev-1.2.9-blue)
+![](https://img.shields.io/badge/3Dev-1.3.0-alpha.1-blue)
 ![](https://img.shields.io/badge/3Dev_Editor-1.3.0-blue)
 ![](https://img.shields.io/badge/language-C++-green)
 ![](https://img.shields.io/github/license/1kuso4ek1/3Dev)
@@ -29,7 +29,7 @@ TODO list is in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)!
 ## Building
 All building instructions are [here](https://1kuso4ek1.github.io/3Dev/build.html)!
 ## Tutorial
-[English](https://telegra.ph/Developing-games-with-3Dev-01-11) and [Russian](https://telegra.ph/Razrabotka-igr-s-pomoshchyu-3Dev-01-06)!
+[English](https://1kuso4ek1.github.io/3Dev/) and [Russian](https://telegra.ph/Razrabotka-igr-s-pomoshchyu-3Dev-01-06)!
 ## Screenshots
 ![](./Screenshots/scr.png)
 ![](./Screenshots/scr1.png)
