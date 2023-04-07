@@ -23,18 +23,6 @@ mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release # Debug, RelWithDebInfo, etc.
 sudo make install -j4
 ```
-There also a small demo scene, you can launch it with
-```
-./physics
-```
-> NOTE: On a Raspberry Pi you will probably get an error when compiling shaders.  
-> This is because 3Dev uses GLSL 3.30, that RPI does not support.
-> The only solution is to launch it with
-> ```
-> MESA_GL_VERSION_OVERRIDE=3.3 ./physics
-> ```
-> Don't worry, it doesn't affect performance ;)  
-
 ### 3Dev Editor
 3Dev Editor will help you create a cool game...
 ```
