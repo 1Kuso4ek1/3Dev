@@ -15,15 +15,11 @@ void Light::SetColor(const rp3d::Vector3& color)
 void Light::SetPosition(const rp3d::Vector3& position)
 {
 	this->position = position;
-	if(castShadows)
-		CalcLightSpaceMatrix();
 }
 
 void Light::SetDirection(const rp3d::Vector3& direction)
 {
 	this->direction = direction;
-	if(castShadows)
-		CalcLightSpaceMatrix();
 }
 
 void Light::SetAttenuation(float constant, float linear, float quadratic)
@@ -48,7 +44,7 @@ void Light::CalcLightSpaceMatrix()
 	glm::mat4 projection;
 
 	auto tr = Node::GetFinalTransform(this);
-	auto pos = (tr * GetTransform()).getPosition();
+	auto pos = (GetTransform() * tr).getPosition();
 
 	if(perspectiveShadows)
 		projection = glm::perspective(glm::radians(90.0), 1.0, 0.01, 1000.0);
@@ -62,15 +58,11 @@ void Light::CalcLightSpaceMatrix()
 void Light::SetIsCastingShadows(bool castShadows)
 {
 	this->castShadows = castShadows;
-	if(castShadows)
-		CalcLightSpaceMatrix();
 }
 
 void Light::SetIsCastingPerspectiveShadows(bool perspectiveShadows)
 {
 	this->perspectiveShadows = perspectiveShadows;
-	if(castShadows)
-		CalcLightSpaceMatrix();
 }
 
 void Light::Update(Shader* shader, int lightnum) 
@@ -99,6 +91,8 @@ bool Light::IsCastingPerspectiveShadows()
 
 glm::mat4 Light::GetLightSpaceMatrix()
 {
+	if(castShadows)
+		CalcLightSpaceMatrix();
 	return lightSpaceMatrix;
 }
 

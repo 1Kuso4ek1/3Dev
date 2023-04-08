@@ -36,6 +36,7 @@ public:
 	void SetPhysicsManager(PhysicsManager* man);
 	void SetIsDrawable(bool drawable);
 	void AddChild(Node* child) override;
+	void DefaultPose();
 
 	void CreateRigidBody();
 
@@ -49,16 +50,7 @@ public:
 	void CreateConcaveShape(unsigned int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
 	void CreateConvexShape(unsigned int mesh = 0, rp3d::Transform tr = rp3d::Transform::identity());
 
-	void PlayAnimation(unsigned int anim = 0);
-	void StopAnimation(unsigned int anim = 0);
-	void PauseAnimation(unsigned int anim = 0);
-
-	void RepeatAnimation(bool repeat, unsigned int anim = 0);
-	void AutoUpdateAnimation(bool update = true);
-	void UpdateAnimation();
-
 	int GetMeshesCount();
-	int GetAnimationsCount();
 
 	bool IsDrawable();
 
@@ -66,8 +58,6 @@ public:
 	rp3d::Vector3 GetPosition();
 	rp3d::Quaternion GetOrientation();
 	rp3d::Vector3 GetSize();
-
-	Animation::State GetAnimationState(unsigned int anim = 0);
 
 	Shader* GetShader();
 	rp3d::RigidBody* GetRigidBody() override;

@@ -50,6 +50,7 @@ public:
 
     std::shared_ptr<Model> GetModel(std::string name);
     std::shared_ptr<Material> GetMaterial(std::string name);
+    std::shared_ptr<Animation> GetAnimation(std::string name);
     std::shared_ptr<PhysicsManager> GetPhysicsManager();
     std::shared_ptr<SoundManager> GetSoundManager();
 
@@ -66,6 +67,7 @@ public:
     // For angelscript
     Model* GetModelPtr(std::string name);
     Material* GetMaterialPtr(std::string name);
+    Animation* GetAnimationPtr(std::string name);
     PhysicsManager* GetPhysicsManagerPtr();
     SoundManager* GetSoundManagerPtr();
 
@@ -79,8 +81,8 @@ public:
 
     std::vector<Light*> GetShadowCastingLights();
 
-	// @return array of names, 0 - models, 1 - materials, 2 - lights, 3 - nodes, 4 - bones
-    std::array<std::vector<std::string>, 5> GetNames();
+	// @return array of names, 0 - models, 1 - materials, 2 - lights, 3 - nodes, 4 - bones, 5 - animations
+    std::array<std::vector<std::string>, 6> GetNames();
 
 private:
     struct State

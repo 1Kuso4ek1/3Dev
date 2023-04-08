@@ -658,6 +658,7 @@ int main()
             sceneTree->addItem({ "Scene", "Materials", i });
         }
         for(auto& i : sounds) sceneTree->addItem({ "Scene", "Sounds", i });
+        for(auto& i : names[5]) sceneTree->addItem({ "Scene", "Animations", i });
 
         auto scripts = scman.GetScripts();
         for(auto& i : scripts)
@@ -1121,8 +1122,6 @@ int main()
                 auto mtl = model->GetMaterial();
                 for(int i = 0; i < mtl.size(); i++)
                     materialsList->addItem(scene.GetMaterialName(mtl[i]), tgui::String(i));
-                if(model->GetAnimationsCount())
-                    model->PlayAnimation();
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;

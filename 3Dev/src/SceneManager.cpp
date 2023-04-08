@@ -90,7 +90,19 @@ void SceneManager::AddModel(std::shared_ptr<Model> model, std::string name, bool
         modelGroups[n.second].push_back(model);
 
     for(auto& i : model->GetAnimations())
+    {
+        std::vector<std::string> kfNames;
+        
+        for(auto& [name, kf] : i->GetKeyframes())
+            kfNames.push_back(name);
+        for(auto& j : kfNames)
+        {
+            auto n = i->GetKeyframes().extract(j);
+            n.key() = j + "-" + lastAdded;
+            i->GetKeyframes().insert(std::move(n));
+        }
         animations[i->GetName()] = i;
+    }
 }
 
 void SceneManager::AddMaterial(std::shared_ptr<Material> material, std::string name)
@@ -472,6 +484,15 @@ std::shared_ptr<Material> SceneManager::GetMaterial(std::string name)
     return nullptr;
 }
 
+std::shared_ptr<Animation> SceneManager::GetAnimation(std::string name)
+{
+    if(animations.find(name) != animations.end())
+        return animations[name];
+    Log::Write("Could not find an animation with name \""
+                + name + "\", function will return nullptr", Log::Type::Warning);
+    return nullptr;
+}
+
 std::shared_ptr<PhysicsManager> SceneManager::GetPhysicsManager()
 {
     return pManager;
@@ -551,6 +572,15 @@ Material* SceneManager::GetMaterialPtr(std::string name)
     if(materials.find(name) != materials.end())
         return materials[name].get();
     Log::Write("Could not find a material with name \""
+                + name + "\", function will return nullptr", Log::Type::Warning);
+    return nullptr;
+}
+
+Animation* SceneManager::GetAnimationPtr(std::string name)
+{
+    if(animations.find(name) != animations.end())
+        return animations[name].get();
+    Log::Write("Could not find an animation with name \""
                 + name + "\", function will return nullptr", Log::Type::Warning);
     return nullptr;
 }
@@ -692,9 +722,9 @@ void SceneManager::SetLightName(std::string name, std::string newName)
         Log::Write("Could not find a light with name \"" + name + "\"", Log::Type::Warning);
 }
 
-std::array<std::vector<std::string>, 5> SceneManager::GetNames()
+std::array<std::vector<std::string>, 6> SceneManager::GetNames()
 {
-	std::array<std::vector<std::string>, 5> ret;
+	std::array<std::vector<std::string>, 6> ret;
     std::vector<std::string> tmp;
     for(auto& i : models)
         tmp.push_back(i.first);
@@ -710,7 +740,10 @@ std::array<std::vector<std::string>, 5> SceneManager::GetNames()
     ret[3] = tmp; tmp.clear();
     for(auto& i : bones)
         tmp.push_back(i.first);
-    ret[4] = tmp;
+    ret[4] = tmp; tmp.clear();
+    for(auto& i : animations)
+        tmp.push_back(i.first);
+    ret[5] = tmp;
     return ret;
 }
 

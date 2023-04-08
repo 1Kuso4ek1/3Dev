@@ -88,7 +88,7 @@ std::unordered_map<std::string, std::pair<rp3d::Transform, rp3d::Vector3>> Anima
     return actions;
 }
 
-std::unordered_map<std::string, Keyframe> Animation::GetKeyframes()
+std::unordered_map<std::string, Keyframe>& Animation::GetKeyframes()
 {
     return keyframes;
 }

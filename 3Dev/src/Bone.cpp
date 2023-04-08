@@ -25,7 +25,6 @@ void Bone::SetOrientation(const rp3d::Quaternion& orient)
 
 void Bone::SetSize(const rp3d::Vector3& size)
 {
-    SavePoseAsIdle();
     this->size = size;
 }
 
@@ -43,7 +42,6 @@ void Bone::Rotate(const rp3d::Quaternion& quat)
 
 void Bone::Expand(const rp3d::Vector3& vec)
 {
-    SavePoseAsIdle();
     size += vec;
 }
 

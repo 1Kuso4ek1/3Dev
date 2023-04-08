@@ -22,6 +22,7 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterSoundManager();
     RegisterCamera();
     RegisterMaterial();
+    RegisterAnimation();
     RegisterModel();
     RegisterLight();
     RegisterBone();
@@ -276,8 +277,6 @@ void ScriptManager::RegisterQuaternion()
 
 void ScriptManager::RegisterModel()
 {
-    AddEnum("AnimationState", { "Stopped", "Playing", "Paused" });
-
     AddType("Model", sizeof(Model),
     {
         { "void SetPosition(const Vector3& in)", WRAP_MFN(Model, SetPosition) },
@@ -286,6 +285,7 @@ void ScriptManager::RegisterModel()
         { "void SetMaterial(Material@, uint32 = 0)", WRAP_MFN(Model, SetMaterialSlot) },
         { "void SetPhysicsManager(PhysicsManager@)", WRAP_MFN(Model, SetPhysicsManager) },
         { "void SetIsDrawable(bool)", WRAP_MFN(Model, SetIsDrawable) },
+        { "void DefaultPose()", WRAP_MFN(Model, DefaultPose) },
         { "void CreateRigidBody()", WRAP_MFN(Model, CreateRigidBody) },
         { "void Move(const Vector3& in)", WRAP_MFN(Model, Move) },
         { "void Rotate(const Quaternion& in)", WRAP_MFN(Model, Rotate) },
@@ -295,14 +295,7 @@ void ScriptManager::RegisterModel()
         { "Quaternion GetOrientation()", WRAP_MFN(Model, GetOrientation) },
         { "Vector3 GetSize()", WRAP_MFN(Model, GetSize) },
         { "RigidBody@ GetRigidBody()", WRAP_MFN(Model, GetRigidBody) },
-        { "AnimationState GetAnimationState(uint32 = 0)", WRAP_MFN(Model, GetAnimationState) },
-        { "void PlayAnimation(uint32 = 0)", WRAP_MFN(Model, PlayAnimation) },
-        { "void StopAnimation(uint32 = 0)", WRAP_MFN(Model, StopAnimation) },
-        { "void PauseAnimation(uint32 = 0)", WRAP_MFN(Model, PauseAnimation) },
-        { "void RepeatAnimation(bool, uint32 = 0)", WRAP_MFN(Model, RepeatAnimation) },
-        { "void AutoUpdateAnimation(bool = true)", WRAP_MFN(Model, AutoUpdateAnimation) },
-        { "int GetMeshesCount()", WRAP_MFN(Model, GetMeshesCount) },
-        { "int GetAnimationsCount()", WRAP_MFN(Model, GetAnimationsCount) }
+        { "int GetMeshesCount()", WRAP_MFN(Model, GetMeshesCount) }
     }, {});
 }
 
@@ -411,6 +404,7 @@ void ScriptManager::RegisterSceneManager()
         { "Light@ GetLight(string)", WRAP_MFN(SceneManager, GetLight) },
         { "Material@ GetMaterial(string)", WRAP_MFN(SceneManager, GetMaterialPtr) },
         { "Bone@ GetBone(string)", WRAP_MFN(SceneManager, GetBone) },
+        { "Animation@ GetAnimation(string)", WRAP_MFN(SceneManager, GetAnimationPtr) },
         { "Model@ CloneModel(Model@, bool = true, string = \"model\")", WRAP_MFN(SceneManager, CloneModel) },
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
         { "PhysicsManager@ GetPhysicsManager()", WRAP_MFN(SceneManager, GetPhysicsManagerPtr) },
@@ -873,5 +867,19 @@ void ScriptManager::RegisterBone()
         { "void Move(const Vector3& in)", WRAP_MFN(Bone, Move) },
         { "void Rotate(const Quaternion& in)", WRAP_MFN(Bone, Rotate) },
         { "void Expand(const Vector3& in)", WRAP_MFN(Bone, Expand) }
+    }, {});
+}
+
+void ScriptManager::RegisterAnimation()
+{
+    AddEnum("AnimationState", { "Stopped", "Playing", "Paused" });
+
+    AddType("Animation", sizeof(Animation),
+    {
+        { "void Play()", WRAP_MFN(Animation, Play) },
+        { "void Pause()", WRAP_MFN(Animation, Pause) },
+        { "void Stop()", WRAP_MFN(Animation, Stop) },
+        { "void SetIsRepeated(bool)", WRAP_MFN(Animation, SetIsRepeated) },
+        { "AnimationState GetState()", WRAP_MFN(Animation, GetState) }
     }, {});
 }

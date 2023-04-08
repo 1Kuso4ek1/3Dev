@@ -37,7 +37,7 @@ public:
 
     std::unordered_map<std::string, std::pair<rp3d::Transform, rp3d::Vector3>> Update();
 
-    std::unordered_map<std::string, Keyframe> GetKeyframes();
+    std::unordered_map<std::string, Keyframe>& GetKeyframes();
     std::string GetName();
 	float GetTime();
     State GetState();

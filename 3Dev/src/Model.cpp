@@ -337,6 +337,14 @@ void Model::AddChild(Node* child)
 	}
 }
 
+void Model::DefaultPose()
+{
+	for(auto& i : bones)
+		i->SetTransform(i->GetIdle());
+	for(auto& i : bonesChildren)
+		i->SetTransform(i->GetIdle());
+}
+
 void Model::CreateRigidBody()
 {
 	if(man) body = man->CreateRigidBody(transform);
@@ -500,78 +508,9 @@ void Model::CreateConvexShape(unsigned int mesh, rp3d::Transform tr)
 	cstype = CollisionShapeType::Convex;
 }
 
-void Model::PlayAnimation(unsigned int anim)
-{
-	if(anim >= anims.size())
-    {
-        Log::Write("PlayAnimation(): unsigned int anim is out of anims array bounds", Log::Type::Error);
-        return;
-    }
-
-	for(int i = 0; i < GetAnimationsCount(); i++)
-		StopAnimation(i);
-
-	/*anims[anim].state = Animation::State::Playing;
-	anims[anim].time.restart();*/
-}
-
-void Model::StopAnimation(unsigned int anim)
-{
-	if(anim >= anims.size())
-    {
-        Log::Write("StopAnimation(): unsigned int anim is out of anims array bounds", Log::Type::Error);
-        return;
-    }
-
-	//anims[anim].state = Animation::State::Stopped;
-	for(auto& i : bones)
-		i->SetTransform(i->GetIdle());
-	for(auto& i : bonesChildren)
-		i->SetTransform(i->GetIdle());
-}
-
-void Model::PauseAnimation(unsigned int anim)
-{
-	if(anim >= anims.size())
-    {
-        Log::Write("PauseAnimation(): unsigned int anim is out of anims array bounds", Log::Type::Error);
-        return;
-    }
-
-	/*anims[anim].state = Animation::State::Paused;
-	anims[anim].lastTime = anims[anim].GetTime();*/
-}
-
-void Model::RepeatAnimation(bool repeat, unsigned int anim)
-{
-	if(anim >= anims.size())
-    {
-        Log::Write("RepeatAnimation(): unsigned int anim is out of anims array bounds", Log::Type::Error);
-        return;
-    }
-
-	//anims[anim].repeat = repeat;
-}
-
-void Model::AutoUpdateAnimation(bool update)
-{
-	autoUpdateAnimation = update;
-}
-
-void Model::UpdateAnimation()
-{
-	for(auto i : bones)
-		CalculatePose(i.get());
-}
-
 int Model::GetMeshesCount()
 {
 	return meshes.size();
-}
-
-int Model::GetAnimationsCount()
-{
-	return anims.size();
 }
 
 bool Model::IsDrawable()
@@ -597,11 +536,6 @@ rp3d::Quaternion Model::GetOrientation()
 rp3d::Vector3 Model::GetSize()
 {
 	return size;
-}
-
-Animation::State Model::GetAnimationState(unsigned int anim)
-{
-	return Animation::State::Stopped;//anims[anim].state;
 }
 
 Shader* Model::GetShader()
@@ -759,7 +693,7 @@ void Model::FindBoneNodes(aiNode* node, std::vector<std::shared_ptr<Bone>>& bone
 		FindBoneNodes(node->mChildren[i], bones);
 }
 
-void Model::CalculatePose(Bone* bone/*, std::shared_ptr<Mesh>& mesh, glm::mat4 parent*/)
+void Model::CalculatePose(Bone* bone)
 {
 	auto it = std::find_if(bones.begin(), bones.end(), [&](auto b)
 						  { return b.get() == bone; });
@@ -768,100 +702,21 @@ void Model::CalculatePose(Bone* bone/*, std::shared_ptr<Mesh>& mesh, glm::mat4 p
 	if(it == bones.end() && it1 == bonesChildren.end())
 		return;
 		
-	//bool foundAnim = false;
 	rp3d::Transform tmp = transform;
 	transform = rp3d::Transform::identity();
-	/*for(auto i : anims)
-	{
-		if(i.state == Animation::State::Playing || i.state == Animation::State::Paused)
-		{
-			foundAnim = true;
-			if(i.keyframes.find(bone->GetName()) != i.keyframes.end())
-			{
-				Keyframe kf = i.keyframes[bone->GetName()];
 
-				float time = 0;
-				if(i.state == Animation::State::Playing)
-				{
-					time = i.GetTime();
-					if(i.lastTime != 0)
-						time += i.lastTime;
-				}
-				else time = i.lastTime;
+	auto finalTransform = Node::GetFinalTransform(bone) * bone->GetTransform();
 
-				if(i.state == Animation::State::Playing && time >= i.duration)
-				{
-					if(i.repeat)
-					{
-						time = i.time.restart().asSeconds() * i.tps;
-						i.lastTime = 0;
-					}
-					else
-					{
-						time = i.duration - 0.01;
-						i.state = Animation::State::Paused;
-						i.lastTime = i.duration - 0.01;
-					}
-				}
+	glm::mat4 finaltr(1.0);
+	finaltr = glm::translate(finaltr, toglm(finalTransform.getPosition()));
+	finaltr = finaltr * glm::toMat4(toglm(finalTransform.getOrientation()));
+	finaltr = glm::scale(finaltr, toglm(bone->GetSize()));
 
-				float dt = fmod(time, i.duration);
-				auto fraction = TimeFraction(kf.rotStamps, dt);
+	pose[bone->GetID()] = finaltr * bone->GetOffset();
 
-				glm::vec3 pos = glm::mix(kf.positions[fraction.first - 1], kf.positions[fraction.first], fraction.second);
-				glm::quat rot = glm::slerp(kf.rotations[fraction.first - 1], kf.rotations[fraction.first], fraction.second);
-				glm::vec3 scale = glm::mix(kf.scales[fraction.first - 1], kf.scales[fraction.first], fraction.second);
+	for(auto child : bone->GetChildren())
+		CalculatePose(dynamic_cast<Bone*>(child));
 
-				glm::mat4 mpos = glm::translate(glm::mat4(1.0), pos),
-						  mscale = glm::scale(glm::mat4(1.0), scale),
-						  mrot = glm::toMat4(rot);
-
-				glm::mat4 localTransform = mpos * mrot * mscale;
-
-				rp3d::Transform tr;
-				tr.setPosition({ pos.x, pos.y, pos.z });
-				tr.setOrientation({ rot.x, rot.y, rot.z, rot.w });
-
-				bone->SetTransform(tr);
-				auto globalTransform = Node::GetFinalTransform(bone);
-				glm::mat4 parent(1.0);
-				parent = glm::translate(parent, toglm(globalTransform.getPosition()));
-				parent = parent * glm::toMat4(toglm(globalTransform.getOrientation()));
-
-				pose[bone->GetID()] = parent * localTransform * bone->GetOffset();
-
-				for(auto child : bone->GetChildren())
-					CalculatePose(dynamic_cast<Bone*>(child));
-			}
-			else
-			{
-				auto finalTransform = Node::GetFinalTransform(bone) * bone->GetTransform();
-				
-				glm::mat4 finaltr(1.0);
-				finaltr = glm::translate(finaltr, toglm(finalTransform.getPosition()));
-				finaltr = finaltr * glm::toMat4(toglm(finalTransform.getOrientation()));
-				finaltr = glm::scale(finaltr, toglm(bone->GetSize()));
-
-				pose[bone->GetID()] = finaltr * bone->GetOffset();
-
-				for(auto child : bone->GetChildren())
-					CalculatePose(dynamic_cast<Bone*>(child));
-			}
-		}
-	}
-	if(!foundAnim)*/
-	{
-		auto finalTransform = Node::GetFinalTransform(bone) * bone->GetTransform();
-
-		glm::mat4 finaltr(1.0);
-		finaltr = glm::translate(finaltr, toglm(finalTransform.getPosition()));
-		finaltr = finaltr * glm::toMat4(toglm(finalTransform.getOrientation()));
-		finaltr = glm::scale(finaltr, toglm(bone->GetSize()));
-
-		pose[bone->GetID()] = finaltr * bone->GetOffset();
-
-		for(auto child : bone->GetChildren())
-			CalculatePose(dynamic_cast<Bone*>(child));
-	}
 	transform = tmp;
 }
 
