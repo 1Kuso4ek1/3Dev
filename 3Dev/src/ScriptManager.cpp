@@ -439,7 +439,7 @@ void ScriptManager::RegisterSfKeyboard()
 void ScriptManager::RegisterSfMouse()
 {
     SetDefaultNamespace("Mouse");
-    AddFunction("bool isButtonPressed(int)", WRAP_FN(sf::Keyboard::isKeyPressed));
+    AddFunction("bool isButtonPressed(int)", WRAP_FN(sf::Mouse::isButtonPressed));
     AddEnum("Button", { "Left", "Right", "Middle", "XButton1", "XButton2" });
     SetDefaultNamespace("");
 }

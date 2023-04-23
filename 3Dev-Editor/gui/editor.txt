@@ -27,6 +27,22 @@ Renderer.2 {
 }
 
 Renderer.3 {
+    TextColor = rgb(190, 190, 190);
+    TextureBackground = None;
+
+    Scrollbar {
+        TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+        TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+        TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+        TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+        TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+        TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+        TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+        TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+    }
+}
+
+Renderer.4 {
     BackgroundColor = rgb( 80, 80, 80);
     BorderColor = Black;
     Borders = (1, 1, 1, 1);
@@ -56,10 +72,10 @@ Renderer.3 {
     }
 }
 
-Renderer.4 {
+Renderer.5 {
 }
 
-Renderer.5 {
+Renderer.6 {
     CaretColor = rgb(110, 110, 255);
     DefaultTextColor = rgb(120, 120, 120);
     Padding = (6, 4, 6, 4);
@@ -72,7 +88,7 @@ Renderer.5 {
     TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
 }
 
-Renderer.6 {
+Renderer.7 {
     TextColor = rgb(190, 190, 190);
     TextureBackground = None;
 
@@ -88,27 +104,11 @@ Renderer.6 {
     }
 }
 
-Renderer.7 {
+Renderer.8 {
     TextureThumb = "themes/Black.png" Part(44, 499, 30, 30) Smooth;
     TextureThumbHover = None;
     TextureTrack = "themes/Black.png" Part(76, 499, 20, 45) Middle(0, 15) Smooth;
     TextureTrackHover = "themes/Black.png" Part(98, 499, 20, 45) Middle(0, 15) Smooth;
-}
-
-Renderer.8 {
-    TextColor = rgb(190, 190, 190);
-    TextureBackground = None;
-
-    Scrollbar {
-        TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
-        TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
-        TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
-        TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
-        TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
-        TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
-        TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
-        TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
-    }
 }
 
 Renderer.9 {
@@ -128,48 +128,35 @@ Renderer.9 {
 }
 
 Renderer.10 {
-    CaretColor = rgb(110, 110, 255);
-    DefaultTextColor = rgb(120, 120, 120);
-    Padding = (6, 4, 6, 4);
-    SelectedTextBackgroundColor = rgb( 10, 110, 255);
-    SelectedTextColor = White;
     TextColor = rgb(190, 190, 190);
-    Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
-    TextureDisabled = None;
-    TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
-    TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
+    TextureBackground = None;
+
+    Scrollbar {
+        TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+        TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+        TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+        TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+        TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+        TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+        TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+        TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+    }
 }
 
 Renderer.11 {
+    CaretColor = rgb(110, 110, 255);
+    DefaultTextColor = rgb(120, 120, 120);
+    Padding = (6, 4, 6, 4);
+    SelectedTextBackgroundColor = rgb( 10, 110, 255);
+    SelectedTextColor = White;
     TextColor = rgb(190, 190, 190);
-    TextureBackground = None;
-
-    Scrollbar {
-        TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
-        TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
-        TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
-        TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
-        TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
-        TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
-        TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
-        TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
-    }
+    Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
+    TextureDisabled = None;
+    TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
+    TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
 }
 
 Renderer.12 {
-    CaretColor = rgb(110, 110, 255);
-    DefaultTextColor = rgb(120, 120, 120);
-    Padding = (6, 4, 6, 4);
-    SelectedTextBackgroundColor = rgb( 10, 110, 255);
-    SelectedTextColor = White;
-    TextColor = rgb(190, 190, 190);
-    Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
-    TextureDisabled = None;
-    TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
-    TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
-}
-
-Renderer.13 {
     TextColor = rgb(190, 190, 190);
     TextureBackground = None;
 
@@ -185,7 +172,7 @@ Renderer.13 {
     }
 }
 
-Renderer.14 {
+Renderer.13 {
     CaretColor = rgb(110, 110, 255);
     DefaultTextColor = rgb(120, 120, 120);
     Padding = (6, 4, 6, 4);
@@ -196,6 +183,22 @@ Renderer.14 {
     TextureDisabled = None;
     TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
     TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
+}
+
+Renderer.14 {
+    TextColor = rgb(190, 190, 190);
+    TextureBackground = None;
+
+    Scrollbar {
+        TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+        TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+        TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+        TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+        TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+        TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+        TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+        TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+    }
 }
 
 Renderer.15 {
@@ -212,6 +215,19 @@ Renderer.15 {
 }
 
 Renderer.16 {
+    CaretColor = rgb(110, 110, 255);
+    DefaultTextColor = rgb(120, 120, 120);
+    Padding = (6, 4, 6, 4);
+    SelectedTextBackgroundColor = rgb( 10, 110, 255);
+    SelectedTextColor = White;
+    TextColor = rgb(190, 190, 190);
+    Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
+    TextureDisabled = None;
+    TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
+    TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
+}
+
+Renderer.17 {
     TextColor = rgb(190, 190, 190);
     TextColorHover = rgb(250, 250, 250);
     Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
@@ -223,7 +239,60 @@ Renderer.16 {
     TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
 }
 
-Renderer.17 {
+Renderer.18 {
+    TextColor = rgb(190, 190, 190);
+    TextureBackground = None;
+
+    Scrollbar {
+        TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+        TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+        TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+        TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+        TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+        TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+        TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+        TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+    }
+}
+
+Renderer.19 {
+    TextColor = rgb(190, 190, 190);
+    TextColorHover = rgb(250, 250, 250);
+    Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
+    TextureDisabled = None;
+    TextureDown = "themes/Black.png" Part(0, 74, 45, 50) Middle(10, 0) Smooth;
+    TextureDownFocused = None;
+    TextureDownHover = None;
+    TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
+    TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
+}
+
+Renderer.20 {
+    TextColor = rgb(190, 190, 190);
+    TextColorHover = rgb(250, 250, 250);
+    Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
+    TextureDisabled = None;
+    TextureDown = "themes/Black.png" Part(0, 74, 45, 50) Middle(10, 0) Smooth;
+    TextureDownFocused = None;
+    TextureDownHover = None;
+    TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
+    TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
+}
+
+Renderer.21 {
+    CaretColor = rgb(110, 110, 255);
+    DefaultTextColor = rgb(120, 120, 120);
+    Padding = (6, 4, 6, 4);
+    SelectedTextBackgroundColor = rgb( 10, 110, 255);
+    SelectedTextColor = White;
+    TextColor = rgb(190, 190, 190);
+    Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
+    TextureDisabled = None;
+    TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
+    TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
+}
+
+Renderer.22 {
     TextColor = rgb(190, 190, 190);
     TextureBackground = None;
 
@@ -391,12 +460,40 @@ ChildWindow.ChildWindow1 {
         Text = "Concave collider";
         TextSize = 13;
     }
+
+    Label.Label42 {
+        AutoSize = true;
+        Position = (73, 480);
+        Renderer = &3;
+        Size = (71.2, 18);
+        Text = Animation;
+        TextSize = 13;
+    }
+
+    Button.createAnimation {
+        Position = (0, 500);
+        Size = (221, 37);
+        Text = Animation;
+        TextSize = 13;
+
+        Renderer {
+            TextColor = rgb(190, 190, 190);
+            TextColorHover = rgb(250, 250, 250);
+            Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
+            TextureDisabled = None;
+            TextureDown = "themes/Black.png" Part(0, 74, 45, 50) Middle(10, 0) Smooth;
+            TextureDownFocused = None;
+            TextureDownHover = None;
+            TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
+            TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
+        }
+    }
 }
 
 ChildWindow.ChildWindow2 {
     Position = (1060, 0);
     PositionLocked = true;
-    Renderer = &3;
+    Renderer = &4;
     Size = (220, 250);
     Title = Scene;
     TitleAlignment = Center;
@@ -477,12 +574,12 @@ ChildWindow.objectEditorWindow {
     Group.objectEditor {
         Enabled = false;
         Position = (10, 10);
-        Renderer = &4;
+        Renderer = &5;
         Size = (200, 420);
         Visible = false;
 
         EditBox.name {
-            Renderer = &5;
+            Renderer = &6;
             Size = (200, 24);
             TextSize = 13;
         }
@@ -491,7 +588,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (0, 30);
-            Renderer = &5;
+            Renderer = &6;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -500,7 +597,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (50, 30);
-            Renderer = &5;
+            Renderer = &6;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -509,7 +606,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (100, 30);
-            Renderer = &5;
+            Renderer = &6;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -517,7 +614,7 @@ ChildWindow.objectEditorWindow {
         Label.Label4 {
             HorizontalAlignment = Center;
             Position = (140, 32);
-            Renderer = &6;
+            Renderer = &7;
             Size = (68.2, 18);
             Text = pos;
             TextSize = 13;
@@ -527,7 +624,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (0, 60);
-            Renderer = &5;
+            Renderer = &6;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -536,7 +633,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (50, 60);
-            Renderer = &5;
+            Renderer = &6;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -545,7 +642,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (100, 60);
-            Renderer = &5;
+            Renderer = &6;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -553,7 +650,7 @@ ChildWindow.objectEditorWindow {
         Label.Label5 {
             HorizontalAlignment = Center;
             Position = (140, 62);
-            Renderer = &6;
+            Renderer = &7;
             Size = (68.2, 18);
             Text = rot;
             TextSize = 13;
@@ -563,7 +660,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 1;
             InputValidator = Float;
             Position = (0, 90);
-            Renderer = &5;
+            Renderer = &6;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -572,7 +669,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 1;
             InputValidator = Float;
             Position = (50, 90);
-            Renderer = &5;
+            Renderer = &6;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -581,7 +678,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 1;
             InputValidator = Float;
             Position = (100, 90);
-            Renderer = &5;
+            Renderer = &6;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -589,7 +686,7 @@ ChildWindow.objectEditorWindow {
         Label.Label6 {
             HorizontalAlignment = Center;
             Position = (140, 92);
-            Renderer = &6;
+            Renderer = &7;
             Size = (68.2, 18);
             Text = size;
             TextSize = 13;
@@ -814,7 +911,7 @@ ChildWindow.objectEditorWindow {
 
     Group.materialEditor {
         Position = (10, 10);
-        Renderer = &4;
+        Renderer = &5;
         Size = (200, 420);
         Visible = false;
 
@@ -824,7 +921,7 @@ ChildWindow.objectEditorWindow {
             Maximum = 1;
             Minimum = 0;
             Position = (20, 100);
-            Renderer = &7;
+            Renderer = &8;
             Size = (125, 16);
             Step = 0.01;
             Value = 0;
@@ -836,7 +933,7 @@ ChildWindow.objectEditorWindow {
             Maximum = 1;
             Minimum = 0;
             Position = (20, 170);
-            Renderer = &7;
+            Renderer = &8;
             Size = (125, 16);
             Step = 0.01;
             Value = 0;
@@ -845,7 +942,7 @@ ChildWindow.objectEditorWindow {
         EditBox.mtlbox {
             InputValidator = Float;
             Position = (160, 96);
-            Renderer = &5;
+            Renderer = &6;
             Size = (40, 22);
             Text = "0.0";
             TextSize = 13;
@@ -854,7 +951,7 @@ ChildWindow.objectEditorWindow {
         EditBox.rghbox {
             InputValidator = Float;
             Position = (160, 166);
-            Renderer = &5;
+            Renderer = &6;
             Size = (40, 22);
             Text = "0.0";
             TextSize = 13;
@@ -863,7 +960,7 @@ ChildWindow.objectEditorWindow {
         Label.Label7 {
             HorizontalAlignment = Center;
             Position = (10, 30);
-            Renderer = &6;
+            Renderer = &7;
             Size = (188.2, 18);
             Text = Color;
             TextSize = 13;
@@ -872,7 +969,7 @@ ChildWindow.objectEditorWindow {
         Label.Label8 {
             HorizontalAlignment = Center;
             Position = (10, 75);
-            Renderer = &6;
+            Renderer = &7;
             Size = (188.2, 18);
             Text = Metalness;
             TextSize = 13;
@@ -881,14 +978,14 @@ ChildWindow.objectEditorWindow {
         Label.Label9 {
             HorizontalAlignment = Center;
             Position = (10, 145);
-            Renderer = &6;
+            Renderer = &7;
             Size = (188.2, 18);
             Text = Roughness;
             TextSize = 13;
         }
 
         EditBox.matName {
-            Renderer = &5;
+            Renderer = &6;
             Size = (200, 24);
             TextSize = 13;
         }
@@ -928,7 +1025,7 @@ ChildWindow.objectEditorWindow {
         Label.Label15 {
             HorizontalAlignment = Center;
             Position = (10, 215);
-            Renderer = &6;
+            Renderer = &7;
             Size = (188.2, 18);
             Text = Normal;
             TextSize = 13;
@@ -945,7 +1042,7 @@ ChildWindow.objectEditorWindow {
         Label.Label16 {
             HorizontalAlignment = Center;
             Position = (10, 257);
-            Renderer = &6;
+            Renderer = &7;
             Size = (188.2, 18);
             Text = "Ambient occlusion";
             TextSize = 13;
@@ -962,7 +1059,7 @@ ChildWindow.objectEditorWindow {
         Label.Label17 {
             HorizontalAlignment = Center;
             Position = (10, 299);
-            Renderer = &6;
+            Renderer = &7;
             Size = (188.2, 18);
             Text = Emission;
             TextSize = 13;
@@ -979,7 +1076,7 @@ ChildWindow.objectEditorWindow {
         Label.Label18 {
             HorizontalAlignment = Center;
             Position = (10, 341);
-            Renderer = &6;
+            Renderer = &7;
             Size = (188.2, 18);
             Text = Opacity;
             TextSize = 13;
@@ -991,7 +1088,7 @@ ChildWindow.objectEditorWindow {
             Maximum = 1;
             Minimum = 0;
             Position = (20, 362);
-            Renderer = &7;
+            Renderer = &8;
             Size = (125, 16);
             Step = 0.01;
             Value = 0;
@@ -1000,7 +1097,7 @@ ChildWindow.objectEditorWindow {
         EditBox.opcbox {
             InputValidator = Float;
             Position = (160, 356);
-            Renderer = &5;
+            Renderer = &6;
             Size = (40, 22);
             Text = "0.0";
             TextSize = 13;
@@ -1026,14 +1123,14 @@ ChildWindow.objectEditorWindow {
     Group.scriptsGroup {
         Enabled = false;
         Position = (10, 10);
-        Renderer = &4;
+        Renderer = &5;
         Size = (200, 360);
         Visible = false;
 
         Label.Label11 {
             AutoSize = true;
             Position = (75, 0);
-            Renderer = &6;
+            Renderer = &7;
             Size = (47.2, 18);
             Text = Scripts;
             TextSize = 13;
@@ -1063,7 +1160,7 @@ ChildWindow.objectEditorWindow {
         Label.Label12 {
             AutoSize = true;
             Position = (67, 80);
-            Renderer = &6;
+            Renderer = &7;
             Size = (63.2, 18);
             Text = Variables;
             TextSize = 13;
@@ -1071,7 +1168,7 @@ ChildWindow.objectEditorWindow {
 
         EditBox.value {
             Position = (0, 241);
-            Renderer = &5;
+            Renderer = &6;
             Size = (109, 22);
             TextSize = 13;
         }
@@ -1146,13 +1243,13 @@ ChildWindow.objectEditorWindow {
 
     Group.sceneGroup {
         Position = (10, 10);
-        Renderer = &4;
+        Renderer = &5;
         Size = (200, 260);
         Visible = false;
 
         Label.Label14 {
             Position = (78, 0);
-            Renderer = &6;
+            Renderer = &7;
             Size = (42.2, 18);
             Text = Scene;
             TextSize = 13;
@@ -1168,7 +1265,7 @@ ChildWindow.objectEditorWindow {
 
         EditBox.filename {
             Position = (0, 20);
-            Renderer = &5;
+            Renderer = &6;
             Size = (160, 24);
             TextSize = 13;
         }
@@ -1185,7 +1282,7 @@ ChildWindow.objectEditorWindow {
     Group.lightEditor {
         Enabled = false;
         Position = (10, 10);
-        Renderer = &4;
+        Renderer = &5;
         Size = (200, 430);
         Visible = false;
 
@@ -1384,7 +1481,7 @@ ChildWindow.objectEditorWindow {
         Label.Label22 {
             AutoSize = true;
             Position = (81, 90);
-            Renderer = &8;
+            Renderer = &9;
             Size = (37.2, 18);
             Text = Color;
             TextSize = 13;
@@ -1393,7 +1490,7 @@ ChildWindow.objectEditorWindow {
         Label.Label23 {
             AutoSize = true;
             Position = (60, 137);
-            Renderer = &8;
+            Renderer = &9;
             Size = (79.2, 18);
             Text = Attenuation;
             TextSize = 13;
@@ -1402,7 +1499,7 @@ ChildWindow.objectEditorWindow {
         Label.Label24 {
             AutoSize = true;
             Position = (0, 163);
-            Renderer = &8;
+            Renderer = &9;
             Size = (63.2, 18);
             Text = Constant;
             TextSize = 13;
@@ -1411,7 +1508,7 @@ ChildWindow.objectEditorWindow {
         Label.Label25 {
             AutoSize = true;
             Position = (0, 193);
-            Renderer = &9;
+            Renderer = &10;
             Size = (45.2, 18);
             Text = Linear;
             TextSize = 13;
@@ -1420,7 +1517,7 @@ ChildWindow.objectEditorWindow {
         Label.Label26 {
             AutoSize = true;
             Position = (0, 223);
-            Renderer = &9;
+            Renderer = &10;
             Size = (67.2, 18);
             Text = Quadratic;
             TextSize = 13;
@@ -1451,7 +1548,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (120, 190);
-            Renderer = &10;
+            Renderer = &11;
             Size = (70, 22);
             TextSize = 13;
         }
@@ -1460,7 +1557,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (120, 220);
-            Renderer = &10;
+            Renderer = &11;
             Size = (70, 22);
             TextSize = 13;
         }
@@ -1506,7 +1603,7 @@ ChildWindow.objectEditorWindow {
         Label.Label27 {
             AutoSize = true;
             Position = (0, 355);
-            Renderer = &11;
+            Renderer = &12;
             Size = (93.2, 18);
             Text = "Cast shadows";
             TextSize = 13;
@@ -1515,7 +1612,7 @@ ChildWindow.objectEditorWindow {
         Label.Label28 {
             AutoSize = true;
             Position = (70, 330);
-            Renderer = &11;
+            Renderer = &12;
             Size = (61.2, 18);
             Text = Shadows;
             TextSize = 13;
@@ -1525,7 +1622,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (0, 110);
-            Renderer = &12;
+            Renderer = &13;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -1534,7 +1631,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (50, 110);
-            Renderer = &12;
+            Renderer = &13;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -1543,7 +1640,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (100, 110);
-            Renderer = &12;
+            Renderer = &13;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -1575,7 +1672,7 @@ ChildWindow.objectEditorWindow {
         Label.Label30 {
             AutoSize = true;
             Position = (80, 247);
-            Renderer = &13;
+            Renderer = &14;
             Size = (44.2, 18);
             Text = Cutoff;
             TextSize = 13;
@@ -1584,7 +1681,7 @@ ChildWindow.objectEditorWindow {
         Label.Label31 {
             AutoSize = true;
             Position = (0, 272);
-            Renderer = &13;
+            Renderer = &14;
             Size = (38.2, 18);
             Text = Inner;
             TextSize = 13;
@@ -1593,7 +1690,7 @@ ChildWindow.objectEditorWindow {
         Label.Label32 {
             AutoSize = true;
             Position = (0, 303);
-            Renderer = &13;
+            Renderer = &14;
             Size = (41.2, 18);
             Text = Outer;
             TextSize = 13;
@@ -1603,7 +1700,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (120, 270);
-            Renderer = &14;
+            Renderer = &15;
             Size = (70, 22);
             TextSize = 13;
         }
@@ -1612,7 +1709,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (120, 300);
-            Renderer = &14;
+            Renderer = &15;
             Size = (70, 22);
             TextSize = 13;
         }
@@ -1664,7 +1761,7 @@ ChildWindow.objectEditorWindow {
     Group.soundEditor {
         Enabled = false;
         Position = (10, 10);
-        Renderer = &4;
+        Renderer = &5;
         Size = (200, 420);
         Visible = false;
 
@@ -1690,7 +1787,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (0, 30);
-            Renderer = &15;
+            Renderer = &16;
             Size = (40, 24);
             TextSize = 13;
         }
@@ -1763,7 +1860,7 @@ ChildWindow.objectEditorWindow {
 
         Button.sdelete {
             Position = (0, 266);
-            Renderer = &16;
+            Renderer = &17;
             Size = (74, 20);
             Text = Delete;
             TextSize = 13;
@@ -1771,24 +1868,24 @@ ChildWindow.objectEditorWindow {
 
         Button.play {
             Position = (0, 216);
-            Renderer = &16;
-            Size = (64, 20);
+            Renderer = &17;
+            Size = (60, 20);
             Text = Play;
             TextSize = 13;
         }
 
         Button.pause {
             Position = (70, 216);
-            Renderer = &16;
-            Size = (64, 20);
+            Renderer = &17;
+            Size = (60, 20);
             Text = Pause;
             TextSize = 13;
         }
 
         Button.stop {
             Position = (140, 216);
-            Renderer = &16;
-            Size = (64, 20);
+            Renderer = &17;
+            Size = (60, 20);
             Text = Stop;
             TextSize = 13;
         }
@@ -1815,7 +1912,7 @@ ChildWindow.objectEditorWindow {
         Label.Label34 {
             AutoSize = true;
             Position = (0, 190);
-            Renderer = &17;
+            Renderer = &18;
             Size = (33.2, 18);
             Text = Loop;
             TextSize = 13;
@@ -1824,7 +1921,7 @@ ChildWindow.objectEditorWindow {
         Label.Label35 {
             AutoSize = true;
             Position = (70, 64);
-            Renderer = &17;
+            Renderer = &18;
             Size = (53.2, 18);
             Text = Volume;
             TextSize = 13;
@@ -1851,7 +1948,7 @@ ChildWindow.objectEditorWindow {
         Label.Label36 {
             AutoSize = true;
             Position = (0, 124);
-            Renderer = &17;
+            Renderer = &18;
             Size = (79.2, 18);
             Text = Attenuation;
             TextSize = 13;
@@ -1885,7 +1982,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (140, 120);
-            Renderer = &15;
+            Renderer = &16;
             Size = (50, 24);
             TextSize = 13;
         }
@@ -1894,7 +1991,7 @@ ChildWindow.objectEditorWindow {
             DefaultText = 0;
             InputValidator = Float;
             Position = (140, 150);
-            Renderer = &15;
+            Renderer = &16;
             Size = (50, 24);
             TextSize = 13;
         }
@@ -1903,10 +2000,9 @@ ChildWindow.objectEditorWindow {
     Group.boneEditor {
         Enabled = false;
         Position = (10, 10);
+        Renderer = &5;
         Size = (200, 420);
-
-        Renderer {
-        }
+        Visible = false;
 
         EditBox.bposX {
             DefaultText = 0;
@@ -2187,12 +2283,216 @@ ChildWindow.objectEditorWindow {
             }
         }
     }
+
+    Group.animationEditor {
+        Enabled = false;
+        Position = (10, 10);
+        Renderer = &5;
+        Size = (200, 420);
+
+        EditBox.animName {
+            Size = (200, 24);
+            TextSize = 13;
+
+            Renderer {
+                CaretColor = rgb(110, 110, 255);
+                DefaultTextColor = rgb(120, 120, 120);
+                Padding = (6, 4, 6, 4);
+                SelectedTextBackgroundColor = rgb( 10, 110, 255);
+                SelectedTextColor = White;
+                TextColor = rgb(190, 190, 190);
+                Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
+                TextureDisabled = None;
+                TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
+            }
+        }
+
+        Button.aplay {
+            Position = (0, 90);
+            Renderer = &19;
+            Size = (60, 20);
+            Text = Play;
+            TextSize = 13;
+        }
+
+        Button.apause {
+            Position = (70, 90);
+            Renderer = &19;
+            Size = (60, 20);
+            Text = Pause;
+            TextSize = 13;
+        }
+
+        Button.astop {
+            Position = (140, 90);
+            Renderer = &19;
+            Size = (60, 20);
+            Text = Stop;
+            TextSize = 13;
+        }
+
+        EditBox.duration {
+            DefaultText = 0;
+            InputValidator = Float;
+            Position = (0, 30);
+            Size = (60, 22);
+            TextSize = 13;
+
+            Renderer {
+                CaretColor = rgb(110, 110, 255);
+                DefaultTextColor = rgb(120, 120, 120);
+                Padding = (6, 4, 6, 4);
+                SelectedTextBackgroundColor = rgb( 10, 110, 255);
+                SelectedTextColor = White;
+                TextColor = rgb(190, 190, 190);
+                Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
+                TextureDisabled = None;
+                TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
+            }
+        }
+
+        Label.Label46 {
+            AutoSize = true;
+            Position = (70, 33);
+            Renderer = &3;
+            Size = (59.2, 18);
+            Text = duration;
+            TextSize = 13;
+        }
+
+        EditBox.tps {
+            DefaultText = 30;
+            InputValidator = Float;
+            Position = (0, 60);
+            Size = (60, 22);
+            TextSize = 13;
+
+            Renderer {
+                CaretColor = rgb(110, 110, 255);
+                DefaultTextColor = rgb(120, 120, 120);
+                Padding = (6, 4, 6, 4);
+                SelectedTextBackgroundColor = rgb( 10, 110, 255);
+                SelectedTextColor = White;
+                TextColor = rgb(190, 190, 190);
+                Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
+                TextureDisabled = None;
+                TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
+            }
+        }
+
+        Label.Label47 {
+            AutoSize = true;
+            Position = (70, 63);
+            Renderer = &3;
+            Size = (23.2, 18);
+            Text = tps;
+            TextSize = 13;
+        }
+
+        Button.addKf {
+            Position = (140, 120);
+            Renderer = &20;
+            Text = "Add kf";
+            TextSize = 13;
+        }
+
+        EditBox.kfName {
+            Position = (0, 120);
+            Renderer = &21;
+            Size = (130, 22);
+            TextSize = 13;
+        }
+
+        Slider.timeline {
+            ChangeValueOnScroll = true;
+            InvertedDirection = false;
+            Maximum = 10;
+            Minimum = 0;
+            Position = (20, 170);
+            Size = (130, 16);
+            Step = 1;
+            Value = 0;
+
+            Renderer {
+                TextureThumb = "themes/Black.png" Part(44, 499, 30, 30) Smooth;
+                TextureThumbHover = None;
+                TextureTrack = "themes/Black.png" Part(76, 499, 20, 45) Middle(0, 15) Smooth;
+                TextureTrackHover = "themes/Black.png" Part(98, 499, 20, 45) Middle(0, 15) Smooth;
+            }
+        }
+
+        Label.Label43 {
+            AutoSize = true;
+            Position = (70, 147);
+            Renderer = &22;
+            Size = (60.2, 18);
+            Text = Timeline;
+            TextSize = 13;
+        }
+
+        EditBox.time {
+            Position = (160, 166);
+            Renderer = &21;
+            Size = (40, 22);
+            TextSize = 13;
+        }
+
+        ListBox.actions {
+            ItemHeight = 20;
+            MaximumItems = 0;
+            Position = (0, 220);
+            Size = (200, 92);
+            TextSize = 13;
+
+            Renderer {
+                BackgroundColorHover = rgb(100, 100, 100);
+                Padding = (3, 3, 3, 3);
+                SelectedBackgroundColor = rgb( 10, 110, 255);
+                SelectedBackgroundColorHover = rgb(30, 150, 255);
+                SelectedTextColor = White;
+                TextColor = rgb(190, 190, 190);
+                TextColorHover = rgb(250, 250, 250);
+                TextureBackground = "themes/Black.png" Part(0, 22, 48, 48) Middle(16) Smooth;
+
+                Scrollbar {
+                    TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+                    TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+                    TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+                    TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+                }
+            }
+        }
+
+        Label.Label44 {
+            AutoSize = true;
+            Position = (75, 200);
+            Renderer = &22;
+            Size = (51.2, 18);
+            Text = Actions;
+            TextSize = 13;
+        }
+
+        Button.addAction {
+            Position = (0, 320);
+            Renderer = &20;
+            Size = (61, 20);
+            Text = Add;
+            TextSize = 13;
+        }
+    }
 }
 
 ChildWindow.viewport {
     Position = (220, 0);
     PositionLocked = true;
-    Renderer = &3;
+    Renderer = &4;
     Size = (840, 520);
     Title = Viewport;
     TitleAlignment = Center;
@@ -2229,7 +2529,7 @@ ChildWindow.viewport {
 ChildWindow.ChildWindow3 {
     Position = (220, 520);
     PositionLocked = true;
-    Renderer = &3;
+    Renderer = &4;
     Size = (840, 200);
     Title = Messages;
     TitleAlignment = Center;

@@ -11,7 +11,6 @@ public:
 
 	void Update(bool force = false);
 
-	rp3d::Vector3 Move(float time, bool onlyOffset = false);
 	void Mouse();
 
 	void Look();
@@ -19,6 +18,7 @@ public:
 
 	void SetViewportSize(sf::Vector2u size);
 
+	void SetTransform(const rp3d::Transform& tr) override;
 	void SetPosition(const rp3d::Vector3& vec);
 	void SetOrientation(const rp3d::Quaternion& quat);
 	void SetSpeed(float speed);
@@ -26,6 +26,8 @@ public:
 	void SetNear(float near);
 	void SetFar(float far);
 	void AlwaysUp(bool a);
+
+	rp3d::Vector3 Move(float time, bool onlyOffset = false);
 
 	rp3d::Transform GetTransform() override;
 

@@ -19,18 +19,17 @@ Model::Model(Model* model)
 {
 	autoUpdateAnimation = model->autoUpdateAnimation;
 	drawable = model->drawable;
-	//meshes = model->meshes;
 	m = model->m;
 	shader = model->shader;
 	mat = model->mat;
-	//anims = model->anims;
 	man = model->man;
-	//globalInverseTransform = model->globalInverseTransform;
 	filename = model->filename;
 	size = model->size;
 	transform = model->transform;
 
-	Load(filename, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
+	if(!filename.empty())
+		Load(filename, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
+	else meshes = model->meshes;
 
 	if(man)
 	{

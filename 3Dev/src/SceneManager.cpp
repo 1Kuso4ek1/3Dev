@@ -91,17 +91,20 @@ void SceneManager::AddModel(std::shared_ptr<Model> model, std::string name, bool
 
     for(auto& i : model->GetAnimations())
     {
-        std::vector<std::string> kfNames;
-        
-        for(auto& [name, kf] : i->GetKeyframes())
-            kfNames.push_back(name);
-        for(auto& j : kfNames)
+        if(animations.find(i->GetName() + "-" + name) == animations.end())
         {
-            auto n = i->GetKeyframes().extract(j);
-            n.key() = j + "-" + lastAdded;
-            i->GetKeyframes().insert(std::move(n));
+            std::vector<std::string> kfNames;
+        
+            for(auto& [name, kf] : i->GetKeyframes())
+                kfNames.push_back(name);
+            for(auto& j : kfNames)
+            {
+                auto n = i->GetKeyframes().extract(j);
+                n.key() = j + "-" + lastAdded;
+                i->GetKeyframes().insert(std::move(n));
+            }
+            animations[i->GetName() + "-" + lastAdded] = i;
         }
-        animations[i->GetName()] = i;
     }
 }
 
@@ -276,6 +279,16 @@ void SceneManager::Save(std::string filename, bool relativePaths)
     {
         data["bones"][counter] = i.second->Serialize();
         data["bones"][counter]["name"] = i.first;
+
+        counter++;
+    }
+    counter = 0;
+
+    for(auto& i : animations)
+    {
+        data["animations"][counter] = i.second->Serialize();
+        data["animations"][counter]["name"] = i.first;
+
         counter++;
     }
 
@@ -303,11 +316,22 @@ void SceneManager::Load(std::string filename)
     std::filesystem::current_path(std::filesystem::path(filename).parent_path());
 
     int counter = 0;
+    while(!data["animations"][counter].empty())
+    {
+        auto name = data["animations"][counter]["name"].asString();
+        animations[name] = std::make_shared<Animation>(name);
+        animations[name]->Deserialize(data["animations"][counter]);
+
+        counter++;
+    }
+    counter = 0;
+
     while(!data["materials"][counter].empty())
     {
         auto name = data["materials"][counter]["name"].asString();
         materials[name] = std::make_shared<Material>();
         materials[name]->Deserialize(data["materials"][counter]);
+
         counter++;
     }
     counter = 0;
@@ -335,6 +359,7 @@ void SceneManager::Load(std::string filename)
         model->Deserialize(data["objects"]["models"][counter]);
         AddModel(model, name, false);
         StoreBones(model);
+
         counter++;
     }
     counter = 0;
@@ -346,6 +371,7 @@ void SceneManager::Load(std::string filename)
         lights[name]->Deserialize(data["lights"][counter]);
         nodes[name] = lights[name];
         lightsVector.push_back(lights[name]);
+
         counter++;
     }
     counter = 0;
@@ -354,6 +380,7 @@ void SceneManager::Load(std::string filename)
     {
         if(bones.find(data["bones"][counter]["name"].asString()) != bones.end())
             bones[data["bones"][counter]["name"].asString()]->Deserialize(data["bones"][counter]);
+
         counter++;
     }
     counter = 0;
@@ -373,6 +400,7 @@ void SceneManager::Load(std::string filename)
             if(bones.find(parent) != bones.end())
                 GetNode(parent)->AddChild(model.get());
         }
+
         counter++;
     }
     counter = 0;
@@ -384,6 +412,7 @@ void SceneManager::Load(std::string filename)
             light->AddChild(GetNode(i.asString()));
         if(!data["lights"][counter]["parent"].empty())
             light->SetParent(GetNode(data["lights"][counter]["parent"].asString()));
+
         counter++;
     }
     counter = 0;
@@ -671,10 +700,15 @@ void SceneManager::SetModelName(std::string name, std::string newName)
 		nodes.insert(std::move(n1));
 
         std::vector<std::string> modelBones;
+        std::vector<std::string> modelAnims;
 
         for(auto& [boneName, bone] : bones)
             if(boneName.find(name) != std::string::npos)
                 modelBones.push_back(boneName);
+
+        for(auto& [animName, anim] : animations)
+            if(animName.find(name) != std::string::npos)
+                modelAnims.push_back(animName);
 
         for(auto& i : modelBones)
         {
@@ -685,6 +719,13 @@ void SceneManager::SetModelName(std::string name, std::string newName)
             auto n1 = nodes.extract(i);
             n1.key() = i.substr(0, i.find(name)) + newName;
             nodes.insert(std::move(n1));
+        }
+
+        for(auto& i : modelAnims)
+        {
+            auto n = animations.extract(i);
+            n.key() = i.substr(0, i.find(name)) + newName;
+            animations.insert(std::move(n));
         }
 	}
     else

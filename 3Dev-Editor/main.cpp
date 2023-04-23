@@ -213,13 +213,15 @@ int main()
     auto lightEditorGroup = editor.get<tgui::Group>("lightEditor");
     auto materialEditorGroup = editor.get<tgui::Group>("materialEditor");
     auto boneEditorGroup = editor.get<tgui::Group>("boneEditor");
+    auto animationEditorGroup = editor.get<tgui::Group>("animationEditor");
     auto soundEditorGroup = editor.get<tgui::Group>("soundEditor");
 	auto scriptsGroup = editor.get<tgui::Group>("scriptsGroup");
 	auto sceneGroup = editor.get<tgui::Group>("sceneGroup");
 
     std::vector<tgui::Group::Ptr> groups = { objectEditorGroup, lightEditorGroup,
                                              materialEditorGroup, soundEditorGroup,
-                                             scriptsGroup, sceneGroup, boneEditorGroup };
+                                             scriptsGroup, sceneGroup, boneEditorGroup,
+                                             animationEditorGroup };
 
 	auto nameEdit = editor.get<tgui::EditBox>("name");
 
@@ -294,6 +296,21 @@ int main()
     auto perspectiveShadowsBox = editor.get<tgui::CheckBox>("perspectiveShadows");
 
     auto ldeleteButton = editor.get<tgui::Button>("ldelete");
+
+    auto animNameEdit = editor.get<tgui::EditBox>("animName");
+
+    auto durationEdit = editor.get<tgui::EditBox>("duration");
+    auto tpsEdit = editor.get<tgui::EditBox>("tps");
+    auto kfNameEdit = editor.get<tgui::EditBox>("kfName");
+    auto addKfButton = editor.get<tgui::Button>("addKf");
+    auto timelineSlider = editor.get<tgui::Slider>("timeline");
+    auto timeEdit = editor.get<tgui::EditBox>("time");
+    auto actionsList = editor.get<tgui::ListBox>("actions");
+    auto addActionButton = editor.get<tgui::Button>("addAction");
+
+    auto aplayButton = editor.get<tgui::Button>("aplay");
+    auto apauseButton = editor.get<tgui::Button>("apause");
+    auto astopButton = editor.get<tgui::Button>("astop");
 
     auto soundNameEdit = editor.get<tgui::EditBox>("soundName");
 
@@ -643,6 +660,7 @@ int main()
                     auto item = it->second;
                     item.push_back(i);
                     sceneTree->addItem(item);
+                    sceneTree->collapse(item);
                     used.push_back({ i, item });
                 }
                 auto children = node->GetChildren();
@@ -658,7 +676,13 @@ int main()
             sceneTree->addItem({ "Scene", "Materials", i });
         }
         for(auto& i : sounds) sceneTree->addItem({ "Scene", "Sounds", i });
-        for(auto& i : names[5]) sceneTree->addItem({ "Scene", "Animations", i });
+        for(auto& i : names[5])
+        {
+            sceneTree->addItem({ "Scene", "Animations", i });
+
+            for(auto& [name, kf] : scene.GetAnimation(i)->GetKeyframes())
+                sceneTree->addItem({ "Scene", "Animations", i, name });
+        }
 
         auto scripts = scman.GetScripts();
         for(auto& i : scripts)
@@ -1056,7 +1080,7 @@ int main()
                 }
                 else
                 {
-                    std::ifstream file(path);
+                    std::ifstream file(openFileDialog->getSelectedPaths()[0].asString().toStdString());
                     std::copy(std::istreambuf_iterator<char>(file),
                               std::istreambuf_iterator<char>(),
                               std::back_inserter(code[filename]));
@@ -1211,21 +1235,28 @@ int main()
 
     editScriptButton->onPress([&]()
 	{
-        codeEditor->setVisible(true);
-        codeEditor->setEnabled(true);
-        fileTabs->select(sceneTree->getSelectedItem().back().toStdString());
+        if(sceneTree->getSelectedItem().size() > 1)
+        {
+            codeEditor->setVisible(true);
+            codeEditor->setEnabled(true);
+            codeEditor->moveToFront();
+            fileTabs->select(sceneTree->getSelectedItem().back().toStdString());
+        }
 	});
 
     removeScriptButton->onPress([&]()
 	{
-        scman.RemoveScript(std::filesystem::absolute("assets/scripts/" + sceneTree->getSelectedItem().back().toStdString()).string());
-        fileTabs->remove(sceneTree->getSelectedItem().back().toStdString());
-        code[sceneTree->getSelectedItem().back().toStdString()] = "";
-        sceneTree->removeItem(sceneTree->getSelectedItem(), false);
-        if(fileTabs->getTabsCount() == 0 && codeEditor->isEnabled())
+        if(sceneTree->getSelectedItem().size() > 1)
         {
-            codeEditor->setVisible(false);
-            codeEditor->setEnabled(false);
+            scman.RemoveScript(std::filesystem::absolute("assets/scripts/" + sceneTree->getSelectedItem().back().toStdString()).string());
+            fileTabs->remove(sceneTree->getSelectedItem().back().toStdString());
+            code[sceneTree->getSelectedItem().back().toStdString()] = "";
+            sceneTree->removeItem(sceneTree->getSelectedItem(), false);
+            if(fileTabs->getTabsCount() == 0 && codeEditor->isEnabled())
+            {
+                codeEditor->setVisible(false);
+                codeEditor->setEnabled(false);
+            }
         }
 	});
 
@@ -1319,7 +1350,7 @@ int main()
 		if(sceneTree->getSelectedItem().size() > 2)
 		{
 			////////////// OBJECTS //////////////
-			if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[0]))
+			if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[0]) && sceneTree->getSelectedItem()[1] != "Animations")
 			{
                 std::shared_ptr<Model> object;
                 
@@ -1444,7 +1475,7 @@ int main()
 		    /////////////////////////////////////
 
             /////////////// LIGHTS //////////////
-            else if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[2]))
+            else if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[2]) && sceneTree->getSelectedItem()[1] != "Animations")
 		    {
                 std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == lightEditorGroup) return; g->setEnabled(false); g->setVisible(false); });
                 lightEditorGroup->setEnabled(true);
@@ -1517,9 +1548,6 @@ int main()
                         scene.SetLightName(sceneTree->getSelectedItem().back().toStdString(), lightNameEdit->getText().toStdString());
                         sceneTree->removeAllItems();
                         readSceneTree();
-                        auto scripts = scman.GetScripts();
-                        for(auto& i : scripts)
-                            sceneTree->addItem({ "Scripts", i });
                     
                         lightNameEdit->setFocused(false);
                     }
@@ -1560,7 +1588,7 @@ int main()
             /////////////////////////////////////
 
             /////////////// BONES ///////////////
-            else if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[4]))
+            else if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[4]) && sceneTree->getSelectedItem()[1] != "Animations")
             {
                 auto bone = scene.GetBone(sceneTree->getSelectedItem().back().toStdString());
                 if(objectMode)
@@ -1791,6 +1819,43 @@ int main()
                 }
 		    }
 		    /////////////////////////////////////
+
+            ///////////// ANIMATIONS ////////////
+            else if(sceneTree->getSelectedItem()[1] == "Animations" && sceneTree->getSelectedItem().size() == 3)
+            {
+                std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == animationEditorGroup) return; g->setEnabled(false); g->setVisible(false); });
+                animationEditorGroup->setEnabled(true);
+                animationEditorGroup->setVisible(true);
+
+                auto anim = scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString());
+
+                if((!animNameEdit->isFocused() && animNameEdit->getText() != sceneTree->getSelectedItem()[2]) || objectMode)
+                {
+                    animNameEdit->setText(sceneTree->getSelectedItem()[2]);
+
+                    durationEdit->setText(tgui::String(anim->GetDuration()));
+                    tpsEdit->setText(tgui::String(anim->GetTPS()));
+
+                    timelineSlider->setMaximum(anim->GetDuration());
+
+                    actionsList->removeAllItems();
+                    /*for(auto& i : actions)
+                        actionsList->addItem(i);*/
+                }
+
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && animNameEdit->isFocused() && animNameEdit->getText() != sceneTree->getSelectedItem().back())
+                {
+                    /*scene.SetAnimationName(sceneTree->getSelectedItem()[2].toStdString(), animNameEdit->getText().toStdString());
+                    sceneTree->removeAllItems();
+                    readSceneTree();
+                
+                    animNameEdit->setFocused(false);*/
+                }
+
+                anim->SetDuration(durationEdit->getText().toFloat());
+                anim->SetTPS(tpsEdit->getText().toFloat());
+            }
+            /////////////////////////////////////
 
             ////////////// SOUNDS ///////////////
             else if(sceneTree->getSelectedItem()[1] == "Sounds")

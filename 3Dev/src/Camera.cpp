@@ -83,6 +83,12 @@ void Camera::SetViewportSize(sf::Vector2u size)
 	UpdateMatrix();
 }
 
+void Camera::SetTransform(const rp3d::Transform& tr)
+{
+	pos = tr.getPosition();
+	orient = tr.getOrientation();
+}
+
 void Camera::SetPosition(const rp3d::Vector3& vec)
 {
 	pos = vec;
