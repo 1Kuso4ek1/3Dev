@@ -38,6 +38,11 @@ rp3d::RigidBody* Node::GetRigidBody()
     return nullptr;
 }
 
+rp3d::Vector3 Node::GetSize()
+{
+    return rp3d::Vector3(1, 1, 1);
+}
+
 Node* Node::GetParent()
 {
     return parent;

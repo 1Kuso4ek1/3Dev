@@ -117,6 +117,15 @@ void SceneManager::AddMaterial(std::shared_ptr<Material> material, std::string n
     materials[lastAdded] = material;
 }
 
+void SceneManager::AddAnimation(std::shared_ptr<Animation> animation, std::string name)
+{
+    int nameCount = std::count_if(animations.begin(), animations.end(), [&](auto& p)
+                    { return p.first.find(name) != std::string::npos; });
+
+    lastAdded = name + (nameCount ? std::to_string(nameCount) : "");
+    animations[lastAdded] = animation;
+}
+
 void SceneManager::AddLight(Light* light, std::string name)
 {
     int nameCount = std::count_if(lights.begin(), lights.end(), [&](auto& p)
@@ -743,6 +752,19 @@ void SceneManager::SetMaterialName(std::string name, std::string newName)
 	}
     else
         Log::Write("Could not find a material with name \"" + name + "\"", Log::Type::Warning);
+}
+
+void SceneManager::SetAnimationName(std::string name, std::string newName)
+{
+    auto it = animations.find(name);
+	if(it != animations.end())
+	{
+		auto n = animations.extract(it);
+		n.key() = newName;
+		animations.insert(std::move(n));
+	}
+    else
+        Log::Write("Could not find an animation with name \"" + name + "\"", Log::Type::Warning);
 }
 
 void SceneManager::SetLightName(std::string name, std::string newName)

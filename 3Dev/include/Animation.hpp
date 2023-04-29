@@ -28,6 +28,7 @@ public:
     void SetTPS(float tps);
     void SetDuration(float duration);
     void SetIsRepeated(bool repeat);
+	void SetLastTime(float lastTime);
 
     void AddKeyframe(std::string name, const Keyframe& keyframe);
 
@@ -39,10 +40,12 @@ public:
 
     std::unordered_map<std::string, Keyframe>& GetKeyframes();
     std::string GetName();
+
 	float GetTime();
 	float GetDuration();
 	float GetTPS();
-    State GetState();
+    
+	State GetState();
 
 	Json::Value Serialize();
 	void Deserialize(Json::Value data);

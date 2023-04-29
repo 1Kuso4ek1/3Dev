@@ -22,6 +22,11 @@ void Animation::SetIsRepeated(bool repeat)
     this->repeat = repeat;
 }
 
+void Animation::SetLastTime(float lastTime)
+{
+    this->lastTime = lastTime;
+}
+
 void Animation::AddKeyframe(std::string name, const Keyframe& keyframe)
 {
     keyframes[name] = keyframe;

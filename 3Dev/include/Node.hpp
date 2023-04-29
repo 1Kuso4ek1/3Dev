@@ -16,6 +16,7 @@ public:
 
     virtual rp3d::Transform GetTransform() = 0;
     virtual rp3d::RigidBody* GetRigidBody();
+    virtual rp3d::Vector3 GetSize();
     
     static rp3d::Transform GetFinalTransform(Node* node, rp3d::Transform tr = rp3d::Transform::identity());
 

@@ -13,7 +13,8 @@ public:
     void Draw(Framebuffer* fbo = nullptr, Framebuffer* transparency = nullptr, bool updatePhysics = true);
 
     void AddModel(std::shared_ptr<Model> model, std::string name = "model", bool checkUniqueness = true);
-    void AddMaterial(std::shared_ptr<Material>, std::string name = "material");
+    void AddMaterial(std::shared_ptr<Material> material, std::string name = "material");
+    void AddAnimation(std::shared_ptr<Animation> animation, std::string name = "animation");
     void AddLight(Light* light, std::string name = "light");
 
     void StoreBones(std::shared_ptr<Model> model, Bone* bone = nullptr);
@@ -42,6 +43,7 @@ public:
 
     void SetModelName(std::string name, std::string newName);
     void SetMaterialName(std::string name, std::string newName);
+    void SetAnimationName(std::string name, std::string newName);
     void SetLightName(std::string name, std::string newName);
 
     void UpdatePhysics(bool update);

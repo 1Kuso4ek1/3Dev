@@ -292,22 +292,6 @@ Renderer.21 {
     TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
 }
 
-Renderer.22 {
-    TextColor = rgb(190, 190, 190);
-    TextureBackground = None;
-
-    Scrollbar {
-        TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
-        TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
-        TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
-        TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
-        TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
-        TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
-        TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
-        TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
-    }
-}
-
 ChildWindow.ChildWindow1 {
     PositionLocked = true;
     Size = (220, 720);
@@ -2324,14 +2308,6 @@ ChildWindow.objectEditorWindow {
             TextSize = 13;
         }
 
-        Button.astop {
-            Position = (140, 90);
-            Renderer = &19;
-            Size = (60, 20);
-            Text = Stop;
-            TextSize = 13;
-        }
-
         EditBox.duration {
             DefaultText = 0;
             InputValidator = Float;
@@ -2413,7 +2389,7 @@ ChildWindow.objectEditorWindow {
             Minimum = 0;
             Position = (20, 170);
             Size = (130, 16);
-            Step = 1;
+            Step = 0.1;
             Value = 0;
 
             Renderer {
@@ -2427,35 +2403,13 @@ ChildWindow.objectEditorWindow {
         Label.Label43 {
             AutoSize = true;
             Position = (70, 147);
-            Renderer = &22;
             Size = (60.2, 18);
             Text = Timeline;
             TextSize = 13;
-        }
-
-        EditBox.time {
-            Position = (160, 166);
-            Renderer = &21;
-            Size = (40, 22);
-            TextSize = 13;
-        }
-
-        ListBox.actions {
-            ItemHeight = 20;
-            MaximumItems = 0;
-            Position = (0, 220);
-            Size = (200, 92);
-            TextSize = 13;
 
             Renderer {
-                BackgroundColorHover = rgb(100, 100, 100);
-                Padding = (3, 3, 3, 3);
-                SelectedBackgroundColor = rgb( 10, 110, 255);
-                SelectedBackgroundColorHover = rgb(30, 150, 255);
-                SelectedTextColor = White;
                 TextColor = rgb(190, 190, 190);
-                TextColorHover = rgb(250, 250, 250);
-                TextureBackground = "themes/Black.png" Part(0, 22, 48, 48) Middle(16) Smooth;
+                TextureBackground = None;
 
                 Scrollbar {
                     TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
@@ -2470,21 +2424,57 @@ ChildWindow.objectEditorWindow {
             }
         }
 
-        Label.Label44 {
-            AutoSize = true;
-            Position = (75, 200);
-            Renderer = &22;
-            Size = (51.2, 18);
-            Text = Actions;
+        EditBox.time {
+            Position = (160, 166);
+            Renderer = &21;
+            Size = (40, 22);
             TextSize = 13;
         }
 
         Button.addAction {
-            Position = (0, 320);
+            Position = (0, 200);
             Renderer = &20;
-            Size = (61, 20);
-            Text = Add;
+            Size = (90, 20);
+            Text = "Add action";
             TextSize = 13;
+        }
+
+        Button.astop {
+            Position = (140, 90);
+            Size = (60, 20);
+            Text = Stop;
+            TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextColorHover = rgb(250, 250, 250);
+                Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
+                TextureDisabled = None;
+                TextureDown = "themes/Black.png" Part(0, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureDownFocused = None;
+                TextureDownHover = None;
+                TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
+            }
+        }
+
+        Button.removeKeyframe {
+            Position = (0, 230);
+            Size = (130, 20);
+            Text = "Remove keyframe";
+            TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextColorHover = rgb(250, 250, 250);
+                Texture = "themes/Black.png" Part(50, 22, 45, 50) Middle(10, 0) Smooth;
+                TextureDisabled = None;
+                TextureDown = "themes/Black.png" Part(0, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureDownFocused = None;
+                TextureDownHover = None;
+                TextureFocused = "themes/Black.png" Part(47, 74, 45, 50) Middle(10, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(0, 126, 45, 50) Middle(10, 0) Smooth;
+            }
         }
     }
 }

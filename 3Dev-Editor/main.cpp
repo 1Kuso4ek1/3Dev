@@ -206,6 +206,7 @@ int main()
     auto concaveColliderButton = editor.get<tgui::Button>("concaveCollider");
     auto soundButton = editor.get<tgui::Button>("createSound");
 	auto scriptButton = editor.get<tgui::Button>("createScript");
+    auto animationButton = editor.get<tgui::Button>("createAnimation");
 
     auto sceneTree = editor.get<tgui::TreeView>("scene");
 
@@ -305,8 +306,8 @@ int main()
     auto addKfButton = editor.get<tgui::Button>("addKf");
     auto timelineSlider = editor.get<tgui::Slider>("timeline");
     auto timeEdit = editor.get<tgui::EditBox>("time");
-    auto actionsList = editor.get<tgui::ListBox>("actions");
     auto addActionButton = editor.get<tgui::Button>("addAction");
+    auto removeKeyframeButton = editor.get<tgui::Button>("removeKeyframe");
 
     auto aplayButton = editor.get<tgui::Button>("aplay");
     auto apauseButton = editor.get<tgui::Button>("apause");
@@ -633,6 +634,7 @@ int main()
 
     auto readSceneTree = [&]()
     {
+        sceneTree->removeAllItems();
         auto names = scene.GetNames();
         auto sounds = sman->GetSounds();
         std::vector<std::pair<std::string, std::vector<tgui::String>>> used;
@@ -717,9 +719,7 @@ int main()
 		model->SetPhysicsManager(man.get());
 		model->CreateRigidBody();
     	scene.AddModel(model);
-    	std::string name = scene.GetLastAdded();
-    	sceneTree->addItem({ "Scene", "Objects", name });
-    	sceneTree->selectItem({ "Scene", "Objects", name });
+    	readSceneTree();
     });
 
     shapeButton->onPress([&]()
@@ -730,27 +730,21 @@ int main()
 		model->CreateRigidBody();
         model->CreateBoxShape();
         scene.AddModel(model, "cube");
-    	std::string name = scene.GetLastAdded();
-    	sceneTree->addItem({ "Scene", "Objects", name });
-    	sceneTree->selectItem({ "Scene", "Objects", name });
+    	readSceneTree();
     });
 
     lightButton->onPress([&]()
     {
         auto light = new Light(rp3d::Vector3(0, 0, 0), rp3d::Vector3::zero());
         scene.AddLight(light);
-        std::string name = scene.GetLastAdded();
-    	sceneTree->addItem({ "Scene", "Objects", name });
-    	sceneTree->selectItem({ "Scene", "Objects", name });
+        readSceneTree();
     });
 
     materialButton->onPress([&]()
     {
     	scene.AddMaterial(std::make_shared<Material>());
-    	std::string name = scene.GetLastAdded();
-    	sceneTree->addItem({ "Scene", "Materials", name });
-    	sceneTree->selectItem({ "Scene", "Materials", name });
-    	materialBox->addItem(name);
+    	readSceneTree();
+    	materialBox->addItem(scene.GetLastAdded());
     });
 
     boxColliderButton->onPress([&]()
@@ -845,6 +839,50 @@ int main()
     	scene.RemoveLight(light);
         delete light;
     	sceneTree->removeItem(sceneTree->getSelectedItem(), false);
+    });
+
+    addKfButton->onPress([&]()
+    {
+        if(scene.GetNode(kfNameEdit->getText().toStdString()))
+        {
+            scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString())->AddKeyframe(kfNameEdit->getText().toStdString(), Keyframe());
+            readSceneTree();
+        }
+    });
+
+    addActionButton->onPress([&]()
+    {
+        auto& kf = scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString())->GetKeyframes()[sceneTree->getSelectedItem()[3].toStdString()];
+        auto node = scene.GetNode(sceneTree->getSelectedItem()[3].toStdString());
+
+        kf.positions.push_back(toglm(node->GetTransform().getPosition()));
+        kf.rotations.push_back(toglm(node->GetTransform().getOrientation()));
+        kf.scales.push_back(toglm(node->GetSize()));
+
+        kf.posStamps.push_back(timelineSlider->getValue());
+        kf.rotStamps.push_back(timelineSlider->getValue());
+        kf.scaleStamps.push_back(timelineSlider->getValue());
+    });
+
+    removeKeyframeButton->onPress([&]()
+    {
+        scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString())->GetKeyframes().erase(sceneTree->getSelectedItem()[3].toStdString());
+        readSceneTree();
+    });
+
+    aplayButton->onPress([&]()
+    {
+        scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString())->Play();
+    });
+
+    apauseButton->onPress([&]()
+    {
+        scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString())->Pause();
+    });
+
+    astopButton->onPress([&]()
+    {
+        scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString())->Stop();
     });
 
     colorPickerButton->onPress([&]()
@@ -1088,7 +1126,7 @@ int main()
                     codeArea->setText(code[filename]);
                 }
                 scman.LoadScript(path);
-                sceneTree->addItem({ "Scripts", filename });
+                readSceneTree();
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
                 currentFile = filename;
 
@@ -1098,6 +1136,13 @@ int main()
   	    	openFileDialog = nullptr;
   	    });
 	});
+
+    animationButton->onPress([&]()
+    {
+        auto anim = std::make_shared<Animation>("");
+        scene.AddAnimation(anim);
+        readSceneTree();
+    });
 
     sceneTree->onItemSelect([&]()
     {
@@ -1113,8 +1158,6 @@ int main()
                 {
                     parentNode->AddChild(childNode);
                     childNode->SetParent(parentNode);
-                    
-                    sceneTree->removeAllItems();
                     readSceneTree();
                 }
                 selectedWithShift.clear();
@@ -1140,7 +1183,6 @@ int main()
                 scene.RemoveBones(model);
                 model->Load(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
                 scene.StoreBones(model);
-                sceneTree->removeAllItems();
                 readSceneTree();
                 materialsList->removeAllItems();
                 auto mtl = model->GetMaterial();
@@ -1427,7 +1469,6 @@ int main()
                     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem().back())
                     {
                         scene.SetModelName(sceneTree->getSelectedItem().back().toStdString(), nameEdit->getText().toStdString());
-                        sceneTree->removeAllItems();
                         readSceneTree();
                     
                         nameEdit->setFocused(false);
@@ -1546,7 +1587,6 @@ int main()
                     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem().back())
                     {
                         scene.SetLightName(sceneTree->getSelectedItem().back().toStdString(), lightNameEdit->getText().toStdString());
-                        sceneTree->removeAllItems();
                         readSceneTree();
                     
                         lightNameEdit->setFocused(false);
@@ -1821,13 +1861,27 @@ int main()
 		    /////////////////////////////////////
 
             ///////////// ANIMATIONS ////////////
-            else if(sceneTree->getSelectedItem()[1] == "Animations" && sceneTree->getSelectedItem().size() == 3)
+            else if(sceneTree->getSelectedItem()[1] == "Animations" && sceneTree->getSelectedItem().size() >= 3)
             {
                 std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == animationEditorGroup) return; g->setEnabled(false); g->setVisible(false); });
                 animationEditorGroup->setEnabled(true);
                 animationEditorGroup->setVisible(true);
 
                 auto anim = scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString());
+                if(sceneTree->getSelectedItem().size() > 3)
+                {
+                    addActionButton->setVisible(true);
+                    addActionButton->setEnabled(true);
+                    removeKeyframeButton->setVisible(true);
+                    removeKeyframeButton->setEnabled(true);
+                }
+                else
+                {
+                    addActionButton->setVisible(false);
+                    addActionButton->setEnabled(false);
+                    removeKeyframeButton->setVisible(false);
+                    removeKeyframeButton->setEnabled(false);
+                }
 
                 if((!animNameEdit->isFocused() && animNameEdit->getText() != sceneTree->getSelectedItem()[2]) || objectMode)
                 {
@@ -1835,25 +1889,25 @@ int main()
 
                     durationEdit->setText(tgui::String(anim->GetDuration()));
                     tpsEdit->setText(tgui::String(anim->GetTPS()));
-
-                    timelineSlider->setMaximum(anim->GetDuration());
-
-                    actionsList->removeAllItems();
-                    /*for(auto& i : actions)
-                        actionsList->addItem(i);*/
                 }
+
+                timelineSlider->setMaximum(anim->GetDuration());
+
+                if(anim->GetState() == Animation::State::Playing)
+                    timelineSlider->setValue(anim->GetTime());
+                else anim->SetLastTime(timelineSlider->getValue());
 
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && animNameEdit->isFocused() && animNameEdit->getText() != sceneTree->getSelectedItem().back())
                 {
-                    /*scene.SetAnimationName(sceneTree->getSelectedItem()[2].toStdString(), animNameEdit->getText().toStdString());
-                    sceneTree->removeAllItems();
+                    scene.SetAnimationName(sceneTree->getSelectedItem()[2].toStdString(), animNameEdit->getText().toStdString());
                     readSceneTree();
                 
-                    animNameEdit->setFocused(false);*/
+                    animNameEdit->setFocused(false);
                 }
 
                 anim->SetDuration(durationEdit->getText().toFloat());
                 anim->SetTPS(tpsEdit->getText().toFloat());
+                timeEdit->setText(tgui::String(timelineSlider->getValue()));
             }
             /////////////////////////////////////
 
@@ -2033,7 +2087,6 @@ int main()
                 {
                     auto a = scene.CloneModel(buffer.object.get(), false, buffer.name + "-copy");
                     std::string name = scene.GetLastAdded();
-                    sceneTree->removeAllItems();
                     readSceneTree();
                 }
             }

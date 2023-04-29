@@ -57,7 +57,7 @@ public:
 	rp3d::Transform GetTransform() override;
 	rp3d::Vector3 GetPosition();
 	rp3d::Quaternion GetOrientation();
-	rp3d::Vector3 GetSize();
+	rp3d::Vector3 GetSize() override;
 
 	Shader* GetShader();
 	rp3d::RigidBody* GetRigidBody() override;

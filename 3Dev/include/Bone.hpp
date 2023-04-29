@@ -23,7 +23,7 @@ public:
 
     rp3d::Vector3 GetPosition();
     rp3d::Quaternion GetOrientation();
-    rp3d::Vector3 GetSize();
+    rp3d::Vector3 GetSize() override;
     
     glm::mat4 GetOffset();
     rp3d::Transform GetTransform() override;
