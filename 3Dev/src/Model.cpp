@@ -17,7 +17,6 @@ Model::~Model()
 
 Model::Model(Model* model)
 {
-	autoUpdateAnimation = model->autoUpdateAnimation;
 	drawable = model->drawable;
 	m = model->m;
 	shader = model->shader;
@@ -150,6 +149,8 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
 
     if(drawable)
     {
+		auto shader = (tempShader ? tempShader : this->shader);
+
         for(unsigned int mesh = 0; mesh < meshes.size(); mesh++)
         {
             shader->Bind();
@@ -191,6 +192,8 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
 
 	for(auto i : children)
 		i->Draw(cam, lights, transparencyPass);
+
+	tempShader = nullptr;
 }
 
 void Model::DrawSkybox()
@@ -278,9 +281,10 @@ void Model::SetMaterialSlot(Material* mat, unsigned int slot)
 	this->mat[slot] = mat;
 }
 
-void Model::SetShader(Shader* shader)
+void Model::SetShader(Shader* shader, bool temp)
 {
-	this->shader = shader;
+	if(temp) tempShader = shader;
+	else this->shader = shader;
 }
 
 void Model::SetPhysicsManager(PhysicsManager* man)

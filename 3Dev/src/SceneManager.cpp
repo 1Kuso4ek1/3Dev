@@ -468,9 +468,9 @@ void SceneManager::LoadState()
     temporaryModelCopies.clear();
 }
 
-void SceneManager::SetMainShader(Shader* shader)
+void SceneManager::SetMainShader(Shader* shader, bool temp)
 {
-    std::for_each(models.begin(), models.end(), [&](auto p) { p.second->SetShader(shader); });
+    std::for_each(models.begin(), models.end(), [&](auto p) { p.second->SetShader(shader, temp); });
 }
 
 void SceneManager::SetCamera(Camera* camera)

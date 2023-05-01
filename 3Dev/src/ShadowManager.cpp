@@ -20,7 +20,7 @@ void ShadowManager::Update()
     if(lights.empty())
         return;
 
-    scene->SetMainShader(depthShader);
+    scene->SetMainShader(depthShader, true);
 
     //glEnable(GL_POLYGON_OFFSET_FILL);
     glCullFace(GL_FRONT);
@@ -41,8 +41,6 @@ void ShadowManager::Update()
     scene->Draw(depthBuffer.get(), nullptr);
 
     texture = depthBuffer->GetTexture(true);
-
-    scene->SetMainShader(mainShader);
 
     mainShader->Bind();
 

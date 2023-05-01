@@ -3,26 +3,28 @@
 
 class Shader {
 public:
-	Shader(std::string vertname, std::string fragname);
+	Shader(const std::string& vert, const std::string& frag, bool load = true);
 
 	void Bind();
 	static void Unbind();
 
-	void SetUniform1i(std::string name, int val);
-	void SetUniform1f(std::string name, float val);
-	void SetUniform2f(std::string name, float x, float y);
-	void SetUniform3f(std::string name, float x, float y, float z);
+	void SetUniform1i(const std::string& name, int val);
+	void SetUniform1f(const std::string& name, float val);
+	void SetUniform2f(const std::string& name, float x, float y);
+	void SetUniform3f(const std::string& name, float x, float y, float z);
 
-	void SetUniformMatrix4(std::string name, glm::mat4 mat);
-	void SetVectorOfUniformMatrix4(std::string name, int count, std::vector<glm::mat4>& mat);
+	void SetUniformMatrix4(const std::string& name, glm::mat4 mat);
+	void SetVectorOfUniformMatrix4(const std::string& name, int count, std::vector<glm::mat4>& mat);
 
-	int GetUniformLocation(std::string name);
-	int GetAttribLocation(std::string name);
+	int GetUniformLocation(const std::string& name);
+	int GetAttribLocation(const std::string& name);
 
 private:
+	void Compile();
+
 	GLuint program;
 
-	std::string vertcode, fragcode;
+	std::string vCode, fCode;
 
 	std::unordered_map<std::string, GLuint> cache;
 };

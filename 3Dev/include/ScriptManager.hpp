@@ -59,6 +59,7 @@ private:
     void RegisterNetwork();
     void RegisterBone();
     void RegisterAnimation();
+    void RegisterShader();
 
     bool buildSucceded = false;
 

@@ -3,6 +3,7 @@
 ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
 {
     engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
+    engine->SetEngineProperty(asEP_ALLOW_MULTILINE_STRINGS, true);
 
     context = engine->CreateContext();
 
@@ -23,6 +24,7 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterCamera();
     RegisterMaterial();
     RegisterAnimation();
+    RegisterShader();
     RegisterModel();
     RegisterLight();
     RegisterBone();
@@ -284,6 +286,7 @@ void ScriptManager::RegisterModel()
         { "void SetSize(const Vector3& in)", WRAP_MFN(Model, SetSize) },
         { "void SetMaterial(Material@, uint32 = 0)", WRAP_MFN(Model, SetMaterialSlot) },
         { "void SetPhysicsManager(PhysicsManager@)", WRAP_MFN(Model, SetPhysicsManager) },
+        { "void SetShader(Shader@, bool = false)", WRAP_MFN(Model, SetShader) },
         { "void SetIsDrawable(bool)", WRAP_MFN(Model, SetIsDrawable) },
         { "void DefaultPose()", WRAP_MFN(Model, DefaultPose) },
         { "void CreateRigidBody()", WRAP_MFN(Model, CreateRigidBody) },
@@ -294,6 +297,7 @@ void ScriptManager::RegisterModel()
         { "Vector3 GetPosition()", WRAP_MFN(Model, GetPosition) },
         { "Quaternion GetOrientation()", WRAP_MFN(Model, GetOrientation) },
         { "Vector3 GetSize()", WRAP_MFN(Model, GetSize) },
+        { "Shader@ GetShader()", WRAP_MFN(Model, GetShader) },
         { "RigidBody@ GetRigidBody()", WRAP_MFN(Model, GetRigidBody) },
         { "int GetMeshesCount()", WRAP_MFN(Model, GetMeshesCount) }
     }, {});
@@ -409,6 +413,7 @@ void ScriptManager::RegisterSceneManager()
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
         { "PhysicsManager@ GetPhysicsManager()", WRAP_MFN(SceneManager, GetPhysicsManagerPtr) },
         { "SoundManager@ GetSoundManager()", WRAP_MFN(SceneManager, GetSoundManagerPtr) },
+        { "void SetMainShader(Shader@, bool = false)", WRAP_MFN(SceneManager, SetMainShader) },
         { "void RemoveModel(Model@)", WRAP_MFN(SceneManager, RemoveModel) },
         { "void RemoveLight(Light@)", WRAP_MFN(SceneManager, RemoveModel) },
         { "void Save(string filename)", WRAP_MFN(SceneManager, Save) },
@@ -882,4 +887,17 @@ void ScriptManager::RegisterAnimation()
         { "void SetIsRepeated(bool)", WRAP_MFN(Animation, SetIsRepeated) },
         { "AnimationState GetState()", WRAP_MFN(Animation, GetState) }
     }, {});
+}
+
+void ScriptManager::RegisterShader()
+{
+    AddType("Shader", sizeof(Shader),
+    {
+        { "void SetUniform1i(const string& in, int)", WRAP_MFN(Shader, SetUniform1i) },
+        { "void SetUniform1f(const string& in, float)", WRAP_MFN(Shader, SetUniform1f) },
+        { "void SetUniform2f(const string& in, float, float)", WRAP_MFN(Shader, SetUniform2f) },
+        { "void SetUniform3f(const string& in, float, float, float)", WRAP_MFN(Shader, SetUniform3f) }
+    }, {});
+
+    AddTypeFactory("Shader", "Shader@ f(const string& in, const string& in, bool = true)", WRAP_FN(MakeShader));
 }

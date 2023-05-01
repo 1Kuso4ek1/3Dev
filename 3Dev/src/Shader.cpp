@@ -1,62 +1,26 @@
 #include "Shader.hpp"
 
-Shader::Shader(std::string vertname, std::string fragname)
+Shader::Shader(const std::string& vert, const std::string& frag, bool load)
 {
-	std::ifstream vertfile(vertname);
-	std::ifstream fragfile(fragname);
-
-	if(!vertfile.is_open())
-		Log::Write("Can't open file '" + vertname + "'!", Log::Type::Critical);
-	if(!fragfile.is_open())
-		Log::Write("Can't open file '" + fragname + "'!", Log::Type::Critical);
-
-	std::getline(vertfile, vertcode, '\0');
-	std::getline(fragfile, fragcode, '\0');
-
-	GLint success;
-	GLuint vertshader = glCreateShader(GL_VERTEX_SHADER);
-	GLuint fragshader = glCreateShader(GL_FRAGMENT_SHADER);
-	GLchar log[512];
-
-	const GLchar* verttemp = vertcode.c_str();
-	const GLchar* fragtemp = fragcode.c_str();
-
-	glShaderSource(vertshader, 1, &verttemp, NULL);
-	glShaderSource(fragshader, 1, &fragtemp, NULL);
-
-	glCompileShader(vertshader);
-	glCompileShader(fragshader);
-
-	glGetShaderiv(vertshader, GL_COMPILE_STATUS, &success);
-	if (!success)
+	if(load)
 	{
-		glGetShaderInfoLog(vertshader, 512, NULL, log);
-		Log::Write("Vertex shader compilation failed! Reason: " + std::string(log), Log::Type::Critical);
+		std::ifstream vFile(vert);
+		std::ifstream fFile(frag);
+
+		if(!vFile.is_open())
+			Log::Write("Can't open file '" + vert + "'!", Log::Type::Critical);
+		if(!fFile.is_open())
+			Log::Write("Can't open file '" + frag + "'!", Log::Type::Critical);
+
+		std::getline(vFile, vCode, '\0');
+		std::getline(fFile, fCode, '\0');
+	}
+	else
+	{
+		vCode = vert; fCode = frag;
 	}
 
-	glGetShaderiv(fragshader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(fragshader, 512, NULL, log);
-		Log::Write("Fragment shader compilation failed! Reason: " + std::string(log), Log::Type::Critical);
-	}
-
-	program = glCreateProgram();
-
-	glAttachShader(program, vertshader);
-	glAttachShader(program, fragshader);
-
-	glLinkProgram(program);
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
-
-	if (!success)
-	{
-		glGetProgramInfoLog(program, 512, NULL, log);
-		Log::Write("Program linking failed! Reason: " + std::string(log), Log::Type::Critical);
-	}
-
-	glDeleteShader(vertshader);
-	glDeleteShader(fragshader);
+	Compile();
 }
 
 void Shader::Bind()
@@ -69,44 +33,92 @@ void Shader::Unbind()
 	glUseProgram(0);
 }
 
-void Shader::SetUniform1i(std::string name, int val)
+void Shader::SetUniform1i(const std::string& name, int val)
 {
 	glUniform1i(GetUniformLocation(name), val);
 }
 
-void Shader::SetUniform1f(std::string name, float val)
+void Shader::SetUniform1f(const std::string& name, float val)
 {
 	glUniform1f(GetUniformLocation(name), val);
 }
 
-void Shader::SetUniform3f(std::string name, float x, float y, float z)
+void Shader::SetUniform3f(const std::string& name, float x, float y, float z)
 {
 	glUniform3f(GetUniformLocation(name), x, y, z);
 }
 
-void Shader::SetUniform2f(std::string name, float x, float y)
+void Shader::SetUniform2f(const std::string& name, float x, float y)
 {
 	glUniform2f(GetUniformLocation(name), x, y);
 }
 
-void Shader::SetUniformMatrix4(std::string name, glm::mat4 mat)
+void Shader::SetUniformMatrix4(const std::string& name, glm::mat4 mat)
 {
 	glUniformMatrix4fv(GetUniformLocation(name), 1, 0, glm::value_ptr(mat));
 }
 
-void Shader::SetVectorOfUniformMatrix4(std::string name, int count, std::vector<glm::mat4>& mat)
+void Shader::SetVectorOfUniformMatrix4(const std::string& name, int count, std::vector<glm::mat4>& mat)
 {
 	glUniformMatrix4fv(GetUniformLocation(name), count, 0, glm::value_ptr(mat[0]));
 }
 
-int Shader::GetUniformLocation(std::string name)
+int Shader::GetUniformLocation(const std::string& name)
 {
     if(cache.find(name) != cache.end())
         return cache[name];
     return (cache[name] = glGetUniformLocation(program, name.c_str()));
 }
 
-int Shader::GetAttribLocation(std::string name)
+int Shader::GetAttribLocation(const std::string& name)
 {
 	return glGetAttribLocation(program, name.c_str());
+}
+
+void Shader::Compile()
+{
+	GLint success;
+	GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
+	GLuint fShader = glCreateShader(GL_FRAGMENT_SHADER);
+	GLchar log[512];
+
+	const GLchar* vTemp = vCode.c_str();
+	const GLchar* fTemp = fCode.c_str();
+
+	glShaderSource(vShader, 1, &vTemp, NULL);
+	glShaderSource(fShader, 1, &fTemp, NULL);
+
+	glCompileShader(vShader);
+	glCompileShader(fShader);
+
+	glGetShaderiv(vShader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(vShader, 512, NULL, log);
+		Log::Write("Vertex shader compilation failed! Reason: " + std::string(log), Log::Type::Critical);
+	}
+
+	glGetShaderiv(fShader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(fShader, 512, NULL, log);
+		Log::Write("Fragment shader compilation failed! Reason: " + std::string(log), Log::Type::Critical);
+	}
+
+	program = glCreateProgram();
+
+	glAttachShader(program, vShader);
+	glAttachShader(program, fShader);
+
+	glLinkProgram(program);
+	glGetProgramiv(program, GL_LINK_STATUS, &success);
+
+	if (!success)
+	{
+		glGetProgramInfoLog(program, 512, NULL, log);
+		Log::Write("Program linking failed! Reason: " + std::string(log), Log::Type::Critical);
+	}
+
+	glDeleteShader(vShader);
+	glDeleteShader(fShader);
 }

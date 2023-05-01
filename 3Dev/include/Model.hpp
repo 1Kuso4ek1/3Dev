@@ -32,7 +32,7 @@ public:
 	void SetSize(const rp3d::Vector3& size) override;
 	void SetMaterial(std::vector<Material*> mat);
 	void SetMaterialSlot(Material* mat, unsigned int slot = 0);
-	void SetShader(Shader* shader);
+	void SetShader(Shader* shader, bool temp = false);
 	void SetPhysicsManager(PhysicsManager* man);
 	void SetIsDrawable(bool drawable);
 	void AddChild(Node* child) override;
@@ -92,7 +92,6 @@ private:
 
 	bool ProcessBone(aiNode* node, std::shared_ptr<Bone>& out);
 
-	bool autoUpdateAnimation = true;
 	bool drawable = true;
 
 	std::vector<std::shared_ptr<Mesh>> meshes;
@@ -103,6 +102,7 @@ private:
 
 	Matrices* m = Renderer::GetInstance()->GetMatrices();
 	Shader* shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
+	Shader* tempShader = nullptr;
 
 	std::vector<Material*> mat;
 	std::vector<std::shared_ptr<Animation>> anims;

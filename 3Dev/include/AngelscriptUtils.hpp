@@ -166,3 +166,8 @@ static void MakeIpAddress(const std::string& str, sf::IpAddress* addr)
 {
     new(addr) sf::IpAddress(str);
 }
+
+static Shader* MakeShader(const std::string& str, const std::string& str1, bool load)
+{
+    return new Shader(str, str1, load);
+}
