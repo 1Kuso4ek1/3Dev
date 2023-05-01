@@ -635,6 +635,7 @@ int main()
     auto readSceneTree = [&]()
     {
         sceneTree->removeAllItems();
+        materialBox->removeAllItems();
         auto names = scene.GetNames();
         auto sounds = sman->GetSounds();
         std::vector<std::pair<std::string, std::vector<tgui::String>>> used;
@@ -907,12 +908,11 @@ int main()
   	    });
     });
 
-    // TODO: Add a universal LoadTexture function or smth
-    colorTextureButton->onPress([&]()
+    auto loadTexture = [&](Material::Type type)
     {
         openFileDialog = CreateFileDialog("Open file", 3);
     	editor.add(openFileDialog);
-    	openFileDialog->onClose([&]()
+    	openFileDialog->onClose([&](Material::Type matType)
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
@@ -922,183 +922,26 @@ int main()
                     std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
                 path = projectDir + "/assets/textures/" + filename;
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
-                auto p = mat->GetParameter(Material::Type::Color);
+                auto p = mat->GetParameter(matType);
                 if(std::holds_alternative<GLuint>(p))
                 {
                     auto name = TextureManager::GetInstance()->GetName(std::get<1>(p));
                     TextureManager::GetInstance()->DeleteTexture(name);
                 }
-                mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::Color);
+                mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), matType);
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
-  	    });
-    });
+  	    }, type);
+    };
 
-    metalTextureButton->onPress([&]()
-    {
-        openFileDialog = CreateFileDialog("Open file", 3);
-    	editor.add(openFileDialog);
-    	openFileDialog->onClose([&]()
-  	    {
-            if(!openFileDialog->getSelectedPaths().empty())
-            {
-                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
-                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
-                if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
-                    std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
-                path = projectDir + "/assets/textures/" + filename;
-                auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
-                auto p = mat->GetParameter(Material::Type::Metalness);
-                if(std::holds_alternative<GLuint>(p))
-                {
-                    auto name = TextureManager::GetInstance()->GetName(std::get<1>(p));
-                    TextureManager::GetInstance()->DeleteTexture(name);
-                }
-                mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::Metalness);
-                metalSlider->setValue(0.0);
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
-            }
-  	    	openFileDialog = nullptr;
-  	    });
-    });
-
-    roughTextureButton->onPress([&]()
-    {
-        openFileDialog = CreateFileDialog("Open file", 3);
-    	editor.add(openFileDialog);
-    	openFileDialog->onClose([&]()
-  	    {
-            if(!openFileDialog->getSelectedPaths().empty())
-            {
-                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
-                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
-                if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
-                    std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
-                path = projectDir + "/assets/textures/" + filename;
-                auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
-                auto p = mat->GetParameter(Material::Type::Roughness);
-                if(std::holds_alternative<GLuint>(p))
-                {
-                    auto name = TextureManager::GetInstance()->GetName(std::get<1>(p));
-                    TextureManager::GetInstance()->DeleteTexture(name);
-                }
-                mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::Roughness);
-                roughSlider->setValue(0.0);
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
-            }
-  	    	openFileDialog = nullptr;
-  	    });
-    });
-
-    normalTextureButton->onPress([&]()
-    {
-        openFileDialog = CreateFileDialog("Open file", 3);
-    	editor.add(openFileDialog);
-    	openFileDialog->onClose([&]()
-  	    {
-            if(!openFileDialog->getSelectedPaths().empty())
-            {
-                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
-                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
-                if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
-                    std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
-                path = projectDir + "/assets/textures/" + filename;
-                auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
-                auto p = mat->GetParameter(Material::Type::Normal);
-                if(std::holds_alternative<GLuint>(p))
-                {
-                    auto name = TextureManager::GetInstance()->GetName(std::get<1>(p));
-                    TextureManager::GetInstance()->DeleteTexture(name);
-                }
-                mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::Normal);
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
-            }
-  	    	openFileDialog = nullptr;
-  	    });
-    });
-
-    aoTextureButton->onPress([&]()
-    {
-        openFileDialog = CreateFileDialog("Open file", 3);
-    	editor.add(openFileDialog);
-    	openFileDialog->onClose([&]()
-  	    {
-            if(!openFileDialog->getSelectedPaths().empty())
-            {
-                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
-                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
-                if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
-                    std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
-                path = projectDir + "/assets/textures/" + filename;
-                auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
-                auto p = mat->GetParameter(Material::Type::AmbientOcclusion);
-                if(std::holds_alternative<GLuint>(p))
-                {
-                    auto name = TextureManager::GetInstance()->GetName(std::get<1>(p));
-                    TextureManager::GetInstance()->DeleteTexture(name);
-                }
-                mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::AmbientOcclusion);
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
-            }
-  	    	openFileDialog = nullptr;
-  	    });
-    });
-
-    emissionTextureButton->onPress([&]()
-    {
-        openFileDialog = CreateFileDialog("Open file", 3);
-    	editor.add(openFileDialog);
-    	openFileDialog->onClose([&]()
-  	    {
-            if(!openFileDialog->getSelectedPaths().empty())
-            {
-                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
-                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
-                if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
-                    std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
-                path = projectDir + "/assets/textures/" + filename;
-                auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
-                auto p = mat->GetParameter(Material::Type::Emission);
-                if(std::holds_alternative<GLuint>(p))
-                {
-                    auto name = TextureManager::GetInstance()->GetName(std::get<1>(p));
-                    TextureManager::GetInstance()->DeleteTexture(name);
-                }
-                mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::Emission);
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
-            }
-  	    	openFileDialog = nullptr;
-  	    });
-    });
-
-    opacityTextureButton->onPress([&]()
-    {
-        openFileDialog = CreateFileDialog("Open file", 3);
-    	editor.add(openFileDialog);
-    	openFileDialog->onClose([&]()
-  	    {
-            if(!openFileDialog->getSelectedPaths().empty())
-            {
-                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
-                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
-                if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
-                    std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
-                path = projectDir + "/assets/textures/" + filename;
-                auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
-                auto p = mat->GetParameter(Material::Type::Opacity);
-                if(std::holds_alternative<GLuint>(p))
-                {
-                    auto name = TextureManager::GetInstance()->GetName(std::get<1>(p));
-                    TextureManager::GetInstance()->DeleteTexture(name);
-                }
-                mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), Material::Type::Opacity);
-                opacitySlider->setValue(1.0);
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
-            }
-  	    	openFileDialog = nullptr;
-  	    });
-    });
+    colorTextureButton->onPress(loadTexture, Material::Type::Color);
+    metalTextureButton->onPress(loadTexture, Material::Type::Metalness);
+    roughTextureButton->onPress(loadTexture, Material::Type::Roughness);
+    normalTextureButton->onPress(loadTexture, Material::Type::Normal);
+    aoTextureButton->onPress(loadTexture, Material::Type::AmbientOcclusion);
+    emissionTextureButton->onPress(loadTexture, Material::Type::Emission);
+    opacityTextureButton->onPress(loadTexture, Material::Type::Opacity);
 
 	scriptButton->onPress([&]()
 	{

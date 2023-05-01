@@ -47,6 +47,7 @@ void Animation::Pause()
 void Animation::Stop()
 {
     state = State::Stopped;
+    lastTime = 0.01;
 }
 
 std::unordered_map<std::string, std::pair<rp3d::Transform, rp3d::Vector3>> Animation::Update()
