@@ -885,6 +885,7 @@ void ScriptManager::RegisterAnimation()
         { "void Pause()", WRAP_MFN(Animation, Pause) },
         { "void Stop()", WRAP_MFN(Animation, Stop) },
         { "void SetIsRepeated(bool)", WRAP_MFN(Animation, SetIsRepeated) },
+        { "void SetTPS(float)", WRAP_MFN(Animation, SetTPS) },
         { "AnimationState GetState()", WRAP_MFN(Animation, GetState) }
     }, {});
 }

@@ -953,7 +953,6 @@ int main()
             {
                 auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
                 std::string filename = std::filesystem::path(path).filename().string();
-                path = projectDir + "/assets/scripts/" + filename;
                 if(!std::filesystem::exists(path))
                 {
                     code[filename] = "";
