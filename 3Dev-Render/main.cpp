@@ -26,7 +26,8 @@ int main(int argc, char* argv[])
                   << "Usage: render [options] -s path/to/scene" << std::endl
                   << "  --help            Display this information" << std::endl
                   << "  -s <file>         Path to the scene file" << std::endl
-                  << "  -o <file>         Name for the output image (output.png is default)" << std::endl
+                  << "  -a <name>         Name of animation" << std::endl
+                  << "  -o <file>         Name for the output image/video (output.png/.mp4 is default)" << std::endl
                   << "  -e <file>         Path to the hdri environment (${HOME}/.3Dev-Editor/default/hdri.hdr is default)" << std::endl
                   << "  -w <int>          Width of the output (1280 is default)" << std::endl
                   << "  -h <int>          Height of the output (720 is default)" << std::endl
@@ -43,11 +44,12 @@ int main(int argc, char* argv[])
     #else
 		std::string env = std::string(getenv("HOME")) + "/.3Dev-Editor/default/hdri.hdr";
     #endif
-    std::string out = "output.png", scenePath;
+    std::string out = "output.png", scenePath, animation;
 
     if(!GetArgument(argc, argv, "-s").empty()) scenePath = GetArgument(argc, argv, "-s");
     else Log::Write("No path to scene given", Log::Type::Critical);
 
+    if(!GetArgument(argc, argv, "-a").empty()) animation = GetArgument(argc, argv, "-a");
     if(!GetArgument(argc, argv, "-w").empty()) w = std::stoi(GetArgument(argc, argv, "-w"));
     if(!GetArgument(argc, argv, "-h").empty()) h = std::stoi(GetArgument(argc, argv, "-h"));
     if(!GetArgument(argc, argv, "-b").empty()) b = std::stoi(GetArgument(argc, argv, "-b"));
@@ -55,6 +57,14 @@ int main(int argc, char* argv[])
     if(!GetArgument(argc, argv, "-x").empty()) exp = std::stof(GetArgument(argc, argv, "-x"));
     if(!GetArgument(argc, argv, "-o").empty()) out = GetArgument(argc, argv, "-o");
     if(!GetArgument(argc, argv, "-e").empty()) env = GetArgument(argc, argv, "-e");
+
+    if(!animation.empty())
+    {
+        if(out == "output.png")
+            out = "output.mp4";
+        if(std::system("ffmpeg") == 32512)
+            Log::Write("You can't render animation without ffmpeg", Log::Type::Critical);
+    }
 
     Engine engine;
 
@@ -94,6 +104,15 @@ int main(int argc, char* argv[])
     scene.UpdatePhysics(false);
 
     scene.Load(scenePath);
+
+    std::shared_ptr<Animation> anim = nullptr;
+    if(!animation.empty())
+    {
+        anim = scene.GetAnimation(animation);
+        if(!anim)
+            Log::Write("Can't find an animation with name \"" + animation + "\"", Log::Type::Critical);
+        anim->Pause();
+    }
     
     if(scene.GetNames()[2].empty())
         scene.AddLight(&shadowSource);
@@ -104,39 +123,61 @@ int main(int argc, char* argv[])
 
     Framebuffer render(nullptr, w, h), renderTr(nullptr, w, h);
 
-    cam.Look();
+    float time = 0.01;
+    int tmpCount = 0;
+    do
+    {
+        cam.Look();
 
-    shadows.Update();
+        shadows.Update();
 
-    scene.Draw();
+        scene.Draw();
 
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exp);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exp);
 
-    render.Bind();
-    Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
-    auto pixels = render.GetPixels(glm::ivec2(0, 0), render.GetSize());
+        render.Bind();
+        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
+        auto pixels = render.GetPixels(glm::ivec2(0, 0), render.GetSize());
 
-    renderTr.Bind();
-    Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
-    auto pixelsTr = renderTr.GetPixels(glm::ivec2(0, 0), renderTr.GetSize());
+        renderTr.Bind();
+        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
+        auto pixelsTr = renderTr.GetPixels(glm::ivec2(0, 0), renderTr.GetSize());
 
-    sf::Image image;
-    image.create(w, h);
+        sf::Image image;
+        image.create(w, h);
 
-    for(int i = 0; i < h; i++)
-        for(int j = 0; j < w; j++)
-        {
-            float a = pixelsTr[((i * w + j) * 4) + 3];
-            float r = Blend(pixels[(i * w + j) * 4], std::isnan(pixelsTr[(i * w + j) * 4]) ? 0 : pixelsTr[(i * w + j) * 4], a);
-            float g = Blend(pixels[((i * w + j) * 4) + 1], std::isnan(pixelsTr[((i * w + j) * 4) + 1]) ? 0 : pixelsTr[((i * w + j) * 4) + 1], a);
-            float b = Blend(pixels[((i * w + j) * 4) + 2], std::isnan(pixelsTr[((i * w + j) * 4) + 2]) ? 0 : pixelsTr[((i * w + j) * 4) + 2], a);
-            sf::Color color((uint8_t)r, (uint8_t)g, (uint8_t)b);
-            image.setPixel(j, h - 1 - i, color);
-        }
+        for(int i = 0; i < h; i++)
+            for(int j = 0; j < w; j++)
+            {
+                float a = pixelsTr[((i * w + j) * 4) + 3];
+                float r = Blend(pixels[(i * w + j) * 4], std::isnan(pixelsTr[(i * w + j) * 4]) ? 0 : pixelsTr[(i * w + j) * 4], a);
+                float g = Blend(pixels[((i * w + j) * 4) + 1], std::isnan(pixelsTr[((i * w + j) * 4) + 1]) ? 0 : pixelsTr[((i * w + j) * 4) + 1], a);
+                float b = Blend(pixels[((i * w + j) * 4) + 2], std::isnan(pixelsTr[((i * w + j) * 4) + 2]) ? 0 : pixelsTr[((i * w + j) * 4) + 2], a);
+                sf::Color color((uint8_t)r, (uint8_t)g, (uint8_t)b);
+                image.setPixel(j, h - 1 - i, color);
+            }
 
-    free(pixels);
-    free(pixelsTr);
+        free(pixels);
+        free(pixelsTr);
 
-    image.saveToFile(out);
+        image.saveToFile(animation.empty() ? out : "temp" + std::to_string(tmpCount) + ".png");
+        time += (1.0 / 30.0) * anim->GetTPS();
+        anim->SetLastTime(time);
+        tmpCount++;
+    } while(animation.empty() ? false : /*anim->GetState() == Animation::State::Playing*/time < anim->GetDuration());
+
+    for(int i = 0; i < tmpCount; i++)
+    {
+        std::system(std::string("ffmpeg -framerate 30 -i temp" + std::to_string(i) + ".png -c:v libx264 -x264opts stitchable -r 30 temp" + std::to_string(i) + ".mp4").c_str());
+        std::system(std::string("echo \"file temp" + std::to_string(i) + ".mp4\" >> list.txt").c_str());
+        std::filesystem::remove("temp" + std::to_string(i) + ".png");
+    }
+
+    std::system(std::string("ffmpeg -f concat -i list.txt -c copy " + out).c_str());
+
+    for(int i = 0; i < tmpCount; i++)
+        std::filesystem::remove("temp" + std::to_string(i) + ".mp4");
+
+    std::filesystem::remove("list.txt");
 }

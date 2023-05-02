@@ -103,16 +103,16 @@ int main()
         engine.GetWindow().setMouseCursorVisible(mouseCursorVisible);
         engine.GetWindow().setMouseCursorGrabbed(mouseCursorGrabbed);
 
+        scman.ExecuteFunction("void Loop()");
+
+        ListenerWrapper::SetPosition(cam.GetPosition());
+        ListenerWrapper::SetOrientation(cam.GetOrientation());
+        
         cam.Update();
         if(manageCameraMovement) cam.Move(1);
         if(manageCameraMouse) cam.Mouse();
         if(manageCameraLook) cam.Look();
-
-        scman.ExecuteFunction("void Loop()");
-
-        ListenerWrapper::SetPosition(cam.GetPosition());
-		ListenerWrapper::SetOrientation(cam.GetOrientation());
-
+        
         if(updateShadows) shadows.Update();
         if(manageSceneRendering) scene.Draw(nullptr, nullptr, !updateShadows);
 
