@@ -32,12 +32,13 @@ int main(int argc, char* argv[])
                   << "  -w <int>          Width of the output (1280 is default)" << std::endl
                   << "  -h <int>          Height of the output (720 is default)" << std::endl
                   << "  -b <int>          Size of a skybox side (512 is default)" << std::endl
+                  << "  -f <int>          Output video framerate (30 is default)" << std::endl
                   << "  -x <float>        Exposure (1.5 is default)" << std::endl
                   << "  -r <number>       Shadow map resolution (4096 is default)" << std::endl;
         return 0;
     }
 
-    uint32_t w = 1280, h = 720, b = 256, r = 4096;
+    uint32_t w = 1280, h = 720, b = 256, r = 4096, fps = 30;
     float exp = 1.0;
     #ifdef _WIN32
     	std::string env = std::string(getenv("HOMEPATH")) + "/.3Dev-Editor/default/hdri.hdr";
@@ -54,6 +55,7 @@ int main(int argc, char* argv[])
     if(!GetArgument(argc, argv, "-h").empty()) h = std::stoi(GetArgument(argc, argv, "-h"));
     if(!GetArgument(argc, argv, "-b").empty()) b = std::stoi(GetArgument(argc, argv, "-b"));
     if(!GetArgument(argc, argv, "-r").empty()) r = std::stoi(GetArgument(argc, argv, "-r"));
+    if(!GetArgument(argc, argv, "-f").empty()) fps = std::stoi(GetArgument(argc, argv, "-f"));
     if(!GetArgument(argc, argv, "-x").empty()) exp = std::stof(GetArgument(argc, argv, "-x"));
     if(!GetArgument(argc, argv, "-o").empty()) out = GetArgument(argc, argv, "-o");
     if(!GetArgument(argc, argv, "-e").empty()) env = GetArgument(argc, argv, "-e");
@@ -162,22 +164,12 @@ int main(int argc, char* argv[])
         free(pixelsTr);
 
         image.saveToFile(animation.empty() ? out : "temp" + std::to_string(tmpCount) + ".png");
-        time += (1.0 / 30.0) * anim->GetTPS();
+        time += (1.0 / float(fps)) * anim->GetTPS();
         anim->SetLastTime(time);
         tmpCount++;
     } while(animation.empty() ? false : /*anim->GetState() == Animation::State::Playing*/time < anim->GetDuration());
 
+    std::system(std::string("ffmpeg -f image2 -r " + std::to_string(fps) + " -i temp%d.png " + out + ".mp4").c_str());
     for(int i = 0; i < tmpCount; i++)
-    {
-        std::system(std::string("ffmpeg -framerate 30 -i temp" + std::to_string(i) + ".png -c:v libx264 -x264opts stitchable -r 30 temp" + std::to_string(i) + ".mp4").c_str());
-        std::system(std::string("echo \"file temp" + std::to_string(i) + ".mp4\" >> list.txt").c_str());
         std::filesystem::remove("temp" + std::to_string(i) + ".png");
-    }
-
-    std::system(std::string("ffmpeg -f concat -i list.txt -c copy " + out).c_str());
-
-    for(int i = 0; i < tmpCount; i++)
-        std::filesystem::remove("temp" + std::to_string(i) + ".mp4");
-
-    std::filesystem::remove("list.txt");
 }
