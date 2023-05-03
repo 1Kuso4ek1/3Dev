@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
     scene.SetSoundManager(sman);
     scene.UpdatePhysics(false);
 
-    scene.Load(scenePath);
+    scene.Load(scenePath, true);
 
     std::shared_ptr<Animation> anim = nullptr;
     if(!animation.empty())

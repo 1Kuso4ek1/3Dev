@@ -244,6 +244,7 @@ int main()
     auto bodyTypeBox = editor.get<tgui::ComboBox>("bodyType");
 
     auto isDrawableBox = editor.get<tgui::CheckBox>("isDrawable");
+    auto immLoadBox = editor.get<tgui::CheckBox>("immLoad");
 
     auto openFileButton = editor.get<tgui::Button>("openFile");
     auto reloadButton = editor.get<tgui::Button>("reload");
@@ -564,7 +565,7 @@ int main()
 	if(!projectFilename.empty())
 	{
         lastPath = projectFilename.substr(0, projectFilename.find_last_of("/"));
-        scene.Load(projectFilename);
+        scene.Load(projectFilename, true);
         if(scene.GetNames()[2].empty())
             scene.AddLight(&shadowSource, "shadowSource");
         
@@ -1291,6 +1292,7 @@ int main()
                             materialsList->addItem(scene.GetMaterialName(mtl[i]), tgui::String(i));
                         bodyTypeBox->setSelectedItemByIndex((int)object->GetRigidBody()->getType());
                         isDrawableBox->setChecked(object->IsDrawable());
+                        immLoadBox->setChecked(object->IsLoadingImmediatelly());
 
                         nameEdit->setText(sceneTree->getSelectedItem().back());
                         posEditX->setText(tgui::String(position.x));
@@ -1349,6 +1351,7 @@ int main()
                     if((int)object->GetRigidBody()->getType() != bodyTypeBox->getSelectedItemIndex())
                         object->GetRigidBody()->setType(rp3d::BodyType(bodyTypeBox->getSelectedItemIndex()));
                     object->SetIsDrawable(isDrawableBox->isChecked());
+                    object->SetIsLoadingImmediatelly(immLoadBox->isChecked());
 
                     if(!materialsList->getSelectedItem().empty())
                         materialBox->setSelectedItem(materialsList->getSelectedItem());

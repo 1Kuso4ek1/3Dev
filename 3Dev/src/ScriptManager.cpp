@@ -281,6 +281,7 @@ void ScriptManager::RegisterModel()
 {
     AddType("Model", sizeof(Model),
     {
+        { "void Load()", WRAP_MFN_PR(Model, Load, (), void) },
         { "void SetPosition(const Vector3& in)", WRAP_MFN(Model, SetPosition) },
         { "void SetOrientation(const Quaternion& in)", WRAP_MFN(Model, SetOrientation) },
         { "void SetSize(const Vector3& in)", WRAP_MFN(Model, SetSize) },

@@ -22,6 +22,7 @@ public:
 	~Model();
 
 	void Load(std::string filename, unsigned int flags = 0);
+	void Load();
 
 	void Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass = false) override;
 	void DrawSkybox();
@@ -34,7 +35,9 @@ public:
 	void SetMaterialSlot(Material* mat, unsigned int slot = 0);
 	void SetShader(Shader* shader, bool temp = false);
 	void SetPhysicsManager(PhysicsManager* man);
+	void SetFilename(const std::string& filename);
 	void SetIsDrawable(bool drawable);
+	void SetIsLoadingImmediatelly(bool imm);
 	void AddChild(Node* child) override;
 	void DefaultPose();
 
@@ -53,6 +56,7 @@ public:
 	int GetMeshesCount();
 
 	bool IsDrawable();
+	bool IsLoadingImmediatelly();
 
 	rp3d::Transform GetTransform() override;
 	rp3d::Vector3 GetPosition();
@@ -71,7 +75,7 @@ public:
 	std::vector<Material*>& GetMaterial();
 
 	Json::Value Serialize();
-	void Deserialize(Json::Value data);
+	void Deserialize(Json::Value data, bool storeData = false);
 
 private:
     enum class CollisionShapeType
@@ -92,7 +96,7 @@ private:
 
 	bool ProcessBone(aiNode* node, std::shared_ptr<Bone>& out);
 
-	bool drawable = true;
+	bool drawable = true, immLoad = true;
 
 	std::vector<std::shared_ptr<Mesh>> meshes;
 	std::vector<std::shared_ptr<Bone>> bones;
@@ -103,6 +107,8 @@ private:
 	Matrices* m = Renderer::GetInstance()->GetMatrices();
 	Shader* shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
 	Shader* tempShader = nullptr;
+
+	Json::Value data;
 
 	std::vector<Material*> mat;
 	std::vector<std::shared_ptr<Animation>> anims;

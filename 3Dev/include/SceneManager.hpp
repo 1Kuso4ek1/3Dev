@@ -30,7 +30,7 @@ public:
     void RemoveAllObjects();
 
     void Save(std::string filename, bool relativePaths = false);
-    void Load(std::string filename);
+    void Load(std::string filename, bool loadEverything = false);
 
     void SaveState();
     void LoadState();

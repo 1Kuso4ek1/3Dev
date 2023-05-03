@@ -125,6 +125,13 @@ void Model::Load(std::string filename, unsigned int flags)
 	this->filename = filename;
 }
 
+void Model::Load()
+{
+	Load(filename, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
+	if(!data.empty())
+		Deserialize(data);
+}
+
 void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
 {
 	m->PushMatrix();
@@ -294,9 +301,19 @@ void Model::SetPhysicsManager(PhysicsManager* man)
     colliders.resize(meshes.size(), nullptr);
 }
 
+void Model::SetFilename(const std::string& filename)
+{
+	this->filename = filename;
+}
+
 void Model::SetIsDrawable(bool drawable)
 {
     this->drawable = drawable;
+}
+
+void Model::SetIsLoadingImmediatelly(bool imm)
+{
+	immLoad = imm;
 }
 
 void Model::AddChild(Node* child)
@@ -519,6 +536,11 @@ int Model::GetMeshesCount()
 bool Model::IsDrawable()
 {
     return drawable;
+}
+
+bool Model::IsLoadingImmediatelly()
+{
+	return immLoad;
 }
 
 rp3d::Transform Model::GetTransform()
@@ -785,6 +807,7 @@ Json::Value Model::Serialize()
 	data["size"]["z"] = size.z;
 
 	data["drawable"] = drawable;
+	data["immediateLoad"] = immLoad;
 
 	data["rigidBody"]["active"] = body ? body->isActive() : false;
 	data["rigidBody"]["collider"] = (int)cstype;
@@ -793,8 +816,14 @@ Json::Value Model::Serialize()
 	return data;
 }
 
-void Model::Deserialize(Json::Value data)
+void Model::Deserialize(Json::Value data, bool storeData)
 {
+	if(storeData)
+	{
+		this->data = data;
+		return;
+	}
+
     rp3d::Vector3 pos, size;
 	rp3d::Quaternion orient;
 
@@ -812,6 +841,7 @@ void Model::Deserialize(Json::Value data)
 	size.z = data["size"]["z"].asFloat();
 
 	drawable = data["drawable"].asBool();
+	immLoad = data["immediateLoad"].asBool();
 
 	if(body)
 	{

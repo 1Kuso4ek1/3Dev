@@ -306,7 +306,7 @@ void SceneManager::Save(std::string filename, bool relativePaths)
     file.close();
 }
 
-void SceneManager::Load(std::string filename)
+void SceneManager::Load(std::string filename, bool loadEverything)
 {
     RemoveAllObjects();
 
@@ -356,16 +356,25 @@ void SceneManager::Load(std::string filename)
             material.push_back(materials[i["name"].asString()].get());
 
         std::shared_ptr<Model> model;
-        if(!filename.empty())
+        bool load = !filename.empty() && (data["objects"]["models"][counter]["immediateLoad"].asBool() || loadEverything);
+        if(load)
             model = std::make_shared<Model>(filename, material, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, pManager.get());
-        else
+        else if(filename.empty())
         {
             model = std::make_shared<Model>(true);
             model->SetMaterial(material);
             model->SetPhysicsManager(pManager.get());
             model->CreateRigidBody();
         }
-        model->Deserialize(data["objects"]["models"][counter]);
+        else
+        {
+            model = std::make_shared<Model>();
+            model->SetFilename(filename);
+            model->SetMaterial(material);
+            model->SetPhysicsManager(pManager.get());
+            model->CreateRigidBody();
+        }
+        model->Deserialize(data["objects"]["models"][counter], (!load && !filename.empty()));
         AddModel(model, name, false);
         StoreBones(model);
 
