@@ -18,6 +18,33 @@ float Blend(float c1, float c2, float a)
     return std::clamp(((c1 * (1.0 - a)) + (c2 * a)) * 255.0, 0.0, 255.0);
 }
 
+std::vector<std::vector<std::string>> ParseAnimations(std::string anims)
+{
+    std::vector<std::vector<std::string>> ret;
+    std::vector<std::string> tmp;
+
+    while(anims.find(",") != std::string::npos || anims.find(":") != std::string::npos)
+    {
+        if(anims.find(":") < anims.find(","))
+        {
+            tmp.push_back(anims.substr(0, anims.find(":")));
+            anims.erase(0, anims.find(":") + 1);
+            ret.push_back(tmp);
+            tmp.clear();
+        }
+        if(anims.find(",") != std::string::npos)
+        {
+            tmp.push_back(anims.substr(0, anims.find(",")));
+            anims.erase(0, anims.find(",") + 1);
+        }
+    }
+
+    tmp.push_back(anims);
+    ret.push_back(tmp);
+
+    return ret;
+}
+
 int main(int argc, char* argv[])
 {
     if(ArgumentExists(argc, argv, "--help"))
@@ -27,7 +54,7 @@ int main(int argc, char* argv[])
                   << "  --help            Display this information" << std::endl
                   << "  -s <file>         Path to the scene file" << std::endl
                   << "  -a <name>         Name of animation" << std::endl
-                  << "  -o <file>         Name for the output image/video (output.png/.mp4 is default)" << std::endl
+                  << "  -o <file>         Name for the output image/video (output.jpg/.mp4 is default)" << std::endl
                   << "  -e <file>         Path to the hdri environment (${HOME}/.3Dev-Editor/default/hdri.hdr is default)" << std::endl
                   << "  -w <int>          Width of the output (1280 is default)" << std::endl
                   << "  -h <int>          Height of the output (720 is default)" << std::endl
@@ -45,7 +72,9 @@ int main(int argc, char* argv[])
     #else
 		std::string env = std::string(getenv("HOME")) + "/.3Dev-Editor/default/hdri.hdr";
     #endif
-    std::string out = "output.png", scenePath, animation;
+    std::string out = "output.jpg", scenePath, animation;
+
+    std::vector<std::vector<std::string>> animationsQueue;
 
     if(!GetArgument(argc, argv, "-s").empty()) scenePath = GetArgument(argc, argv, "-s");
     else Log::Write("No path to scene given", Log::Type::Critical);
@@ -62,10 +91,22 @@ int main(int argc, char* argv[])
 
     if(!animation.empty())
     {
-        if(out == "output.png")
+        if(out == "output.jpg")
             out = "output.mp4";
         if(std::system("ffmpeg") == 32512)
             Log::Write("You can't render animation without ffmpeg", Log::Type::Critical);
+
+        animationsQueue = ParseAnimations(animation);
+        //Log::Write(std::to_string(animationsQueue.size()), Log::Type::Info);
+        /*Log::Write("Animations to be drawn:" + ([&]()
+        {
+            std::string ret;
+            for(auto& i : animationsQueue)
+                for(auto& j : i)
+                    ret += " " + j;
+            return ret;
+        })(), Log::Type::Info);
+        exit(0);*/
     }
 
     Engine engine;
@@ -106,15 +147,6 @@ int main(int argc, char* argv[])
     scene.UpdatePhysics(false);
 
     scene.Load(scenePath, true);
-
-    std::shared_ptr<Animation> anim = nullptr;
-    if(!animation.empty())
-    {
-        anim = scene.GetAnimation(animation);
-        if(!anim)
-            Log::Write("Can't find an animation with name \"" + animation + "\"", Log::Type::Critical);
-        anim->Pause();
-    }
     
     if(scene.GetNames()[2].empty())
         scene.AddLight(&shadowSource);
@@ -125,9 +157,9 @@ int main(int argc, char* argv[])
 
     Framebuffer render(nullptr, w, h), renderTr(nullptr, w, h);
 
-    float time = 0.01;
-    int tmpCount = 0;
-    do
+    sf::Image image;
+
+    auto draw = [&]()
     {
         cam.Look();
 
@@ -146,7 +178,6 @@ int main(int argc, char* argv[])
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
         auto pixelsTr = renderTr.GetPixels(glm::ivec2(0, 0), renderTr.GetSize());
 
-        sf::Image image;
         image.create(w, h);
 
         for(int i = 0; i < h; i++)
@@ -162,14 +193,55 @@ int main(int argc, char* argv[])
 
         free(pixels);
         free(pixelsTr);
+    };
 
-        image.saveToFile(animation.empty() ? out : "temp" + std::to_string(tmpCount) + ".png");
-        time += (1.0 / float(fps)) * anim->GetTPS();
-        anim->SetLastTime(time);
-        tmpCount++;
-    } while(animation.empty() ? false : /*anim->GetState() == Animation::State::Playing*/time < anim->GetDuration());
+    if(animation.empty())
+    {
+        draw();
+        image.saveToFile(out);
+        exit(0);
+    }
 
-    std::system(std::string("ffmpeg -f image2 -r " + std::to_string(fps) + " -i temp%d.png " + out + ".mp4").c_str());
+    int tmpCount = 0;
+    for(auto& i : animationsQueue)
+    {
+        std::shared_ptr<Animation> maxDuration = scene.GetAnimation(i[0]);
+        std::vector<std::shared_ptr<Animation>> playingAnims;
+
+        for(auto& j : i)
+        {
+            std::shared_ptr<Animation> anim = scene.GetAnimation(j);
+            if(!anim)
+                Log::Write("Can't find an animation with name \"" + j + "\"", Log::Type::Critical);
+            anim->Pause();
+            anim->SetLastTime(0);
+            playingAnims.push_back(anim);
+            if((anim->GetDuration() / anim->GetTPS() > maxDuration->GetDuration() / maxDuration->GetTPS()) && !anim->IsRepeated())
+                maxDuration = anim;
+        }
+
+        while(maxDuration->GetLastTime() < maxDuration->GetDuration())
+        {
+            draw();
+
+            image.saveToFile("temp" + std::to_string(tmpCount) + ".jpg");
+
+            for(auto j : playingAnims)
+            {
+                j->SetLastTime(j->GetLastTime() + (1.0 / float(fps)) * j->GetTPS());
+                if(j->GetLastTime() > j->GetDuration())
+                {
+                    if(j->IsRepeated())
+                        j->SetLastTime(0);
+                    else j->SetLastTime(j->GetDuration());
+                }
+            }
+
+            tmpCount++;
+        }
+    }
+
+    std::system(std::string("ffmpeg -f image2 -r " + std::to_string(fps) + " -i temp%d.jpg " + out).c_str());
     for(int i = 0; i < tmpCount; i++)
-        std::filesystem::remove("temp" + std::to_string(i) + ".png");
+        std::filesystem::remove("temp" + std::to_string(i) + ".jpg");
 }

@@ -75,13 +75,13 @@ std::unordered_map<std::string, std::pair<rp3d::Transform, rp3d::Vector3>> Anima
                 }
                 else
                 {
-                    time = duration - 0.01;
+                    time = duration;
                     state = State::Paused;
-                    lastTime = duration - 0.01;
+                    lastTime = duration;
                 }
             }
 
-            float dt = fmod(time, duration);
+            float dt = fmod(time == 0 ? time + 0.01 : (time == duration ? time - 0.01 : time), duration);
 
             auto posFraction = TimeFraction(keyframe.posStamps, dt);
             auto rotFraction = TimeFraction(keyframe.rotStamps, dt);
@@ -107,9 +107,19 @@ std::string Animation::GetName()
     return name;
 }
 
+bool Animation::IsRepeated()
+{
+    return repeat;
+}
+
 float Animation::GetTime()
 {
     return time.getElapsedTime().asSeconds() * tps;
+}
+
+float Animation::GetLastTime()
+{
+    return lastTime;
 }
 
 float Animation::GetDuration()
@@ -133,6 +143,7 @@ Json::Value Animation::Serialize()
 
     data["duration"] = duration;
     data["tps"] = tps;
+    data["repeat"] = repeat;
 
     int counter = 0;
     for(auto& [name, kf] : keyframes)
@@ -174,6 +185,7 @@ void Animation::Deserialize(Json::Value data)
 {
     duration = data["duration"].asFloat();
     tps = data["tps"].asFloat();
+    repeat = data["repeat"].asBool();
 
     for(auto& i : data["keyframes"])
     {

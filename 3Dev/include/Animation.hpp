@@ -41,7 +41,9 @@ public:
     std::unordered_map<std::string, Keyframe>& GetKeyframes();
     std::string GetName();
 
+	bool IsRepeated();
 	float GetTime();
+	float GetLastTime();
 	float GetDuration();
 	float GetTPS();
     

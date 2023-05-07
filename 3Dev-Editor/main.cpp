@@ -16,6 +16,13 @@ bool disableShortcuts = false;
 std::unordered_map<std::string, std::string> code;
 std::string currentFile;
 
+struct
+{
+    float time = 0.0;
+    std::string name;
+    std::shared_ptr<Animation> ptr;
+} lastAnimation;
+
 void SaveProperties(Json::Value data)
 {
     std::ofstream file(homeFolder + "properties.json");
@@ -307,6 +314,7 @@ int main()
     auto addKfButton = editor.get<tgui::Button>("addKf");
     auto timelineSlider = editor.get<tgui::Slider>("timeline");
     auto timeEdit = editor.get<tgui::EditBox>("time");
+    auto repeatBox = editor.get<tgui::CheckBox>("repeat");
     auto addActionButton = editor.get<tgui::Button>("addAction");
     auto removeKeyframeButton = editor.get<tgui::Button>("removeKeyframe");
 
@@ -843,27 +851,37 @@ int main()
     	sceneTree->removeItem(sceneTree->getSelectedItem(), false);
     });
 
-    addKfButton->onPress([&]()
+    auto addKf = [&](std::string kf)
     {
-        if(scene.GetNode(kfNameEdit->getText().toStdString()))
+        if(scene.GetNode(kf))
         {
-            scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString())->AddKeyframe(kfNameEdit->getText().toStdString(), Keyframe());
+            lastAnimation.ptr->AddKeyframe(kf, Keyframe());
             readSceneTree();
         }
+    };
+
+    addKfButton->onPress([&]()
+    {
+        addKf(kfNameEdit->getText().toStdString());
     });
 
-    addActionButton->onPress([&]()
+    auto addAction = [&](std::string kfName)
     {
-        auto& kf = scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString())->GetKeyframes()[sceneTree->getSelectedItem()[3].toStdString()];
-        auto node = scene.GetNode(sceneTree->getSelectedItem()[3].toStdString());
+        auto& kf = lastAnimation.ptr->GetKeyframes()[kfName];
+        auto node = scene.GetNode(kfName);
 
         kf.positions.push_back(toglm(node->GetTransform().getPosition()));
         kf.rotations.push_back(toglm(node->GetTransform().getOrientation()));
         kf.scales.push_back(toglm(node->GetSize()));
 
-        kf.posStamps.push_back(timelineSlider->getValue());
-        kf.rotStamps.push_back(timelineSlider->getValue());
-        kf.scaleStamps.push_back(timelineSlider->getValue());
+        kf.posStamps.push_back(lastAnimation.time);
+        kf.rotStamps.push_back(lastAnimation.time);
+        kf.scaleStamps.push_back(lastAnimation.time);
+    };
+
+    addActionButton->onPress([&]()
+    {
+        addAction(sceneTree->getSelectedItem()[3].toStdString());
     });
 
     removeKeyframeButton->onPress([&]()
@@ -1713,6 +1731,8 @@ int main()
                 animationEditorGroup->setVisible(true);
 
                 auto anim = scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString());
+                lastAnimation.ptr = anim;
+                lastAnimation.name = sceneTree->getSelectedItem()[2].toStdString();
                 if(sceneTree->getSelectedItem().size() > 3)
                 {
                     addActionButton->setVisible(true);
@@ -1734,6 +1754,7 @@ int main()
 
                     durationEdit->setText(tgui::String(anim->GetDuration()));
                     tpsEdit->setText(tgui::String(anim->GetTPS()));
+                    repeatBox->setChecked(anim->IsRepeated());
                 }
 
                 timelineSlider->setMaximum(anim->GetDuration());
@@ -1741,6 +1762,8 @@ int main()
                 if(anim->GetState() == Animation::State::Playing)
                     timelineSlider->setValue(anim->GetTime());
                 else anim->SetLastTime(timelineSlider->getValue());
+
+                lastAnimation.time = timelineSlider->getValue();
 
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && animNameEdit->isFocused() && animNameEdit->getText() != sceneTree->getSelectedItem().back())
                 {
@@ -1752,6 +1775,7 @@ int main()
 
                 anim->SetDuration(durationEdit->getText().toFloat());
                 anim->SetTPS(tpsEdit->getText().toFloat());
+                anim->SetIsRepeated(repeatBox->isChecked());
                 timeEdit->setText(tgui::String(timelineSlider->getValue()));
             }
             /////////////////////////////////////
@@ -1913,6 +1937,31 @@ int main()
             if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::M })) param = 0;
             if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::R })) param = 1;
             if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::S })) param = 2;
+        }
+
+        else if(lastAnimation.ptr && sceneTree->getSelectedItem().size() > 1)
+        {
+            if(sceneTree->getSelectedItem()[1] == "Objects" && !nameEdit->isFocused())
+            {
+                if(Shortcut({ sf::Keyboard::K }))
+                    addKf(sceneTree->getSelectedItem().back().toStdString());
+                if(Shortcut({ sf::Keyboard::I }))
+                    addAction(sceneTree->getSelectedItem().back().toStdString());
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Period) || 
+                   sf::Keyboard::isKeyPressed(sf::Keyboard::Comma))
+                {
+                    float timeChangeSpeed = 0.1 + (0.4 * sf::Keyboard::isKeyPressed(sf::Keyboard::LShift));
+                    if(Shortcut({ sf::Keyboard::Period }, 0.1))
+                        lastAnimation.time += timeChangeSpeed;
+                    if(Shortcut({ sf::Keyboard::Comma }, 0.1))
+                        lastAnimation.time -= timeChangeSpeed;
+                    
+                    if(lastAnimation.time < 0) lastAnimation.time = 0;
+                    if(lastAnimation.time > lastAnimation.ptr->GetDuration()) lastAnimation.time = lastAnimation.ptr->GetDuration();
+
+                    modeLabel->setText("Animation: " + lastAnimation.name + "; time: " + std::to_string(lastAnimation.time));
+                }
+            }
         }
 
         if(viewport->isFocused() || sceneTree->isFocused())
