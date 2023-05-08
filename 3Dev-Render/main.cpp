@@ -239,6 +239,8 @@ int main(int argc, char* argv[])
 
             tmpCount++;
         }
+        
+        for(auto j : playingAnims) j->Stop();
     }
 
     std::system(std::string("ffmpeg -f image2 -r " + std::to_string(fps) + " -i temp%d.jpg " + out).c_str());
