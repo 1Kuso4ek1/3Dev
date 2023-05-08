@@ -1,6 +1,8 @@
+[How to build from sources?](build.md)  
+[How to use 3Dev Render?](render.md)
+
 # Hello, 3Dev!  
 Learn how to create your first project using 3Dev engine  
-[Build from sources](build.md)
 ## 3Dev Editor
 ### Editor interface
 After running editor a window will appear with the main menu.  
