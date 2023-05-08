@@ -1,6 +1,6 @@
 # 3Dev
-![](https://img.shields.io/badge/3Dev-1.3.0_beta.2-blue)
-![](https://img.shields.io/badge/3Dev_Editor-1.3.2-blue)
+![](https://img.shields.io/badge/3Dev-1.3.0_rc-blue)
+![](https://img.shields.io/badge/3Dev_Editor-1.3.3-blue)
 ![](https://img.shields.io/badge/language-C++-green)
 ![](https://img.shields.io/github/license/1kuso4ek1/3Dev)
 ![](https://img.shields.io/github/issues/1kuso4ek1/3Dev)
@@ -11,7 +11,8 @@
 ## Features
 - Rigid body physics
 - Loading a lot of model formats (.obj, .dae, .fbx and much more...)
-- Skeletal animation
+- Good animation system
+- Skeletal animations support
 - HDR with ACES tone mapping
 - FXAA
 - Physically Based Rendering
@@ -19,7 +20,7 @@
 - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
 - 3D audio
 - User interface with TGUI
-- Separate console program for scene rendering
+- Separate console program for scene or animation rendering
 - Scripting with Angelscript
 - 3Dev Editor
 - Node-based hierarchy
