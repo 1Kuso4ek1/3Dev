@@ -60,6 +60,7 @@ private:
     void RegisterBone();
     void RegisterAnimation();
     void RegisterShader();
+    void RegisterNode();
 
     bool buildSucceded = false;
 

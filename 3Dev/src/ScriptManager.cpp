@@ -21,6 +21,7 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterJoints();
     RegisterPhysicsManager();
     RegisterSoundManager();
+    RegisterNode();
     RegisterCamera();
     RegisterMaterial();
     RegisterAnimation();
@@ -294,6 +295,7 @@ void ScriptManager::RegisterModel()
         { "void Move(const Vector3& in)", WRAP_MFN(Model, Move) },
         { "void Rotate(const Quaternion& in)", WRAP_MFN(Model, Rotate) },
         { "void Expand(const Vector3& in)", WRAP_MFN(Model, Expand) },
+        { "Node@ opCast()", WRAP_OBJ_LAST(CastModel) },
         { "bool IsDrawable()", WRAP_MFN(Model, IsDrawable) },
         { "Vector3 GetPosition()", WRAP_MFN(Model, GetPosition) },
         { "Quaternion GetOrientation()", WRAP_MFN(Model, GetOrientation) },
@@ -302,6 +304,8 @@ void ScriptManager::RegisterModel()
         { "RigidBody@ GetRigidBody()", WRAP_MFN(Model, GetRigidBody) },
         { "int GetMeshesCount()", WRAP_MFN(Model, GetMeshesCount) }
     }, {});
+
+    engine->RegisterObjectMethod("Node", "Model@ opCast()", WRAP_OBJ_LAST(CastToModel), asCALL_GENERIC);
 }
 
 void ScriptManager::RegisterLight()
@@ -316,6 +320,7 @@ void ScriptManager::RegisterLight()
         { "void SetOuterCutoff(float)", WRAP_MFN(Light, SetCutoff) },
         { "void CalcLightSpaceMatrix()", WRAP_MFN(Light, CalcLightSpaceMatrix) },
         { "void SetIsCastingShadows(bool)", WRAP_MFN(Light, SetIsCastingShadows) },
+        { "Node@ opCast()", WRAP_OBJ_LAST(CastLight) },
         { "bool IsCastingShadows()", WRAP_MFN(Light, IsCastingShadows) },
         { "Vector3 GetPosition()", WRAP_MFN(Light, GetPosition) },
         { "Vector3 GetDirection()", WRAP_MFN(Light, GetDirection) },
@@ -324,6 +329,8 @@ void ScriptManager::RegisterLight()
         { "float GetCutoff()", WRAP_MFN(Light, GetCutoff) },
         { "float GetOuterCutoff()", WRAP_MFN(Light, GetOuterCutoff) }
     }, {});
+
+    engine->RegisterObjectMethod("Node", "Light@ opCast()", WRAP_OBJ_LAST(CastToLight), asCALL_GENERIC);
 }
 
 void ScriptManager::RegisterRigidBody()
@@ -385,6 +392,7 @@ void ScriptManager::RegisterCamera()
         { "void SetSpeed(float)", WRAP_MFN(Camera, SetSpeed) },
         { "void SetFOV(float)", WRAP_MFN(Camera, SetFOV) },
         { "void AlwaysUp(bool)", WRAP_MFN(Camera, AlwaysUp) },
+        { "Node@ opCast()", WRAP_OBJ_LAST(CastCamera) },
         { "Vector3 GetPosition()", WRAP_MFN(Camera, GetPosition) },
         { "Quaternion GetOrientation()", WRAP_MFN(Camera, GetOrientation) },
         { "void GetSpeed(float)", WRAP_MFN(Camera, GetSpeed) },
@@ -392,6 +400,8 @@ void ScriptManager::RegisterCamera()
         { "void Look()", WRAP_MFN_PR(Camera, Look, (), void) },
         { "void Look(const Vector3& in)", WRAP_MFN_PR(Camera, Look, (const rp3d::Vector3&), void) }
     }, {});
+
+    engine->RegisterObjectMethod("Node", "Camera@ opCast()", WRAP_OBJ_LAST(CastToCamera), asCALL_GENERIC);
 }
 
 void ScriptManager::RegisterSceneManager()
@@ -409,6 +419,7 @@ void ScriptManager::RegisterSceneManager()
         { "Light@ GetLight(string)", WRAP_MFN(SceneManager, GetLight) },
         { "Material@ GetMaterial(string)", WRAP_MFN(SceneManager, GetMaterialPtr) },
         { "Bone@ GetBone(string)", WRAP_MFN(SceneManager, GetBone) },
+        { "Node@ GetNode(string)", WRAP_MFN(SceneManager, GetNode) },
         { "Animation@ GetAnimation(string)", WRAP_MFN(SceneManager, GetAnimationPtr) },
         { "Model@ CloneModel(Model@, bool = true, string = \"model\")", WRAP_MFN(SceneManager, CloneModel) },
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
@@ -864,16 +875,19 @@ void ScriptManager::RegisterBone()
 {
     AddType("Bone", sizeof(Bone),
     {
-        { "Vector3 GetPosition()", WRAP_MFN(Bone, GetPosition) },
-        { "Quaternion GetOrientation()", WRAP_MFN(Bone, GetOrientation) },
-        { "Vector3 GetSize()", WRAP_MFN(Bone, GetSize) },
         { "void SetPosition(const Vector3& in)", WRAP_MFN(Bone, SetPosition) },
         { "void SetOrientation(const Quaternion& in)", WRAP_MFN(Bone, SetOrientation) },
         { "void SetSize(const Vector3& in)", WRAP_MFN(Bone, SetSize) },
         { "void Move(const Vector3& in)", WRAP_MFN(Bone, Move) },
         { "void Rotate(const Quaternion& in)", WRAP_MFN(Bone, Rotate) },
-        { "void Expand(const Vector3& in)", WRAP_MFN(Bone, Expand) }
+        { "void Expand(const Vector3& in)", WRAP_MFN(Bone, Expand) },
+        { "Node@ opCast()", WRAP_OBJ_LAST(CastBone) },
+        { "Vector3 GetPosition()", WRAP_MFN(Bone, GetPosition) },
+        { "Quaternion GetOrientation()", WRAP_MFN(Bone, GetOrientation) },
+        { "Vector3 GetSize()", WRAP_MFN(Bone, GetSize) }
     }, {});
+
+    engine->RegisterObjectMethod("Node", "Bone@ opCast()", WRAP_OBJ_LAST(CastToBone), asCALL_GENERIC);
 }
 
 void ScriptManager::RegisterAnimation()
@@ -902,4 +916,13 @@ void ScriptManager::RegisterShader()
     }, {});
 
     AddTypeFactory("Shader", "Shader@ f(const string& in, const string& in, bool = true)", WRAP_FN(MakeShader));
+}
+
+void ScriptManager::RegisterNode()
+{
+    AddType("Node", sizeof(Node),
+    {
+        { "void AddChild(Node@)", WRAP_MFN(Node, AddChild) },
+        { "void SetParent(Node@)", WRAP_MFN(Node, SetParent) }
+    }, {});
 }

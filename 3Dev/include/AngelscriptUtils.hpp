@@ -171,3 +171,43 @@ static Shader* MakeShader(const std::string& str, const std::string& str1, bool 
 {
     return new Shader(str, str1, load);
 }
+
+static Node* CastLight(Light* light)
+{
+    return dynamic_cast<Node*>(light);
+}
+
+static Node* CastModel(Model* model)
+{
+    return dynamic_cast<Node*>(model);
+}
+
+static Node* CastCamera(Camera* camera)
+{
+    return dynamic_cast<Node*>(camera);
+}
+
+static Node* CastBone(Bone* bone)
+{
+    return dynamic_cast<Node*>(bone);
+}
+
+static Light* CastToLight(Node* node)
+{
+    return dynamic_cast<Light*>(node);
+}
+
+static Model* CastToModel(Node* node)
+{
+    return dynamic_cast<Model*>(node);
+}
+
+static Camera* CastToCamera(Node* node)
+{
+    return dynamic_cast<Camera*>(node);
+}
+
+static Bone* CastToBone(Node* node)
+{
+    return dynamic_cast<Bone*>(node);
+}
