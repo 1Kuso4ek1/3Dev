@@ -446,11 +446,11 @@ void SceneManager::Load(std::string filename, bool loadEverything)
 void SceneManager::SaveState()
 {
     savedState.clear();
-    std::for_each(models.begin(), models.end(), [&](auto p)
+    std::for_each(nodes.begin(), nodes.end(), [&](auto p)
                   {
-                      savedState[p.first].pos = p.second->GetPosition();
+                      savedState[p.first].pos = p.second->GetTransform().getPosition();
                       savedState[p.first].size = p.second->GetSize();
-                      savedState[p.first].orient = p.second->GetOrientation();
+                      savedState[p.first].orient = p.second->GetTransform().getOrientation();
                       if(p.second->GetRigidBody())
                       {
                           p.second->GetRigidBody()->setLinearVelocity(rp3d::Vector3::zero());
@@ -463,11 +463,10 @@ void SceneManager::LoadState()
 {
     for(auto& i : savedState)
     {
-        if(models.find(i.first) != models.end())
+        if(nodes.find(i.first) != nodes.end())
         {
-            models[i.first]->SetPosition(i.second.pos);
-            models[i.first]->SetSize(i.second.size);
-            models[i.first]->SetOrientation(i.second.orient);
+            nodes[i.first]->SetTransform(rp3d::Transform(i.second.pos, i.second.orient));
+            nodes[i.first]->SetSize(i.second.size);
         }
     }
     

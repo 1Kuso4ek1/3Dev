@@ -250,6 +250,7 @@ void ScriptManager::RegisterQuaternion()
         { "string to_string()", WRAP_MFN(rp3d::Quaternion, to_string) },
         { "void inverse()", WRAP_MFN(rp3d::Quaternion, inverse) },
         { "Quaternion getInverse()", WRAP_MFN(rp3d::Quaternion, getInverse) },
+        { "Quaternion getConjugate()", WRAP_MFN(rp3d::Quaternion, getConjugate) },
         { "Quaternion& opAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
         { "Quaternion& opAddAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator+=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
         { "Quaternion& opSubAssign(const Quaternion& in)", WRAP_MFN_PR(rp3d::Quaternion, operator-=, (const rp3d::Quaternion&), rp3d::Quaternion&) },
