@@ -517,9 +517,8 @@ int main()
     glClear(GL_COLOR_BUFFER_BIT);
     loading.draw();
     engine.GetWindow().display();
-
-    if(properties["shadersDir"].asString() != "default")
-        Renderer::GetInstance()->SetShadersDirectory(properties["renderer"]["shadersDir"].asString());
+        
+    Renderer::GetInstance()->SetShadersDirectory(properties["renderer"]["shadersDir"].asString());
     Renderer::GetInstance()->Init({ 840, 492 }, properties["renderer"]["hdriPath"].asString(),
                                                 properties["renderer"]["skyboxSideSize"].asInt(),
                                                 properties["renderer"]["irradianceSideSize"].asInt(),
