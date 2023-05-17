@@ -60,7 +60,7 @@ void Engine::Loop(std::function<void(void)> loop)
     this->loop = loop;
 }
 
-void Engine::Launch()
+void Engine::Launch(bool handleResize)
 {
     running = true;
 
@@ -71,8 +71,13 @@ void Engine::Launch()
             eloop(event);
             for(auto i : gui)
                 i->handleEvent(event);
-            if(event.type == sf::Event::Resized)
+            if(event.type == sf::Event::Resized && handleResize)
+            {
                 glViewport(0, 0, (float)event.size.width, (float)event.size.height);
+                viewport = tgui::FloatRect({ 0, 0, (float)event.size.width, (float)event.size.height });
+                for(auto& i : gui)
+                    i->setAbsoluteViewport(viewport);
+            }
         }
 
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);

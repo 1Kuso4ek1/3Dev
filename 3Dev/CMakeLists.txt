@@ -14,6 +14,7 @@ find_package(Angelscript REQUIRED)
 find_package(Threads REQUIRED)
 
 set(ANGELSCRIPT_LIBRARY_NAME angelscript)
+set(WIN_RELEASE OFF)
 
 if(UNIX OR APPLE)
 	find_package(GLEW 2.1.0 REQUIRED)
@@ -55,7 +56,11 @@ add_library(3Dev
 	libraries/Angelscript/sdk/add_on/scriptfile/scriptfile.cpp
 )
 
-add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/shaders/\"")
+if(WIN_RELEASE)
+	add_definitions("-DSHADERS_DIRECTORY=\"../../shaders/\"")
+else()
+	add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/shaders/\"")
+endif()
 
 add_executable(launcher launcher.cpp)
 

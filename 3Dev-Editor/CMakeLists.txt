@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.17)
 
-project(editor VERSION 1.3.0 LANGUAGES CXX)
+project(editor VERSION 1.3.4 LANGUAGES CXX)
 
 find_package(3Dev REQUIRED)
 find_package(SFML 2.5.1 COMPONENTS system window network audio REQUIRED)
@@ -21,6 +21,14 @@ elseif("${GLEW_INCLUDE_DIR}" STREQUAL "" OR "${GLEW_LIBRARIES}" STREQUAL "")
 endif()
 
 add_executable(editor main.cpp)
+
+add_definitions("-DEDITOR_VERSION=\"1.3.4\"")
+
+if(WIN_RELEASE)
+	add_definitions("-DSHADERS_DIRECTORY=\"../../shaders/\"")
+else()
+	add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/../3Dev/shaders/\"")
+endif()
 
 target_include_directories(editor
   	PUBLIC

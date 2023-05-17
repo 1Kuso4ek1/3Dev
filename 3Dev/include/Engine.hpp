@@ -58,7 +58,7 @@ public:
     void EventLoop(std::function<void(sf::Event&)> eloop);
 
     // Launch your game
-    void Launch();
+    void Launch(bool handleResize = true);
 
     // Close your game
     void Close();

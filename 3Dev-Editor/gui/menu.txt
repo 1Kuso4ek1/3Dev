@@ -109,7 +109,7 @@ ChildWindow.ChildWindow1 {
         Position = (577, 354);
         Renderer = &1;
         Size = (126.2, 18);
-        Text = "3Dev Editor 1.3.3";
+        Text = "3Dev Editor 1.3.4";
         TextSize = 13;
     }
 
@@ -173,7 +173,7 @@ ChildWindow.ChildWindow1 {
         Label.Label2 {
             AutoSize = true;
             Position = (126, 10);
-            Size = (48.2, 18);
+            Size = (49, 18);
             Text = Recent;
             TextSize = 13;
 
@@ -313,7 +313,7 @@ ChildWindow.ChildWindow1 {
             AutoSize = true;
             Position = (130, 10);
             Renderer = &1;
-            Size = (42.2, 18);
+            Size = (43, 18);
             Text = Name;
             TextSize = 13;
         }
@@ -321,7 +321,7 @@ ChildWindow.ChildWindow1 {
         Label.Label4 {
             AutoSize = true;
             Position = (130, 60);
-            Size = (42.2, 18);
+            Size = (43, 18);
             Text = Folder;
             TextSize = 13;
 

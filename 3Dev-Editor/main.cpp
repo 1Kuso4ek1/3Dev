@@ -30,14 +30,29 @@ void SaveProperties(Json::Value data)
     file.close();
 }
 
-void DefaultProperties()
+Json::Value DefaultProperties(const Json::Value& recentProjects = "", const Json::Value& recentProjectsPaths = "")
 {
     Json::Value p;
+
+    p["version"] = EDITOR_VERSION;
+
     p["logFilename"] = homeFolder + "log/EditorLog.txt";
     p["defaultResorces"] = homeFolder + "default/";
-    p["shadersDir"] = "default";
+
+    p["renderer"]["shadersDir"] = std::filesystem::absolute(std::string(SHADERS_DIRECTORY)).string();
+    p["renderer"]["hdriPath"] = homeFolder + "default/hdri.hdr";
+    p["renderer"]["skyboxSideSize"] = 256;
+    p["renderer"]["irradianceSideSize"] = 32;
+    p["renderer"]["prefilteredSideSize"] = 256;
+    p["renderer"]["shadowMapResolution"] = 2048;
+    p["renderer"]["exposure"] = 0.5;
+
+    p["recentProjects"] = recentProjects;
+    p["recentProjectsPaths"] = recentProjectsPaths;
 
     SaveProperties(p);
+
+    return p;
 }
 
 Json::Value ParseProperties()
@@ -50,6 +65,14 @@ Json::Value ParseProperties()
     std::string errors;
     if(!Json::parseFromStream(rbuilder, file, &ret, &errors))
         Log::Write("Json parsing failed: " + errors, Log::Type::Critical);
+
+    if(ret["version"].asString() != EDITOR_VERSION)
+    {
+        Log::Write("The editor's version has changed, updating properties", Log::Type::Info);
+
+        return DefaultProperties(ret["recentProjects"], ret["recentProjectsPaths"]);
+    }
+
     return ret;
 }
 
@@ -148,7 +171,7 @@ int main()
         std::filesystem::copy("../gui/editor.txt", homeFolder + "gui/editor.txt");
         std::filesystem::copy("../gui/themes/Black.txt", homeFolder + "gui/themes/Black.txt");
         std::filesystem::copy("../gui/themes/Black.png", homeFolder + "gui/themes/Black.png");
-	std::filesystem::copy("../gui/themes/SourceCodePro-Regular.ttf", homeFolder + "gui/themes/SourceCodePro-Regular.ttf");
+	    std::filesystem::copy("../gui/themes/SourceCodePro-Regular.ttf", homeFolder + "gui/themes/SourceCodePro-Regular.ttf");
         std::filesystem::copy("../icon.png", homeFolder + "icon.png");
 
         DefaultProperties();
@@ -487,7 +510,7 @@ int main()
         menu.draw();
     });
 
-    engine.Launch();
+    engine.Launch(false);
     
     progressBar->setText("Initializing Renderer");
     
@@ -496,8 +519,11 @@ int main()
     engine.GetWindow().display();
 
     if(properties["shadersDir"].asString() != "default")
-        Renderer::GetInstance()->SetShadersDirectory(properties["shadersDir"].asString());
-    Renderer::GetInstance()->Init({ 840, 492 }, properties["defaultResorces"].asString() + "hdri.hdr");
+        Renderer::GetInstance()->SetShadersDirectory(properties["renderer"]["shadersDir"].asString());
+    Renderer::GetInstance()->Init({ 840, 492 }, properties["renderer"]["hdriPath"].asString(),
+                                                properties["renderer"]["skyboxSideSize"].asInt(),
+                                                properties["renderer"]["irradianceSideSize"].asInt(),
+                                                properties["renderer"]["prefilteredSideSize"].asInt());
     
     progressBar->setValue(20);
     progressBar->setText("Setting up defaults");
@@ -718,7 +744,9 @@ int main()
     loading.draw();
     engine.GetWindow().display();
 
-    ShadowManager shadows(&scene, glm::ivec2(1024, 1024));
+    ShadowManager shadows(&scene, glm::ivec2(properties["renderer"]["shadowMapResolution"].asInt()));
+
+    float exposure = properties["renderer"]["exposure"].asFloat();
 
     std::vector<std::vector<tgui::String>> selectedWithShift;
 
@@ -1997,7 +2025,7 @@ int main()
         if(manageSceneRendering) scene.Draw(nullptr, nullptr, !updateShadows);
 
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", 0.5);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exposure);
 
 		viewport->bindFramebuffer();
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -2016,7 +2044,7 @@ int main()
     loading.draw();
     engine.GetWindow().display();
 
-    engine.Launch();
+    engine.Launch(false);
 
     std::ofstream out(homeFolder + "/properties.json");
     out << properties.toStyledString();
