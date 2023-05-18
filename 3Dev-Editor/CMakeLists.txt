@@ -14,6 +14,8 @@ find_package(jsoncpp REQUIRED)
 find_package(Angelscript REQUIRED)
 find_package(Threads REQUIRED)
 
+option(WIN_RELEASE OFF)
+
 if(UNIX OR APPLE)
 	find_package(GLEW 2.1.0 REQUIRED)
 elseif("${GLEW_INCLUDE_DIR}" STREQUAL "" OR "${GLEW_LIBRARIES}" STREQUAL "")
