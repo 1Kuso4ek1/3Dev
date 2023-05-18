@@ -70,6 +70,15 @@ Json::Value ParseProperties()
     {
         Log::Write("The editor's version has changed, updating properties", Log::Type::Info);
 
+        std::filesystem::copy("../default/hdri.hdr", homeFolder + "default/hdri.hdr", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy("../gui/menu.txt", homeFolder + "gui/menu.txt", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy("../gui/loading.txt", homeFolder + "gui/loading.txt", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy("../gui/editor.txt", homeFolder + "gui/editor.txt", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy("../gui/themes/Black.txt", homeFolder + "gui/themes/Black.txt", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy("../gui/themes/Black.png", homeFolder + "gui/themes/Black.png", std::filesystem::copy_options::overwrite_existing);
+	    std::filesystem::copy("../gui/themes/SourceCodePro-Regular.ttf", homeFolder + "gui/themes/SourceCodePro-Regular.ttf", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy("../icon.png", homeFolder + "icon.png", std::filesystem::copy_options::overwrite_existing);
+
         return DefaultProperties(ret["recentProjects"], ret["recentProjectsPaths"]);
     }
 
