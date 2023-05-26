@@ -47,8 +47,8 @@ Json::Value DefaultProperties(const Json::Value& recentProjects = "", const Json
     p["renderer"]["shadowMapResolution"] = 2048;
     p["renderer"]["exposure"] = 0.5;
 
-    p["recentProjects"] = recentProjects;
-    p["recentProjectsPaths"] = recentProjectsPaths;
+    p["recentProjects"][0] = recentProjects;
+    p["recentProjectsPaths"][0] = recentProjectsPaths;
 
     SaveProperties(p);
 
@@ -174,14 +174,14 @@ int main()
         std::filesystem::create_directory(homeFolder + "gui/themes");
         std::filesystem::create_directory(homeFolder + "default");
 
-        std::filesystem::copy("../default/hdri.hdr", homeFolder + "default/hdri.hdr");
-        std::filesystem::copy("../gui/menu.txt", homeFolder + "gui/menu.txt");
-        std::filesystem::copy("../gui/loading.txt", homeFolder + "gui/loading.txt");
-        std::filesystem::copy("../gui/editor.txt", homeFolder + "gui/editor.txt");
-        std::filesystem::copy("../gui/themes/Black.txt", homeFolder + "gui/themes/Black.txt");
-        std::filesystem::copy("../gui/themes/Black.png", homeFolder + "gui/themes/Black.png");
-	    std::filesystem::copy("../gui/themes/SourceCodePro-Regular.ttf", homeFolder + "gui/themes/SourceCodePro-Regular.ttf");
-        std::filesystem::copy("../icon.png", homeFolder + "icon.png");
+        std::filesystem::copy("../default/hdri.hdr", homeFolder + "default/hdri.hdr", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy("../gui/menu.txt", homeFolder + "gui/menu.txt", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy("../gui/loading.txt", homeFolder + "gui/loading.txt", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy("../gui/editor.txt", homeFolder + "gui/editor.txt", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy("../gui/themes/Black.txt", homeFolder + "gui/themes/Black.txt", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy("../gui/themes/Black.png", homeFolder + "gui/themes/Black.png", std::filesystem::copy_options::overwrite_existing);
+	    std::filesystem::copy("../gui/themes/SourceCodePro-Regular.ttf", homeFolder + "gui/themes/SourceCodePro-Regular.ttf", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy("../icon.png", homeFolder + "icon.png", std::filesystem::copy_options::overwrite_existing);
 
         DefaultProperties();
         Log::Write("properties.json created.", Log::Type::Info);
@@ -417,21 +417,23 @@ int main()
 
     if(!properties["recentProjects"].empty())
     {
-        for(int i = 0; i < properties["recentProjects"].size(); i++)
-            if(!properties["recentProjects"][i].empty())
-                recentBox->addItem(properties["recentProjects"][i].asString());
+        for(auto i : properties["recentProjects"])
+            if(!i.asString().empty()) recentBox->addItem(i.asString());
 
-        recentBox->setSelectedItemByIndex(0);
-        pathEdit->setText(properties["recentProjectsPaths"]
-                                    [recentBox->getSelectedItemIndex()].asString());
+        if(recentBox->getItemCount() > 0)
+            recentBox->setSelectedItemByIndex(0);
+        if(recentBox->getSelectedItemIndex() >= 0)
+            pathEdit->setText(properties["recentProjectsPaths"]
+                                        [recentBox->getSelectedItemIndex()].asString());
     }
 
     std::string projectFilename = "";
 
     recentBox->onItemSelect([&]()
     {
-        pathEdit->setText(properties["recentProjectsPaths"]
-                                    [recentBox->getSelectedItemIndex()].asString());
+        if(recentBox->getSelectedItemIndex() >= 0)
+            pathEdit->setText(properties["recentProjectsPaths"]
+                                        [recentBox->getSelectedItemIndex()].asString());
     });
 
     newProjectButton->onPress([&]()
@@ -460,7 +462,7 @@ int main()
 
     loadButton->onPress([&]()
     {
-        if(!properties["recentProjectsPaths"].empty())
+        if(!properties["recentProjectsPaths"].empty() && recentBox->getSelectedItemIndex() >= 0)
             projectFilename = properties["recentProjectsPaths"]
                                         [recentBox->getSelectedItemIndex()].asString();
         if(projectFilename != pathEdit->getText().toStdString())
@@ -523,7 +525,7 @@ int main()
     
     progressBar->setText("Initializing Renderer");
     
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     loading.draw();
     engine.GetWindow().display();
         
@@ -536,7 +538,7 @@ int main()
     progressBar->setValue(20);
     progressBar->setText("Setting up defaults");
     
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     loading.draw();
     engine.GetWindow().display();
 
@@ -562,7 +564,7 @@ int main()
     progressBar->setValue(40);
     progressBar->setText("Loading scene");
     
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     loading.draw();
     engine.GetWindow().display();
 
@@ -630,7 +632,7 @@ int main()
     progressBar->setValue(70);
     progressBar->setText("Loading scripts");
     
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     loading.draw();
     engine.GetWindow().display();
 
@@ -748,7 +750,7 @@ int main()
     progressBar->setValue(90);
     progressBar->setText("Finishing");
     
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     loading.draw();
     engine.GetWindow().display();
 
@@ -2036,7 +2038,7 @@ int main()
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exposure);
 
 		viewport->bindFramebuffer();
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
         glDisable(GL_DEPTH_TEST);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
@@ -2048,7 +2050,7 @@ int main()
     
     progressBar->setValue(100);
     
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     loading.draw();
     engine.GetWindow().display();
 

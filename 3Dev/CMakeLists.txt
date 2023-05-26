@@ -89,6 +89,7 @@ target_include_directories(3Dev
 	$<BUILD_INTERFACE:${LIGHTLOG_INCLUDE_DIR}>
 	$<BUILD_INTERFACE:${GLEW_INCLUDE_DIR}>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/stb>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/assimp/include>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptbuilder>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptstdstring>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libraries/Angelscript/sdk/add_on/scriptarray>

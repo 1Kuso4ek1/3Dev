@@ -24,6 +24,7 @@ add_executable(render main.cpp)
 
 target_include_directories(render
   	PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../3Dev/libraries/assimp/include>
 	$<BUILD_INTERFACE:${SFML_INCLUDE_DIR}>
 	$<BUILD_INTERFACE:${LIGHTLOG_INCLUDE_DIR}>
 	$<BUILD_INTERFACE:${GLEW_INCLUDE_DIR}>
