@@ -6,6 +6,9 @@
 ![](https://img.shields.io/github/issues/1kuso4ek1/3Dev)
 ![](https://img.shields.io/github/downloads/1kuso4ek1/3Dev/total)  
 ![](logo.png)
+
+[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://stand-with-ukraine.pp.ua)
+
 ## About
 - 3Dev is a lightweight, crossplatform and easy-to-use game engine with some useful instruments, besides the library itself.
 ## Features
