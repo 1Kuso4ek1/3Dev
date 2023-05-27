@@ -47,8 +47,16 @@ Json::Value DefaultProperties(const Json::Value& recentProjects = "", const Json
     p["renderer"]["shadowMapResolution"] = 2048;
     p["renderer"]["exposure"] = 0.5;
 
-    p["recentProjects"][0] = recentProjects;
-    p["recentProjectsPaths"][0] = recentProjectsPaths;
+    if(!recentProjects.isArray())
+    {
+        p["recentProjects"][0] = recentProjects;
+        p["recentProjectsPaths"][0] = recentProjectsPaths;
+    }
+    else
+    {
+        p["recentProjects"] = recentProjects;
+        p["recentProjectsPaths"] = recentProjectsPaths;
+    }
 
     SaveProperties(p);
 
