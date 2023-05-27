@@ -24,7 +24,7 @@ endif()
 
 add_executable(editor main.cpp)
 
-add_definitions("-DEDITOR_VERSION=\"1.3.4\"")
+add_definitions("-DEDITOR_VERSION=\"1.3.4-1\"")
 
 if(WIN_RELEASE)
 	add_definitions("-DSHADERS_DIRECTORY=\"../../shaders/\"")
@@ -80,11 +80,11 @@ install(FILES
 )
 
 if(UNIX)
-    write_file(${CMAKE_CURRENT_SOURCE_DIR}/3Dev-Editor.desktop
+    write_file(${CMAKE_CURRENT_BINARY_DIR}/3Dev-Editor.desktop
     "[Desktop Entry]\nVersion=1.0\nType=Application\nName=3Dev Editor\n\
 Keywords=game;engine;\nCategories=Programming;\nTerminal=false\n\
-Exec=${CMAKE_CURRENT_BINARY_DIR}/editor\nIcon=${CMAKE_CURRENT_SOURCE_DIR}/icon.png\n\
+Exec=\"${CMAKE_CURRENT_BINARY_DIR}/editor\"\nIcon=\"${CMAKE_CURRENT_SOURCE_DIR}/icon.png\"\n\
 Comment=Create a game."
     )
-    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/3Dev-Editor.desktop DESTINATION ${HOME_PATH}/.local/share/applications)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/3Dev-Editor.desktop DESTINATION ${HOME_PATH}/.local/share/applications)
 endif()
