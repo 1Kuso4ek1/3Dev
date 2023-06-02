@@ -58,7 +58,7 @@ Renderer.3 {
 
 ChildWindow.ChildWindow1 {
     PositionLocked = true;
-    Size = (1280, 720);
+    Size = (1600, 900);
     Title = Menu;
     TitleAlignment = Center;
     TitleButtons = None;
@@ -95,7 +95,7 @@ ChildWindow.ChildWindow1 {
     }
 
     Picture.Picture1 {
-        Position = (583, 234);
+        Position = (737, 290);
         Size = (115, 114);
 
         Renderer {
@@ -106,7 +106,7 @@ ChildWindow.ChildWindow1 {
 
     Label.Label1 {
         HorizontalAlignment = Center;
-        Position = (577, 354);
+        Position = (731, 414);
         Renderer = &1;
         Size = (126.2, 18);
         Text = "3Dev Editor 1.3.4";
@@ -114,7 +114,7 @@ ChildWindow.ChildWindow1 {
     }
 
     Button.newProject {
-        Position = (587, 440);
+        Position = (737, 500);
         Renderer = &2;
         Size = (107, 40.0328);
         Text = "New project";
@@ -122,7 +122,7 @@ ChildWindow.ChildWindow1 {
     }
 
     Button.loadProject {
-        Position = (587, 490);
+        Position = (737, 550);
         Renderer = &2;
         Size = (107, 40.0328);
         Text = "Load project";
@@ -130,7 +130,7 @@ ChildWindow.ChildWindow1 {
     }
 
     ChildWindow.loadWindow {
-        Position = (490, 380);
+        Position = (645, 460);
         PositionLocked = true;
         Renderer = &3;
         Size = (300, 250);
@@ -261,7 +261,7 @@ ChildWindow.ChildWindow1 {
     }
 
     ChildWindow.newProjectWindow {
-        Position = (490, 380);
+        Position = (645, 460);
         PositionLocked = true;
         Renderer = &3;
         Size = (300, 250);

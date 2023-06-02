@@ -13,10 +13,14 @@ int main()
 
     Engine engine(cfg["log"]["init"].asBool(), cfg["log"]["silent"].asBool());
 
-    engine.CreateWindow(cfg["window"]["width"].asInt(), cfg["window"]["height"].asInt(), cfg["window"]["title"].asString());
+    engine.CreateWindow(cfg["window"]["width"].asInt(), cfg["window"]["height"].asInt(), cfg["window"]["title"].asString(),
+                        cfg["window"]["fullscreen"].asBool() ? sf::Style::Fullscreen : sf::Style::Default);
     engine.Init();
 
     engine.SetGuiViewport({ 0, 0, cfg["window"]["width"].asFloat(), cfg["window"]["height"].asFloat() });
+
+    engine.GetWindow().setVerticalSyncEnabled(cfg["window"]["vsync"].asBool());
+    engine.GetWindow().setFramerateLimit(cfg["window"]["maxFps"].asInt());
 
     if(cfg["renderer"]["shadersDir"].asString() != "default")
         Renderer::GetInstance()->SetShadersDirectory(cfg["renderer"]["shadersDir"].asString());

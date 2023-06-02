@@ -196,12 +196,12 @@ int main()
         properties = ParseProperties();
     }
 
-    Engine engine(false);
+    Engine engine;
     Log::Init(properties["logFilename"].asString(), false, true);
-    engine.CreateWindow(1280, 720, "3Dev Editor");
+    engine.CreateWindow(1600, 900, "3Dev Editor");
     engine.Init();
 
-    engine.GetWindow().setFramerateLimit(120);
+    engine.GetWindow().setFramerateLimit(60);
 
     std::filesystem::current_path(homeFolder + "gui");
 
@@ -538,7 +538,7 @@ int main()
     engine.GetWindow().display();
         
     Renderer::GetInstance()->SetShadersDirectory(properties["renderer"]["shadersDir"].asString());
-    Renderer::GetInstance()->Init({ 840, 492 }, properties["renderer"]["hdriPath"].asString(),
+    Renderer::GetInstance()->Init({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 }, properties["renderer"]["hdriPath"].asString(),
                                                 properties["renderer"]["skyboxSideSize"].asInt(),
                                                 properties["renderer"]["irradianceSideSize"].asInt(),
                                                 properties["renderer"]["prefilteredSideSize"].asInt());
@@ -551,7 +551,7 @@ int main()
     engine.GetWindow().display();
 
     Camera cam(&engine.GetWindow());
-    cam.SetViewportSize({ 840, 492 });
+    cam.SetViewportSize({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 });
 
     Light shadowSource({ 0, 0, 0 }, { 30.1, 50.0, -30.1 }, true);
     shadowSource.SetDirection({ 0.0, -1.0, 0.0 });

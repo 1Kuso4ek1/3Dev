@@ -1,10 +1,13 @@
 {
-    "scenePath" : "../../3Dev-Editor/projects/flappy_bird.json",
+    "scenePath" : "",
     "window" :
     {
         "title" : "game",
         "width" : 1280,
-        "height" : 720
+        "height" : 720,
+        "fullscreen" : false,
+        "vsync" : false,
+        "maxFps" : 120
     },
     "renderer" :
     {
