@@ -995,6 +995,21 @@ int main()
                 }
                 mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), matType);
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
+                
+                switch (matType)
+                {
+                case Material::Type::Metalness:
+                    metalSlider->setValue(0);
+                    break;
+                case Material::Type::Roughness:
+                    roughSlider->setValue(0);
+                    break;
+                case Material::Type::Opacity:
+                    opacitySlider->setValue(0);
+                    break;
+                default:
+                    break;
+                }
             }
   	    	openFileDialog = nullptr;
   	    }, type);
