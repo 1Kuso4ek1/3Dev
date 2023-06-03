@@ -1,9 +1,9 @@
 # Build
 If you're using debian, then almost everything can be obtained through apt
 ```
-sudo apt install build-essential cmake git g++ libsfml-dev libassimp-dev libglew-dev libglm-dev libjsoncpp-dev
+sudo apt install build-essential cmake git g++ libassimp-dev libglew-dev libglm-dev libjsoncpp-dev
 ```
-There are 4 libraries that you must build from source: ReactPhysics3D, LightLog, Angelscript and TGUI, they are included in 3Dev as submodules
+There are 5 libraries that you must build from source: ReactPhysics3D, LightLog, Angelscript, SFML 3 and TGUI, they are included in 3Dev as submodules
 ```
 git clone --recursive https://github.com/1Kuso4ek1/3Dev.git
 cd 3Dev/3Dev/libraries
