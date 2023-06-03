@@ -97,16 +97,6 @@ int main(int argc, char* argv[])
             Log::Write("You can't render animation without ffmpeg", Log::Type::Critical);
 
         animationsQueue = ParseAnimations(animation);
-        //Log::Write(std::to_string(animationsQueue.size()), Log::Type::Info);
-        /*Log::Write("Animations to be drawn:" + ([&]()
-        {
-            std::string ret;
-            for(auto& i : animationsQueue)
-                for(auto& j : i)
-                    ret += " " + j;
-            return ret;
-        })(), Log::Type::Info);
-        exit(0);*/
     }
 
     Engine engine;
@@ -178,7 +168,7 @@ int main(int argc, char* argv[])
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
         auto pixelsTr = renderTr.GetPixels(glm::ivec2(0, 0), renderTr.GetSize());
 
-        image.create(w, h);
+        image.create({ w, h });
 
         for(int i = 0; i < h; i++)
             for(int j = 0; j < w; j++)
@@ -188,7 +178,7 @@ int main(int argc, char* argv[])
                 float g = Blend(pixels[((i * w + j) * 4) + 1], std::isnan(pixelsTr[((i * w + j) * 4) + 1]) ? 0 : pixelsTr[((i * w + j) * 4) + 1], a);
                 float b = Blend(pixels[((i * w + j) * 4) + 2], std::isnan(pixelsTr[((i * w + j) * 4) + 2]) ? 0 : pixelsTr[((i * w + j) * 4) + 2], a);
                 sf::Color color((uint8_t)r, (uint8_t)g, (uint8_t)b);
-                image.setPixel(j, h - 1 - i, color);
+                image.setPixel({ j, h - 1 - i }, color);
             }
 
         free(pixels);
