@@ -27,9 +27,9 @@ void Engine::Init()
     glewInit();
 }
 
-void Engine::CreateWindow(float width, float height, std::string title, sf::Uint32 style)
+void Engine::CreateWindow(uint32_t width, uint32_t height, std::string title, uint32_t style)
 {
-    window.create(sf::VideoMode(width, height), title, style, settings);
+    window.create(sf::VideoMode({ width, height }), title, style, settings);
 }
 
 tgui::Gui* Engine::CreateGui(std::string widgets)

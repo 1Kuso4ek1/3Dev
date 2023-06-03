@@ -86,7 +86,7 @@ private:
                 it->second->setPitch(pitch);
                 it->second->setLoop(loop);
                 it->second->setRelativeToListener(relativeToListener);
-                it->second->setPosition(pos.x, pos.y, pos.z);
+                it->second->setPosition({ pos.x, pos.y, pos.z });
             }
         }
 
@@ -107,7 +107,7 @@ private:
                     it->second->setPitch(pitch);
                     it->second->setLoop(loop);
                     it->second->setRelativeToListener(relativeToListener);
-                    it->second->setPosition(pos.x, pos.y, pos.z);
+                    it->second->setPosition({ pos.x, pos.y, pos.z });
                 }
             }
         }

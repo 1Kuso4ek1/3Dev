@@ -16,7 +16,7 @@ Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, GLint filte
 	
 	int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if(status != GL_FRAMEBUFFER_COMPLETE)
-        Log::Write("framebuffer status isn't GL_FRAMEBUFFER_COMPLETE", Log::Type::Error);
+        Log::Write("Failed to create framebuffer: " + errorStatus[status], Log::Type::Error);
 	Unbind();
 
 	glGenBuffers(1, &vbo);

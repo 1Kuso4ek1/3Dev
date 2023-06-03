@@ -80,6 +80,14 @@ private:
 		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
 	};
 
+    std::unordered_map<int, std::string> errorStatus = 
+    {
+        { 36054, "Incomplete attachment" },
+        { 36057, "Incomplete dimensions" },
+        { 36055, "Missing attachment" },
+        { 36061, "Unsupported" }
+    };
+
     GLuint indices[6] = { 0, 1, 2, 0, 2, 3 };
     GLuint vao, vbo, fbo, ebo, texture = 0, depth = 0;
 };

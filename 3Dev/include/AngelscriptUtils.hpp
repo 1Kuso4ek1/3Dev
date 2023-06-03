@@ -162,9 +162,9 @@ static rp3d::Vector3 EulerFromQuaternion(const rp3d::Quaternion& orientation)
     return rp3d::Vector3(euler.x, euler.y, euler.z);
 }
 
-static void MakeIpAddress(const std::string& str, sf::IpAddress* addr)
+static void MakeIpAddress(uint32_t ip, sf::IpAddress* addr)
 {
-    new(addr) sf::IpAddress(str);
+    new(addr) sf::IpAddress(ip);
 }
 
 static Shader* MakeShader(const std::string& str, const std::string& str1, bool load)

@@ -196,7 +196,7 @@ int main()
         properties = ParseProperties();
     }
 
-    Engine engine;
+    Engine engine(false);
     Log::Init(properties["logFilename"].asString(), false, true);
     engine.CreateWindow(1600, 900, "3Dev Editor");
     engine.Init();

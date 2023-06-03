@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.17)
 project(editor VERSION 1.3.4 LANGUAGES CXX)
 
 find_package(3Dev REQUIRED)
-find_package(SFML 2.5.1 COMPONENTS system window network audio REQUIRED)
+find_package(SFML 3.0.0 COMPONENTS System Window Network Audio REQUIRED)
 find_package(TGUI REQUIRED)
 find_package(assimp REQUIRED)
 find_package(OpenGL REQUIRED)

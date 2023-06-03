@@ -2,18 +2,18 @@
 
 void ListenerWrapper::SetPosition(rp3d::Vector3 pos)
 {
-    sf::Listener::setPosition(pos.x, pos.y, pos.z);
+    sf::Listener::setPosition({ pos.x, pos.y, pos.z });
 }
 
 void ListenerWrapper::SetUpVector(rp3d::Vector3 vec)
 {
-    sf::Listener::setUpVector(vec.x, vec.y, vec.z);
+    sf::Listener::setUpVector({ vec.x, vec.y, vec.z });
 }
 
 void ListenerWrapper::SetOrientation(rp3d::Quaternion orient)
 {
     auto vec = orient * rp3d::Vector3(0, 0, -1);
-    sf::Listener::setDirection(vec.x, vec.y, vec.z);
+    sf::Listener::setDirection({ vec.x, vec.y, vec.z });
 }
 
 void ListenerWrapper::SetGlobalVolume(float volume)
@@ -63,7 +63,7 @@ void SoundManager::PlayAt(std::string name, int id, rp3d::Vector3 pos)
     sounds[name + std::to_string(id)]->play();
     it->UpdateActiveSound(sounds, id);
     sounds[name + std::to_string(id)]->setRelativeToListener(false);
-    sounds[name + std::to_string(id)]->setPosition(pos.x, pos.y, pos.z);
+    sounds[name + std::to_string(id)]->setPosition({ pos.x, pos.y, pos.z });
 }
 
 void SoundManager::PlayMono(std::string name, int id)
@@ -74,7 +74,7 @@ void SoundManager::PlayMono(std::string name, int id)
     sounds[name + std::to_string(id)]->play();
     it->UpdateActiveSound(sounds, id);
     sounds[name + std::to_string(id)]->setRelativeToListener(true);
-    sounds[name + std::to_string(id)]->setPosition(0, 0, 0);
+    sounds[name + std::to_string(id)]->setPosition({ 0, 0, 0 });
 }
 
 void SoundManager::Stop(std::string name, int id)

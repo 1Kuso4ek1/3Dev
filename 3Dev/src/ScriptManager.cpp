@@ -441,7 +441,7 @@ void ScriptManager::RegisterSceneManager()
 void ScriptManager::RegisterSfKeyboard()
 {
     SetDefaultNamespace("Keyboard");
-    AddFunction("bool isKeyPressed(int)", WRAP_FN(sf::Keyboard::isKeyPressed));
+    AddFunction("bool isKeyPressed(int)", WRAP_FN_PR(sf::Keyboard::isKeyPressed, (sf::Keyboard::Key), bool));
     AddEnum("Key", { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
                      "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Num0", "Num1", "Num2", "Num3",
                      "Num4", "Num5", "Num6", "Num7", "Num8", "Num9", "Escape", "LControl", "LShift", "LAlt", "LSystem",
@@ -913,7 +913,7 @@ void ScriptManager::RegisterNetwork()
         { "string toString()", WRAP_MFN(sf::IpAddress, toString) }
     }, {});
 
-    AddTypeConstructor("IpAddress", "void f(const string& in)", WRAP_OBJ_LAST(MakeIpAddress));
+    AddTypeConstructor("IpAddress", "void f(uint)", WRAP_OBJ_LAST(MakeIpAddress));
 
     AddValueType("Packet", sizeof(sf::Packet), asGetTypeTraits<sf::Packet>() | asOBJ_POD,
     {
@@ -931,8 +931,8 @@ void ScriptManager::RegisterNetwork()
     {
         { "Status connect(const IpAddress& in, uint)", WRAP_MFN(sf::TcpSocket, connect) },
         { "void disconnect()", WRAP_MFN(sf::TcpSocket, disconnect) },
-        { "Status send(Packet& in)", WRAP_MFN_PR(sf::TcpSocket, send, (sf::Packet&), sf::TcpSocket::Status) },
-        { "Status receive(Packet& out)", WRAP_MFN_PR(sf::TcpSocket, receive, (sf::Packet&), sf::TcpSocket::Status) },
+        { "Status send(Packet& in)", WRAP_MFN_PR(sf::TcpSocket, send, (sf::Packet&), sf::Socket::Status) },
+        { "Status receive(Packet& out)", WRAP_MFN_PR(sf::TcpSocket, receive, (sf::Packet&), sf::Socket::Status) },
         { "void setBlocking(bool)", WRAP_MFN(sf::TcpSocket, setBlocking) },
         { "bool isBlocking()", WRAP_MFN(sf::TcpSocket, isBlocking) }
     }, {});
@@ -941,8 +941,8 @@ void ScriptManager::RegisterNetwork()
     {
         { "Status bind(uint, const IpAddress& in = IpAddress(\"0.0.0.0\"))", WRAP_MFN(sf::UdpSocket, bind) },
         { "void unbind()", WRAP_MFN(sf::UdpSocket, unbind) },
-        { "Status send(Packet& in, const IpAddress& in, uint)", WRAP_MFN_PR(sf::UdpSocket, send, (sf::Packet&, const sf::IpAddress&, unsigned short), sf::UdpSocket::Status) },
-        { "Status receive(Packet& out, const IpAddress& in, uint)", WRAP_MFN_PR(sf::UdpSocket, receive, (sf::Packet&, sf::IpAddress&, unsigned short&), sf::UdpSocket::Status) },
+        { "Status send(Packet& in, const IpAddress& in, uint)", WRAP_MFN_PR(sf::UdpSocket, send, (sf::Packet&, const sf::IpAddress&, unsigned short), sf::Socket::Status) },
+        { "Status receive(Packet& out, const IpAddress& in, uint)", WRAP_MFN_PR(sf::UdpSocket, receive, (sf::Packet&, std::optional<sf::IpAddress>&, unsigned short&), sf::Socket::Status) },
         { "void setBlocking(bool)", WRAP_MFN(sf::UdpSocket, setBlocking) },
         { "bool isBlocking()", WRAP_MFN(sf::UdpSocket, isBlocking) }
     }, {});

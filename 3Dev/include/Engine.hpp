@@ -37,7 +37,7 @@ public:
      * @param title title of your window
      * @param style SFML window style (sf::Style::None, sf::Style::Titlebar, sf::Style::Resize, sf::Style::Close, sf::Style::Fullscreen, sf::Style::Default)
      */
-    void CreateWindow(float width, float height, std::string title, sf::Uint32 style = sf::Style::Default);
+    void CreateWindow(uint32_t width, uint32_t height, std::string title, uint32_t style = sf::Style::Default);
 
     tgui::Gui* CreateGui(std::string widgets);
 
