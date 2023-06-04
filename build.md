@@ -13,7 +13,7 @@ Build every library in `libraries` folder like that
 cd library
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release # Debug, RelWithDebInfo, etc.
-sudo make install -j4
+sudo make install -j $(nproc)
 ```
 Note: When building TGUI don't forget to also write `-DTGUI_BACKEND=SFML_OPENGL3`, when calling cmake
 ### 3Dev
@@ -21,7 +21,7 @@ Now, when we have all the dependencies, we can build 3Dev. First, cd to `3Dev/3D
 ```
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release # Debug, RelWithDebInfo, etc.
-sudo make install -j4
+sudo make install -j $(nproc)
 ```
 ### 3Dev Editor
 3Dev Editor will help you create a cool game...
