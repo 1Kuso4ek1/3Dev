@@ -35,6 +35,7 @@ void Animation::AddKeyframe(std::string name, const Keyframe& keyframe)
 void Animation::Play()
 {
     state = State::Playing;
+    lastTime = 0;
     time.restart();
 }
 
