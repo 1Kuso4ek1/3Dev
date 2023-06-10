@@ -928,7 +928,9 @@ void ScriptManager::RegisterNetwork()
         { "Packet& opShl(float)", WRAP_MFN_PR(sf::Packet, operator<<, (float), sf::Packet&) },
         { "Packet& opShr(string& out)", WRAP_MFN_PR(sf::Packet, operator>>, (std::string&), sf::Packet&) },
         { "Packet& opShr(int& out)", WRAP_MFN_PR(sf::Packet, operator>>, (int&), sf::Packet&) },
-        { "Packet& opShr(float& out)", WRAP_MFN_PR(sf::Packet, operator>>, (float&), sf::Packet&) }
+        { "Packet& opShr(float& out)", WRAP_MFN_PR(sf::Packet, operator>>, (float&), sf::Packet&) },
+        { "Packet& opAssign(const Packet& in)", WRAP_MFN_PR(sf::Packet, operator=, (const sf::Packet&), sf::Packet&) },
+        { "bool opImplConv()", WRAP_MFN(sf::Packet, operator bool) }
     }, {});
 
     AddTypeConstructor("Packet", "void f()", WRAP_OBJ_LAST(MakeType<sf::Packet>));
