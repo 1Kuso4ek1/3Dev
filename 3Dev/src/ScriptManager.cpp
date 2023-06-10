@@ -573,7 +573,10 @@ void ScriptManager::RegisterClock()
 	}, {});
 
 	AddTypeConstructor("Time", "void f()", WRAP_OBJ_LAST(MakeType<sf::Time>));
+    AddTypeConstructor("Time", "void f(const Time& in)", WRAP_OBJ_LAST(CopyType<sf::Time>));
 	AddTypeDestructor("Time", "void f()", WRAP_OBJ_LAST(DestroyType<sf::Time>));
+
+    AddFunction("Time seconds(float)", WRAP_FN(sf::seconds));
 
 	AddValueType("Clock", sizeof(sf::Clock), asGetTypeTraits<sf::Clock>(),
 	{
@@ -908,14 +911,17 @@ void ScriptManager::RegisterMaterial()
 
 void ScriptManager::RegisterNetwork()
 {
-    AddValueType("IpAddress", sizeof(sf::IpAddress), asGetTypeTraits<sf::IpAddress>() | asOBJ_POD,
+    AddValueType("IpAddress", sizeof(sf::IpAddress), asGetTypeTraits<sf::IpAddress>(),
     {
         { "string toString()", WRAP_MFN(sf::IpAddress, toString) }
     }, {});
 
-    AddTypeConstructor("IpAddress", "void f(uint)", WRAP_OBJ_LAST(MakeIpAddress));
+    AddTypeConstructor("IpAddress", "void f(const IpAddress& in)", WRAP_OBJ_LAST(CopyType<sf::IpAddress>));
+    AddTypeDestructor("IpAddress", "void f()", WRAP_OBJ_LAST(DestroyType<sf::IpAddress>));
 
-    AddValueType("Packet", sizeof(sf::Packet), asGetTypeTraits<sf::Packet>() | asOBJ_POD,
+    AddFunction("IpAddress ResolveIp(string)", WRAP_FN(ResolveIp));
+
+    AddValueType("Packet", sizeof(sf::Packet), asGetTypeTraits<sf::Packet>(),
     {
         { "Packet& opShl(const string& in)", WRAP_MFN_PR(sf::Packet, operator<<, (const std::string&), sf::Packet&) },
         { "Packet& opShl(int)", WRAP_MFN_PR(sf::Packet, operator<<, (int), sf::Packet&) },
@@ -925,27 +931,39 @@ void ScriptManager::RegisterNetwork()
         { "Packet& opShr(float& out)", WRAP_MFN_PR(sf::Packet, operator>>, (float&), sf::Packet&) }
     }, {});
 
-    AddEnum("Status", { "Done", "NotReady", "Partial", "Disconnected", "Error" });
+    AddTypeConstructor("Packet", "void f()", WRAP_OBJ_LAST(MakeType<sf::Packet>));
+    AddTypeConstructor("Packet", "void f(const Packet& in)", WRAP_OBJ_LAST(CopyType<sf::Packet>));
+    AddTypeDestructor("Packet", "void f()", WRAP_OBJ_LAST(DestroyType<sf::Packet>));
 
-    AddValueType("TcpSocket", sizeof(sf::TcpSocket), asGetTypeTraits<sf::TcpSocket>() | asOBJ_POD,
+    SetDefaultNamespace("Socket");
+    AddEnum("Status", { "Done", "NotReady", "Partial", "Disconnected", "Error" });
+    SetDefaultNamespace("");
+
+    AddValueType("TcpSocket", sizeof(sf::TcpSocket), asGetTypeTraits<sf::TcpSocket>(),
     {
-        { "Status connect(const IpAddress& in, uint)", WRAP_MFN(sf::TcpSocket, connect) },
+        { "Socket::Status connect(const IpAddress& in, uint16, Time)", WRAP_MFN(sf::TcpSocket, connect) },
         { "void disconnect()", WRAP_MFN(sf::TcpSocket, disconnect) },
-        { "Status send(Packet& in)", WRAP_MFN_PR(sf::TcpSocket, send, (sf::Packet&), sf::Socket::Status) },
-        { "Status receive(Packet& out)", WRAP_MFN_PR(sf::TcpSocket, receive, (sf::Packet&), sf::Socket::Status) },
+        { "Socket::Status send(Packet& in)", WRAP_MFN_PR(sf::TcpSocket, send, (sf::Packet&), sf::Socket::Status) },
+        { "Socket::Status receive(Packet& out)", WRAP_MFN_PR(sf::TcpSocket, receive, (sf::Packet&), sf::Socket::Status) },
         { "void setBlocking(bool)", WRAP_MFN(sf::TcpSocket, setBlocking) },
         { "bool isBlocking()", WRAP_MFN(sf::TcpSocket, isBlocking) }
     }, {});
 
+    AddTypeConstructor("TcpSocket", "void f()", WRAP_OBJ_LAST(MakeType<sf::TcpSocket>));
+    AddTypeDestructor("TcpSocket", "void f()", WRAP_OBJ_LAST(DestroyType<sf::TcpSocket>));
+
     AddValueType("UdpSocket", sizeof(sf::UdpSocket), asGetTypeTraits<sf::UdpSocket>() | asOBJ_POD,
     {
-        { "Status bind(uint, const IpAddress& in = IpAddress(\"0.0.0.0\"))", WRAP_MFN(sf::UdpSocket, bind) },
+        { "Socket::Status bind(uint16, const IpAddress& in)", WRAP_MFN(sf::UdpSocket, bind) },
         { "void unbind()", WRAP_MFN(sf::UdpSocket, unbind) },
-        { "Status send(Packet& in, const IpAddress& in, uint)", WRAP_MFN_PR(sf::UdpSocket, send, (sf::Packet&, const sf::IpAddress&, unsigned short), sf::Socket::Status) },
-        { "Status receive(Packet& out, const IpAddress& in, uint)", WRAP_MFN_PR(sf::UdpSocket, receive, (sf::Packet&, std::optional<sf::IpAddress>&, unsigned short&), sf::Socket::Status) },
+        { "Socket::Status send(Packet& in, const IpAddress& in, uint)", WRAP_MFN_PR(sf::UdpSocket, send, (sf::Packet&, const sf::IpAddress&, unsigned short), sf::Socket::Status) },
+        { "Socket::Status receive(Packet& out, const IpAddress& in, uint)", WRAP_MFN_PR(sf::UdpSocket, receive, (sf::Packet&, std::optional<sf::IpAddress>&, unsigned short&), sf::Socket::Status) },
         { "void setBlocking(bool)", WRAP_MFN(sf::UdpSocket, setBlocking) },
         { "bool isBlocking()", WRAP_MFN(sf::UdpSocket, isBlocking) }
     }, {});
+
+    AddTypeConstructor("UdpSocket", "void f()", WRAP_OBJ_LAST(MakeType<sf::UdpSocket>));
+    AddTypeDestructor("UdpSocket", "void f()", WRAP_OBJ_LAST(DestroyType<sf::UdpSocket>));
 }
 
 void ScriptManager::RegisterBone()

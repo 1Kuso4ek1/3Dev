@@ -162,11 +162,6 @@ static rp3d::Vector3 EulerFromQuaternion(const rp3d::Quaternion& orientation)
     return rp3d::Vector3(euler.x, euler.y, euler.z);
 }
 
-static void MakeIpAddress(uint32_t ip, sf::IpAddress* addr)
-{
-    new(addr) sf::IpAddress(ip);
-}
-
 static Shader* MakeShader(const std::string& str, const std::string& str1, bool load)
 {
     return new Shader(str, str1, load);
@@ -210,4 +205,12 @@ static Camera* CastToCamera(Node* node)
 static Bone* CastToBone(Node* node)
 {
     return dynamic_cast<Bone*>(node);
+}
+
+static sf::IpAddress ResolveIp(std::string addr)
+{
+    auto ip = sf::IpAddress::resolve(std::string_view(addr));
+    if(ip.has_value())
+        return ip.value();
+    return sf::IpAddress::Any;
 }
