@@ -396,8 +396,8 @@ void ScriptManager::RegisterCamera()
         { "Node@ opCast()", WRAP_OBJ_LAST(CastCamera) },
         { "Vector3 GetPosition()", WRAP_MFN(Camera, GetPosition) },
         { "Quaternion GetOrientation()", WRAP_MFN(Camera, GetOrientation) },
-        { "void GetSpeed(float)", WRAP_MFN(Camera, GetSpeed) },
-        { "void GetFOV(float)", WRAP_MFN(Camera, GetFOV) },
+        { "float GetSpeed()", WRAP_MFN(Camera, GetSpeed) },
+        { "float GetFOV()", WRAP_MFN(Camera, GetFOV) },
         { "void Look()", WRAP_MFN_PR(Camera, Look, (), void) },
         { "void Look(const Vector3& in)", WRAP_MFN_PR(Camera, Look, (const rp3d::Vector3&), void) }
     }, {});
