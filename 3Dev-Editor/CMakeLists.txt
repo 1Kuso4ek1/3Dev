@@ -83,8 +83,9 @@ if(UNIX)
     write_file(${CMAKE_CURRENT_BINARY_DIR}/3Dev-Editor.desktop
     "[Desktop Entry]\nVersion=1.0\nType=Application\nName=3Dev Editor\n\
 Keywords=game;engine;\nCategories=Programming;\nTerminal=false\n\
-Exec=\"${CMAKE_CURRENT_BINARY_DIR}/editor\"\nIcon=\"${CMAKE_CURRENT_SOURCE_DIR}/icon.png\"\n\
+Exec=\"${CMAKE_CURRENT_BINARY_DIR}/editor\"\nIcon=icon\n\
 Comment=Create a game."
     )
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/3Dev-Editor.desktop DESTINATION ${HOME_PATH}/.local/share/applications)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/icon.png DESTINATION ${HOME_PATH}/.local/share/icons)
 endif()
