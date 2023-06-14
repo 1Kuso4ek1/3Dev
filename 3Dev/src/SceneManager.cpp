@@ -186,10 +186,12 @@ std::shared_ptr<Model> SceneManager::CreateModel(std::string name, Args&&... arg
 void SceneManager::RemoveModel(std::shared_ptr<Model> model)
 {
     auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second == model; });
+    auto itn = std::find_if(nodes.begin(), nodes.end(), [&](auto& p) { return p.second == model.get(); });
     if(it != models.end())
     {
         auto p = ParseName(it->first);
         models.erase(it);
+        nodes.erase(itn);
         RemoveBones(model);
         if(!p.second.empty())
             RemoveFromTheGroup(p.second, model);
@@ -206,9 +208,11 @@ void SceneManager::RemoveMaterial(std::shared_ptr<Material> material)
 void SceneManager::RemoveLight(Light* light)
 {
     auto it = std::find_if(lights.begin(), lights.end(), [&](auto& p) { return p.second == light; });
+    auto itn = std::find_if(nodes.begin(), nodes.end(), [&](auto& p) { return p.second == light; });
     if(it != lights.end())
     {
         lights.erase(it);
+        nodes.erase(itn);
         lightsVector.erase(std::find(lightsVector.begin(), lightsVector.end(), it->second));
     }
 }
@@ -218,6 +222,9 @@ void SceneManager::RemoveAllObjects()
     models.clear();
     modelGroups.clear();
     lights.clear();
+    nodes.clear();
+
+    SetCamera(camera);
 }
 
 void SceneManager::Save(std::string filename, bool relativePaths)
@@ -350,7 +357,6 @@ void SceneManager::Load(std::string filename, bool loadEverything)
         auto name = data["objects"]["models"][counter]["name"].asString();
         auto filename = data["objects"]["models"][counter]["filename"].asString();
 
-        //auto material = materials[data["objects"]["models"][counter]["material"].asString()].get();
         std::vector<Material*> material;
         for(auto& i : data["objects"]["models"][counter]["material"])
             material.push_back(materials[i["name"].asString()].get());

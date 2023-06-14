@@ -988,12 +988,13 @@ int main()
                 path = projectDir + "/assets/textures/" + filename;
                 auto mat = scene.GetMaterial(sceneTree->getSelectedItem().back().toStdString());
                 auto p = mat->GetParameter(matType);
+                std::string name = "texture";
                 if(std::holds_alternative<GLuint>(p))
                 {
-                    auto name = TextureManager::GetInstance()->GetName(std::get<1>(p));
+                    name = TextureManager::GetInstance()->GetName(std::get<1>(p));
                     TextureManager::GetInstance()->DeleteTexture(name);
                 }
-                mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path), matType);
+                mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path, name), matType);
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
                 
                 switch (matType)

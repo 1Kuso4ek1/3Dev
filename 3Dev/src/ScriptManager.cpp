@@ -923,6 +923,7 @@ void ScriptManager::RegisterNetwork()
 
     AddValueType("Packet", sizeof(sf::Packet), asGetTypeTraits<sf::Packet>(),
     {
+        { "void clear()", WRAP_MFN(sf::Packet, clear) },
         { "Packet& opShl(const string& in)", WRAP_MFN_PR(sf::Packet, operator<<, (const std::string&), sf::Packet&) },
         { "Packet& opShl(int)", WRAP_MFN_PR(sf::Packet, operator<<, (int), sf::Packet&) },
         { "Packet& opShl(float)", WRAP_MFN_PR(sf::Packet, operator<<, (float), sf::Packet&) },
