@@ -43,6 +43,7 @@ public:
 
     void RemoveGui();
 
+    void SetGuiView(tgui::FloatRect view);
     void SetGuiViewport(tgui::FloatRect viewport);
 
     /*
@@ -73,7 +74,7 @@ private:
     std::function<void(sf::Event&)> eloop;
 
     std::vector<std::shared_ptr<tgui::Gui>> gui;
-    tgui::FloatRect viewport;
+    tgui::FloatRect view, viewport;
 
     sf::ContextSettings settings;
     sf::Window window;

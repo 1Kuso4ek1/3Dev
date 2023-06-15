@@ -394,7 +394,7 @@ void ScriptManager::RegisterCamera()
         { "void SetFOV(float)", WRAP_MFN(Camera, SetFOV) },
         { "void AlwaysUp(bool)", WRAP_MFN(Camera, AlwaysUp) },
         { "Node@ opCast()", WRAP_OBJ_LAST(CastCamera) },
-        { "Vector3 GetPosition()", WRAP_MFN(Camera, GetPosition) },
+        { "Vector3 GetPosition(bool = false)", WRAP_MFN(Camera, GetPosition) },
         { "Quaternion GetOrientation()", WRAP_MFN(Camera, GetOrientation) },
         { "float GetSpeed()", WRAP_MFN(Camera, GetSpeed) },
         { "float GetFOV()", WRAP_MFN(Camera, GetFOV) },

@@ -36,13 +36,22 @@ tgui::Gui* Engine::CreateGui(std::string widgets)
 {
     gui.emplace_back(std::make_shared<tgui::Gui>(window));
     gui.back()->loadWidgetsFromFile(widgets);
-    gui.back()->setAbsoluteViewport(viewport);
+    if(viewport != tgui::FloatRect() && view != tgui::FloatRect())
+    {
+        gui.back()->setAbsoluteViewport(viewport);
+        gui.back()->setAbsoluteView(view);
+    }
     return gui.back().get();
 }
 
 void Engine::RemoveGui()
 {
     gui.clear();
+}
+
+void Engine::SetGuiView(tgui::FloatRect view)
+{
+    this->view = view;
 }
 
 void Engine::SetGuiViewport(tgui::FloatRect viewport)

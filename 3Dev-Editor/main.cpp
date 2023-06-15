@@ -576,7 +576,8 @@ int main()
     loading.draw();
     engine.GetWindow().display();
 
-    engine.SetGuiViewport({ 220, 25, 840, 520 });
+    engine.SetGuiView({ 0, 0, viewportWindow->getSize().x * 1.65f, viewportWindow->getSize().y * 1.65f });
+    engine.SetGuiViewport({ 221, 26, viewportWindow->getSize().x - 1, viewportWindow->getSize().y - 28 });
 
     auto sman = std::make_shared<SoundManager>();
 

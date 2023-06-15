@@ -17,8 +17,6 @@ int main()
                         cfg["window"]["fullscreen"].asBool() ? sf::Style::Fullscreen : sf::Style::Default);
     engine.Init();
 
-    engine.SetGuiViewport({ 0, 0, cfg["window"]["width"].asFloat(), cfg["window"]["height"].asFloat() });
-
     engine.GetWindow().setVerticalSyncEnabled(cfg["window"]["vsync"].asBool());
     engine.GetWindow().setFramerateLimit(cfg["window"]["maxFps"].asInt());
 
