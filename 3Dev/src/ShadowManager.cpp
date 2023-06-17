@@ -38,7 +38,7 @@ void ShadowManager::Update()
         closestLight->CalcLightSpaceMatrix();
     depthShader->SetUniformMatrix4("light", closestLight->GetLightSpaceMatrix());
 
-    scene->Draw(depthBuffer.get(), nullptr);
+    scene->Draw(depthBuffer.get(), nullptr, true, true);
 
     texture = depthBuffer->GetTexture(true);
 

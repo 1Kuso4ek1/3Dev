@@ -1,6 +1,6 @@
 #include <SceneManager.hpp>
 
-void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool updatePhysics)
+void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool updatePhysics, bool shadowPass)
 {
     for(auto& i : animations)
     {
@@ -50,6 +50,9 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 
     fbo->Unbind();
 
+    if(shadowPass)
+        return;
+        
     if(!transparency) transparency = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency);
 
     glFrontFace(GL_CW);

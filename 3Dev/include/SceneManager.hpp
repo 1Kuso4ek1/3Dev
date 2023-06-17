@@ -10,7 +10,7 @@
 class SceneManager
 {
 public:
-    void Draw(Framebuffer* fbo = nullptr, Framebuffer* transparency = nullptr, bool updatePhysics = true);
+    void Draw(Framebuffer* fbo = nullptr, Framebuffer* transparency = nullptr, bool updatePhysics = true, bool shadowPass = false);
 
     void AddModel(std::shared_ptr<Model> model, std::string name = "model", bool checkUniqueness = true);
     void AddMaterial(std::shared_ptr<Material> material, std::string name = "material");
