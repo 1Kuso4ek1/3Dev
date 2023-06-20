@@ -22,13 +22,16 @@ public:
         Environment,
         Irradiance,
         Filtering,
-        BRDF
+        BRDF,
+        Bloom
     };
 
     enum class FramebufferType
     {
         Main,
-        Transparency
+        Transparency,
+        BloomPingPong0,
+        BloomPingPong1
     };
 
     static Renderer* GetInstance();

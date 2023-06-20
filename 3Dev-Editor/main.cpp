@@ -652,6 +652,12 @@ int main()
 
     bool scriptLaunched = false;
 
+    float exposure = properties["renderer"]["exposure"].asFloat();
+    float bloomStrength = 0.3;
+    float brightnessThreshold = 2.5;
+
+    int blurIterations = 8;
+
     ScriptManager scman;
     scman.AddProperty("Engine engine", &engine);
     scman.SetDefaultNamespace("Game");
@@ -664,6 +670,10 @@ int main()
     scman.AddProperty("bool manageCameraMovement", &manageCameraMovement);
     scman.AddProperty("bool manageCameraLook", &manageCameraLook);
     scman.AddProperty("bool manageCameraMouse", &manageCameraMouse);
+    scman.AddProperty("float exposure", &exposure);
+    scman.AddProperty("float bloomStrength", &bloomStrength);
+    scman.AddProperty("float brightnessThreshold", &brightnessThreshold);
+    scman.AddProperty("int blurIterations", &blurIterations);
     scman.SetDefaultNamespace("");
 	std::string startDecl = "void Start()", loopDecl = "void Loop()";
 
@@ -765,9 +775,12 @@ int main()
 
     ShadowManager shadows(&scene, glm::ivec2(properties["renderer"]["shadowMapResolution"].asInt()));
 
-    float exposure = properties["renderer"]["exposure"].asFloat();
-
     std::vector<std::vector<tgui::String>> selectedWithShift;
+    std::vector<Framebuffer*> pingPongBuffers = 
+    {
+        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0),
+        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)
+    };
 
     modelButton->onPress([&]()
     {
@@ -2059,11 +2072,36 @@ int main()
 		if(updateShadows) shadows.Update();
         if(manageSceneRendering) scene.Draw(nullptr, nullptr, !updateShadows);
 
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exposure);
+        bool horizontal = true;
+        bool buffer = true;
+
+        if(bloomStrength > 0)
+        {
+            pingPongBuffers[0]->Bind();
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("brightnessThreshold", brightnessThreshold);
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
+
+            for(int i = 0; i < blurIterations; i++)
+            {
+                pingPongBuffers[buffer]->Bind();
+                Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
+                Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
+                pingPongBuffers[!buffer]->Draw();
+                buffer = !buffer; horizontal = !horizontal;
+            }
+        }
 
 		viewport->bindFramebuffer();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glActiveTexture(GL_TEXTURE15);
+        glBindTexture(GL_TEXTURE_2D, pingPongBuffers[buffer]->GetTexture());
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exposure);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("bloomStrength", bloomStrength);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom", 15);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
         glDisable(GL_DEPTH_TEST);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();

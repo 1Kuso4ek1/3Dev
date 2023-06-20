@@ -61,11 +61,17 @@ int main(int argc, char* argv[])
                   << "  -b <int>          Size of a skybox side (512 is default)" << std::endl
                   << "  -f <int>          Output video framerate (30 is default)" << std::endl
                   << "  -x <float>        Exposure (1.5 is default)" << std::endl
-                  << "  -r <number>       Shadow map resolution (4096 is default)" << std::endl;
+                  << "  -r <int>          Shadow map resolution (4096 is default)" << std::endl
+                  << "  -i <int>          Blur iterations (8 is default)" << std::endl
+                  << "  -n <float>        Bloom strength (0.3 is default)" << std::endl
+                  << "  -t <float>        Brightness threshold (2.5 is default)" << std::endl;
         return 0;
     }
 
     uint32_t w = 1280, h = 720, b = 256, r = 4096, fps = 30;
+    int blurIterations = 8;
+    float bloomStrength = 0.3;
+    float brightnessThreshold = 2.5;
     float exp = 1.0;
     #ifdef _WIN32
     	std::string env = std::string(getenv("HOMEPATH")) + "/.3Dev-Editor/default/hdri.hdr";
@@ -86,6 +92,9 @@ int main(int argc, char* argv[])
     if(!GetArgument(argc, argv, "-r").empty()) r = std::stoi(GetArgument(argc, argv, "-r"));
     if(!GetArgument(argc, argv, "-f").empty()) fps = std::stoi(GetArgument(argc, argv, "-f"));
     if(!GetArgument(argc, argv, "-x").empty()) exp = std::stof(GetArgument(argc, argv, "-x"));
+    if(!GetArgument(argc, argv, "-i").empty()) blurIterations = std::stof(GetArgument(argc, argv, "-i"));
+    if(!GetArgument(argc, argv, "-n").empty()) bloomStrength = std::stof(GetArgument(argc, argv, "-n"));
+    if(!GetArgument(argc, argv, "-t").empty()) brightnessThreshold = std::stof(GetArgument(argc, argv, "-t"));
     if(!GetArgument(argc, argv, "-o").empty()) out = GetArgument(argc, argv, "-o");
     if(!GetArgument(argc, argv, "-e").empty()) env = GetArgument(argc, argv, "-e");
 
@@ -145,6 +154,12 @@ int main(int argc, char* argv[])
 
     ShadowManager shadows(&scene, glm::ivec2(r, r));
 
+    std::vector<Framebuffer*> pingPongBuffers = 
+    {
+        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0),
+        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)
+    };
+
     Framebuffer render(nullptr, w, h), renderTr(nullptr, w, h);
 
     sf::Image image;
@@ -157,10 +172,36 @@ int main(int argc, char* argv[])
 
         scene.Draw();
 
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exp);
+        bool horizontal = true;
+        bool buffer = true;
+
+        if(bloomStrength > 0)
+        {
+            pingPongBuffers[0]->Bind();
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("brightnessThreshold", brightnessThreshold);
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
+
+            for(int i = 0; i < blurIterations; i++)
+            {
+                pingPongBuffers[buffer]->Bind();
+                Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
+                Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
+                pingPongBuffers[!buffer]->Draw();
+                buffer = !buffer; horizontal = !horizontal;
+            }
+        }
 
         render.Bind();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glActiveTexture(GL_TEXTURE15);
+        glBindTexture(GL_TEXTURE_2D, pingPongBuffers[buffer]->GetTexture());
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exp);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("bloomStrength", bloomStrength);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom", 15);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
         auto pixels = render.GetPixels(glm::ivec2(0, 0), render.GetSize());
 

@@ -28,9 +28,13 @@ void Renderer::Init(sf::Vector2u fbSize, std::string environmentMapFilename, uin
     shaders[ShaderType::Irradiance] = std::make_shared<Shader>(shadersDir + "irradiance.vs", shadersDir + "irradiance.fs");
     shaders[ShaderType::Filtering] = std::make_shared<Shader>(shadersDir + "spcfiltering.vs", shadersDir + "spcfiltering.fs");
     shaders[ShaderType::BRDF] = std::make_shared<Shader>(shadersDir + "brdf.vs", shadersDir + "brdf.fs");
+    shaders[ShaderType::Bloom] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "bloom.fs");
 
     framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
     framebuffers[FramebufferType::Transparency] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
+
+    framebuffers[FramebufferType::BloomPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x, fbSize.y, false, GL_LINEAR);
+    framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x, fbSize.y, false, GL_LINEAR);
 
     LoadEnvironment(environmentMapFilename, skyboxSideSize, irradianceSideSize, prefilteredSideSize);
 

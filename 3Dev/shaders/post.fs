@@ -10,8 +10,12 @@ in vec2 coord;
 
 uniform vec2 pixelsize;
 uniform sampler2D frame;
+uniform sampler2D bloom;
 uniform float exposure = 1.0;
+uniform float bloomStrength = 0.3;
+uniform float brightnessThreshold = 2.5;
 uniform bool fxaa = true;
+uniform bool rawColor = false;
 
 out vec4 color;
 
@@ -74,7 +78,16 @@ vec3 ACES()
 void main()
 {
     color = texture(frame, coord);
+
     if(fxaa) color = FXAA();
+    if(rawColor)
+    {
+        if(dot(color.rgb, vec3(0.2126, 0.7152, 0.0722)) > brightnessThreshold) return;
+        else color = vec4(0.0, 0.0, 0.0, 1.0);
+        return;
+    }
+
+    color.rgb += texture(bloom, coord).rgb * bloomStrength;
 
     /*color.rgb = color.rgb / (color.rgb + vec3(1.0));
     color.rgb *= exposure;
