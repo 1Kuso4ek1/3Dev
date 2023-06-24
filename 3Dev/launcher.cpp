@@ -20,6 +20,13 @@ int main()
     engine.GetWindow().setVerticalSyncEnabled(cfg["window"]["vsync"].asBool());
     engine.GetWindow().setFramerateLimit(cfg["window"]["maxFps"].asInt());
 
+    float guiWidth = cfg["gui"]["width"].asInt(), guiHeight = cfg["gui"]["height"].asInt();
+
+    engine.SetGuiView({ 0, 0, float(engine.GetWindow().getSize().x) * (guiWidth / float(engine.GetWindow().getSize().x)),
+                              float(engine.GetWindow().getSize().y) * (guiHeight / float(engine.GetWindow().getSize().y)) });
+
+    engine.SetGuiViewport({ 0, 0, float(engine.GetWindow().getSize().x), float(engine.GetWindow().getSize().y) });
+
     if(cfg["renderer"]["shadersDir"].asString() != "default")
         Renderer::GetInstance()->SetShadersDirectory(cfg["renderer"]["shadersDir"].asString());
     Renderer::GetInstance()->Init(engine.GetWindow().getSize(),
@@ -111,6 +118,11 @@ int main()
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->RecreateTexture(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->RecreateTexture(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->RecreateTexture(event.size.width, event.size.height);
+
+            engine.SetGuiView({ 0, 0, float(event.size.width) * (guiWidth / float(event.size.width)),
+                                      float(event.size.height) * (guiHeight / float(event.size.height)) });
+
+            engine.SetGuiViewport({ 0, 0, float(event.size.width), float(event.size.height) });
         }
 
         if(event.type == sf::Event::Closed) engine.Close();
