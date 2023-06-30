@@ -182,6 +182,12 @@ int main(int argc, char* argv[])
             Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("brightnessThreshold", brightnessThreshold);
             Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
+            glDisable(GL_DEPTH_TEST);
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", true);
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
+            glEnable(GL_DEPTH_TEST);
 
             for(int i = 0; i < blurIterations; i++)
             {
@@ -202,10 +208,13 @@ int main(int argc, char* argv[])
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("bloomStrength", bloomStrength);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom", 15);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
         auto pixels = render.GetPixels(glm::ivec2(0, 0), render.GetSize());
 
         renderTr.Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", true);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
         auto pixelsTr = renderTr.GetPixels(glm::ivec2(0, 0), renderTr.GetSize());
 

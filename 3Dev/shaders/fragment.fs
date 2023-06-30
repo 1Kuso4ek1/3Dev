@@ -26,6 +26,7 @@ uniform float nopacity;
 uniform vec3 nirradiance;
 
 uniform bool drawTransparency = false;
+uniform float shadowBias;
 
 in vec2 coord;
 in vec3 camposout;
@@ -55,6 +56,7 @@ struct Light
     float outerCutoff;
 
     bool isactive;
+    bool castShadows;
 };
 
 uniform Light lights[maxLights];
@@ -89,7 +91,7 @@ float CalcShadow()
 		for(int y = -0; y <= 1; ++y)
 		{
 		    float pcf = LinearizeDepth(texture(shadow.shadowmap, pcoord.xy + vec2(x, y) * pixelsize).x);
-		    ret += float(current - (shadow.perspective ? 0.05 : 0.00001) > pcf);
+		    ret += float(current - (shadow.perspective ? shadowBias : 0.00001) > pcf);
 		}
 	}
     return ret / 4.0;//float(currentcc > LinearizeDepth(texture(shadow.shadowmap, pcoord.xy).x));
@@ -170,10 +172,10 @@ void main()
     	alpha = w;
 
     if(!drawTransparency && alpha < 1.0)
-        discard;
+        return;
     if(drawTransparency && alpha == 1.0)
     {
-        color = vec4(0.0, 0.0, 0.0, 1.0 * pow(10.0, -20.0)); // need to set gl_FragDepth to something
+        color = vec4(0.0, 0.0, 0.0, 1.0);
         return;
     }
 
@@ -189,13 +191,15 @@ void main()
     vec3 irr = (nirradiance.x < 0.0 ? texture(irradiance, norm).xyz : nirradiance);
     vec3 prefiltered = textureLod(prefilteredMap, reflect(-normalize(camposout - mpos), norm), rough * maxLodLevel).xyz;
 
-    vec3 total = vec3(0.0);
+    vec3 total = vec3(0.0), totalNoShadow = vec3(0.0);
     float shadow = 0.0;
     vec3 f0 = mix(vec3(0.04), alb, metal);
     int i = 0;
     while(lights[i].isactive)
     {
-        total += CalcLight(lights[i], norm, rough, metal, alb, irr, f0);
+        if(lights[i].castShadows)
+            total += CalcLight(lights[i], norm, rough, metal, alb, irr, f0);
+        else totalNoShadow += CalcLight(lights[i], norm, rough, metal, alb, irr, f0);
         i++;
     }
     shadow = CalcShadow();
@@ -211,5 +215,5 @@ void main()
     vec3 ambient = ((kdif * diffuse) + spc) * ao;
 
     total += ambient / 2;
-    color = vec4((total * (length(emission) > 0.0 ? 1.0 : (1.0 - shadow)) + ambient / 2) + emission, (alpha < 1.0 ? alpha + ((total.x + total.y, + total.z) / 3.0) : 1.0));
+    color = vec4((total * (length(emission) > 0.0 ? 1.0 : (1.0 - shadow)) + ambient / 2) + (emission * 5) + totalNoShadow, (alpha < 1.0 ? alpha + ((total.x + total.y, + total.z) / 3.0) * alpha : 1.0));
 }

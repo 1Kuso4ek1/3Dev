@@ -5,7 +5,7 @@ Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, GLint filte
 	CalcPixelSize(glm::vec2(w, h));
     if(!isDepth) texture = TextureManager::GetInstance()->CreateTexture(w, h, false, filter, wrap);
 	
-	depth = TextureManager::GetInstance()->CreateTexture(w, h, true, isDepth ? GL_LINEAR : GL_NEAREST, wrap);
+	depth = TextureManager::GetInstance()->CreateTexture(w, h, true, filter, wrap);
     glGenFramebuffers(1, &fbo);
     
 	Bind();

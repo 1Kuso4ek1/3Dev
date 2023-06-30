@@ -78,14 +78,23 @@ Json::Value ParseProperties()
     {
         Log::Write("The editor's version has changed, updating properties", Log::Type::Info);
 
-        std::filesystem::copy("../default/hdri.hdr", homeFolder + "default/hdri.hdr", std::filesystem::copy_options::overwrite_existing);
-        std::filesystem::copy("../gui/menu.txt", homeFolder + "gui/menu.txt", std::filesystem::copy_options::overwrite_existing);
-        std::filesystem::copy("../gui/loading.txt", homeFolder + "gui/loading.txt", std::filesystem::copy_options::overwrite_existing);
-        std::filesystem::copy("../gui/editor.txt", homeFolder + "gui/editor.txt", std::filesystem::copy_options::overwrite_existing);
-        std::filesystem::copy("../gui/themes/Black.txt", homeFolder + "gui/themes/Black.txt", std::filesystem::copy_options::overwrite_existing);
-        std::filesystem::copy("../gui/themes/Black.png", homeFolder + "gui/themes/Black.png", std::filesystem::copy_options::overwrite_existing);
-	    std::filesystem::copy("../gui/themes/SourceCodePro-Regular.ttf", homeFolder + "gui/themes/SourceCodePro-Regular.ttf", std::filesystem::copy_options::overwrite_existing);
-        std::filesystem::copy("../icon.png", homeFolder + "icon.png", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::remove(homeFolder + "default/hdri.hdr");
+        std::filesystem::remove(homeFolder + "gui/menu.txt");
+        std::filesystem::remove(homeFolder + "gui/loading.txt");
+        std::filesystem::remove(homeFolder + "gui/editor.txt");
+        std::filesystem::remove(homeFolder + "gui/themes/Black.txt");
+        std::filesystem::remove(homeFolder + "gui/themes/Black.png");
+	    std::filesystem::remove(homeFolder + "gui/themes/SourceCodePro-Regular.ttf");
+        std::filesystem::remove(homeFolder + "icon.png");
+
+        std::filesystem::copy("../default/hdri.hdr", homeFolder + "default/hdri.hdr");
+        std::filesystem::copy("../gui/menu.txt", homeFolder + "gui/menu.txt");
+        std::filesystem::copy("../gui/loading.txt", homeFolder + "gui/loading.txt");
+        std::filesystem::copy("../gui/editor.txt", homeFolder + "gui/editor.txt");
+        std::filesystem::copy("../gui/themes/Black.txt", homeFolder + "gui/themes/Black.txt");
+        std::filesystem::copy("../gui/themes/Black.png", homeFolder + "gui/themes/Black.png");
+	    std::filesystem::copy("../gui/themes/SourceCodePro-Regular.ttf", homeFolder + "gui/themes/SourceCodePro-Regular.ttf");
+        std::filesystem::copy("../icon.png", homeFolder + "icon.png");
 
         return DefaultProperties(ret["recentProjects"], ret["recentProjectsPaths"]);
     }
@@ -119,7 +128,7 @@ std::shared_ptr<tgui::FileDialog> CreateFileDialog(std::string title, int fileTy
     else if(fileType == 4)
         dialog->setFileTypeFilters(
 		{
-			{ "Sounds", { "*.ogg", "*.wav"  } }
+			{ "Sounds", { "*.ogg", "*.wav", "*.mp3"  } }
 		});
     dialog->setPath(lastPath);
 	dialog->setFileMustExist(fileMustExist);
@@ -1784,7 +1793,7 @@ int main()
                             i.first = etmp.value();
                         break;
                     case Material::Type::Opacity:
-                        if(!std::holds_alternative<glm::vec3>(material->GetParameter(Material::Type::Opacity)) && opacity < 1.0)
+                        if(!std::holds_alternative<glm::vec3>(material->GetParameter(Material::Type::Opacity)) && opacity > 0.0)
                         {
                             auto name = TextureManager::GetInstance()->GetName(std::get<1>(i.first));
                             TextureManager::GetInstance()->DeleteTexture(name);
@@ -2082,6 +2091,12 @@ int main()
             Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("brightnessThreshold", brightnessThreshold);
             Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
+            glDisable(GL_DEPTH_TEST);
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", true);
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
+            glEnable(GL_DEPTH_TEST);
 
             for(int i = 0; i < blurIterations; i++)
             {
@@ -2102,8 +2117,11 @@ int main()
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("bloomStrength", bloomStrength);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom", 15);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
         glDisable(GL_DEPTH_TEST);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", true);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
         glEnable(GL_DEPTH_TEST);
         Framebuffer::Unbind();

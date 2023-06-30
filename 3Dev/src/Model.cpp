@@ -174,22 +174,11 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
             	shader->SetVectorOfUniformMatrix4("pose", pose.size(), pose);
             shader->SetUniform1i("bones", !bones.empty());
             shader->SetUniform1i("drawTransparency", transparencyPass);
+			shader->SetUniform1f("shadowBias", shadowBias);
 
             m->UpdateShader(shader);
 
-            if(transparencyPass)
-            {
-                glEnable(GL_CULL_FACE);
-                glFrontFace(GL_CCW);
-            }
-
             meshes[mesh]->Draw();
-
-            if(transparencyPass)
-            {
-                glDisable(GL_CULL_FACE);
-                glFrontFace(GL_CW);
-            }
 
             mat[mesh]->ResetShader(shader);
         }
@@ -314,6 +303,11 @@ void Model::SetIsDrawable(bool drawable)
 void Model::SetIsLoadingImmediatelly(bool imm)
 {
 	immLoad = imm;
+}
+
+void Model::SetShadowBias(float bias)
+{
+	shadowBias = bias;
 }
 
 void Model::AddChild(Node* child)
