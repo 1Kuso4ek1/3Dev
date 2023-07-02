@@ -174,11 +174,22 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
             	shader->SetVectorOfUniformMatrix4("pose", pose.size(), pose);
             shader->SetUniform1i("bones", !bones.empty());
             shader->SetUniform1i("drawTransparency", transparencyPass);
-			shader->SetUniform1f("shadowBias", shadowBias);
 
             m->UpdateShader(shader);
 
+            if(transparencyPass)
+            {
+                glEnable(GL_CULL_FACE);
+                glFrontFace(GL_CCW);
+            }
+
             meshes[mesh]->Draw();
+
+            if(transparencyPass)
+            {
+                glDisable(GL_CULL_FACE);
+                glFrontFace(GL_CW);
+            }
 
             mat[mesh]->ResetShader(shader);
         }
@@ -303,11 +314,6 @@ void Model::SetIsDrawable(bool drawable)
 void Model::SetIsLoadingImmediatelly(bool imm)
 {
 	immLoad = imm;
-}
-
-void Model::SetShadowBias(float bias)
-{
-	shadowBias = bias;
 }
 
 void Model::AddChild(Node* child)
@@ -744,13 +750,15 @@ bool Model::ProcessBone(aiNode* node, std::shared_ptr<Bone>& out)
 	if(bonemap.find(node->mName.C_Str()) != bonemap.end())
 	{
 		auto it = std::find_if(bones.begin(), bones.end(), [&](auto& b) { return b->GetName() == std::string(node->mName.C_Str()); });
+		
 		if(it != bones.end())
 			return false;
+			
 		out = std::make_shared<Bone>(bonemap[node->mName.C_Str()].first, node->mName.C_Str(), bonemap[node->mName.C_Str()].second);
 		if(!anims.empty())
 			if(anims[0]->GetKeyframes().find(out->GetName()) != anims[0]->GetKeyframes().end())
 			{
-				Keyframe kf = anims[0]->GetKeyframes()[out->GetName()];
+				Keyframe kf = anims[0]->GetKeyframes().at(out->GetName());
 				auto pos = kf.positions[0];
 				auto rot = kf.rotations[0];
 				rp3d::Transform tr;

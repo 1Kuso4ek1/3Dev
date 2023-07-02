@@ -20,13 +20,6 @@ int main()
     engine.GetWindow().setVerticalSyncEnabled(cfg["window"]["vsync"].asBool());
     engine.GetWindow().setFramerateLimit(cfg["window"]["maxFps"].asInt());
 
-    float guiWidth = cfg["gui"]["width"].asInt(), guiHeight = cfg["gui"]["height"].asInt();
-
-    engine.SetGuiView({ 0, 0, float(engine.GetWindow().getSize().x) * (guiWidth / float(engine.GetWindow().getSize().x)),
-                              float(engine.GetWindow().getSize().y) * (guiHeight / float(engine.GetWindow().getSize().y)) });
-
-    engine.SetGuiViewport({ 0, 0, float(engine.GetWindow().getSize().x), float(engine.GetWindow().getSize().y) });
-
     if(cfg["renderer"]["shadersDir"].asString() != "default")
         Renderer::GetInstance()->SetShadersDirectory(cfg["renderer"]["shadersDir"].asString());
     Renderer::GetInstance()->Init(engine.GetWindow().getSize(),
@@ -118,11 +111,6 @@ int main()
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->RecreateTexture(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->RecreateTexture(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->RecreateTexture(event.size.width, event.size.height);
-
-            engine.SetGuiView({ 0, 0, float(event.size.width) * (guiWidth / float(event.size.width)),
-                                      float(event.size.height) * (guiHeight / float(event.size.height)) });
-
-            engine.SetGuiViewport({ 0, 0, float(event.size.width), float(event.size.height) });
         }
 
         if(event.type == sf::Event::Closed) engine.Close();
@@ -156,12 +144,6 @@ int main()
             Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("brightnessThreshold", brightnessThreshold);
             Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
-            glDisable(GL_DEPTH_TEST);
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", true);
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
-            glEnable(GL_DEPTH_TEST);
 
             for(int i = 0; i < blurIterations; i++)
             {
@@ -182,11 +164,8 @@ int main()
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("bloomStrength", bloomStrength);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom", 15);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
         glDisable(GL_DEPTH_TEST);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", true);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
         glEnable(GL_DEPTH_TEST);
     });

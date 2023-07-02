@@ -59,7 +59,7 @@ static glm::mat4 toglm(const aiMatrix4x4& mat)
     return ret;
 }
 
-static std::pair<int, float> TimeFraction(std::vector<float>& times, float dt)
+static std::pair<int, float> TimeFraction(const std::vector<float>& times, float dt)
 {
     if(times.empty()) return { 1, 1.0 };
 

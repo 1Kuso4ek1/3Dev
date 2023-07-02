@@ -30,7 +30,7 @@ public:
     void SetIsRepeated(bool repeat);
 	void SetLastTime(float lastTime);
 
-    void AddKeyframe(std::string name, const Keyframe& keyframe);
+    void AddKeyframe(const std::string& name, const Keyframe& keyframe);
 
     void Play();
     void Pause();
@@ -38,16 +38,18 @@ public:
 
     std::unordered_map<std::string, std::pair<rp3d::Transform, rp3d::Vector3>> Update();
 
-    std::unordered_map<std::string, Keyframe>& GetKeyframes();
-    std::string GetName();
+    const std::unordered_map<std::string, Keyframe>& GetKeyframes() const;
+	std::unordered_map<std::string, Keyframe>& GetKeyframes() ;
+    std::string GetName() const ;
 
-	bool IsRepeated();
-	float GetTime();
-	float GetLastTime();
-	float GetDuration();
-	float GetTPS();
+
+	bool IsRepeated() const ;
+	float GetTime() const;
+	float GetLastTime() const;
+	float GetDuration() const;
+	float GetTPS() const;
     
-	State GetState();
+	State GetState() const;
 
 	Json::Value Serialize();
 	void Deserialize(Json::Value data);

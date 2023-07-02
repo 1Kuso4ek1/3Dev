@@ -77,7 +77,6 @@ void Light::Update(Shader* shader, int lightnum)
 	shader->SetUniform1f("lights[" + std::to_string(lightnum) + "].cutoff", glm::cos(glm::radians(cutoff)));
 	shader->SetUniform1f("lights[" + std::to_string(lightnum) + "].outerCutoff", glm::cos(glm::radians(outerCutoff)));
 	shader->SetUniform1i("lights[" + std::to_string(lightnum) + "].isactive", 1);
-	shader->SetUniform1i("lights[" + std::to_string(lightnum) + "].castShadows", castShadows);
 }
 
 bool Light::IsCastingShadows()

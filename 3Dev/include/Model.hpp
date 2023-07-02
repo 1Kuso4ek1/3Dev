@@ -38,7 +38,6 @@ public:
 	void SetFilename(const std::string& filename);
 	void SetIsDrawable(bool drawable);
 	void SetIsLoadingImmediatelly(bool imm);
-	void SetShadowBias(float bias);
 	void AddChild(Node* child) override;
 	void DefaultPose();
 
@@ -98,8 +97,6 @@ private:
 	bool ProcessBone(aiNode* node, std::shared_ptr<Bone>& out);
 
 	bool drawable = true, immLoad = true;
-
-	float shadowBias = 0.05;
 
 	std::vector<std::shared_ptr<Mesh>> meshes;
 	std::vector<std::shared_ptr<Bone>> bones;

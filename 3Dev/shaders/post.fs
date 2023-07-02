@@ -15,8 +15,7 @@ uniform float exposure = 1.0;
 uniform float bloomStrength = 0.3;
 uniform float brightnessThreshold = 2.5;
 uniform bool fxaa = true;
-uniform bool rawColor;
-uniform bool transparentBuffer;
+uniform bool rawColor = false;
 
 out vec4 color;
 
@@ -80,20 +79,13 @@ void main()
 {
     color = texture(frame, coord);
 
-    if(color.x <= 0.2 && color.y <= 0.2 && color.z <= 0.2 && transparentBuffer)
-    {
-        color = vec4(0.0, 0.0, 0.0, 0.0);
-        return;
-    }
-
+    if(fxaa) color = FXAA();
     if(rawColor)
     {
         if(dot(color.rgb, vec3(0.2126, 0.7152, 0.0722)) > brightnessThreshold) return;
         else color = vec4(0.0, 0.0, 0.0, 1.0);
         return;
     }
-
-    if(fxaa) color = FXAA();
 
     color.rgb += texture(bloom, coord).rgb * bloomStrength;
 

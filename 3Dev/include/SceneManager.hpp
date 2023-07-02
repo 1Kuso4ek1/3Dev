@@ -12,16 +12,16 @@ class SceneManager
 public:
     void Draw(Framebuffer* fbo = nullptr, Framebuffer* transparency = nullptr, bool updatePhysics = true, bool shadowPass = false);
 
-    void AddModel(std::shared_ptr<Model> model, std::string name = "model", bool checkUniqueness = true);
-    void AddMaterial(std::shared_ptr<Material> material, std::string name = "material");
-    void AddAnimation(std::shared_ptr<Animation> animation, std::string name = "animation");
-    void AddLight(Light* light, std::string name = "light");
+    void AddModel(std::shared_ptr<Model> model, const std::string& name = "model", bool checkUniqueness = true);
+    void AddMaterial(std::shared_ptr<Material> material, const std::string& name = "material");
+    void AddAnimation(std::shared_ptr<Animation> animation, const std::string& name = "animation");
+    void AddLight(Light* light, const std::string& name = "light");
 
     void StoreBones(std::shared_ptr<Model> model, Bone* bone = nullptr);
     void RemoveBones(std::shared_ptr<Model> model, Bone* bone = nullptr);
 
     template<class... Args>
-    std::shared_ptr<Model> CreateModel(std::string name, Args&&... args);
+    std::shared_ptr<Model> CreateModel(const std::string& name, Args&&... args);
 
     void RemoveModel(std::shared_ptr<Model> model);
     void RemoveMaterial(std::shared_ptr<Material> material);
@@ -29,8 +29,8 @@ public:
 
     void RemoveAllObjects();
 
-    void Save(std::string filename, bool relativePaths = false);
-    void Load(std::string filename, bool loadEverything = false);
+    void Save(const std::string& filename, bool relativePaths = false);
+    void Load(const std::string& filename, bool loadEverything = false);
 
     void SaveState();
     void LoadState();
@@ -41,22 +41,22 @@ public:
     void SetPhysicsManager(std::shared_ptr<PhysicsManager> manager);
     void SetSoundManager(std::shared_ptr<SoundManager> manager);
 
-    void SetModelName(std::string name, std::string newName);
-    void SetMaterialName(std::string name, std::string newName);
-    void SetAnimationName(std::string name, std::string newName);
-    void SetLightName(std::string name, std::string newName);
+    void SetModelName(const std::string& name, const std::string& newName);
+    void SetMaterialName(const std::string& name, const std::string& newName);
+    void SetAnimationName(const std::string& name, const std::string& newName);
+    void SetLightName(const std::string& name,  const std::string& newName);
 
     void UpdatePhysics(bool update);
 
     std::string GetLastAdded();
 
-    std::shared_ptr<Model> GetModel(std::string name);
-    std::shared_ptr<Material> GetMaterial(std::string name);
-    std::shared_ptr<Animation> GetAnimation(std::string name);
+    std::shared_ptr<Model> GetModel(const std::string& name);
+    std::shared_ptr<Material> GetMaterial(const std::string& name);
+    std::shared_ptr<Animation> GetAnimation(const std::string& name);
     std::shared_ptr<PhysicsManager> GetPhysicsManager();
     std::shared_ptr<SoundManager> GetSoundManager();
 
-    Node* GetNode(std::string name);
+    Node* GetNode(const std::string& name);
 
     std::string GetModelName(std::shared_ptr<Model> model);
     std::string GetModelName(Model* model);
@@ -64,22 +64,22 @@ public:
     std::string GetMaterialName(std::shared_ptr<Material> mat);
     std::string GetMaterialName(Material* mat);
 
-    std::vector<std::shared_ptr<Model>> GetModelGroup(std::string name);
+    std::vector<std::shared_ptr<Model>> GetModelGroup(const std::string& name);
 
     // For angelscript
-    Model* GetModelPtr(std::string name);
-    Material* GetMaterialPtr(std::string name);
-    Animation* GetAnimationPtr(std::string name);
+    Model* GetModelPtr(const std::string& name);
+    Material* GetMaterialPtr(const std::string& name);
+    Animation* GetAnimationPtr(const std::string& name);
     PhysicsManager* GetPhysicsManagerPtr();
     SoundManager* GetSoundManagerPtr();
 
-    Model* CloneModel(Model* model, bool isTemporary = true, std::string name = "model");
+    Model* CloneModel(Model* model, bool isTemporary = true, const std::string& name = "model");
 
-    std::vector<Model*> GetModelPtrGroup(std::string name);
+    std::vector<Model*> GetModelPtrGroup(const std::string& name);
 
     Camera* GetCamera();
-    Light* GetLight(std::string name);
-    Bone* GetBone(std::string name);
+    Light* GetLight(const std::string& name);
+    Bone* GetBone(const std::string& name);
 
     std::vector<Light*> GetShadowCastingLights();
 
@@ -93,10 +93,10 @@ private:
         rp3d::Quaternion orient;
     };
 
-    void RemoveFromTheGroup(std::string group, std::shared_ptr<Model> model);
-    void MoveToTheGroup(std::string from, std::string to, std::shared_ptr<Model> model);
+    void RemoveFromTheGroup(const std::string& group, std::shared_ptr<Model> model);
+    void MoveToTheGroup(const std::string& from, const std::string& to, std::shared_ptr<Model> model);
 
-    std::pair<std::string, std::string> ParseName(std::string in);
+    std::pair<std::string, std::string> ParseName(const std::string& in);
 
     sf::Clock clock;
 

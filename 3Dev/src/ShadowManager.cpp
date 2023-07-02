@@ -47,10 +47,10 @@ void ShadowManager::Update()
     mainShader->SetUniformMatrix4("lspace", closestLight->GetLightSpaceMatrix());
     auto pos = closestLight->GetPosition();
 
-    glActiveTexture(GL_TEXTURE14);
+    glActiveTexture(GL_TEXTURE9);
     glBindTexture(GL_TEXTURE_2D, texture);
     mainShader->SetUniform3f("shadow.sourcepos", pos.x, pos.y, pos.z);
-    mainShader->SetUniform1i("shadow.shadowmap", 14);
+    mainShader->SetUniform1i("shadow.shadowmap", 9);
     mainShader->SetUniform1i("shadow.perspective", closestLight->IsCastingPerspectiveShadows());
 
     glCullFace(GL_BACK);
