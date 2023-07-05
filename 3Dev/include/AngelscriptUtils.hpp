@@ -127,6 +127,7 @@ static void OnPress(asIScriptFunction& func, tgui::Button* button)
 
 static void MakeColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a, tgui::Color* color) { new(color) tgui::Color(r, g, b, a); }
 static void MakeString(const std::string& str, tgui::String* string) { new(string) tgui::String(str); }
+static void MakeDuration(const sf::Time& time, tgui::Duration* duration) { new(duration) tgui::Duration(time); }
 
 template<class T>
 static T* GetWidget(std::string name, tgui::Gui* gui) { return gui->get<T>(name).get(); }

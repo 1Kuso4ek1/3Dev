@@ -643,6 +643,9 @@ void ScriptManager::RegisterTGUI()
     }, {});
     AddTypeConstructor("String", "void f(const string& in)", WRAP_OBJ_LAST(MakeString));
 
+    AddValueType("Duration", sizeof(tgui::Duration), asGetTypeTraits<tgui::Duration>() | asOBJ_POD, {}, {});
+    AddTypeConstructor("Duration", "void f(const Time& in)", WRAP_OBJ_LAST(MakeDuration));
+
     AddValueType("Color", sizeof(tgui::Color), asGetTypeTraits<tgui::Color>() | asOBJ_POD, {}, {});
     AddTypeConstructor("Color", "void f(uint8, uint8, uint8, uint8 = 255)", WRAP_OBJ_LAST(MakeColor));
 
@@ -656,8 +659,8 @@ void ScriptManager::RegisterTGUI()
         { "void setEnabled(bool)", WRAP_MFN(tgui::BitmapButton, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::BitmapButton, setVisible) },
         { "void setText(const String& in)", WRAP_MFN(tgui::BitmapButton, setText) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::BitmapButton, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::BitmapButton, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::BitmapButton, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::BitmapButton, hideWithEffect) }
     }, {});
 
     AddType("Button", sizeof(tgui::Button),
@@ -666,8 +669,8 @@ void ScriptManager::RegisterTGUI()
         { "void setEnabled(bool)", WRAP_MFN(tgui::Button, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Button, setVisible) },
         { "void setText(const String& in)", WRAP_MFN(tgui::Button, setText) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Button, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Button, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Button, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Button, hideWithEffect) }
     }, {});
 
     AddType("ChatBox", sizeof(tgui::ChatBox),
@@ -679,8 +682,8 @@ void ScriptManager::RegisterTGUI()
         { "uint getLineAmount()", WRAP_MFN(tgui::ChatBox, getLineAmount) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ChatBox, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ChatBox, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::ChatBox, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::ChatBox, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChatBox, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChatBox, hideWithEffect) }
     }, {});
 
     AddType("CheckBox", sizeof(tgui::CheckBox),
@@ -689,16 +692,16 @@ void ScriptManager::RegisterTGUI()
         { "bool isChecked()", WRAP_MFN(tgui::CheckBox, isChecked) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::CheckBox, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::CheckBox, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::CheckBox, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::CheckBox, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::CheckBox, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::CheckBox, hideWithEffect) }
     }, {});
 
     AddType("ChildWindow", sizeof(tgui::ChildWindow),
     {
         { "void setEnabled(bool)", WRAP_MFN(tgui::ChildWindow, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ChildWindow, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::ChildWindow, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::ChildWindow, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChildWindow, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChildWindow, hideWithEffect) }
     }, {});
 
     AddType("ComboBox", sizeof(tgui::ComboBox),
@@ -711,8 +714,8 @@ void ScriptManager::RegisterTGUI()
         { "void deselectItem()", WRAP_MFN(tgui::ComboBox, deselectItem) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ComboBox, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ComboBox, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::ComboBox, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::ComboBox, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ComboBox, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ComboBox, hideWithEffect) }
     }, {});
 
     AddType("EditBox", sizeof(tgui::EditBox),
@@ -721,24 +724,24 @@ void ScriptManager::RegisterTGUI()
         { "String getText()", WRAP_MFN(tgui::EditBox, getText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::EditBox, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::EditBox, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::EditBox, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::EditBox, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::EditBox, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::EditBox, hideWithEffect) }
     }, {});
 
     AddType("Group", sizeof(tgui::Group),
     {
         { "void setEnabled(bool)", WRAP_MFN(tgui::Group, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Group, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Group, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Group, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Group, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Group, hideWithEffect) }
     }, {});
 
     AddType("Knob", sizeof(tgui::Knob),
     {
         { "void setEnabled(bool)", WRAP_MFN(tgui::Knob, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Knob, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Knob, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Knob, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Knob, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Knob, hideWithEffect) }
     }, {});
 
     AddType("Label", sizeof(tgui::Label),
@@ -746,50 +749,50 @@ void ScriptManager::RegisterTGUI()
         { "void setText(const String& in)", WRAP_MFN(tgui::Label, setText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Label, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Label, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Label, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Label, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Label, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Label, hideWithEffect) }
     }, {});
 
     AddType("ListBox", sizeof(tgui::ListBox),
     {
         { "void setEnabled(bool)", WRAP_MFN(tgui::ListBox, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ListBox, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::ListBox, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::ListBox, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListBox, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListBox, hideWithEffect) }
     }, {});
 
     AddType("ListView", sizeof(tgui::ListView),
     {
         { "void setEnabled(bool)", WRAP_MFN(tgui::ListView, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ListView, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::ListView, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::ListView, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListView, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListView, hideWithEffect) }
     }, {});
 
     AddType("Panel", sizeof(tgui::Panel),
     {
         { "void setEnabled(bool)", WRAP_MFN(tgui::Panel, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Panel, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Panel, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Panel, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Panel, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Panel, hideWithEffect) }
     }, {});
 
     AddType("Picture", sizeof(tgui::Picture),
     {
         { "void setEnabled(bool)", WRAP_MFN(tgui::Picture, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Picture, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Picture, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Picture, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Picture, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Picture, hideWithEffect) }
     }, {});
 
     AddType("ProgressBar", sizeof(tgui::ProgressBar),
     {
-        { "void setValue(float)", WRAP_MFN(tgui::ProgressBar, setValue) },
-        { "float getValue()", WRAP_MFN(tgui::ProgressBar, getValue) },
+        { "void setValue(uint)", WRAP_MFN(tgui::ProgressBar, setValue) },
+        { "uint getValue()", WRAP_MFN(tgui::ProgressBar, getValue) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ProgressBar, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ProgressBar, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::ProgressBar, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::ProgressBar, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ProgressBar, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ProgressBar, hideWithEffect) }
     }, {});
 
     AddType("RadioButton", sizeof(tgui::RadioButton),
@@ -798,8 +801,8 @@ void ScriptManager::RegisterTGUI()
         { "bool isChecked()", WRAP_MFN(tgui::RadioButton, isChecked) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::RadioButton, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::RadioButton, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::RadioButton, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::RadioButton, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RadioButton, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RadioButton, hideWithEffect) }
     }, {});
 
     AddType("RangeSlider", sizeof(tgui::RangeSlider),
@@ -810,8 +813,8 @@ void ScriptManager::RegisterTGUI()
         { "float getSelectionEnd()", WRAP_MFN(tgui::RangeSlider, getSelectionEnd) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::RangeSlider, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::RangeSlider, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::RangeSlider, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::RangeSlider, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RangeSlider, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RangeSlider, hideWithEffect) }
     }, {});
 
     AddType("Slider", sizeof(tgui::Slider),
@@ -820,32 +823,32 @@ void ScriptManager::RegisterTGUI()
         { "float getValue()", WRAP_MFN(tgui::Slider, getValue) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Slider, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Slider, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Slider, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Slider, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Slider, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Slider, hideWithEffect) }
     }, {});
 
     AddType("SpinButton", sizeof(tgui::SpinButton),
     {
         { "void setEnabled(bool)", WRAP_MFN(tgui::SpinButton, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::SpinButton, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::SpinButton, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::SpinButton, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinButton, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinButton, hideWithEffect) }
     }, {});
 
     AddType("SpinControl", sizeof(tgui::SpinControl),
     {
         { "void setEnabled(bool)", WRAP_MFN(tgui::SpinControl, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::SpinControl, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::SpinControl, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::SpinControl, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinControl, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinControl, hideWithEffect) }
     }, {});
 
     AddType("Tabs", sizeof(tgui::Tabs),
     {
         { "void setEnabled(bool)", WRAP_MFN(tgui::Tabs, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Tabs, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Tabs, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::Tabs, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Tabs, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Tabs, hideWithEffect) }
     }, {});
 
     AddType("TextArea", sizeof(tgui::TextArea),
@@ -854,16 +857,16 @@ void ScriptManager::RegisterTGUI()
         { "void setText(const String& in)", WRAP_MFN(tgui::TextArea, setText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::TextArea, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::TextArea, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::TextArea, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::TextArea, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TextArea, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TextArea, hideWithEffect) }
     }, {});
 
     AddType("TreeView", sizeof(tgui::TreeView),
     {
         { "void setEnabled(bool)", WRAP_MFN(tgui::TreeView, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::TreeView, setVisible) },
-        { "void showWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::TreeView, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Time)", WRAP_MFN(tgui::TreeView, hideWithEffect) }
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TreeView, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TreeView, hideWithEffect) }
     }, {});
 
     AddType("Gui", sizeof(tgui::Gui),
