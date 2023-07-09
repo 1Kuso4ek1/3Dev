@@ -38,9 +38,9 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     }
 
     auto gBuffer = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer);
-    gBuffer->Bind();
     auto size = gBuffer->GetSize();
     glViewport(0, 0, size.x, size.y);
+    gBuffer->Bind();
 
     if(this->updatePhysics && updatePhysics)
     {
@@ -61,7 +61,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     camera->Draw(camera, lightsVector);
 
     if(!fbo) fbo = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main);
-
+    size = fbo->GetSize();
+    glViewport(0, 0, size.x, size.y);
     fbo->Bind();
 
     glActiveTexture(GL_TEXTURE0);
