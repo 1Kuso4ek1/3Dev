@@ -132,8 +132,22 @@ GLuint TextureManager::CreateCubemap(uint32_t size, GLuint filter, std::string n
 	return texture;
 }
 
+void TextureManager::ResizeTexture(std::string name, bool depth, uint32_t w, uint32_t h)
+{
+    GLuint tex = textures[name];
+
+    glBindTexture(GL_TEXTURE_2D, tex);
+	glTexImage2D(GL_TEXTURE_2D, 0, (depth ? GL_DEPTH_COMPONENT32 : GL_RGBA32F), w, h, 0, (depth ? GL_DEPTH_COMPONENT : GL_RGBA), GL_FLOAT, NULL);
+}
+
 void TextureManager::DeleteTexture(std::string name)
 {
+    if(textures.find(name) == textures.end())
+    {
+        Log::Write("Can't delete unknown texture \"" + name + "\"", Log::Type::Error);
+        return;
+    }
+
     glDeleteTextures(1, &textures[name]);
     textures.erase(name);
 }
@@ -153,7 +167,13 @@ GLuint TextureManager::GetTexture(std::string name)
 
 std::string TextureManager::GetName(GLuint id)
 {
-    return std::find_if(textures.begin(), textures.end(), [&](auto& a) { return a.second == id; })->first;
+    auto it = std::find_if(textures.begin(), textures.end(), [&](auto& a) { return a.second == id; });
+    if(it == textures.end())
+    {
+        Log::Write("There's no texture with id " + std::to_string(id), Log::Type::Error);
+        return "";
+    }
+    return it->first;
 }
 
 std::string TextureManager::GetFilename(std::string name)

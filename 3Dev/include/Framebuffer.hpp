@@ -20,12 +20,7 @@ public:
     Framebuffer(Shader* shader, int w, int h, bool isDepth = false, uint32_t attachments = 1, GLint filter = GL_NEAREST, GLint wrap = GL_CLAMP_TO_EDGE);
     ~Framebuffer();
 
-    /*
-     * Used to create a new framebuffer texture with another width and height
-     * @param w width of the new framebuffer texture
-     * @param h height of the new framebuffer texture
-     */
-    void RecreateTexture(int w, int h);
+    void Resize(int w, int h);
 
     /*
      * Calculates pixel size of current texture (useful in shaders)

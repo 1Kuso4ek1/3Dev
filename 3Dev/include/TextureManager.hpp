@@ -12,6 +12,7 @@ public:
     GLuint LoadTexture(std::string filename, std::string name = "texture");
     GLuint CreateCubemap(uint32_t size, GLuint filter = GL_LINEAR, std::string name = "cubemap");
 
+    void ResizeTexture(std::string name, bool depth, uint32_t w, uint32_t h);
     void DeleteTexture(std::string name);
     void MakeFilenamesRelativeTo(std::string base);
 

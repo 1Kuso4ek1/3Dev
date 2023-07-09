@@ -57,7 +57,7 @@ Framebuffer::~Framebuffer()
     glDeleteFramebuffers(1, &fbo);
 }
 
-void Framebuffer::RecreateTexture(int w, int h)
+void Framebuffer::Resize(int w, int h)
 {
 	size = glm::ivec2(w, h);
 	CalcPixelSize(glm::vec2(w, h));
@@ -67,30 +67,11 @@ void Framebuffer::RecreateTexture(int w, int h)
 		for(auto& i : textures)
 		{
 			auto name = TextureManager::GetInstance()->GetName(i);
-			TextureManager::GetInstance()->DeleteTexture(name);
-			i = TextureManager::GetInstance()->CreateTexture(w, h);
+			TextureManager::GetInstance()->ResizeTexture(name, false, w, h);
 		}
 	}
 	auto name = TextureManager::GetInstance()->GetName(depth);
-	TextureManager::GetInstance()->DeleteTexture(name);
-	depth = TextureManager::GetInstance()->CreateTexture(w, h, true);
-
-    Bind();
-    if(!textures.empty())
-	{
-		std::vector<GLenum> tmp;
-		for(int i = 0; i < textures.size(); i++)
-		{
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textures[i], 0);
-			tmp.push_back(GL_COLOR_ATTACHMENT0 + i);
-		}
-
-		glDrawBuffers(textures.size(), &tmp[0]);
-	}
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        Log::Write("framebuffer status isn't GL_FRAMEBUFFER_COMPLETE", Log::Type::Error);
-    Unbind();
+	TextureManager::GetInstance()->ResizeTexture(name, true, w, h);
 }
 
 void Framebuffer::CalcPixelSize(glm::vec2 v)

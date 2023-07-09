@@ -114,10 +114,11 @@ int main()
     {
         if(event.type == sf::Event::Resized)
         {
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->RecreateTexture(event.size.width, event.size.height);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->RecreateTexture(event.size.width, event.size.height);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->RecreateTexture(event.size.width, event.size.height);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->RecreateTexture(event.size.width, event.size.height);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->Resize(event.size.width, event.size.height);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Resize(event.size.width, event.size.height);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Resize(event.size.width, event.size.height);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(event.size.width, event.size.height);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->Resize(event.size.width, event.size.height);
 
             engine.SetGuiView({ 0, 0, float(event.size.width) * (guiWidth / float(event.size.width)),
                                       float(event.size.height) * (guiHeight / float(event.size.height)) });
