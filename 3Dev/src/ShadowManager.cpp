@@ -9,7 +9,7 @@ ShadowManager::ShadowManager(SceneManager* scene, glm::ivec2 size, Shader* mainS
     glEnable(GL_CULL_FACE);
     //glPolygonOffset(-1, 0.7);
 
-    depthBuffer = std::make_unique<Framebuffer>(nullptr, size.x, size.y, true, GL_LINEAR, GL_CLAMP_TO_BORDER);
+    depthBuffer = std::make_unique<Framebuffer>(nullptr, size.x, size.y, true, 1, GL_LINEAR, GL_CLAMP_TO_BORDER);
 }
 
 void ShadowManager::Update()

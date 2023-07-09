@@ -291,7 +291,6 @@ void ScriptManager::RegisterModel()
         { "void SetPhysicsManager(PhysicsManager@)", WRAP_MFN(Model, SetPhysicsManager) },
         { "void SetShader(Shader@, bool = false)", WRAP_MFN(Model, SetShader) },
         { "void SetIsDrawable(bool)", WRAP_MFN(Model, SetIsDrawable) },
-        { "void SetShadowBias(float)", WRAP_MFN(Model, SetShadowBias) },
         { "void DefaultPose()", WRAP_MFN(Model, DefaultPose) },
         { "void CreateRigidBody()", WRAP_MFN(Model, CreateRigidBody) },
         { "void Move(const Vector3& in)", WRAP_MFN(Model, Move) },

@@ -17,11 +17,9 @@ uniform mat4 view;
 uniform mat4 projection;
 
 out vec2 coord;
-out vec3 camposout;
 out vec3 mnormal;
 out vec3 mpos;
 out mat3 tbn;
-out vec4 lspaceout;
 
 void main()
 {
@@ -39,10 +37,10 @@ void main()
     pos = transform * pos;
 
     mpos = (model * pos).xyz;
-	lspaceout = lspace * vec4(mpos, 1.0);
+	//lspaceout = lspace * vec4(mpos, 1.0);
     mnormal = normalize(mat3(model * transform) * normal);
     coord = uv;
-    camposout = campos;
+    //camposout = campos;
 
     vec3 tangent = cross(mnormal, vec3(0.5, 0.5, 0.5));
     vec3 t = normalize(mat3(model * transform) * tangent);

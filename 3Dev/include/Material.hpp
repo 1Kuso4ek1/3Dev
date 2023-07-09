@@ -43,6 +43,7 @@ public:
 
 	void UpdateShader(Shader* shader);
 	void ResetShader(Shader* shader);
+	static void UpdateShaderEnvironment(Shader* shader);
 	void GetEnvironmentFromRenderer();
 
 	bool Contains(Type type);

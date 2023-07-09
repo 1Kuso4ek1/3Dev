@@ -1,9 +1,11 @@
 #include <Framebuffer.hpp>
 
-Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, GLint filter, GLint wrap) : shader(shader), size(w, h)
+Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, uint32_t attachments, GLint filter, GLint wrap) : shader(shader), size(w, h)
 {
 	CalcPixelSize(glm::vec2(w, h));
-    if(!isDepth) texture = TextureManager::GetInstance()->CreateTexture(w, h, false, filter, wrap);
+    if(!isDepth)
+		for(int i = 0; i < attachments; i++)
+			textures.push_back(TextureManager::GetInstance()->CreateTexture(w, h, false, filter, wrap));
 	
 	depth = TextureManager::GetInstance()->CreateTexture(w, h, true, filter, wrap);
     glGenFramebuffers(1, &fbo);
@@ -11,7 +13,17 @@ Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, GLint filte
 	Bind();
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
     
-	if(!isDepth) glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+	if(!isDepth)
+	{
+		std::vector<GLenum> tmp;
+		for(int i = 0; i < attachments; i++)
+		{
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textures[i], 0);
+			tmp.push_back(GL_COLOR_ATTACHMENT0 + i);
+		}
+
+		glDrawBuffers(attachments, &tmp[0]);
+	}
 	else glDrawBuffer(GL_NONE);
 	
 	int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -50,18 +62,31 @@ void Framebuffer::RecreateTexture(int w, int h)
 	size = glm::ivec2(w, h);
 	CalcPixelSize(glm::vec2(w, h));
 
-	if(texture != 0)
+	if(!textures.empty())
 	{
-		auto name = TextureManager::GetInstance()->GetName(texture);
-		TextureManager::GetInstance()->DeleteTexture(name);
-		texture = TextureManager::GetInstance()->CreateTexture(w, h);
+		for(auto& i : textures)
+		{
+			auto name = TextureManager::GetInstance()->GetName(i);
+			TextureManager::GetInstance()->DeleteTexture(name);
+			i = TextureManager::GetInstance()->CreateTexture(w, h);
+		}
 	}
 	auto name = TextureManager::GetInstance()->GetName(depth);
 	TextureManager::GetInstance()->DeleteTexture(name);
 	depth = TextureManager::GetInstance()->CreateTexture(w, h, true);
 
     Bind();
-    if(texture != 0) glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+    if(!textures.empty())
+	{
+		std::vector<GLenum> tmp;
+		for(int i = 0; i < textures.size(); i++)
+		{
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textures[i], 0);
+			tmp.push_back(GL_COLOR_ATTACHMENT0 + i);
+		}
+
+		glDrawBuffers(textures.size(), &tmp[0]);
+	}
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         Log::Write("framebuffer status isn't GL_FRAMEBUFFER_COMPLETE", Log::Type::Error);
@@ -84,11 +109,11 @@ void Framebuffer::Unbind()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Framebuffer::Draw()
+void Framebuffer::Draw(uint32_t attachment)
 {
 	shader->Bind();
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, textures[attachment]);
 	shader->SetUniform1i("frame", 0);
 	shader->SetUniform2f("pixelsize", pixelsize.x, pixelsize.y);
 	glBindVertexArray(vao);
@@ -231,9 +256,9 @@ float* Framebuffer::GetPixels(glm::ivec2 coords, glm::ivec2 size)
     return data;
 }
 
-GLuint Framebuffer::GetTexture(bool depth)
+GLuint Framebuffer::GetTexture(bool depth, uint32_t attachment)
 {
-	return (depth ? this->depth : texture);
+	return (depth ? this->depth : textures[attachment]);
 }
 
 glm::ivec2 Framebuffer::GetSize()

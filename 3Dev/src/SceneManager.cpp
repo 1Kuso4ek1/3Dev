@@ -15,10 +15,31 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         }
     }
 
-    if(!fbo) fbo = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main);
+    if(shadowPass)
+    {
+        fbo->Bind();
+        auto size = fbo->GetSize();
+        glViewport(0, 0, size.x, size.y);
 
-    fbo->Bind();
-    auto size = fbo->GetSize();
+        if(this->updatePhysics && updatePhysics)
+        {
+            float time = clock.restart().asSeconds();
+            pManager->Update(time);
+        }
+        else clock.restart();
+
+        std::for_each(models.begin(), models.end(), [&](auto p) 
+            { if(!p.second->GetParent()) p.second->Draw(camera, lightsVector); });
+        camera->Draw(camera, lightsVector);
+
+        fbo->Unbind();
+
+        return;
+    }
+
+    auto gBuffer = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer);
+    gBuffer->Bind();
+    auto size = gBuffer->GetSize();
     glViewport(0, 0, size.x, size.y);
 
     if(this->updatePhysics && updatePhysics)
@@ -39,6 +60,37 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         { if(!p.second->GetParent()) p.second->Draw(camera, lightsVector); });
     camera->Draw(camera, lightsVector);
 
+    if(!fbo) fbo = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main);
+
+    fbo->Bind();
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 0));
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 1));
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 2));
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 3));
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 4));
+
+    auto lightingPass = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
+    lightingPass->Bind();
+
+    lightingPass->SetUniform3f("campos", camera->GetPosition().x, camera->GetPosition().y, camera->GetPosition().z);
+    lightingPass->SetUniform1i("gposition", 0);
+    lightingPass->SetUniform1i("galbedo", 1);
+    lightingPass->SetUniform1i("gnormal", 2);
+    lightingPass->SetUniform1i("gemission", 3);
+    lightingPass->SetUniform1i("gcombined", 4);
+    Material::UpdateShaderEnvironment(lightingPass);
+
+    for(int i = 0; i < lightsVector.size(); i++)
+        dynamic_cast<Light*>(lightsVector[i])->Update(lightingPass, i);
+    
+    gBuffer->Draw();
+
     if(skybox)
     {
         glDepthFunc(GL_LEQUAL);
@@ -49,11 +101,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     }
 
     fbo->Unbind();
-
-    if(shadowPass)
-        return;
         
-    if(!transparency) transparency = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency);
+    /*if(!transparency) transparency = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency);
 
     glFrontFace(GL_CW);
     glDisable(GL_CULL_FACE);
@@ -67,7 +116,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 
     transparency->Unbind();
     glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
+    glFrontFace(GL_CCW);*/
 }
 
 void SceneManager::AddModel(std::shared_ptr<Model> model, std::string name, bool checkUniqueness)

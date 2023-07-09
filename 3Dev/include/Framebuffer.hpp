@@ -17,7 +17,7 @@ public:
      * @param w width of the framebuffer texture
      * @param h height of the framebuffer texture
      */
-    Framebuffer(Shader* shader, int w, int h, bool isDepth = false, GLint filter = GL_NEAREST, GLint wrap = GL_CLAMP_TO_EDGE);
+    Framebuffer(Shader* shader, int w, int h, bool isDepth = false, uint32_t attachments = 1, GLint filter = GL_NEAREST, GLint wrap = GL_CLAMP_TO_EDGE);
     ~Framebuffer();
 
     /*
@@ -40,7 +40,7 @@ public:
     static void Unbind();
 
     // Draw the buffer texture on the screen
-    void Draw();
+    void Draw(uint32_t attachment = 0);
 
     GLuint Capture(GLuint texture = 0);
     GLuint CaptureCubemap(Shader* shader, GLuint tex, Matrices& m, bool isSkybox = false);
@@ -52,7 +52,7 @@ public:
      * Returns the buffer texture
      * @param depth return depth texture (if true) or color texture (if false)
      */
-    GLuint GetTexture(bool depth = false);
+    GLuint GetTexture(bool depth = false, uint32_t attachment = 0);
 
     glm::ivec2 GetSize();
 
@@ -88,6 +88,7 @@ private:
         { 36061, "Unsupported" }
     };
 
+    std::vector<GLuint> textures;
     GLuint indices[6] = { 0, 1, 2, 0, 2, 3 };
-    GLuint vao, vbo, fbo, ebo, texture = 0, depth = 0;
+    GLuint vao, vbo, fbo, ebo, depth = 0;
 };
