@@ -4,39 +4,43 @@ precision mediump float;
 const int maxLights = 32;
 const int maxLodLevel = 7;
 const float pi = 3.14159265;
-const float shadowBias = 0.0000001;
 
-uniform sampler2D gposition;
-uniform sampler2D galbedo;
-uniform sampler2D gnormal;
-uniform sampler2D gemission;
-uniform sampler2D gcombined;
+uniform sampler2D albedo;
+uniform sampler2D normalMap;
+uniform sampler2D ao;
+uniform sampler2D metalness;
+uniform sampler2D emission;
+uniform sampler2D roughness;
 uniform sampler2D opacity;
 uniform samplerCube irradiance;
 uniform samplerCube prefilteredMap;
 uniform sampler2D lut;
 
+uniform vec3 nalbedo;
+uniform bool nnormalMap;
+uniform vec3 nemission;
+uniform float nmetalness;
+uniform float nroughness;
+uniform bool nao;
 uniform float nopacity;
 uniform vec3 nirradiance;
 
-uniform vec3 campos;
-
-uniform mat4 lspace;
-
 uniform bool drawTransparency = false;
+uniform float shadowBias;
 
 in vec2 coord;
-
-vec3 pos;
-vec3 norm;
-vec4 lspaceout;
+in vec3 camposout;
+in vec3 mnormal;
+in vec3 mpos;
+in mat3 tbn;
+in vec4 lspaceout;
 
 out vec4 color;
 
 struct Shadow
 {
-	sampler2DShadow shadowmap;
 	vec3 sourcepos;
+	sampler2DShadow shadowmap;
     bool perspective;
 };
 
@@ -69,7 +73,7 @@ float LinearizeDepth(float depth)
 
 float CalcShadow()
 {
-    if(1.0 - dot(norm, normalize(shadow.sourcepos - pos)) >= 1.0) return 0.0;
+    if(1.0 - dot(mnormal, normalize(shadow.sourcepos - mpos)) >= 1.0) return 0.0;
     vec3 pcoord = lspaceout.xyz / lspaceout.w;
     pcoord = pcoord * 0.5 + 0.5;
     if(pcoord.z > 1.0)
@@ -109,15 +113,15 @@ vec3 FresnelSchlick(float cosTh, vec3 f0, float rough)
 
 vec3 CalcLight(Light light, vec3 norm, float rough, float metal, vec3 albedo, vec3 irr, vec3 f0)
 {
-    float theta = dot(normalize(light.position - pos), normalize(-light.direction));
+    float theta = dot(normalize(light.position - mpos), normalize(-light.direction));
     float intensity = 1.0;
     if(light.cutoff != 1.0)
         intensity = clamp((theta - light.outerCutoff) / (light.cutoff - light.outerCutoff), 0.0, 1.0);
     if(theta < light.cutoff && intensity <= 0.0) return vec3(0.0);
 
-    vec3 v = normalize(campos - pos);
+    vec3 v = normalize(camposout - mpos);
 
-    vec3 l = (light.cutoff == 1.0 ? normalize(light.position - pos) : normalize(-light.direction));
+    vec3 l = (light.cutoff == 1.0 ? normalize(light.position - mpos) : normalize(-light.direction));
     vec3 h = normalize(v + l);
 
     float attenuation = 1.0 / (light.attenuation.x + light.attenuation.y * length(l) + light.attenuation.z * pow(length(l), 2));
@@ -148,7 +152,10 @@ vec3 CalcLight(Light light, vec3 norm, float rough, float metal, vec3 albedo, ve
 
 void main()
 {
-    float alpha = texture(galbedo, coord).w;
+    float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity);
+    float w = texture(albedo, coord).w;
+    if(w != alpha && w != 1.0)
+    	alpha = w;
 
     if(!drawTransparency && alpha < 1.0)
         return;
@@ -158,17 +165,17 @@ void main()
         return;
     }
 
-    pos = texture(gposition, coord).xyz;
-    vec3 alb = texture(galbedo, coord).xyz;
-    norm = texture(gnormal, coord).xyz;
-    vec3 emission = texture(gemission, coord).xyz;
-    float metal = texture(gcombined, coord).x;
-    float rough = texture(gcombined, coord).y;
-    float ao = texture(gcombined, coord).z;
-    vec3 irr = (nirradiance.x < 0.0 ? texture(irradiance, norm).xyz : nirradiance);
-    vec3 prefiltered = textureLod(prefilteredMap, reflect(-normalize(campos - pos), norm), rough * maxLodLevel).xyz;
+    vec3 norm;
+    if(nnormalMap) norm = normalize(tbn * normalize(texture(normalMap, coord).xyz * 2.0 - 1.0));
+    else norm = normalize(mnormal);
 
-    lspaceout = lspace * vec4(pos, 1.0);
+    vec3 emission = (nemission.x < 0.0 ? texture(emission, coord).xyz : nemission);
+    float rough = (nroughness < 0.0 ? texture(roughness, coord).x : nroughness);
+    float metal = (nmetalness < 0.0 ? texture(metalness, coord).x : nmetalness);
+    float ao = (nao ? texture(ao, coord).x : 1.0);
+    vec3 alb = (nalbedo.x < 0.0 ? texture(albedo, coord).xyz : nalbedo);
+    vec3 irr = (nirradiance.x < 0.0 ? texture(irradiance, norm).xyz : nirradiance);
+    vec3 prefiltered = textureLod(prefilteredMap, reflect(-normalize(camposout - mpos), norm), rough * maxLodLevel).xyz;
 
     vec3 total = vec3(0.0), totalNoShadow = vec3(0.0);
     float shadow = 0.0;
@@ -183,11 +190,11 @@ void main()
     }
     shadow = CalcShadow();
 
-    vec3 f = FresnelSchlick(max(dot(norm, normalize(campos - pos)), 0.0), f0, rough);
+    vec3 f = FresnelSchlick(max(dot(norm, normalize(camposout - mpos)), 0.0), f0, rough);
     vec3 kspc = f;
     vec3 kdif = (1.0 - kspc) * (1.0 - metal);
 
-    vec2 brdf = normalize(texture(lut, vec2(max(dot(norm, normalize(campos - pos)), 0.0), rough)).xy);
+    vec2 brdf = normalize(texture(lut, vec2(max(dot(norm, normalize(camposout - mpos)), 0.0), rough)).xy);
     vec3 spc = prefiltered * (f * brdf.x + brdf.y);
 
     vec3 diffuse = irr * alb;
@@ -195,5 +202,4 @@ void main()
 
     total += ambient / 2;
     color = vec4((total * (length(emission) > 0.0 ? 1.0 : (1.0 - shadow)) + ambient / 2) + (emission * 5) + totalNoShadow, (alpha < 1.0 ? alpha + ((total.x + total.y, + total.z) / 3.0) * alpha : 1.0));
-    //color = vec4(alpha, alpha, alpha, 1.0);
 }

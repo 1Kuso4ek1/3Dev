@@ -20,8 +20,7 @@ void Renderer::DeleteInstance()
 
 void Renderer::Init(sf::Vector2u fbSize, std::string environmentMapFilename, uint32_t skyboxSideSize, uint32_t irradianceSideSize, uint32_t prefilteredSideSize)
 {
-    shaders[ShaderType::Deffered] = std::make_shared<Shader>(shadersDir + "vertex.vs", shadersDir + "deffered.fs");
-    shaders[ShaderType::Main] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "fragment.fs");
+    shaders[ShaderType::Main] = std::make_shared<Shader>(shadersDir + "vertex.vs", shadersDir + "fragment.fs");
     shaders[ShaderType::Skybox] = std::make_shared<Shader>(shadersDir + "skybox.vs", shadersDir + "skybox.fs");
     shaders[ShaderType::Depth] = std::make_shared<Shader>(shadersDir + "depth.vs", shadersDir + "depth.fs");
     shaders[ShaderType::Post] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "post.fs");
@@ -30,8 +29,6 @@ void Renderer::Init(sf::Vector2u fbSize, std::string environmentMapFilename, uin
     shaders[ShaderType::Filtering] = std::make_shared<Shader>(shadersDir + "spcfiltering.vs", shadersDir + "spcfiltering.fs");
     shaders[ShaderType::BRDF] = std::make_shared<Shader>(shadersDir + "brdf.vs", shadersDir + "brdf.fs");
     shaders[ShaderType::Bloom] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "bloom.fs");
-
-    framebuffers[FramebufferType::GBuffer] = std::make_shared<Framebuffer>(shaders[ShaderType::Main].get(), fbSize.x, fbSize.y, false, 5);
 
     framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
     framebuffers[FramebufferType::Transparency] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);

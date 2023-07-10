@@ -16,7 +16,6 @@ public:
     enum class ShaderType
     {
         Main,
-        Deffered,
         Skybox,
         Depth,
         Post,
@@ -31,7 +30,6 @@ public:
     {
         Main,
         Transparency,
-        GBuffer,
         BloomPingPong0,
         BloomPingPong1
     };

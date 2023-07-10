@@ -38,6 +38,7 @@ public:
 	void SetFilename(const std::string& filename);
 	void SetIsDrawable(bool drawable);
 	void SetIsLoadingImmediatelly(bool imm);
+	void SetShadowBias(float bias);
 	void AddChild(Node* child) override;
 	void DefaultPose();
 
@@ -98,6 +99,8 @@ private:
 
 	bool drawable = true, immLoad = true;
 
+	float shadowBias = 0.0000001;
+
 	std::vector<std::shared_ptr<Mesh>> meshes;
 	std::vector<std::shared_ptr<Bone>> bones;
 	std::vector<std::shared_ptr<Bone>> bonesChildren;
@@ -105,7 +108,7 @@ private:
 	std::unordered_map<std::string, std::pair<int, glm::mat4>> bonemap;
 
 	Matrices* m = Renderer::GetInstance()->GetMatrices();
-	Shader* shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Deffered);
+	Shader* shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
 	Shader* tempShader = nullptr;
 
 	Json::Value data;

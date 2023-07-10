@@ -114,7 +114,6 @@ int main()
     {
         if(event.type == sf::Event::Resized)
         {
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->Resize(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Resize(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Resize(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(event.size.width, event.size.height);

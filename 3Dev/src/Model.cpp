@@ -162,11 +162,19 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
         {
             shader->Bind();
             mat[mesh]->UpdateShader(shader);
+            for(int i = 0; i < 32; i++)
+				if(i >= lights.size())
+					shader->SetUniform1i("lights[" + std::to_string(i) + "].isactive", 0);
+				else dynamic_cast<Light*>(lights[i])->Update(shader, i);
 
-			shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
+			auto camPos = dynamic_cast<Camera*>(cam)->GetPosition(true);
+            shader->SetUniform3f("campos", camPos.x, camPos.y, camPos.z);
+            shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
 			if(!pose.empty())
             	shader->SetVectorOfUniformMatrix4("pose", pose.size(), pose);
             shader->SetUniform1i("bones", !bones.empty());
+            shader->SetUniform1i("drawTransparency", transparencyPass);
+			shader->SetUniform1f("shadowBias", shadowBias);
 
             m->UpdateShader(shader);
 
@@ -295,6 +303,11 @@ void Model::SetIsDrawable(bool drawable)
 void Model::SetIsLoadingImmediatelly(bool imm)
 {
 	immLoad = imm;
+}
+
+void Model::SetShadowBias(float bias)
+{
+	shadowBias = bias;
 }
 
 void Model::AddChild(Node* child)
