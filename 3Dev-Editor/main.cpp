@@ -663,7 +663,6 @@ int main()
 
     float exposure = properties["renderer"]["exposure"].asFloat();
     float bloomStrength = 0.3;
-    float brightnessThreshold = 2.5;
 
     int blurIterations = 8;
 
@@ -681,7 +680,6 @@ int main()
     scman.AddProperty("bool manageCameraMouse", &manageCameraMouse);
     scman.AddProperty("float exposure", &exposure);
     scman.AddProperty("float bloomStrength", &bloomStrength);
-    scman.AddProperty("float brightnessThreshold", &brightnessThreshold);
     scman.AddProperty("int blurIterations", &blurIterations);
     scman.SetDefaultNamespace("");
 	std::string startDecl = "void Start()", loopDecl = "void Loop()";
@@ -2087,8 +2085,8 @@ int main()
         if(bloomStrength > 0)
         {
             pingPongBuffers[0]->Bind();
+            glViewport(0, 0, pingPongBuffers[0]->GetSize().x, pingPongBuffers[0]->GetSize().y);
             Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("brightnessThreshold", brightnessThreshold);
             Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
             glDisable(GL_DEPTH_TEST);
@@ -2109,6 +2107,8 @@ int main()
         }
 
 		viewport->bindFramebuffer();
+        auto size = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->GetSize();
+        glViewport(0, 0, size.x, size.y);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glActiveTexture(GL_TEXTURE15);
         glBindTexture(GL_TEXTURE_2D, pingPongBuffers[buffer]->GetTexture());

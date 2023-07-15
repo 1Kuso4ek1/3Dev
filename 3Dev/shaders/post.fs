@@ -80,7 +80,7 @@ void main()
 {
     color = texture(frame, coord);
 
-    if(color.x <= 0.2 && color.y <= 0.2 && color.z <= 0.2 && transparentBuffer)
+    if(color.x < 0.0 && transparentBuffer)
     {
         color = vec4(0.0, 0.0, 0.0, 0.0);
         return;
@@ -88,14 +88,13 @@ void main()
 
     if(rawColor)
     {
-        if(dot(color.rgb, vec3(0.2126, 0.7152, 0.0722)) > brightnessThreshold) return;
-        else color = vec4(0.0, 0.0, 0.0, 1.0);
+        color.rgb = max(color.rgb, vec3(0.00001));
         return;
     }
 
     if(fxaa) color = FXAA();
 
-    color.rgb += texture(bloom, coord).rgb * bloomStrength;
+    color.rgb = mix(color.rgb, texture(bloom, coord).rgb, bloomStrength);
 
     /*color.rgb = color.rgb / (color.rgb + vec3(1.0));
     color.rgb *= exposure;

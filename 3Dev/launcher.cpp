@@ -69,7 +69,6 @@ int main()
 
     float exposure = cfg["renderer"]["exposure"].asFloat();
     float bloomStrength = 0.3;
-    float brightnessThreshold = 2.5;
 
     int blurIterations = 8;
 
@@ -87,7 +86,6 @@ int main()
     scman.AddProperty("bool manageCameraMouse", &manageCameraMouse);
     scman.AddProperty("float exposure", &exposure);
     scman.AddProperty("float bloomStrength", &bloomStrength);
-    scman.AddProperty("float brightnessThreshold", &brightnessThreshold);
     scman.AddProperty("int blurIterations", &blurIterations);
     scman.SetDefaultNamespace("");
 
@@ -116,8 +114,8 @@ int main()
         {
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Resize(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Resize(event.size.width, event.size.height);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(event.size.width, event.size.height);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->Resize(event.size.width, event.size.height);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(event.size.width / 12, event.size.height / 12);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->Resize(event.size.width / 12, event.size.height / 12);
 
             engine.SetGuiView({ 0, 0, float(event.size.width) * (guiWidth / float(event.size.width)),
                                       float(event.size.height) * (guiHeight / float(event.size.height)) });
@@ -152,8 +150,8 @@ int main()
         if(bloomStrength > 0)
         {
             pingPongBuffers[0]->Bind();
+            glViewport(0, 0, pingPongBuffers[0]->GetSize().x, pingPongBuffers[0]->GetSize().y);
             Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("brightnessThreshold", brightnessThreshold);
             Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
             glDisable(GL_DEPTH_TEST);
@@ -174,6 +172,8 @@ int main()
         }
 
         Framebuffer::Unbind();
+        auto size = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->GetSize();
+        glViewport(0, 0, size.x, size.y);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glActiveTexture(GL_TEXTURE15);
         glBindTexture(GL_TEXTURE_2D, pingPongBuffers[buffer]->GetTexture());

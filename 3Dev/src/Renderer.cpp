@@ -33,8 +33,8 @@ void Renderer::Init(sf::Vector2u fbSize, std::string environmentMapFilename, uin
     framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
     framebuffers[FramebufferType::Transparency] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
 
-    framebuffers[FramebufferType::BloomPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x, fbSize.y, false, 1, GL_LINEAR);
-    framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x, fbSize.y, false, 1, GL_LINEAR);
+    framebuffers[FramebufferType::BloomPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / 12, fbSize.y / 12, false, 1, GL_LINEAR);
+    framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / 12, fbSize.y / 12, false, 1, GL_LINEAR);
 
     LoadEnvironment(environmentMapFilename, skyboxSideSize, irradianceSideSize, prefilteredSideSize);
 

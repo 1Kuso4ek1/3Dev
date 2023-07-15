@@ -2572,7 +2572,7 @@ ChildWindow.viewport {
     Position = (220, 0);
     PositionLocked = true;
     Renderer = &4;
-    Size = (1110, 662.381);
+    Size = (1110, 662);
     Title = Viewport;
     TitleAlignment = Center;
     TitleButtons = None;
