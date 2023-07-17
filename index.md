@@ -11,7 +11,7 @@
 - 3D audio
 - Scripting with _**Angelscript**_
 - _**3Dev Editor**_
-- _And much more..._
+- _And much more..._  
 ## Showcase
 - **Bloodbath** - A WIP multiplayer FPS shooter  ![image](https://github.com/1Kuso4ek1/3Dev/assets/53074863/7b34991c-eb7c-4eaf-b1ac-f8c692588b12)
 - **Crytek Sponza**  ![output](https://github.com/1Kuso4ek1/3Dev/assets/53074863/5037aa61-4cd7-4bf6-892a-4cb188904fcb)
