@@ -26,8 +26,4 @@ To render animations you need **FFmpeg**, that included in the 1.3.0-rc release.
 render -s /..../scene.json -o scene.mp4 -e /..../environment.hdr .... -a cameraMovement:walk,cameraMovement1
 ```
 In that case, **cameraMovement** will play first, and then **walk** and **cameraMovement1** will play simultaneously.  
-Here's a small example of what can be rendered:
-
-
-https://user-images.githubusercontent.com/53074863/236879971-24dcfd5a-19e1-40e0-86a0-2ee20c214490.mp4
 
