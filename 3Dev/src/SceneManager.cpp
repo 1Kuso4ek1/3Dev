@@ -165,16 +165,25 @@ void SceneManager::RemoveBones(std::shared_ptr<Model> model, Bone* bone)
         for(auto& i : model->GetBones())
         {
             RemoveBones(model, i.get());
-            bones.erase(i->GetName());
-            nodes.erase(i->GetName());
+            bones.erase(i->GetName() + "-" + GetModelName(model));
+            nodes.erase(i->GetName() + "-" + GetModelName(model));
         }
     else
         for(auto i : bone->GetChildren())
         {
-            auto b = dynamic_cast<Bone*>(i);
-            RemoveBones(model, b);
-            bones.erase(b->GetName());
-            nodes.erase(b->GetName());
+            auto it = std::find_if(bones.begin(), bones.end(), [&](auto b) { return b.second == i; });
+            if(it == bones.end())
+            {
+                i->SetParent(nullptr);
+                continue;
+            }
+            else
+            {
+                auto b = dynamic_cast<Bone*>(i);
+                RemoveBones(model, b);
+                bones.erase(b->GetName() + "-" + GetModelName(model));
+                nodes.erase(b->GetName() + "-" + GetModelName(model));
+            }
         }
 }
 
@@ -193,9 +202,9 @@ void SceneManager::RemoveModel(std::shared_ptr<Model> model)
     if(it != models.end())
     {
         auto p = ParseName(it->first);
+        RemoveBones(model);
         models.erase(it);
         nodes.erase(itn);
-        RemoveBones(model);
         if(!p.second.empty())
             RemoveFromTheGroup(p.second, model);
     }

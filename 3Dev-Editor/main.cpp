@@ -915,7 +915,7 @@ int main()
         auto light = scene.GetLight(sceneTree->getSelectedItem().back().toStdString());
     	scene.RemoveLight(light);
         delete light;
-    	sceneTree->removeItem(sceneTree->getSelectedItem(), false);
+    	readSceneTree();
     });
 
     auto addKf = [&](std::string kf)
@@ -1148,7 +1148,7 @@ int main()
     deleteButton->onPress([&]()
     {
     	scene.RemoveModel(scene.GetModel(sceneTree->getSelectedItem().back().toStdString()));
-    	sceneTree->removeItem(sceneTree->getSelectedItem(), false);
+    	readSceneTree();
     });
 
 	buildButton->onPress([&]()

@@ -90,18 +90,10 @@ void Model::Load(std::string filename, unsigned int flags)
 
 	meshes.clear();
 	anims.clear();
-	bones.clear();
-	children.clear();
 
 	LoadAnimations(scene);
 	ProcessNode(scene->mRootNode, scene);
 
-	for(auto i : bones)
-	{
-		//n += Node::GetHierarchySize(i.get());
-		auto ptr = i;
-		this->AddChild(ptr.get());
-	}
 	pose.resize(64);
 
 	if(man)
@@ -117,10 +109,7 @@ void Model::Load(std::string filename, unsigned int flags)
 
 	if(mat.empty()) Log::Write("Empty material array passed", Log::Type::Critical);
 	if(mat.size() != meshes.size())
-	{
-		//Log::Write("Materials count != meshes count", Log::Type::Warning);
 		mat.resize(meshes.size(), mat.back());
-	}
 
 	this->filename = filename;
 }
@@ -642,11 +631,8 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 		{
 			int id = bone->mWeights[j].mVertexId;
 			float weight = bone->mWeights[j].mWeight;
-			if(nbones[id] < 4)
-			{
-				data[id].ids[nbones[id]] = i;
-				data[id].weights[nbones[id]] = weight;
-			}
+			data[id].ids[nbones[id]] = i;
+			data[id].weights[nbones[id]] = weight;
 			nbones[id]++;
 		}
 	}
@@ -660,7 +646,7 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 	}
 
 	FindBoneNodes(node, bones);
-	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB, /*bones,*/ tr));
+	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB, tr));
 }
 
 void Model::LoadAnimations(const aiScene* scene)
@@ -704,7 +690,10 @@ void Model::FindBoneNodes(aiNode* node, std::vector<std::shared_ptr<Bone>>& bone
 	if(ProcessBone(node, tmp))
 	{
 		if(tmp)
+		{
 			bones.push_back(tmp);
+			this->AddChild(tmp.get());
+		}
 		return;
 	}
 
