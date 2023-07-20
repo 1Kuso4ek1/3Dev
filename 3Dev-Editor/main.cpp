@@ -365,7 +365,7 @@ int main()
     auto timeEdit = editor.get<tgui::EditBox>("time");
     auto repeatBox = editor.get<tgui::CheckBox>("repeat");
     auto addActionButton = editor.get<tgui::Button>("addAction");
-    auto removeKeyframeButton = editor.get<tgui::Button>("removeKeyframe");
+    auto deleteAnimOrKFButton = editor.get<tgui::Button>("deleteAnimOrKF");
 
     auto aplayButton = editor.get<tgui::Button>("aplay");
     auto apauseButton = editor.get<tgui::Button>("apause");
@@ -951,9 +951,11 @@ int main()
         addAction(sceneTree->getSelectedItem()[3].toStdString());
     });
 
-    removeKeyframeButton->onPress([&]()
+    deleteAnimOrKFButton->onPress([&]()
     {
-        scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString())->GetKeyframes().erase(sceneTree->getSelectedItem()[3].toStdString());
+        if(sceneTree->getSelectedItem().size() > 3)
+            scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString())->GetKeyframes().erase(sceneTree->getSelectedItem()[3].toStdString());
+        else scene.RemoveAnimation(scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString()));
         readSceneTree();
     });
 
@@ -1820,15 +1822,13 @@ int main()
                 {
                     addActionButton->setVisible(true);
                     addActionButton->setEnabled(true);
-                    removeKeyframeButton->setVisible(true);
-                    removeKeyframeButton->setEnabled(true);
+                    deleteAnimOrKFButton->setText("Delete keyframe");
                 }
                 else
                 {
                     addActionButton->setVisible(false);
                     addActionButton->setEnabled(false);
-                    removeKeyframeButton->setVisible(false);
-                    removeKeyframeButton->setEnabled(false);
+                    deleteAnimOrKFButton->setText("Delete animation");
                 }
 
                 if((!animNameEdit->isFocused() && animNameEdit->getText() != sceneTree->getSelectedItem()[2]) || objectMode)

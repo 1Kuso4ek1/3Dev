@@ -25,6 +25,7 @@ public:
 
     void RemoveModel(std::shared_ptr<Model> model);
     void RemoveMaterial(std::shared_ptr<Material> material);
+    void RemoveAnimation(std::shared_ptr<Animation> animation);
     void RemoveLight(Light* light);
 
     void RemoveAllObjects();

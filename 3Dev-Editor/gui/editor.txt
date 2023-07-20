@@ -2504,10 +2504,10 @@ ChildWindow.objectEditorWindow {
             }
         }
 
-        Button.removeKeyframe {
+        Button.deleteAnimOrKF {
             Position = (0, 250);
             Size = (130, 20);
-            Text = "Remove keyframe";
+            Text = "Delete keyframe";
             TextSize = 13;
 
             Renderer {

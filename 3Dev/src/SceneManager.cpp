@@ -217,6 +217,13 @@ void SceneManager::RemoveMaterial(std::shared_ptr<Material> material)
         materials.erase(it);
 }
 
+void SceneManager::RemoveAnimation(std::shared_ptr<Animation> animation)
+{
+    auto it = std::find_if(animations.begin(), animations.end(), [&](auto& p) { return p.second == animation; });
+    if(it != animations.end())
+        animations.erase(it);
+}
+
 void SceneManager::RemoveLight(Light* light)
 {
     auto it = std::find_if(lights.begin(), lights.end(), [&](auto& p) { return p.second == light; });
