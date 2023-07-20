@@ -4,7 +4,7 @@
 class Bone : public Node
 {
 public:
-    Bone(int id, std::string name, glm::mat4 offset);
+    Bone(int id, const std::string& name, glm::mat4 offset);
 
     void SetTransform(const rp3d::Transform& tr) override;
 

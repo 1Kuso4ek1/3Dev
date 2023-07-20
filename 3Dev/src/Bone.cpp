@@ -1,6 +1,6 @@
 #include <Bone.hpp>
 
-Bone::Bone(int id, std::string name, glm::mat4 offset) : id(id), name(name)
+Bone::Bone(int id, const std::string& name, glm::mat4 offset) : id(id), name(name)
 {
     this->offset = offset;
     size = rp3d::Vector3(1, 1, 1);

@@ -27,7 +27,7 @@ void Animation::SetLastTime(float lastTime)
     this->lastTime = lastTime;
 }
 
-void Animation::AddKeyframe(std::string name, const Keyframe& keyframe)
+void Animation::AddKeyframe(const std::string& name, const Keyframe& keyframe)
 {
     keyframes[name] = keyframe;
 }
@@ -103,37 +103,37 @@ std::unordered_map<std::string, Keyframe>& Animation::GetKeyframes()
     return keyframes;
 }
 
-std::string Animation::GetName()
+std::string Animation::GetName() const
 {
     return name;
 }
 
-bool Animation::IsRepeated()
+bool Animation::IsRepeated() const
 {
     return repeat;
 }
 
-float Animation::GetTime()
+float Animation::GetTime() const
 {
     return time.getElapsedTime().asSeconds() * tps;
 }
 
-float Animation::GetLastTime()
+float Animation::GetLastTime() const
 {
     return lastTime;
 }
 
-float Animation::GetDuration()
+float Animation::GetDuration() const
 {
     return duration;
 }
 
-float Animation::GetTPS()
+float Animation::GetTPS() const
 {
     return tps;
 }
 
-Animation::State Animation::GetState()
+Animation::State Animation::GetState() const
 {
     return state;
 }

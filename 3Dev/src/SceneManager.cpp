@@ -70,7 +70,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     glFrontFace(GL_CCW);
 }
 
-void SceneManager::AddModel(std::shared_ptr<Model> model, std::string name, bool checkUniqueness)
+void SceneManager::AddModel(std::shared_ptr<Model> model, const std::string& name, bool checkUniqueness)
 {
     auto n = ParseName(name);
     if(checkUniqueness)
@@ -111,7 +111,7 @@ void SceneManager::AddModel(std::shared_ptr<Model> model, std::string name, bool
     }
 }
 
-void SceneManager::AddMaterial(std::shared_ptr<Material> material, std::string name)
+void SceneManager::AddMaterial(std::shared_ptr<Material> material, const std::string& name)
 {
     int nameCount = std::count_if(materials.begin(), materials.end(), [&](auto& p)
                     { return p.first.find(name) != std::string::npos; });
@@ -120,7 +120,7 @@ void SceneManager::AddMaterial(std::shared_ptr<Material> material, std::string n
     materials[lastAdded] = material;
 }
 
-void SceneManager::AddAnimation(std::shared_ptr<Animation> animation, std::string name)
+void SceneManager::AddAnimation(std::shared_ptr<Animation> animation, const std::string& name)
 {
     int nameCount = std::count_if(animations.begin(), animations.end(), [&](auto& p)
                     { return p.first.find(name) != std::string::npos; });
@@ -129,7 +129,7 @@ void SceneManager::AddAnimation(std::shared_ptr<Animation> animation, std::strin
     animations[lastAdded] = animation;
 }
 
-void SceneManager::AddLight(Light* light, std::string name)
+void SceneManager::AddLight(Light* light, const std::string& name)
 {
     int nameCount = std::count_if(lights.begin(), lights.end(), [&](auto& p)
                     { return p.first.find(name) != std::string::npos; });
@@ -188,7 +188,7 @@ void SceneManager::RemoveBones(std::shared_ptr<Model> model, Bone* bone)
 }
 
 template<class... Args>
-std::shared_ptr<Model> SceneManager::CreateModel(std::string name, Args&&... args)
+std::shared_ptr<Model> SceneManager::CreateModel(const std::string& name, Args&&... args)
 {
     auto ret = std::make_shared<Model>(args...);
     AddModel(ret, name);
@@ -239,7 +239,7 @@ void SceneManager::RemoveAllObjects()
     SetCamera(camera);
 }
 
-void SceneManager::Save(std::string filename, bool relativePaths)
+void SceneManager::Save(const std::string& filename, bool relativePaths)
 {
     Json::Value data;
     int counter = 0;
@@ -325,7 +325,7 @@ void SceneManager::Save(std::string filename, bool relativePaths)
     file.close();
 }
 
-void SceneManager::Load(std::string filename, bool loadEverything)
+void SceneManager::Load(const std::string& filename, bool loadEverything)
 {
     RemoveAllObjects();
 
@@ -530,7 +530,7 @@ std::string SceneManager::GetLastAdded()
     return lastAdded;
 }
 
-std::shared_ptr<Model> SceneManager::GetModel(std::string name)
+std::shared_ptr<Model> SceneManager::GetModel(const std::string& name)
 {
     if(models.find(name) != models.end())
         return models[name];
@@ -539,7 +539,7 @@ std::shared_ptr<Model> SceneManager::GetModel(std::string name)
     return nullptr;
 }
 
-std::shared_ptr<Material> SceneManager::GetMaterial(std::string name)
+std::shared_ptr<Material> SceneManager::GetMaterial(const std::string& name)
 {
     if(materials.find(name) != materials.end())
         return materials[name];
@@ -548,7 +548,7 @@ std::shared_ptr<Material> SceneManager::GetMaterial(std::string name)
     return nullptr;
 }
 
-std::shared_ptr<Animation> SceneManager::GetAnimation(std::string name)
+std::shared_ptr<Animation> SceneManager::GetAnimation(const std::string& name)
 {
     if(animations.find(name) != animations.end())
         return animations[name];
@@ -567,7 +567,7 @@ std::shared_ptr<SoundManager> SceneManager::GetSoundManager()
     return sManager;
 }
 
-Node* SceneManager::GetNode(std::string name)
+Node* SceneManager::GetNode(const std::string& name)
 {
     if(nodes.find(name) != nodes.end())
         return nodes[name];
@@ -617,12 +617,12 @@ std::string SceneManager::GetMaterialName(Material* mat)
             })->first;
 }
 
-std::vector<std::shared_ptr<Model>> SceneManager::GetModelGroup(std::string name)
+std::vector<std::shared_ptr<Model>> SceneManager::GetModelGroup(const std::string& name)
 {
     return modelGroups[name];
 }
 
-Model* SceneManager::GetModelPtr(std::string name)
+Model* SceneManager::GetModelPtr(const std::string& name)
 {
     if(models.find(name) != models.end())
         return models[name].get();
@@ -631,7 +631,7 @@ Model* SceneManager::GetModelPtr(std::string name)
     return nullptr;
 }
 
-Material* SceneManager::GetMaterialPtr(std::string name)
+Material* SceneManager::GetMaterialPtr(const std::string& name)
 {
     if(materials.find(name) != materials.end())
         return materials[name].get();
@@ -640,7 +640,7 @@ Material* SceneManager::GetMaterialPtr(std::string name)
     return nullptr;
 }
 
-Animation* SceneManager::GetAnimationPtr(std::string name)
+Animation* SceneManager::GetAnimationPtr(const std::string& name)
 {
     if(animations.find(name) != animations.end())
         return animations[name].get();
@@ -659,7 +659,7 @@ SoundManager* SceneManager::GetSoundManagerPtr()
     return sManager.get();
 }
 
-Model* SceneManager::CloneModel(Model* model, bool isTemporary, std::string name)
+Model* SceneManager::CloneModel(Model* model, bool isTemporary, const std::string& name)
 {
     auto ret = std::make_shared<Model>(model);
     AddModel(ret, name);
@@ -669,7 +669,7 @@ Model* SceneManager::CloneModel(Model* model, bool isTemporary, std::string name
     return ret.get();
 }
 
-std::vector<Model*> SceneManager::GetModelPtrGroup(std::string name)
+std::vector<Model*> SceneManager::GetModelPtrGroup(const std::string& name)
 {
     std::vector<Model*> ret;
     for(auto& i : modelGroups[name])
@@ -682,7 +682,7 @@ Camera* SceneManager::GetCamera()
     return camera;
 }
 
-Light* SceneManager::GetLight(std::string name)
+Light* SceneManager::GetLight(const std::string& name)
 {
     if(lights.find(name) != lights.end())
         return lights[name];
@@ -691,7 +691,7 @@ Light* SceneManager::GetLight(std::string name)
     return nullptr;
 }
 
-Bone* SceneManager::GetBone(std::string name)
+Bone* SceneManager::GetBone(const std::string& name)
 {
     if(bones.find(name) != bones.end())
         return bones[name];
@@ -709,7 +709,7 @@ std::vector<Light*> SceneManager::GetShadowCastingLights()
     return ret;
 }
 
-void SceneManager::SetModelName(std::string name, std::string newName)
+void SceneManager::SetModelName(const std::string& name, const std::string& newName)
 {
 	auto it = models.find(name);
     auto itn = nodes.find(name);
@@ -767,7 +767,7 @@ void SceneManager::SetModelName(std::string name, std::string newName)
         Log::Write("Could not find a model with name \"" + name + "\"", Log::Type::Warning);
 }
 
-void SceneManager::SetMaterialName(std::string name, std::string newName)
+void SceneManager::SetMaterialName(const std::string& name, const std::string& newName)
 {
 	auto it = materials.find(name);
 	if(it != materials.end())
@@ -780,7 +780,7 @@ void SceneManager::SetMaterialName(std::string name, std::string newName)
         Log::Write("Could not find a material with name \"" + name + "\"", Log::Type::Warning);
 }
 
-void SceneManager::SetAnimationName(std::string name, std::string newName)
+void SceneManager::SetAnimationName(const std::string& name, const std::string& newName)
 {
     auto it = animations.find(name);
 	if(it != animations.end())
@@ -793,7 +793,7 @@ void SceneManager::SetAnimationName(std::string name, std::string newName)
         Log::Write("Could not find an animation with name \"" + name + "\"", Log::Type::Warning);
 }
 
-void SceneManager::SetLightName(std::string name, std::string newName)
+void SceneManager::SetLightName(const std::string& name, const std::string& newName)
 {
 	auto it = lights.find(name);
     auto itn = nodes.find(name);
@@ -836,14 +836,14 @@ std::array<std::vector<std::string>, 6> SceneManager::GetNames()
     return ret;
 }
 
-void SceneManager::RemoveFromTheGroup(std::string group, std::shared_ptr<Model> model)
+void SceneManager::RemoveFromTheGroup(const std::string& group, std::shared_ptr<Model> model)
 {
     auto& groupVec = modelGroups[group];
     auto it = std::find(groupVec.begin(), groupVec.end(), model);
     groupVec.erase(it);
 }
 
-void SceneManager::MoveToTheGroup(std::string from, std::string to, std::shared_ptr<Model> model)
+void SceneManager::MoveToTheGroup(const std::string& from, const std::string& to, std::shared_ptr<Model> model)
 {
     auto& groupVec = modelGroups[from];
     auto it = std::find(groupVec.begin(), groupVec.end(), model);
@@ -852,7 +852,7 @@ void SceneManager::MoveToTheGroup(std::string from, std::string to, std::shared_
     modelGroups[to].push_back(model);
 }
 
-std::pair<std::string, std::string> SceneManager::ParseName(std::string in)
+std::pair<std::string, std::string> SceneManager::ParseName(const std::string& in)
 {
     if(in.find(':') == std::string::npos)
         return { in, "" };
