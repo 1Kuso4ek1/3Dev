@@ -27,6 +27,7 @@ GLuint TextureManager::CreateTexture(uint32_t w, uint32_t h, bool depth, GLint f
 	glTexImage2D(GL_TEXTURE_2D, 0, (depth ? GL_DEPTH_COMPONENT32 : GL_RGBA32F), w, h, 0, (depth ? GL_DEPTH_COMPONENT : GL_RGBA), GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+	if(depth) glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
