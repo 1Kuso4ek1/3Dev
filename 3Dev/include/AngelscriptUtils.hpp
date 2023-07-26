@@ -215,3 +215,6 @@ static sf::IpAddress ResolveIp(std::string addr)
         return ip.value();
     return sf::IpAddress::Any;
 }
+
+static int Stoi(const std::string& str, int base) { return std::stoi(str, nullptr, base); }
+static int Stof(const std::string& str) { return std::stof(str); }

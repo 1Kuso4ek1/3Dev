@@ -41,8 +41,8 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     AddFunction("string to_string(int)", WRAP_FN_PR(std::to_string, (int), std::string));
     AddFunction("string to_string(float)", WRAP_FN_PR(std::to_string, (float), std::string));
 
-    AddFunction("int stoi(const string& in)", WRAP_FN_PR(std::stoi, (const std::string&, size_t*, int), int));
-    AddFunction("float stof(const string& in)", WRAP_FN_PR(std::stof, (const std::string&, size_t*), float));
+    AddFunction("int stoi(const string& in, int = 10)", WRAP_FN(Stoi));
+    AddFunction("float stof(const string& in)", WRAP_FN(Stof));
 
     AddFunction("float radians(float)", WRAP_FN(glm::radians<float>));
     AddFunction("float degrees(float)", WRAP_FN(glm::degrees<float>));
@@ -639,9 +639,10 @@ void ScriptManager::RegisterTGUI()
 
     AddValueType("String", sizeof(tgui::String), asGetTypeTraits<tgui::String>() | asOBJ_POD,
     {
-        { "string toStdString()", WRAP_MFN(tgui::String, toStdString) }
+        { "string toStdString() const", WRAP_MFN(tgui::String, toStdString) }
     }, {});
     AddTypeConstructor("String", "void f(const string& in)", WRAP_OBJ_LAST(MakeString));
+    AddTypeConstructor("String", "void f(String& in)", WRAP_OBJ_LAST(CopyType<tgui::String>));
 
     AddValueType("Duration", sizeof(tgui::Duration), asGetTypeTraits<tgui::Duration>() | asOBJ_POD, {}, {});
     AddTypeConstructor("Duration", "void f(const Time& in)", WRAP_OBJ_LAST(MakeDuration));
@@ -721,7 +722,7 @@ void ScriptManager::RegisterTGUI()
     AddType("EditBox", sizeof(tgui::EditBox),
     {
         { "void setText(const String& in)", WRAP_MFN(tgui::EditBox, setText) },
-        { "String getText()", WRAP_MFN(tgui::EditBox, getText) },
+        { "const String& getText() const", WRAP_MFN(tgui::EditBox, getText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::EditBox, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::EditBox, setVisible) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::EditBox, showWithEffect) },
@@ -853,7 +854,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("TextArea", sizeof(tgui::TextArea),
     {
-        { "String getText()", WRAP_MFN(tgui::TextArea, getText) },
+        { "String getText() const", WRAP_MFN(tgui::TextArea, getText) },
         { "void setText(const String& in)", WRAP_MFN(tgui::TextArea, setText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::TextArea, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::TextArea, setVisible) },
