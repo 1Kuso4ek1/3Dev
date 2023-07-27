@@ -872,6 +872,8 @@ void ScriptManager::RegisterTGUI()
 
     AddType("Gui", sizeof(tgui::Gui),
     {
+        { "void setOpacity(float)", WRAP_MFN(tgui::Gui, setOpacity) },
+        { "float getOpacity() const", WRAP_MFN(tgui::Gui, getOpacity) },
         { "BitmapButton@ getBitmapButton(string)", WRAP_OBJ_LAST(GetWidget<tgui::BitmapButton>) },
         { "Button@ getButton(string)", WRAP_OBJ_LAST(GetWidget<tgui::Button>) },
         { "ChatBox@ getChatBox(string)", WRAP_OBJ_LAST(GetWidget<tgui::ChatBox>) },
