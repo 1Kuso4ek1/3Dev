@@ -797,6 +797,7 @@ int main()
 		model->CreateRigidBody();
     	scene.AddModel(model);
     	readSceneTree();
+        sceneTree->selectItem({ "Scene", "Objects", scene.GetLastAdded() });
     });
 
     shapeButton->onPress([&]()
@@ -808,6 +809,7 @@ int main()
         model->CreateBoxShape();
         scene.AddModel(model, "cube");
     	readSceneTree();
+        sceneTree->selectItem({ "Scene", "Objects", scene.GetLastAdded() });
     });
 
     lightButton->onPress([&]()
@@ -815,6 +817,7 @@ int main()
         auto light = new Light(rp3d::Vector3(0, 0, 0), rp3d::Vector3::zero());
         scene.AddLight(light);
         readSceneTree();
+        sceneTree->selectItem({ "Scene", "Objects", scene.GetLastAdded() });
     });
 
     materialButton->onPress([&]()
@@ -822,6 +825,7 @@ int main()
     	scene.AddMaterial(std::make_shared<Material>());
     	readSceneTree();
     	materialBox->addItem(scene.GetLastAdded());
+        sceneTree->selectItem({ "Scene", "Materials", scene.GetLastAdded() });
     });
 
     boxColliderButton->onPress([&]()
@@ -883,6 +887,7 @@ int main()
                 path = projectDir + "/assets/sounds/" + filename;
                 sman->LoadSound(path);
                 sceneTree->addItem({ "Scene", "Sounds", sman->GetSounds().back() });
+                sceneTree->selectItem({ "Scene", "Sounds", sman->GetSounds().back() });
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
@@ -923,7 +928,7 @@ int main()
         if(scene.GetNode(kf))
         {
             lastAnimation.ptr->AddKeyframe(kf, Keyframe());
-            readSceneTree();
+            sceneTree->addItem({ "Scene", "Animations", lastAnimation.name, kf });
         }
     };
 
@@ -1088,6 +1093,7 @@ int main()
         auto anim = std::make_shared<Animation>("");
         scene.AddAnimation(anim);
         readSceneTree();
+        sceneTree->selectItem({ "Scene", "Animations", scene.GetLastAdded() });
     });
 
     sceneTree->onItemSelect([&]()

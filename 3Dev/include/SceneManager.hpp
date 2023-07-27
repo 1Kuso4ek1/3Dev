@@ -113,19 +113,19 @@ private:
 
     std::vector<std::string> temporaryModelCopies;
 
-    std::unordered_map<std::string, std::vector<std::shared_ptr<Model>>> modelGroups;
+    std::map<std::string, std::vector<std::shared_ptr<Model>>> modelGroups;
 
-    std::unordered_map<std::string, Node*> nodes;
-    std::unordered_map<std::string, Bone*> bones;
-    std::unordered_map<std::string, std::shared_ptr<Model>> models;
-    std::unordered_map<std::string, std::shared_ptr<Material>> materials; // for editor and scene saving
-    std::unordered_map<std::string, Light*> lights;
+    std::map<std::string, Node*> nodes;
+    std::map<std::string, Bone*> bones;
+    std::map<std::string, std::shared_ptr<Model>> models;
+    std::map<std::string, std::shared_ptr<Material>> materials; // for editor and scene saving
+    std::map<std::string, Light*> lights;
 
-    std::unordered_map<std::string, std::shared_ptr<Animation>> animations;
+    std::map<std::string, std::shared_ptr<Animation>> animations;
 
     std::vector<Node*> lightsVector; // for drawing
 
-    std::unordered_map<std::string, State> savedState;
+    std::map<std::string, State> savedState;
 
     Json::Value root;
 };
