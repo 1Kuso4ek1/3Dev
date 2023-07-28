@@ -30,6 +30,12 @@ Model::Model(Model* model)
 		Load(filename, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
 	else meshes = model->meshes;
 
+	for(int i = 0; i < bones.size(); i++)
+		bones[i]->SetTransform(model->bones[i]->GetTransform());
+
+	for(int i = 0; i < bonesChildren.size(); i++)
+		bonesChildren[i]->SetTransform(model->bonesChildren[i]->GetTransform());
+
 	if(man)
 	{
 		shapes.resize(meshes.size(), (rp3d::BoxShape*)(nullptr));

@@ -429,7 +429,8 @@ void ScriptManager::RegisterSceneManager()
         { "SoundManager@ GetSoundManager()", WRAP_MFN(SceneManager, GetSoundManagerPtr) },
         { "void SetMainShader(Shader@, bool = false)", WRAP_MFN(SceneManager, SetMainShader) },
         { "void RemoveModel(Model@)", WRAP_MFN(SceneManager, RemoveModel) },
-        { "void RemoveLight(Light@)", WRAP_MFN(SceneManager, RemoveModel) },
+        { "void RemoveLight(Light@)", WRAP_MFN(SceneManager, RemoveLight) },
+        { "void RemoveAnimation(Animation@)", WRAP_MFN(SceneManager, RemoveAnimation) },
         { "void Save(const string& in, bool = false)", WRAP_MFN(SceneManager, Save) },
         { "void Load(const string& in, bool = false)", WRAP_MFN(SceneManager, Load) },
         { "ModelGroup GetModelGroup(const string& in)", WRAP_MFN(SceneManager, GetModelPtrGroup) },
@@ -477,7 +478,13 @@ void ScriptManager::RegisterPhysicsManager()
 
 void ScriptManager::RegisterTransform()
 {
-    AddValueType("Transform", sizeof(rp3d::Transform), asGetTypeTraits<rp3d::Transform>(), {}, {});
+    AddValueType("Transform", sizeof(rp3d::Transform), asGetTypeTraits<rp3d::Transform>(),
+    {
+        { "void setPosition(const Vector3& in)", WRAP_MFN(rp3d::Transform, setPosition) },
+        { "void setOrientation(const Quaternion& in)", WRAP_MFN(rp3d::Transform, setOrientation) },
+        { "Vector3 getPosition()", WRAP_MFN(rp3d::Transform, getPosition) },
+        { "Quaternion getOrientation()", WRAP_MFN(rp3d::Transform, getOrientation) }
+    }, {});
     AddTypeConstructor("Transform", "void f()", WRAP_OBJ_LAST(MakeType<rp3d::Transform>));
     AddTypeConstructor("Transform", "void f(const Transform& in)", WRAP_OBJ_LAST(CopyType<rp3d::Transform>));
     AddTypeDestructor("Transform", "void f()", WRAP_OBJ_LAST(DestroyType<rp3d::Transform>));
