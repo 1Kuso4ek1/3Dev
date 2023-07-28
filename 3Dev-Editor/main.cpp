@@ -212,6 +212,10 @@ int main()
 
     engine.GetWindow().setFramerateLimit(60);
 
+    sf::Image icon;
+    if(icon.loadFromFile(homeFolder + "icon.png"))
+        engine.GetWindow().setIcon(icon.getSize(), icon.getPixelsPtr());
+
     std::filesystem::current_path(homeFolder + "gui");
 
     tgui::Gui menu{ engine.GetWindow() };
