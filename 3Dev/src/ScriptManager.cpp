@@ -576,8 +576,8 @@ void ScriptManager::RegisterClock()
 	AddValueType("Time", sizeof(sf::Time), asGetTypeTraits<sf::Time>(),
 	{
 		{ "float asSeconds()", WRAP_MFN(sf::Time, asSeconds) },
-		{ "float asMilliseconds()", WRAP_MFN(sf::Time, asMilliseconds) },
-		{ "float asMicroseconds()", WRAP_MFN(sf::Time, asMicroseconds) }
+		{ "int asMilliseconds()", WRAP_MFN(sf::Time, asMilliseconds) },
+		{ "int64 asMicroseconds()", WRAP_MFN(sf::Time, asMicroseconds) }
 	}, {});
 
 	AddTypeConstructor("Time", "void f()", WRAP_OBJ_LAST(MakeType<sf::Time>));
@@ -941,9 +941,11 @@ void ScriptManager::RegisterNetwork()
         { "Packet& opShl(const string& in)", WRAP_MFN_PR(sf::Packet, operator<<, (const std::string&), sf::Packet&) },
         { "Packet& opShl(int)", WRAP_MFN_PR(sf::Packet, operator<<, (int), sf::Packet&) },
         { "Packet& opShl(float)", WRAP_MFN_PR(sf::Packet, operator<<, (float), sf::Packet&) },
+        { "Packet& opShl(bool)", WRAP_MFN_PR(sf::Packet, operator<<, (bool), sf::Packet&) },
         { "Packet& opShr(string& out)", WRAP_MFN_PR(sf::Packet, operator>>, (std::string&), sf::Packet&) },
         { "Packet& opShr(int& out)", WRAP_MFN_PR(sf::Packet, operator>>, (int&), sf::Packet&) },
         { "Packet& opShr(float& out)", WRAP_MFN_PR(sf::Packet, operator>>, (float&), sf::Packet&) },
+        { "Packet& opShr(bool& out)", WRAP_MFN_PR(sf::Packet, operator>>, (bool&), sf::Packet&) },
         { "Packet& opAssign(const Packet& in)", WRAP_MFN_PR(sf::Packet, operator=, (const sf::Packet&), sf::Packet&) },
         { "bool opImplConv()", WRAP_MFN(sf::Packet, operator bool) }
     }, {});
