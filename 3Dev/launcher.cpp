@@ -69,6 +69,7 @@ int main()
 
     float exposure = cfg["renderer"]["exposure"].asFloat();
     float bloomStrength = 0.3;
+    float mouseSensitivity = 1.0;
 
     int blurIterations = 8;
 
@@ -84,6 +85,7 @@ int main()
     scman.AddProperty("bool manageCameraMovement", &manageCameraMovement);
     scman.AddProperty("bool manageCameraLook", &manageCameraLook);
     scman.AddProperty("bool manageCameraMouse", &manageCameraMouse);
+    scman.AddProperty("float mouseSensitivity", &mouseSensitivity);
     scman.AddProperty("float exposure", &exposure);
     scman.AddProperty("float bloomStrength", &bloomStrength);
     scman.AddProperty("int blurIterations", &blurIterations);
@@ -138,7 +140,7 @@ int main()
         
         cam.Update();
         if(manageCameraMovement) cam.Move(1);
-        if(manageCameraMouse) cam.Mouse();
+        if(manageCameraMouse) cam.Mouse(mouseSensitivity);
         if(manageCameraLook) cam.Look();
         
         if(updateShadows) shadows.Update();

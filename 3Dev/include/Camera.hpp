@@ -11,7 +11,7 @@ public:
 
 	void Update(bool force = false);
 
-	void Mouse();
+	void Mouse(float sensitivity = 1.0);
 
 	void Look();
 	void Look(const rp3d::Vector3& vec);

@@ -46,15 +46,15 @@ rp3d::Vector3 Camera::Move(float time, bool onlyOffset)
 	return offset;
 }
 
-void Camera::Mouse()
+void Camera::Mouse(float sensitivity)
 {
     if(window)
     {
         sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
         sf::Vector2f mousexy = sf::Vector2f((float)pixelPos.x, (float)pixelPos.y);
 
-        orient = rp3d::Quaternion::fromEulerAngles(0, -glm::radians((mousexy.x - window->getSize().x / 2) / 8), 0) * orient;
-        auto tmp = orient * rp3d::Quaternion::fromEulerAngles(-glm::radians((mousexy.y - window->getSize().y / 2) / 8), 0, 0);
+        orient = rp3d::Quaternion::fromEulerAngles(0, -glm::radians(((mousexy.x - window->getSize().x / 2) / 8) * sensitivity), 0) * orient;
+        auto tmp = orient * rp3d::Quaternion::fromEulerAngles(-glm::radians(((mousexy.y - window->getSize().y / 2) / 8) * sensitivity), 0, 0);
         if((tmp * rp3d::Vector3(0, 0, -1)).getAbsoluteVector().y < 0.99) orient = tmp;
 
         sf::Mouse::setPosition(sf::Vector2i(window->getSize().x / 2, window->getSize().y / 2), *window);
