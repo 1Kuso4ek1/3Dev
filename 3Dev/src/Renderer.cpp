@@ -18,7 +18,7 @@ void Renderer::DeleteInstance()
     delete instance;
 }
 
-void Renderer::Init(sf::Vector2u fbSize, std::string environmentMapFilename, uint32_t skyboxSideSize, uint32_t irradianceSideSize, uint32_t prefilteredSideSize)
+void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilename, uint32_t skyboxSideSize, uint32_t irradianceSideSize, uint32_t prefilteredSideSize)
 {
     shaders[ShaderType::Main] = std::make_shared<Shader>(shadersDir + "vertex.vs", shadersDir + "fragment.fs");
     shaders[ShaderType::Skybox] = std::make_shared<Shader>(shadersDir + "skybox.vs", shadersDir + "skybox.fs");
@@ -36,33 +36,39 @@ void Renderer::Init(sf::Vector2u fbSize, std::string environmentMapFilename, uin
     framebuffers[FramebufferType::BloomPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / 12, fbSize.y / 12, false, 1, GL_LINEAR);
     framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / 12, fbSize.y / 12, false, 1, GL_LINEAR);
 
-    LoadEnvironment(environmentMapFilename, skyboxSideSize, irradianceSideSize, prefilteredSideSize);
+    capture = std::make_shared<Framebuffer>(nullptr, skyboxSideSize, skyboxSideSize);
+    captureIrr = std::make_shared<Framebuffer>(nullptr, irradianceSideSize, irradianceSideSize);
+    captureSpc = std::make_shared<Framebuffer>(nullptr, prefilteredSideSize, prefilteredSideSize);
+    captureBRDF = std::make_shared<Framebuffer>(shaders[ShaderType::BRDF].get(), 512, 512);
+
+    LoadEnvironment(environmentMapFilename);
 
     Log::Write("Renderer successfully initialized", Log::Type::Info);
 }
 
-void Renderer::LoadEnvironment(std::string environmentMapFilename, uint32_t skyboxSideSize, uint32_t irradianceSideSize, uint32_t prefilteredSideSize)
+void Renderer::LoadEnvironment(const std::string& environmentMapFilename)
 {
-    for(auto& i : textures)
-        if(i.second != 0 && i.first != TextureType::LUT)
-            glDeleteTextures(1, &i.second);
-
-    Framebuffer capture(nullptr, skyboxSideSize, skyboxSideSize), captureIrr(nullptr, irradianceSideSize, irradianceSideSize),
-                captureSpc(nullptr, prefilteredSideSize, prefilteredSideSize), captureBRDF(shaders[ShaderType::BRDF].get(), 512, 512);
-
-    GLuint cubemap = capture.CaptureCubemap(shaders[ShaderType::Environment].get(), TextureManager::GetInstance()->LoadTexture(environmentMapFilename), m);
+    if(textures.find(TextureType::Skybox) != textures.end())
+        TextureManager::GetInstance()->DeleteTexture("environment");
+    
+    GLuint environment = TextureManager::GetInstance()->LoadTexture(environmentMapFilename, "environment");
+    
+    GLuint cubemap = capture->CaptureCubemap(shaders[ShaderType::Environment].get(),
+                                             environment, m, textures.find(TextureType::Skybox) == textures.end() ? 0 : textures[TextureType::Skybox]);
     textures[TextureType::Skybox] = cubemap;
 
-    GLuint irr = captureIrr.CaptureCubemap(shaders[ShaderType::Irradiance].get(), cubemap, m, true);
+    GLuint irr = captureIrr->CaptureCubemap(shaders[ShaderType::Irradiance].get(), cubemap, m, true,
+                                            textures.find(TextureType::Irradiance) == textures.end() ? 0 : textures[TextureType::Irradiance]);
     textures[TextureType::Irradiance] = irr;
 
-    GLuint filtered = captureSpc.CaptureCubemapMipmaps(shaders[ShaderType::Filtering].get(), cubemap, m, 8, 1024);
+    GLuint filtered = captureSpc->CaptureCubemapMipmaps(shaders[ShaderType::Filtering].get(), cubemap, m, 8, 1024,
+                                                        textures.find(TextureType::Prefiltered) == textures.end() ? 0 : textures[TextureType::Prefiltered]);
     textures[TextureType::Prefiltered] = filtered;
 
     if(textures.find(TextureType::LUT) == textures.end())
     {
-        captureBRDF.Capture(0);
-        GLuint BRDF = captureBRDF.GetTexture();
+        captureBRDF->Capture();
+        GLuint BRDF = captureBRDF->GetTexture();
         textures[TextureType::LUT] = BRDF;
     }
 }

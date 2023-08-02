@@ -37,9 +37,9 @@ public:
     // Draw the buffer texture on the screen
     void Draw(uint32_t attachment = 0);
 
-    GLuint Capture(GLuint texture = 0);
-    GLuint CaptureCubemap(Shader* shader, GLuint tex, Matrices& m, bool isSkybox = false);
-    GLuint CaptureCubemapMipmaps(Shader* shader, GLuint tex, Matrices& m, int maxLevel, int samples);
+    GLuint Capture(GLuint texture = 0, GLuint output = 0);
+    GLuint CaptureCubemap(Shader* shader, GLuint tex, Matrices& m, bool isSkybox = false, GLuint output = 0);
+    GLuint CaptureCubemapMipmaps(Shader* shader, GLuint tex, Matrices& m, int maxLevel, int samples, GLuint output = 0);
 
     static float* GetPixels(glm::ivec2 coords, glm::ivec2 size);
 

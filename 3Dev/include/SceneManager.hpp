@@ -36,6 +36,8 @@ public:
     void SaveState();
     void LoadState();
 
+    void LoadEnvironment(const std::string& filename);
+
     void SetMainShader(Shader* shader, bool temp = false);
     void SetCamera(Camera* camera);
     void SetSkybox(std::shared_ptr<Model> skybox);

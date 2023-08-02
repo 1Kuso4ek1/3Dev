@@ -501,6 +501,12 @@ void SceneManager::LoadState()
     temporaryModelCopies.clear();
 }
 
+void SceneManager::LoadEnvironment(const std::string& filename)
+{
+    Renderer::GetInstance()->LoadEnvironment(filename);
+    skybox->GetMaterial()[0]->SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap);
+}
+
 void SceneManager::SetMainShader(Shader* shader, bool temp)
 {
     std::for_each(models.begin(), models.end(), [&](auto p) { p.second->SetShader(shader, temp); });

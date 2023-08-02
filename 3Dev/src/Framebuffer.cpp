@@ -103,10 +103,11 @@ void Framebuffer::Draw(uint32_t attachment)
 	shader->Unbind();
 }
 
-GLuint Framebuffer::Capture(GLuint texture)
+GLuint Framebuffer::Capture(GLuint texture, GLuint output)
 {
-	GLuint out = TextureManager::GetInstance()->CreateTexture(size.x, size.y);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, out, 0);
+	if(output == 0)
+		output = TextureManager::GetInstance()->CreateTexture(size.x, size.y);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, output, 0);
 	Bind();
 	glViewport(0, 0, size.x, size.y);
 	shader->Bind();
@@ -122,14 +123,15 @@ GLuint Framebuffer::Capture(GLuint texture)
 	glBindVertexArray(0);
 	shader->Unbind();
 	Unbind();
-	return out;
+	return output;
 }
 
-GLuint Framebuffer::CaptureCubemap(Shader* shader, GLuint tex, Matrices& m, bool isSkybox)
+GLuint Framebuffer::CaptureCubemap(Shader* shader, GLuint tex, Matrices& m, bool isSkybox, GLuint output)
 {
 	Mesh cube;
 	cube.CreateCube();
-	GLuint cubemap = TextureManager::GetInstance()->CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
+	if(output == 0)
+		output = TextureManager::GetInstance()->CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
 	m.PushMatrix();
 	m.GetProjection() = glm::perspective(glm::radians(90.0), 1.0, 0.1, 1000.0);
 	Bind();
@@ -137,7 +139,7 @@ GLuint Framebuffer::CaptureCubemap(Shader* shader, GLuint tex, Matrices& m, bool
 	for(int i = 0; i < 6; i++)
 	{
 		m.GetView() = views[i];
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, output, 0);
     	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		if(isSkybox)
 		{
@@ -178,17 +180,18 @@ GLuint Framebuffer::CaptureCubemap(Shader* shader, GLuint tex, Matrices& m, bool
 	}
 	Unbind();
 	m.PopMatrix();
-	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, output);
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-	return cubemap;
+	return output;
 }
 
-GLuint Framebuffer::CaptureCubemapMipmaps(Shader* shader, GLuint tex, Matrices& m, int maxLevel, int samples)
+GLuint Framebuffer::CaptureCubemapMipmaps(Shader* shader, GLuint tex, Matrices& m, int maxLevel, int samples, GLuint output)
 {
 	Mesh cube;
 	cube.CreateCube();
-	GLuint cubemap = TextureManager::GetInstance()->CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
+	if(output == 0)
+		output = TextureManager::GetInstance()->CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
 	m.PushMatrix();
 	m.GetProjection() = glm::perspective(glm::radians(90.0), 1.0, 0.1, 1000.0);
 	Bind();
@@ -202,7 +205,7 @@ GLuint Framebuffer::CaptureCubemapMipmaps(Shader* shader, GLuint tex, Matrices& 
 		for(int j = 0; j < 6; j++)
 		{
 			m.GetView() = views[j];
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, cubemap, i);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, output, i);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			glDepthFunc(GL_LEQUAL);
@@ -227,7 +230,7 @@ GLuint Framebuffer::CaptureCubemapMipmaps(Shader* shader, GLuint tex, Matrices& 
 	}
 	Unbind();
 	m.PopMatrix();
-	return cubemap;
+	return output;
 }
 
 float* Framebuffer::GetPixels(glm::ivec2 coords, glm::ivec2 size)

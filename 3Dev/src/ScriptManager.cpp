@@ -436,7 +436,8 @@ void ScriptManager::RegisterSceneManager()
         { "ModelGroup GetModelGroup(const string& in)", WRAP_MFN(SceneManager, GetModelPtrGroup) },
         { "void UpdatePhysics(bool)", WRAP_MFN(SceneManager, UpdatePhysics) },
         { "void SaveState()", WRAP_MFN(SceneManager, SaveState) },
-        { "void LoadState()", WRAP_MFN(SceneManager, LoadState) }
+        { "void LoadState()", WRAP_MFN(SceneManager, LoadState) },
+        { "void LoadEnvironment(const string& in)", WRAP_MFN(SceneManager, LoadEnvironment) }
     }, {});
 }
 
