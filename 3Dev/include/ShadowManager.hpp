@@ -11,9 +11,8 @@ public:
 private:
     SceneManager* scene;
 
-    GLuint texture;
     std::vector<Light*> lights;
-    std::unique_ptr<Framebuffer> depthBuffer;
+    std::vector<std::unique_ptr<Framebuffer>> depthBuffers;
 
     Shader* mainShader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
     Shader* depthShader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Depth);

@@ -1,7 +1,8 @@
 #version 330
 precision mediump float;
 
-const int maxLights = 32;
+const int maxLights = 128;
+const int maxShadows = 8;
 const int maxLodLevel = 7;
 const float pi = 3.14159265;
 
@@ -33,7 +34,7 @@ in vec3 camposout;
 in vec3 mnormal;
 in vec3 mpos;
 in mat3 tbn;
-in vec4 lspaceout;
+in vec4 lspaceout[maxShadows];
 
 out vec4 color;
 
@@ -41,7 +42,7 @@ struct Shadow
 {
 	vec3 sourcepos;
 	sampler2DShadow shadowmap;
-    bool perspective;
+    bool isactive;
 };
 
 struct Light
@@ -59,28 +60,26 @@ struct Light
 };
 
 uniform Light lights[maxLights];
-uniform Shadow shadow;
-
-float LinearizeDepth(float depth)
-{
-    if(shadow.perspective)
-    {
-        float z = depth * 2.0 - 1.0;
-        return (2.0 * 0.01 * 1000.0) / (1000.0 + 0.01 - z * (1000.0 - 0.01));
-    }
-    return depth;
-}
+uniform Shadow shadows[maxShadows];
 
 float CalcShadow()
 {
-    if(1.0 - dot(mnormal, normalize(shadow.sourcepos - mpos)) >= 1.0) return 0.0;
-    vec3 pcoord = lspaceout.xyz / lspaceout.w;
-    pcoord = pcoord * 0.5 + 0.5;
-    if(pcoord.z > 1.0)
-        return 0.0;
-    
-    pcoord.z -= shadowBias;
-    return 1.0 - texture(shadow.shadowmap, pcoord);
+    float ret = 0.0;
+    for(int i = 0; i < maxShadows; i++)
+    {
+        if(!shadows[i].isactive) continue;
+        if(1.0 - dot(mnormal, normalize(shadows[i].sourcepos - mpos)) >= 1.0) continue;
+
+        vec3 pcoord = lspaceout[i].xyz / lspaceout[i].w;
+        pcoord = pcoord * 0.5 + 0.5;
+        if(pcoord.z > 1.0) continue;
+        
+        pcoord.z -= shadowBias;
+        float tmp = 1.0 - texture(shadows[i].shadowmap, pcoord);
+        if(tmp != 0.0 && ret == 0.0)
+            ret += tmp;
+    }
+    return ret;
 }
 
 float GGX(float ndoth, float rough)

@@ -14,7 +14,7 @@ find_package(Angelscript REQUIRED)
 find_package(Threads REQUIRED)
 
 set(ANGELSCRIPT_LIBRARY_NAME angelscript)
-option(WIN_RELEASE OFF)
+option(3DEV_RELEASE OFF)
 
 if(UNIX OR APPLE)
 	find_package(GLEW 2.1.0 REQUIRED)
