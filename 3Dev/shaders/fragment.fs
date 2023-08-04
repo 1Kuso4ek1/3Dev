@@ -68,7 +68,6 @@ float CalcShadow()
     for(int i = 0; i < maxShadows; i++)
     {
         if(!shadows[i].isactive) continue;
-        if(1.0 - dot(mnormal, normalize(shadows[i].sourcepos - mpos)) >= 1.0) continue;
 
         vec3 pcoord = lspaceout[i].xyz / lspaceout[i].w;
         pcoord = pcoord * 0.5 + 0.5;
@@ -76,8 +75,7 @@ float CalcShadow()
         
         pcoord.z -= shadowBias;
         float tmp = 1.0 - texture(shadows[i].shadowmap, pcoord);
-        if(tmp != 0.0 && ret == 0.0)
-            ret += tmp;
+        if(ret < tmp) ret = tmp;
     }
     return ret;
 }

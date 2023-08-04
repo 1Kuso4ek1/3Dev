@@ -7,9 +7,7 @@ ShadowManager::ShadowManager(SceneManager* scene, glm::ivec2 size, Shader* mainS
     if(depthShader) this->depthShader = depthShader;
 
     glEnable(GL_CULL_FACE);
-    //glPolygonOffset(-1, 0.7);
-    for(int i = 0; i < 8; i++)
-        depthBuffers.emplace_back(std::make_unique<Framebuffer>(nullptr, size.x, size.y, true, 1, GL_LINEAR, GL_CLAMP_TO_BORDER));
+    glPolygonOffset(-1, 0.7);
 }
 
 void ShadowManager::Update()
@@ -19,8 +17,14 @@ void ShadowManager::Update()
 
     if(lights.empty())
         return;
+        
+    if(lights.size() > depthBuffers.size())
+        for(int i = 0; i < (lights.size() > 8 ? 8 - depthBuffers.size() : (lights.size() - depthBuffers.size())); i++)
+            depthBuffers.emplace_back(std::make_unique<Framebuffer>(nullptr, shadowSize.x, shadowSize.y, true, 1, GL_LINEAR, GL_CLAMP_TO_BORDER));
+    else if(lights.size() < depthBuffers.size())
+        depthBuffers.resize(lights.size());
 
-    //glEnable(GL_POLYGON_OFFSET_FILL);
+    glEnable(GL_POLYGON_OFFSET_FILL);
     glCullFace(GL_FRONT);
 
     std::sort(lights.begin(), lights.end(), [&](auto l, auto l1)
@@ -57,5 +61,5 @@ void ShadowManager::Update()
     }
 
     glCullFace(GL_BACK);
-    //glDisable(GL_POLYGON_OFFSET_FILL);
+    glDisable(GL_POLYGON_OFFSET_FILL);
 }
