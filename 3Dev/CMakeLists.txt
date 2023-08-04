@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.17)
 
-project(3Dev VERSION 1.3.1 LANGUAGES CXX)
+project(3Dev VERSION 1.3.2 LANGUAGES CXX)
 
 find_package(SFML 3.0.0 COMPONENTS System Window Network Audio REQUIRED)
 find_package(TGUI REQUIRED)
