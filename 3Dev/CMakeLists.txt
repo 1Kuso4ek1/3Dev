@@ -56,7 +56,7 @@ add_library(3Dev
 	libraries/Angelscript/sdk/add_on/scriptfile/scriptfile.cpp
 )
 
-if(WIN_RELEASE)
+if(3DEV_RELEASE)
 	add_definitions("-DSHADERS_DIRECTORY=\"../../shaders/\"")
 else()
 	add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/shaders/\"")

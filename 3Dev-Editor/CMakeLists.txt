@@ -26,7 +26,7 @@ add_executable(editor main.cpp)
 
 add_definitions("-DEDITOR_VERSION=\"1.3.6\"")
 
-if(WIN_RELEASE)
+if(3DEV_RELEASE)
 	add_definitions("-DSHADERS_DIRECTORY=\"../../shaders/\"")
 else()
 	add_definitions("-DSHADERS_DIRECTORY=\"${CMAKE_CURRENT_SOURCE_DIR}/../3Dev/shaders/\"")
