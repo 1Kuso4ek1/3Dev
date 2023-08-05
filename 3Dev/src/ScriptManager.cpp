@@ -637,7 +637,8 @@ void ScriptManager::RegisterEngine()
     AddType("Engine", sizeof(Engine),
     {
         { "tgui::Gui@ CreateGui(string)", WRAP_MFN(Engine, CreateGui) },
-        { "void RemoveGui()", WRAP_MFN(Engine, RemoveGui) }
+        { "void RemoveGui()", WRAP_MFN(Engine, RemoveGui) },
+        { "void Close()", WRAP_MFN(Engine, Close) }
     }, {});
 }
 
