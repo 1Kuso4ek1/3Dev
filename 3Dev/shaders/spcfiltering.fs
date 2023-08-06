@@ -1,4 +1,4 @@
-#version 330
+#version 450 core
 precision mediump float;
 
 const float pi = 3.14159265;

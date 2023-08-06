@@ -29,6 +29,7 @@ void Engine::Init()
 
 void Engine::CreateWindow(uint32_t width, uint32_t height, std::string title, uint32_t style)
 {
+    settings.majorVersion = 4; settings.minorVersion = 5;
     window.create(sf::VideoMode({ width, height }), title, style, settings);
 }
 

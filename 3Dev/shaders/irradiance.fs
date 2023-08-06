@@ -1,4 +1,4 @@
-#version 330
+#version 450 core
 precision mediump float;
 
 const float pi = 3.14159265;
@@ -23,8 +23,8 @@ void main()
     {
         for(float theta = 0.0; theta < 0.5 * pi; theta += delta)
         {
-            vec3 sample = vec3(sin(theta) * cos(phi),  sin(theta) * sin(phi), cos(theta));
-            vec3 vec = sample.x * right + sample.y * up + sample.z * norm; 
+            vec3 s = vec3(sin(theta) * cos(phi),  sin(theta) * sin(phi), cos(theta));
+            vec3 vec = s.x * right + s.y * up + s.z * norm; 
 
             irradiance += texture(cubemap, vec).rgb * cos(theta) * sin(theta);
             samples++;

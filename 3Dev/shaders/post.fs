@@ -1,4 +1,4 @@
-#version 330
+#version 450 core
 precision mediump float;
 
 const float maxTreshold = 0.5;

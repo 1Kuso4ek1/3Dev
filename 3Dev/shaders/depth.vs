@@ -1,4 +1,4 @@
-#version 330
+#version 450 core
 layout (location = 0) in vec3 position;
 layout (location = 3) in vec4 ids;
 layout (location = 4) in vec4 weights;

@@ -1,4 +1,4 @@
-#version 330
+#version 450 core
 precision mediump float;
 
 const vec2 invatan = vec2(0.1591, 0.3183);
