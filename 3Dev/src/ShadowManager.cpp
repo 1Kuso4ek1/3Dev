@@ -8,6 +8,9 @@ ShadowManager::ShadowManager(SceneManager* scene, glm::ivec2 size, Shader* mainS
 
     glEnable(GL_CULL_FACE);
     glPolygonOffset(-1, 0.7);
+
+    for(int i = 0; i < (lights.size() > 8 ? 8 : lights.size()); i++)
+        depthBuffers.emplace_back(std::make_unique<Framebuffer>(nullptr, shadowSize.x, shadowSize.y, true, 1, GL_LINEAR, GL_CLAMP_TO_BORDER));
 }
 
 void ShadowManager::Update()
@@ -56,8 +59,8 @@ void ShadowManager::Update()
         glActiveTexture(GL_TEXTURE16 + i);
         glBindTexture(GL_TEXTURE_2D, depthBuffers[i]->GetTexture(true));
         mainShader->SetUniform3f("shadows[" + std::to_string(i) + "].sourcepos", pos.x, pos.y, pos.z);
-        mainShader->SetUniform1i("shadows[" + std::to_string(i) + "].shadowmap", 16 + i);
         mainShader->SetUniform1i("shadows[" + std::to_string(i) + "].isactive", true);
+        mainShader->SetUniform1i("shadowMaps[" + std::to_string(i) + "]", 16 + i);
     }
 
     glCullFace(GL_BACK);
