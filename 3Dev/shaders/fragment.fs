@@ -29,8 +29,6 @@ uniform vec3 nirradiance;
 uniform bool drawTransparency = false;
 uniform float shadowBias;
 
-uniform sampler2DShadow shadowMaps[maxShadows];
-
 in vec2 coord;
 in vec3 camposout;
 in vec3 mnormal;
@@ -43,6 +41,7 @@ out vec4 color;
 struct Shadow
 {
 	vec3 sourcepos;
+	sampler2DShadow shadowMap;
     bool isactive;
 };
 
@@ -75,20 +74,7 @@ float CalcShadow()
         if(pcoord.z > 1.0) continue;
         
         pcoord.z -= shadowBias;
-        //float tmp = 1.0 - texture(shadows[i].shadowmap, pcoord); // only for gl 4.6 systems
-        float tmp = 1.0;
-        switch(i) // for the gl 4.5 compatibility
-        {
-        case 0: tmp -= texture(shadowMaps[0], pcoord); break;
-        case 1: tmp -= texture(shadowMaps[1], pcoord); break;
-        case 2: tmp -= texture(shadowMaps[2], pcoord); break;
-        case 3: tmp -= texture(shadowMaps[3], pcoord); break;
-        case 4: tmp -= texture(shadowMaps[4], pcoord); break;
-        case 5: tmp -= texture(shadowMaps[5], pcoord); break;
-        case 6: tmp -= texture(shadowMaps[6], pcoord); break;
-        case 7: tmp -= texture(shadowMaps[7], pcoord); break;
-        default: break;
-        }
+        float tmp = 1.0 - texture(shadows[i].shadowMap, pcoord);
         if(ret < tmp) ret = tmp;
     }
     return ret;

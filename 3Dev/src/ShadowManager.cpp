@@ -38,7 +38,12 @@ void ShadowManager::Update()
 
     mainShader->Bind();
     for(int i = 0; i < 8; i++)
+	{
+		glActiveTexture(GL_TEXTURE16 + i);
+        glBindTexture(GL_TEXTURE_2D, 0);
         mainShader->SetUniform1i("shadows[" + std::to_string(i) + "].isactive", false);
+		mainShader->SetUniform1i("shadows[" + std::to_string(i) + "].shadowMap", 16 + i);
+	}
     
     for(int i = 0; i < (lights.size() > 8 ? 8 : lights.size()); i++)
     {
@@ -60,7 +65,7 @@ void ShadowManager::Update()
         glBindTexture(GL_TEXTURE_2D, depthBuffers[i]->GetTexture(true));
         mainShader->SetUniform3f("shadows[" + std::to_string(i) + "].sourcepos", pos.x, pos.y, pos.z);
         mainShader->SetUniform1i("shadows[" + std::to_string(i) + "].isactive", true);
-        mainShader->SetUniform1i("shadowMaps[" + std::to_string(i) + "]", 16 + i);
+        mainShader->SetUniform1i("shadows[" + std::to_string(i) + "].shadowMap", 16 + i);
     }
 
     glCullFace(GL_BACK);
