@@ -1,7 +1,7 @@
 #version 450 core
 precision mediump float;
 
-const int maxLights = 128;
+const int maxLights = 64;
 const int maxShadows = 8;
 const int maxLodLevel = 7;
 const float pi = 3.14159265;
