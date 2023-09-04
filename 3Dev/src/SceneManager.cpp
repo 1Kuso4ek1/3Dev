@@ -672,6 +672,35 @@ SoundManager* SceneManager::GetSoundManagerPtr()
     return sManager.get();
 }
 
+void SceneManager::RemoveModelPtr(Model* model)
+{
+    auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == model; });
+    auto itn = std::find_if(nodes.begin(), nodes.end(), [&](auto& p) { return p.second == model; });
+    if(it != models.end())
+    {
+        auto p = ParseName(it->first);
+        RemoveBones(it->second);
+        if(!p.second.empty())
+            RemoveFromTheGroup(p.second, it->second);
+        models.erase(it);
+        nodes.erase(itn);
+    }
+}
+
+void SceneManager::RemoveMaterialPtr(Material* material)
+{
+    auto it = std::find_if(materials.begin(), materials.end(), [&](auto& p) { return p.second.get() == material; });
+    if(it != materials.end())
+        materials.erase(it);
+}
+
+void SceneManager::RemoveAnimationPtr(Animation* animation)
+{
+    auto it = std::find_if(animations.begin(), animations.end(), [&](auto& p) { return p.second.get() == animation; });
+    if(it != animations.end())
+        animations.erase(it);
+}
+
 Model* SceneManager::CloneModel(Model* model, bool isTemporary, const std::string& name)
 {
     auto ret = std::make_shared<Model>(model);

@@ -76,6 +76,10 @@ public:
     PhysicsManager* GetPhysicsManagerPtr();
     SoundManager* GetSoundManagerPtr();
 
+    void RemoveModelPtr(Model* model);
+    void RemoveMaterialPtr(Material* material);
+    void RemoveAnimationPtr(Animation* animation);
+
     Model* CloneModel(Model* model, bool isTemporary = true, const std::string& name = "model");
 
     std::vector<Model*> GetModelPtrGroup(const std::string& name);
