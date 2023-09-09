@@ -31,10 +31,16 @@ Model::Model(Model* model)
 	else meshes = model->meshes;
 
 	for(int i = 0; i < bones.size(); i++)
+	{
 		bones[i]->SetTransform(model->bones[i]->GetTransform());
+		bones[i]->SavePoseAsIdle();
+	}
 
 	for(int i = 0; i < bonesChildren.size(); i++)
+	{
 		bonesChildren[i]->SetTransform(model->bonesChildren[i]->GetTransform());
+		bonesChildren[i]->SavePoseAsIdle();
+	}
 
 	if(man)
 	{
