@@ -44,12 +44,13 @@ public:
 	void UpdateShader(Shader* shader);
 	void ResetShader(Shader* shader);
 	void GetEnvironmentFromRenderer();
+	void LoadTextures();
 
 	bool Contains(Type type);
 
 	Json::Value Serialize();
 
-	void Deserialize(Json::Value data);
+	void Deserialize(Json::Value data, bool loadTextures = true);
 
 	std::variant<glm::vec3, GLuint> GetParameter(Type type);
 
@@ -60,6 +61,10 @@ public:
 	bool operator!=(Material& r);
 
 private:
+	bool texturesLoaded = false;
+
+	std::unordered_map<Type, std::string> textureFilenames;
+
 	std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>> parameters =
 	{
 		{ glm::vec3(1.0), Type::Color },

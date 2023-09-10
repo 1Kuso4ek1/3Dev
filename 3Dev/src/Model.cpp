@@ -264,6 +264,8 @@ void Model::SetSize(const rp3d::Vector3& size)
 
 void Model::SetMaterial(std::vector<Material*> mat)
 {
+	for(auto i : mat)
+		i->LoadTextures();
 	this->mat = mat;
 }
 
@@ -275,6 +277,7 @@ void Model::SetMaterialSlot(Material* mat, unsigned int slot)
         return;
 	}
 
+	mat->LoadTextures();
 	this->mat[slot] = mat;
 }
 

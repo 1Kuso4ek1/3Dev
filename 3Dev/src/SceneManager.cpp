@@ -361,11 +361,21 @@ void SceneManager::Load(const std::string& filename, bool loadEverything)
     }
     counter = 0;
 
+    std::vector<std::string> usedMaterials;
+    while(!data["objects"]["models"][counter].empty())
+    {
+        for(auto& i : data["objects"]["models"][counter]["material"])
+            usedMaterials.push_back(i["name"].asString());
+        counter++;
+    }
+    counter = 0;
+
     while(!data["materials"][counter].empty())
     {
         auto name = data["materials"][counter]["name"].asString();
         materials[name] = std::make_shared<Material>();
-        materials[name]->Deserialize(data["materials"][counter]);
+        bool load = (std::find(usedMaterials.begin(), usedMaterials.end(), name) != usedMaterials.end() || loadEverything);
+        materials[name]->Deserialize(data["materials"][counter], load);
 
         counter++;
     }

@@ -144,6 +144,19 @@ void Material::GetEnvironmentFromRenderer()
 	SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
 }
 
+void Material::LoadTextures()
+{
+	if(texturesLoaded) return;
+
+	for(auto& i : textureFilenames)
+		parameters.push_back({ TextureManager::GetInstance()->LoadTexture(i.second), i.first });
+
+    GetEnvironmentFromRenderer();
+    SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::LUT), Type::LUT);
+
+	texturesLoaded = true;
+}
+
 bool Material::Contains(Type type)
 {
 	return std::find_if(parameters.begin(), parameters.end(), [&](auto& a)
@@ -205,41 +218,47 @@ Json::Value Material::Serialize()
 	return data;
 }
 
-void Material::Deserialize(Json::Value data)
+void Material::Deserialize(Json::Value data, bool loadTextures)
 {
     parameters.clear();
 	if(!data["color"]["filename"].empty())
-        parameters.push_back({ TextureManager::GetInstance()->LoadTexture(data["color"]["filename"].asString()), Type::Color });
+		textureFilenames[Type::Color] = data["color"]["filename"].asString();
     else
 	{
         parameters.push_back({ glm::vec3(data["color"]["r"].asDouble(),
                                          data["color"]["g"].asDouble(),
                                          data["color"]["b"].asDouble()), Type::Color });
 	}
+
 	if(!data["normal"]["filename"].empty())
-        parameters.push_back({ TextureManager::GetInstance()->LoadTexture(data["normal"]["filename"].asString()), Type::Normal });
+		textureFilenames[Type::Normal] = data["normal"]["filename"].asString();
+
     if(!data["ao"]["filename"].empty())
-        parameters.push_back({ TextureManager::GetInstance()->LoadTexture(data["ao"]["filename"].asString()), Type::AmbientOcclusion });
+        textureFilenames[Type::AmbientOcclusion] = data["ao"]["filename"].asString();
+
     if(!data["metalness"]["filename"].empty())
-        parameters.push_back({ TextureManager::GetInstance()->LoadTexture(data["metalness"]["filename"].asString()), Type::Metalness });
+		textureFilenames[Type::Metalness] = data["metalness"]["filename"].asString();
     else parameters.push_back({ glm::vec3(data["metalness"]["value"].asDouble()), Type::Metalness});
+
     if(!data["emission"]["filename"].empty())
-        parameters.push_back({ TextureManager::GetInstance()->LoadTexture(data["emission"]["filename"].asString()), Type::Emission });
+		textureFilenames[Type::Emission] = data["emission"]["filename"].asString();
     else
 	{
         parameters.push_back({ glm::vec3(data["emission"]["r"].asDouble(),
                                          data["emission"]["g"].asDouble(),
                                          data["emission"]["b"].asDouble()), Type::Emission });
 	}
+	
 	if(!data["roughness"]["filename"].empty())
-        parameters.push_back({ TextureManager::GetInstance()->LoadTexture(data["roughness"]["filename"].asString()), Type::Roughness});
+		textureFilenames[Type::Roughness] = data["roughness"]["filename"].asString();
     else parameters.push_back({ glm::vec3(data["roughness"]["value"].asDouble()), Type::Roughness});
-    if(!data["opacity"]["filename"].empty())
-        parameters.push_back({ TextureManager::GetInstance()->LoadTexture(data["opacity"]["filename"].asString()), Type::Opacity });
+
+	if(!data["opacity"]["filename"].empty())
+		textureFilenames[Type::Opacity] = data["opacity"]["filename"].asString();
     else parameters.push_back({ glm::vec3(data["opacity"]["value"].asDouble()), Type::Opacity});
 
-    GetEnvironmentFromRenderer();
-    SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::LUT), Type::LUT);
+	if(loadTextures)
+		LoadTextures();
 }
 
 std::variant<glm::vec3, GLuint> Material::GetParameter(Type type)
