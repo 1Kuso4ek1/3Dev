@@ -217,4 +217,4 @@ static sf::IpAddress ResolveIp(std::string addr)
 }
 
 static int Stoi(const std::string& str, int base) { return std::stoi(str, nullptr, base); }
-static int Stof(const std::string& str) { return std::stof(str); }
+static float Stof(const std::string& str) { return std::stof(str); }
