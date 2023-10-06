@@ -68,6 +68,17 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     transparency->Unbind();
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
+
+    auto post = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post);
+
+    post->Bind();
+    glActiveTexture(GL_TEXTURE19);
+	glBindTexture(GL_TEXTURE_2D, fbo->GetTexture(true));
+    glActiveTexture(GL_TEXTURE20);
+	glBindTexture(GL_TEXTURE_2D, transparency->GetTexture(true));
+
+    post->SetUniform1i("frameDepth", 19);
+    post->SetUniform1i("transparencyDepth", 20);
 }
 
 void SceneManager::AddModel(std::shared_ptr<Model> model, const std::string& name, bool checkUniqueness)

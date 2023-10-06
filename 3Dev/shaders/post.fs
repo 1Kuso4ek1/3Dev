@@ -11,6 +11,8 @@ in vec2 coord;
 uniform vec2 pixelsize;
 uniform sampler2D frame;
 uniform sampler2D bloom;
+uniform sampler2D frameDepth;
+uniform sampler2D transparencyDepth;
 uniform float exposure = 1.0;
 uniform float bloomStrength = 0.3;
 uniform float brightnessThreshold = 2.5;
@@ -80,10 +82,13 @@ void main()
 {
     color = texture(frame, coord);
 
-    if(color.x < 0.0 && transparentBuffer)
+    if(transparentBuffer && color.x < 1000.0)
     {
-        color = vec4(0.0, 0.0, 0.0, 0.0);
-        return;
+        if(texture(frameDepth, coord).x < texture(transparencyDepth, coord).x - 0.0000001)
+        {
+            color = vec4(0.0, 0.0, 0.0, 0.0);
+            return;
+        }
     }
 
     if(rawColor)
