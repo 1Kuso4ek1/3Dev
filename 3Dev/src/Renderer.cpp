@@ -27,14 +27,14 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     shaders[ShaderType::Environment] = std::make_shared<Shader>(shadersDir + "environment.vs", shadersDir + "environment.fs");
     shaders[ShaderType::Irradiance] = std::make_shared<Shader>(shadersDir + "irradiance.vs", shadersDir + "irradiance.fs");
     shaders[ShaderType::Filtering] = std::make_shared<Shader>(shadersDir + "spcfiltering.vs", shadersDir + "spcfiltering.fs");
-    shaders[ShaderType::BRDF] = std::make_shared<Shader>(shadersDir + "brdf.vs", shadersDir + "brdf.fs");
+    shaders[ShaderType::BRDF] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "brdf.fs");
     shaders[ShaderType::Bloom] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "bloom.fs");
 
     framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
     framebuffers[FramebufferType::Transparency] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
 
-    framebuffers[FramebufferType::BloomPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / 12, fbSize.y / 12, false, 1, GL_LINEAR);
-    framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / 12, fbSize.y / 12, false, 1, GL_LINEAR);
+    framebuffers[FramebufferType::BloomPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / 10, fbSize.y / 10, false, 1, GL_LINEAR);
+    framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / 10, fbSize.y / 10, false, 1, GL_LINEAR);
 
     capture = std::make_shared<Framebuffer>(nullptr, skyboxSideSize, skyboxSideSize);
     captureIrr = std::make_shared<Framebuffer>(nullptr, irradianceSideSize, irradianceSideSize);
@@ -68,8 +68,7 @@ void Renderer::LoadEnvironment(const std::string& environmentMapFilename)
     if(textures.find(TextureType::LUT) == textures.end())
     {
         captureBRDF->Capture();
-        GLuint BRDF = captureBRDF->GetTexture();
-        textures[TextureType::LUT] = BRDF;
+        textures[TextureType::LUT] = captureBRDF->GetTexture();
     }
 }
 

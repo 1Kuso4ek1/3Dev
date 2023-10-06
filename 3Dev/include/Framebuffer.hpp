@@ -57,14 +57,6 @@ private:
     glm::vec2 pixelsize;
     glm::ivec2 size;
 
-    float data[20] =
-    {
-        -1, 1, 0, 0, 1,
-        -1, -1, 0, 0, 0,
-        1, -1, 0, 1, 0,
-        1, 1, 0, 1, 1
-    };
-
     std::vector<glm::mat4> views =
 	{
 		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
@@ -84,6 +76,6 @@ private:
     };
 
     std::vector<GLuint> textures;
-    GLuint indices[6] = { 0, 1, 2, 0, 2, 3 };
-    GLuint vao, vbo, fbo, ebo, depth = 0;
+    std::shared_ptr<Mesh> rectangle;
+    GLuint fbo, depth = 0;
 };

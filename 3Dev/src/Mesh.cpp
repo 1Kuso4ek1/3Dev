@@ -43,6 +43,7 @@ aiAABB Mesh::GetAABB()
 void Mesh::CreateCube()
 {
 	aabb = aiAABB({ -1, -1, -1 }, { 1, 1, 1 });
+	
 	data = 
 	{
 		{ glm::vec3(1, 1, -1), glm::vec3(0, 1, 0), glm::vec2(0, 0) },
@@ -70,6 +71,7 @@ void Mesh::CreateCube()
 		{ glm::vec3(1, 1, -1), glm::vec3(0, 0, -1), glm::vec2(1, 1) },
 		{ glm::vec3(1, -1, -1), glm::vec3(0, 0, -1), glm::vec2(0, 1) }
 	};
+
 	indices = 
 	{
 		0, 1, 2, 0, 2, 3, 4, 5, 6,
@@ -77,6 +79,22 @@ void Mesh::CreateCube()
 		12, 13, 14, 12, 14, 15, 16, 17, 18,
 		16, 18, 19, 20, 21, 22, 20, 22, 23
 	};
+
+	SetupBuffers();
+}
+
+void Mesh::CreateRectangle()
+{
+	data =
+    {
+        { glm::vec3(-1, 1, 0), glm::vec3(0, 1, 0), glm::vec2(0, 1) },
+        { glm::vec3(-1, -1, 0), glm::vec3(0, 1, 0), glm::vec2(0, 0) },
+        { glm::vec3(1, -1, 0), glm::vec3(0, 1, 0), glm::vec2(1, 0) },
+        { glm::vec3(1, 1, 0), glm::vec3(0, 1, 0), glm::vec2(1, 1) }
+    };
+
+	indices = { 0, 1, 2, 0, 2, 3 };
+
 	SetupBuffers();
 }
 

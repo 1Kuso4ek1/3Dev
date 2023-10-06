@@ -45,6 +45,7 @@ public:
     aiAABB GetAABB();
 
     void CreateCube();
+    void CreateRectangle();
 
 private:
     void SetupBuffers();

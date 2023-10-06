@@ -31,25 +31,8 @@ Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, uint32_t at
         Log::Write("Failed to create framebuffer: " + errorStatus[status], Log::Type::Error);
 	Unbind();
 
-	glGenBuffers(1, &vbo);
-	glGenBuffers(1, &ebo);
-	glGenVertexArrays(1, &vao);
-
-	glBindVertexArray(vao);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 20, 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 20, (void*)12);
-
-	glBindVertexArray(0);
+	rectangle = std::make_shared<Mesh>();
+	rectangle->CreateRectangle();
 }
 
 Framebuffer::~Framebuffer()
@@ -97,9 +80,7 @@ void Framebuffer::Draw(uint32_t attachment)
 	glBindTexture(GL_TEXTURE_2D, textures[attachment]);
 	shader->SetUniform1i("frame", 0);
 	shader->SetUniform2f("pixelsize", pixelsize.x, pixelsize.y);
-	glBindVertexArray(vao);
-	glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+	rectangle->Draw();
 	shader->Unbind();
 }
 
@@ -118,9 +99,7 @@ GLuint Framebuffer::Capture(GLuint texture, GLuint output)
 		shader->SetUniform1i("frame", 0);
 		shader->SetUniform2f("pixelsize", pixelsize.x, pixelsize.y);
 	}
-	glBindVertexArray(vao);
-	glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+	rectangle->Draw();
 	shader->Unbind();
 	Unbind();
 	return output;
