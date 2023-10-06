@@ -82,7 +82,7 @@ void main()
 {
     color = texture(frame, coord);
 
-    if(transparentBuffer && color.x < 1000.0)
+    if(transparentBuffer)
     {
         if(texture(frameDepth, coord).x < texture(transparencyDepth, coord).x - 0.0000001)
         {
