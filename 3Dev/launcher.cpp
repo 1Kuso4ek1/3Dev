@@ -156,6 +156,7 @@ int main()
             pingPongBuffers[0]->Bind();
             glViewport(0, 0, pingPongBuffers[0]->GetSize().x, pingPongBuffers[0]->GetSize().y);
             Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
             Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
             glDisable(GL_DEPTH_TEST);

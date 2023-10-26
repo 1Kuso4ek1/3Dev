@@ -154,6 +154,8 @@ void main()
     if(w != alpha && w != 1.0)
     	alpha = w;
 
+    if((drawTransparency && alpha >= 1.0) || (!drawTransparency && alpha < 1.0)) discard;
+
     vec3 norm;
     if(nnormalMap) norm = normalize(tbn * normalize(texture(normalMap, coord).xyz * 2.0 - 1.0));
     else norm = normalize(mnormal);
