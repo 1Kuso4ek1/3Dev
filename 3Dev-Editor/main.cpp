@@ -1930,9 +1930,9 @@ int main()
 			    }
 
 			    rp3d::Vector3 pos;
-			    pos.x = lposEditX->getText().toFloat();
-			    pos.y = lposEditY->getText().toFloat();
-			    pos.z = lposEditZ->getText().toFloat();
+			    pos.x = sposEditX->getText().toFloat();
+			    pos.y = sposEditY->getText().toFloat();
+			    pos.z = sposEditZ->getText().toFloat();
 
                 float attenuation = attenuationEdit->getText().toFloat();
 			    float minDist = minDistEdit->getText().toFloat();

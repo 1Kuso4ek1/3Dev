@@ -163,7 +163,7 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
         {
             shader->Bind();
             mat[mesh]->UpdateShader(shader);
-            for(int i = 0; i < 32; i++)
+            for(int i = 0; i < 64; i++)
 				if(i >= lights.size())
 					shader->SetUniform1i("lights[" + std::to_string(i) + "].isactive", 0);
 				else dynamic_cast<Light*>(lights[i])->Update(shader, i);

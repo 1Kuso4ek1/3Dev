@@ -5,9 +5,9 @@
 class ListenerWrapper
 {
 public:
-    static void SetPosition(rp3d::Vector3 pos);
-    static void SetUpVector(rp3d::Vector3 vec);
-    static void SetOrientation(rp3d::Quaternion orient);
+    static void SetPosition(const rp3d::Vector3& pos);
+    static void SetUpVector(const rp3d::Vector3& vec);
+    static void SetOrientation(const rp3d::Quaternion& orient);
     static void SetGlobalVolume(float volume);
 
 private:
@@ -17,47 +17,47 @@ private:
 class SoundManager
 {
 public:
-    void LoadSound(std::string filename, std::string name = "sound");
-    void LoadSound(sf::SoundBuffer& buffer, std::string name = "sound");
+    void LoadSound(const std::string& filename, std::string name = "sound", bool checkUniqueness = true);
+    void LoadSound(sf::SoundBuffer& buffer, std::string name = "sound", bool checkUniqueness = true);
 
-    void Play(std::string name, int id = 0);
-    void PlayAt(std::string name, int id = 0, rp3d::Vector3 pos = { 0, 0, 0 });
-    void PlayMono(std::string name, int id = 0);
-    void Stop(std::string name, int id = 0);
-    void Pause(std::string name, int id = 0);
+    void Play(const std::string& name, int id = 0);
+    void PlayAt(const std::string& name, int id = 0, const rp3d::Vector3& pos = { 0, 0, 0 });
+    void PlayMono(const std::string& name, int id = 0);
+    void Stop(const std::string& name, int id = 0);
+    void Pause(const std::string& name, int id = 0);
 
-    void SetName(std::string name, std::string newName);
-    void RemoveSound(std::string name);
+    void SetName(const std::string& name, const std::string& newName);
+    void RemoveSound(const std::string& name);
 
-    void SetPosition(rp3d::Vector3 pos, std::string name, int id = 0);
-    void SetRelativeToListener(bool relative, std::string name, int id = 0);
-    void SetLoop(bool loop, std::string name, int id = 0);
-    void SetVolume(float volume, std::string name, int id = 0);
-    void SetMinDistance(float dist, std::string name, int id = 0);
-    void SetAttenuation(float attenuation, std::string name, int id = 0);
-    void SetPitch(float pitch, std::string name, int id = 0);
+    void SetPosition(const rp3d::Vector3& pos, const std::string& name, int id = 0);
+    void SetRelativeToListener(bool relative, const std::string& name, int id = 0);
+    void SetLoop(bool loop, const std::string& name, int id = 0);
+    void SetVolume(float volume, const std::string& name, int id = 0);
+    void SetMinDistance(float dist, const std::string& name, int id = 0);
+    void SetAttenuation(float attenuation, const std::string& name, int id = 0);
+    void SetPitch(float pitch, const std::string& name, int id = 0);
 
-    rp3d::Vector3 GetPosition(std::string name, int id = 0);
-    bool GetRelativeToListener(std::string name, int id = 0);
-    bool GetLoop(std::string name, int id = 0);
-    float GetVolume(std::string name, int id = 0);
-    float GetMinDistance(std::string name, int id = 0);
-    float GetAttenuation(std::string name, int id = 0);
-    float GetPitch(std::string name, int id = 0);
+    rp3d::Vector3 GetPosition(const std::string& name, int id = 0);
+    bool GetRelativeToListener(const std::string& name, int id = 0);
+    bool GetLoop(const std::string& name, int id = 0);
+    float GetVolume(const std::string& name, int id = 0);
+    float GetMinDistance(const std::string& name, int id = 0);
+    float GetAttenuation(const std::string& name, int id = 0);
+    float GetPitch(const std::string& name, int id = 0);
 
     void UpdateAll();
-    void UpdateAll(std::string name);
+    void UpdateAll(const std::string& name);
 
     std::vector<std::string> GetSounds();
 
-    Json::Value Serialize(std::string relativeTo);
+    Json::Value Serialize(const std::string& relativeTo);
     void Deserialize(Json::Value data);
 
 private:
 
     struct Sound
     {
-        Sound(std::string filename, std::string name) : name(name), filename(filename)
+        Sound(const std::string& filename, std::string name) : name(name), filename(filename)
         {
             if(buffer.loadFromFile(filename))
                 Log::Write("Sound \"" + filename + "\" successfully loaded", Log::Type::Info);
@@ -99,6 +99,7 @@ private:
                 {
                     return s.first.find(name) != std::string::npos;
                 });
+
                 if(it != sounds.end())
                 {
                     it->second->setVolume(volume);
@@ -111,6 +112,25 @@ private:
                 }
             }
         }
+
+        rp3d::Vector3 GetPosition(std::unordered_map<std::string, std::shared_ptr<sf::Sound>>& sounds, int id)
+        {
+            auto it = sounds.find(name + std::to_string(id));
+            if(it != sounds.end())
+            {
+                auto v = it->second->getPosition();
+                return { v.x, v.y, v.z };
+            }
+
+            return pos;
+        }
+
+        /*bool GetRelativeToListener(std::unordered_map<std::string, std::shared_ptr<sf::Sound>>& sounds, int id);
+        bool GetLoop(std::unordered_map<std::string, std::shared_ptr<sf::Sound>>& sounds, int id);
+        float GetVolume(std::unordered_map<std::string, std::shared_ptr<sf::Sound>>& sounds, int id);
+        float GetMinDistance(std::unordered_map<std::string, std::shared_ptr<sf::Sound>>& sounds, int id);
+        float GetAttenuation(std::unordered_map<std::string, std::shared_ptr<sf::Sound>>& sounds, int id);
+        float GetPitch(std::unordered_map<std::string, std::shared_ptr<sf::Sound>>& sounds, int id);*/
 
         bool operator==(std::string r)
         {

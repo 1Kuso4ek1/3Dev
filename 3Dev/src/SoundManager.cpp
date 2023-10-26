@@ -1,16 +1,16 @@
 #include <SoundManager.hpp>
 
-void ListenerWrapper::SetPosition(rp3d::Vector3 pos)
+void ListenerWrapper::SetPosition(const rp3d::Vector3& pos)
 {
     sf::Listener::setPosition({ pos.x, pos.y, pos.z });
 }
 
-void ListenerWrapper::SetUpVector(rp3d::Vector3 vec)
+void ListenerWrapper::SetUpVector(const rp3d::Vector3& vec)
 {
     sf::Listener::setUpVector({ vec.x, vec.y, vec.z });
 }
 
-void ListenerWrapper::SetOrientation(rp3d::Quaternion orient)
+void ListenerWrapper::SetOrientation(const rp3d::Quaternion& orient)
 {
     auto vec = orient * rp3d::Vector3(0, 0, -1);
     sf::Listener::setDirection({ vec.x, vec.y, vec.z });
@@ -21,25 +21,33 @@ void ListenerWrapper::SetGlobalVolume(float volume)
     sf::Listener::setGlobalVolume(volume);
 }
 
-void SoundManager::LoadSound(std::string filename, std::string name)
+void SoundManager::LoadSound(const std::string& filename, std::string name, bool checkUniqueness)
 {
-    int nameCount = std::count_if(buffers.begin(), buffers.end(), [&](auto& p)
+    if(checkUniqueness)
+    {
+        int nameCount = std::count_if(buffers.begin(), buffers.end(), [&](auto& p)
                     { return p.name.find(name) != std::string::npos; });
 
-    name += (nameCount ? std::to_string(nameCount) : "");
+        name += (nameCount ? std::to_string(nameCount) : "");
+    }
+
     buffers.emplace_back(filename, name);
 }
 
-void SoundManager::LoadSound(sf::SoundBuffer& buffer, std::string name)
+void SoundManager::LoadSound(sf::SoundBuffer& buffer, std::string name, bool checkUniqueness)
 {
-    int nameCount = std::count_if(buffers.begin(), buffers.end(), [&](auto& p)
-                    { return p.name.find(name) != std::string::npos; });
+    if(checkUniqueness)
+    {
+        int nameCount = std::count_if(buffers.begin(), buffers.end(), [&](auto& p)
+                        { return p.name.find(name) != std::string::npos; });
 
-    name += (nameCount ? std::to_string(nameCount) : "");
+        name += (nameCount ? std::to_string(nameCount) : "");
+    }
+
     buffers.emplace_back(buffer, name);
 }
 
-void SoundManager::Play(std::string name, int id)
+void SoundManager::Play(const std::string& name, int id)
 {
     auto s = sounds.find(name + std::to_string(id));
     if(s != sounds.end())
@@ -55,7 +63,7 @@ void SoundManager::Play(std::string name, int id)
     it->UpdateActiveSound(sounds, id);
 }
 
-void SoundManager::PlayAt(std::string name, int id, rp3d::Vector3 pos)
+void SoundManager::PlayAt(const std::string& name, int id, const rp3d::Vector3& pos)
 {
     if(sounds.size() > 254) sounds.erase(sounds.begin());
     auto it = std::find(buffers.begin(), buffers.end(), name);
@@ -66,7 +74,7 @@ void SoundManager::PlayAt(std::string name, int id, rp3d::Vector3 pos)
     sounds[name + std::to_string(id)]->setPosition({ pos.x, pos.y, pos.z });
 }
 
-void SoundManager::PlayMono(std::string name, int id)
+void SoundManager::PlayMono(const std::string& name, int id)
 {
     if(sounds.size() > 254) sounds.erase(sounds.begin());
     auto it = std::find(buffers.begin(), buffers.end(), name);
@@ -77,7 +85,7 @@ void SoundManager::PlayMono(std::string name, int id)
     sounds[name + std::to_string(id)]->setPosition({ 0, 0, 0 });
 }
 
-void SoundManager::Stop(std::string name, int id)
+void SoundManager::Stop(const std::string& name, int id)
 {
     auto it = sounds.find(name + std::to_string(id));
     if(it != sounds.end())
@@ -88,14 +96,14 @@ void SoundManager::Stop(std::string name, int id)
     }
 }
 
-void SoundManager::Pause(std::string name, int id)
+void SoundManager::Pause(const std::string& name, int id)
 {
     auto it = sounds.find(name + std::to_string(id));
     if(it != sounds.end())
         it->second->pause();
 }
 
-void SoundManager::SetName(std::string name, std::string newName)
+void SoundManager::SetName(const std::string& name, const std::string& newName)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
 	if(it != buffers.end())
@@ -104,7 +112,7 @@ void SoundManager::SetName(std::string name, std::string newName)
         Log::Write("Could not find a sound with name \"" + name + "\"", Log::Type::Warning);
 }
 
-void SoundManager::RemoveSound(std::string name)
+void SoundManager::RemoveSound(const std::string& name)
 {
     Stop(name);
     auto it = std::find(buffers.begin(), buffers.end(), name);
@@ -114,7 +122,7 @@ void SoundManager::RemoveSound(std::string name)
         Log::Write("Could not find a sound with name \"" + name + "\"", Log::Type::Warning);
 }
 
-void SoundManager::SetPosition(rp3d::Vector3 pos, std::string name, int id)
+void SoundManager::SetPosition(const rp3d::Vector3& pos, const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
@@ -124,7 +132,7 @@ void SoundManager::SetPosition(rp3d::Vector3 pos, std::string name, int id)
     }
 }
 
-void SoundManager::SetRelativeToListener(bool relative, std::string name, int id)
+void SoundManager::SetRelativeToListener(bool relative, const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
@@ -134,7 +142,7 @@ void SoundManager::SetRelativeToListener(bool relative, std::string name, int id
     }
 }
 
-void SoundManager::SetLoop(bool loop, std::string name, int id)
+void SoundManager::SetLoop(bool loop, const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
@@ -144,7 +152,7 @@ void SoundManager::SetLoop(bool loop, std::string name, int id)
     }
 }
 
-void SoundManager::SetVolume(float volume, std::string name, int id)
+void SoundManager::SetVolume(float volume, const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
@@ -154,7 +162,7 @@ void SoundManager::SetVolume(float volume, std::string name, int id)
     }
 }
 
-void SoundManager::SetMinDistance(float dist, std::string name, int id)
+void SoundManager::SetMinDistance(float dist, const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
@@ -164,7 +172,7 @@ void SoundManager::SetMinDistance(float dist, std::string name, int id)
     }
 }
 
-void SoundManager::SetAttenuation(float attenuation, std::string name, int id)
+void SoundManager::SetAttenuation(float attenuation, const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
@@ -174,7 +182,7 @@ void SoundManager::SetAttenuation(float attenuation, std::string name, int id)
     }
 }
 
-void SoundManager::SetPitch(float pitch, std::string name, int id)
+void SoundManager::SetPitch(float pitch, const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
@@ -184,15 +192,15 @@ void SoundManager::SetPitch(float pitch, std::string name, int id)
     }
 }
 
-rp3d::Vector3 SoundManager::GetPosition(std::string name, int id)
+rp3d::Vector3 SoundManager::GetPosition(const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
-        return it->pos;
+        return it->GetPosition(sounds, id);
     return rp3d::Vector3::zero();
 }
 
-bool SoundManager::GetRelativeToListener(std::string name, int id)
+bool SoundManager::GetRelativeToListener(const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
@@ -200,7 +208,7 @@ bool SoundManager::GetRelativeToListener(std::string name, int id)
     return false;
 }
 
-bool SoundManager::GetLoop(std::string name, int id)
+bool SoundManager::GetLoop(const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
@@ -208,7 +216,7 @@ bool SoundManager::GetLoop(std::string name, int id)
     return false;
 }
 
-float SoundManager::GetVolume(std::string name, int id)
+float SoundManager::GetVolume(const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
@@ -216,7 +224,7 @@ float SoundManager::GetVolume(std::string name, int id)
     return 0;
 }
 
-float SoundManager::GetMinDistance(std::string name, int id)
+float SoundManager::GetMinDistance(const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
@@ -224,7 +232,7 @@ float SoundManager::GetMinDistance(std::string name, int id)
     return 0;
 }
 
-float SoundManager::GetAttenuation(std::string name, int id)
+float SoundManager::GetAttenuation(const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
@@ -232,7 +240,7 @@ float SoundManager::GetAttenuation(std::string name, int id)
     return 0;
 }
 
-float SoundManager::GetPitch(std::string name, int id)
+float SoundManager::GetPitch(const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
@@ -248,7 +256,7 @@ void SoundManager::UpdateAll()
     });
 }
 
-void SoundManager::UpdateAll(std::string name)
+void SoundManager::UpdateAll(const std::string& name)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
@@ -265,7 +273,7 @@ std::vector<std::string> SoundManager::GetSounds()
     return ret;
 }
 
-Json::Value SoundManager::Serialize(std::string relativeTo)
+Json::Value SoundManager::Serialize(const std::string& relativeTo)
 {
     Json::Value data;
 
@@ -294,7 +302,7 @@ void SoundManager::Deserialize(Json::Value data)
     int counter = 0;
     while(!data[counter].empty())
     {
-        LoadSound(data[counter]["filename"].asString(), data[counter]["name"].asString());
+        LoadSound(data[counter]["filename"].asString(), data[counter]["name"].asString(), false);
 
         buffers.back().pos.x = data[counter]["position"]["x"].asFloat();
         buffers.back().pos.y = data[counter]["position"]["y"].asFloat();

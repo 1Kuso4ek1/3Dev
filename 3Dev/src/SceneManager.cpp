@@ -90,15 +90,11 @@ void SceneManager::AddModel(std::shared_ptr<Model> model, const std::string& nam
                         { return p.first.find(n.first) != std::string::npos; });
 
         lastAdded = n.first + (nameCount ? std::to_string(nameCount) : "") + (n.second.empty() ? "" : ":") + n.second;
-        models[lastAdded] = model;
-        nodes[lastAdded] = (Node*)(model.get());
     }
-    else
-    {
-        models[name] = model;
-        nodes[name] = (Node*)(model.get());
-        lastAdded = name;
-    }
+    else lastAdded = name;
+
+    models[lastAdded] = model;
+    nodes[lastAdded] = (Node*)(model.get());
 
     if(!n.second.empty())
         modelGroups[n.second].push_back(model);

@@ -600,35 +600,35 @@ void ScriptManager::RegisterClock()
 void ScriptManager::RegisterSoundManager()
 {
     SetDefaultNamespace("Listener");
-    AddFunction("void SetPosition(Vector3)", WRAP_FN(ListenerWrapper::SetPosition));
-    AddFunction("void SetUpVector(Vector3)", WRAP_FN(ListenerWrapper::SetUpVector));
-    AddFunction("void SetOrientation(Quaternion)", WRAP_FN(ListenerWrapper::SetOrientation));
+    AddFunction("void SetPosition(const Vector3& in)", WRAP_FN(ListenerWrapper::SetPosition));
+    AddFunction("void SetUpVector(const Vector3& in)", WRAP_FN(ListenerWrapper::SetUpVector));
+    AddFunction("void SetOrientation(const Quaternion& in)", WRAP_FN(ListenerWrapper::SetOrientation));
     AddFunction("void SetGlobalVolume(float)", WRAP_FN(ListenerWrapper::SetGlobalVolume));
     SetDefaultNamespace("");
 
     AddType("SoundManager", sizeof(SoundManager),
     {
-        { "void Play(string, int = 0)", WRAP_MFN(SoundManager, Play) },
-        { "void PlayAt(string, int = 0, Vector3 = Vector3(0, 0, 0))", WRAP_MFN(SoundManager, PlayAt) },
-        { "void PlayMono(string, int = 0)", WRAP_MFN(SoundManager, PlayMono) },
-        { "void Stop(string, int = 0)", WRAP_MFN(SoundManager, Stop) },
-        { "void Pause(string, int = 0)", WRAP_MFN(SoundManager, Pause) },
-        { "void SetPosition(Vector3, string, int = 0)", WRAP_MFN(SoundManager, SetPosition) },
-        { "void SetRelativeToListener(bool, string, int = 0)", WRAP_MFN(SoundManager, SetRelativeToListener) },
-        { "void SetLoop(bool, string, int = 0)", WRAP_MFN(SoundManager, SetLoop) },
-        { "void SetVolume(float, string, int = 0)", WRAP_MFN(SoundManager, SetVolume) },
-        { "void SetMinDistance(float, string, int = 0)", WRAP_MFN(SoundManager, SetMinDistance) },
-        { "void SetAttenuation(float, string, int = 0)", WRAP_MFN(SoundManager, SetAttenuation) },
-        { "void SetPitch(float, string, int = 0)", WRAP_MFN(SoundManager, SetPitch) },
-        { "Vector3 GetPosition(string, int = 0)", WRAP_MFN(SoundManager, GetPosition) },
-        { "bool GetRelativeToListener(string, int = 0)", WRAP_MFN(SoundManager, GetRelativeToListener) },
-        { "bool GetLoop(string, int = 0)", WRAP_MFN(SoundManager, GetLoop) },
-        { "float GetVolume(string, int = 0)", WRAP_MFN(SoundManager, GetVolume) },
-        { "float GetMinDistance(string, int = 0)", WRAP_MFN(SoundManager, GetMinDistance) },
-        { "float GetAttenuation(string, int = 0)", WRAP_MFN(SoundManager, GetAttenuation) },
-        { "float GetPitch(string, int = 0)", WRAP_MFN(SoundManager, GetPitch) },
+        { "void Play(const string& in, int = 0)", WRAP_MFN(SoundManager, Play) },
+        { "void PlayAt(const string& in, int = 0, const Vector3& in = const Vector3& in(0, 0, 0))", WRAP_MFN(SoundManager, PlayAt) },
+        { "void PlayMono(const string& in, int = 0)", WRAP_MFN(SoundManager, PlayMono) },
+        { "void Stop(const string& in, int = 0)", WRAP_MFN(SoundManager, Stop) },
+        { "void Pause(const string& in, int = 0)", WRAP_MFN(SoundManager, Pause) },
+        { "void SetPosition(const Vector3& in, const string& in, int = 0)", WRAP_MFN(SoundManager, SetPosition) },
+        { "void SetRelativeToListener(bool, const string& in, int = 0)", WRAP_MFN(SoundManager, SetRelativeToListener) },
+        { "void SetLoop(bool, const string& in, int = 0)", WRAP_MFN(SoundManager, SetLoop) },
+        { "void SetVolume(float, const string& in, int = 0)", WRAP_MFN(SoundManager, SetVolume) },
+        { "void SetMinDistance(float, const string& in, int = 0)", WRAP_MFN(SoundManager, SetMinDistance) },
+        { "void SetAttenuation(float, const string& in, int = 0)", WRAP_MFN(SoundManager, SetAttenuation) },
+        { "void SetPitch(float, const string& in, int = 0)", WRAP_MFN(SoundManager, SetPitch) },
+        { "Vector3 GetPosition(const string& in, int = 0)", WRAP_MFN(SoundManager, GetPosition) },
+        { "bool GetRelativeToListener(const string& in, int = 0)", WRAP_MFN(SoundManager, GetRelativeToListener) },
+        { "bool GetLoop(const string& in, int = 0)", WRAP_MFN(SoundManager, GetLoop) },
+        { "float GetVolume(const string& in, int = 0)", WRAP_MFN(SoundManager, GetVolume) },
+        { "float GetMinDistance(const string& in, int = 0)", WRAP_MFN(SoundManager, GetMinDistance) },
+        { "float GetAttenuation(const string& in, int = 0)", WRAP_MFN(SoundManager, GetAttenuation) },
+        { "float GetPitch(const string& in, int = 0)", WRAP_MFN(SoundManager, GetPitch) },
         { "void UpdateAll()", WRAP_MFN_PR(SoundManager, UpdateAll, (), void) },
-        { "void UpdateAll(string)", WRAP_MFN_PR(SoundManager, UpdateAll, (std::string), void) }
+        { "void UpdateAll(const string& in)", WRAP_MFN_PR(SoundManager, UpdateAll, (const std::string&), void) }
     }, {});
 }
 

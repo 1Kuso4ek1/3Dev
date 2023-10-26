@@ -2,7 +2,7 @@
     "scenePath" : "",
     "window" :
     {
-        "title" : "game",
+        "title" : "",
         "width" : 1280,
         "height" : 720,
         "fullscreen" : false,
@@ -12,11 +12,11 @@
     "renderer" :
     {
     	"shadersDir" : "default",
-        "hdriPath" : "../textures/park.hdr",
-        "skyboxSideSize" : 256,
+        "hdriPath" : "",
+        "skyboxSideSize" : 512,
         "irradianceSideSize" : 32,
-        "prefilteredSideSize" : 256,
-        "shadowMapResolution" : 2048,
+        "prefilteredSideSize" : 512,
+        "shadowMapResolution" : 4096,
         "exposure" : 1.0
     },
     "log" :
