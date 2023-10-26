@@ -21,6 +21,7 @@ int main()
     engine.GetWindow().setFramerateLimit(cfg["window"]["maxFps"].asInt());
 
     float guiWidth = cfg["gui"]["width"].asInt(), guiHeight = cfg["gui"]["height"].asInt();
+    float bloomResolutionScale = cfg["renderer"]["bloomResolutionScale"].asFloat();
 
     engine.SetGuiView({ 0, 0, float(engine.GetWindow().getSize().x) * (guiWidth / float(engine.GetWindow().getSize().x)),
                               float(engine.GetWindow().getSize().y) * (guiHeight / float(engine.GetWindow().getSize().y)) });
@@ -33,7 +34,8 @@ int main()
                                   cfg["renderer"]["hdriPath"].asString(),
                                   cfg["renderer"]["skyboxSideSize"].asInt(),
                                   cfg["renderer"]["irradianceSideSize"].asInt(),
-                                  cfg["renderer"]["prefilteredSideSize"].asInt());
+                                  cfg["renderer"]["prefilteredSideSize"].asInt(),
+                                  bloomResolutionScale);
 
     Camera cam(&engine.GetWindow(), { 0, 0, 0 });
 
@@ -116,8 +118,8 @@ int main()
         {
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Resize(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Resize(event.size.width, event.size.height);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(event.size.width / 12, event.size.height / 12);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->Resize(event.size.width / 12, event.size.height / 12);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(event.size.width / bloomResolutionScale, event.size.height / bloomResolutionScale);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->Resize(event.size.width / bloomResolutionScale, event.size.height / bloomResolutionScale);
 
             engine.SetGuiView({ 0, 0, float(event.size.width) * (guiWidth / float(event.size.width)),
                                       float(event.size.height) * (guiHeight / float(event.size.height)) });

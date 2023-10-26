@@ -17,6 +17,7 @@
         "irradianceSideSize" : 32,
         "prefilteredSideSize" : 512,
         "shadowMapResolution" : 4096,
+        "bloomResolutionScale" : 10,
         "exposure" : 1.0
     },
     "log" :

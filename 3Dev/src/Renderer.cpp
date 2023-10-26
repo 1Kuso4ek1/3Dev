@@ -18,7 +18,7 @@ void Renderer::DeleteInstance()
     delete instance;
 }
 
-void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilename, uint32_t skyboxSideSize, uint32_t irradianceSideSize, uint32_t prefilteredSideSize)
+void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilename, uint32_t skyboxSideSize, uint32_t irradianceSideSize, uint32_t prefilteredSideSize, float bloomResolutionScale)
 {
     shaders[ShaderType::Main] = std::make_shared<Shader>(shadersDir + "vertex.vs", shadersDir + "fragment.fs");
     shaders[ShaderType::Skybox] = std::make_shared<Shader>(shadersDir + "skybox.vs", shadersDir + "skybox.fs");
@@ -33,8 +33,8 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
     framebuffers[FramebufferType::Transparency] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
 
-    framebuffers[FramebufferType::BloomPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / 10, fbSize.y / 10, false, 1, GL_LINEAR);
-    framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / 10, fbSize.y / 10, false, 1, GL_LINEAR);
+    framebuffers[FramebufferType::BloomPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale, fbSize.y / bloomResolutionScale, false, 1, GL_LINEAR);
+    framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale, fbSize.y / bloomResolutionScale, false, 1, GL_LINEAR);
 
     capture = std::make_shared<Framebuffer>(nullptr, skyboxSideSize, skyboxSideSize);
     captureIrr = std::make_shared<Framebuffer>(nullptr, irradianceSideSize, irradianceSideSize);

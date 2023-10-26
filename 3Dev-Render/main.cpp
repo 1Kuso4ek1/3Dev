@@ -63,7 +63,8 @@ int main(int argc, char* argv[])
                   << "  -x <float>        Exposure (1.5 is default)" << std::endl
                   << "  -r <int>          Shadow map resolution (4096 is default)" << std::endl
                   << "  -i <int>          Blur iterations (8 is default)" << std::endl
-                  << "  -n <float>        Bloom strength (0.3 is default)" << std::endl;
+                  << "  -n <float>        Bloom strength (0.3 is default)" << std::endl
+                  << "  -c <float>        Bloom resolution scale (10 is default)" << std::endl;
         return 0;
     }
 
@@ -71,6 +72,7 @@ int main(int argc, char* argv[])
     int blurIterations = 8;
     float bloomStrength = 0.3;
     float exp = 1.0;
+    float bloomResolutionScale = 10.0;
     #ifdef _WIN32
     	std::string env = std::string(getenv("HOMEPATH")) + "/.3Dev-Editor/default/hdri.hdr";
     #else
@@ -92,6 +94,7 @@ int main(int argc, char* argv[])
     if(!GetArgument(argc, argv, "-x").empty()) exp = std::stof(GetArgument(argc, argv, "-x"));
     if(!GetArgument(argc, argv, "-i").empty()) blurIterations = std::stof(GetArgument(argc, argv, "-i"));
     if(!GetArgument(argc, argv, "-n").empty()) bloomStrength = std::stof(GetArgument(argc, argv, "-n"));
+    if(!GetArgument(argc, argv, "-c").empty()) bloomResolutionScale = std::stof(GetArgument(argc, argv, "-c"));
     if(!GetArgument(argc, argv, "-o").empty()) out = GetArgument(argc, argv, "-o");
     if(!GetArgument(argc, argv, "-e").empty()) env = GetArgument(argc, argv, "-e");
 
@@ -99,8 +102,6 @@ int main(int argc, char* argv[])
     {
         if(out == "output.jpg")
             out = "output.mp4";
-        if(std::system("ffmpeg") == 32512)
-            Log::Write("You can't render animation without ffmpeg", Log::Type::Critical);
 
         animationsQueue = ParseAnimations(animation);
     }
@@ -112,7 +113,7 @@ int main(int argc, char* argv[])
 
     engine.Init();
 
-    Renderer::GetInstance()->Init({ w, h }, env, b, 128, b);
+    Renderer::GetInstance()->Init({ w, h }, env, b, 128, b, bloomResolutionScale);
 
     Camera cam({ w, h });
 

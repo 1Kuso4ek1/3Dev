@@ -45,6 +45,7 @@ Json::Value DefaultProperties(const Json::Value& recentProjects = "", const Json
     p["renderer"]["irradianceSideSize"] = 32;
     p["renderer"]["prefilteredSideSize"] = 256;
     p["renderer"]["shadowMapResolution"] = 2048;
+    p["renderer"]["bloomResolutionScale"] = 10;
     p["renderer"]["exposure"] = 0.5;
 
     if(!recentProjects.isArray())
@@ -551,10 +552,12 @@ int main()
     engine.GetWindow().display();
         
     Renderer::GetInstance()->SetShadersDirectory(properties["renderer"]["shadersDir"].asString());
-    Renderer::GetInstance()->Init({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 }, properties["renderer"]["hdriPath"].asString(),
-                                                properties["renderer"]["skyboxSideSize"].asInt(),
-                                                properties["renderer"]["irradianceSideSize"].asInt(),
-                                                properties["renderer"]["prefilteredSideSize"].asInt());
+    Renderer::GetInstance()->Init({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 },
+                                    properties["renderer"]["hdriPath"].asString(),
+                                    properties["renderer"]["skyboxSideSize"].asInt(),
+                                    properties["renderer"]["irradianceSideSize"].asInt(),
+                                    properties["renderer"]["prefilteredSideSize"].asInt(),
+                                    properties["renderer"]["bloomResolutionScale"].asFloat());
     
     progressBar->setValue(20);
     progressBar->setText("Setting up defaults");

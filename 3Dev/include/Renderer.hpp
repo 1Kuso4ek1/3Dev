@@ -37,7 +37,7 @@ public:
     static Renderer* GetInstance();
     static void DeleteInstance();
 
-    void Init(sf::Vector2u fbSize, const std::string& environmentMapFilename, uint32_t skyboxSideSize = 256, uint32_t irradianceSideSize = 32, uint32_t prefilteredSideSize = 256);
+    void Init(sf::Vector2u fbSize, const std::string& environmentMapFilename, uint32_t skyboxSideSize = 256, uint32_t irradianceSideSize = 32, uint32_t prefilteredSideSize = 256, float bloomResolutionScale = 10);
     void LoadEnvironment(const std::string& environmentMapFilename);
     void SetShadersDirectory(std::string dir);
 
