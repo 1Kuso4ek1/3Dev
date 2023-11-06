@@ -42,6 +42,7 @@ public:
 	void SetParameter(std::variant<glm::vec3, GLuint> parameter, Type type);
 
 	void UpdateShader(Shader* shader);
+	static void UpdateShaderEnvironment(Shader* shader);
 	void ResetShader(Shader* shader);
 	void GetEnvironmentFromRenderer();
 	void LoadTextures();

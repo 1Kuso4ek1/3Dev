@@ -17,9 +17,24 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 
     if(!fbo) fbo = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main);
 
-    fbo->Bind();
-    auto size = fbo->GetSize();
-    glViewport(0, 0, size.x, size.y);
+    if(shadowPass)
+    {
+        if(this->updatePhysics && updatePhysics)
+        {
+            float time = clock.restart().asSeconds();
+            pManager->Update(time);
+        }
+        else clock.restart();
+        
+        fbo->Bind();
+        auto size = fbo->GetSize();
+        glViewport(0, 0, size.x, size.y);
+        std::for_each(models.begin(), models.end(), [&](auto p) 
+            { if(!p.second->GetParent()) p.second->Draw(camera, lightsVector); });
+        camera->Draw(camera, lightsVector);
+        fbo->Unbind();
+        return;
+    }
 
     if(this->updatePhysics && updatePhysics)
     {
@@ -28,7 +43,13 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     }
     else clock.restart();
 
-    // needed for materials without textures to render correctly in some cases
+    SetMainShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Deffered), true);
+
+    auto gBuffer = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer);
+    auto size = gBuffer->GetSize();
+    glViewport(0, 0, size.x, size.y);
+    gBuffer->Bind();
+
     for(int i = 0; i < 8; i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -39,6 +60,35 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         { if(!p.second->GetParent()) p.second->Draw(camera, lightsVector); });
     camera->Draw(camera, lightsVector);
 
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 0));
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 1));
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 2));
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 3));
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 4));
+
+    auto lightingPass = Renderer::GetInstance()->GetShader(Renderer::ShaderType::LightingPass);
+    lightingPass->Bind();
+
+    lightingPass->SetUniform3f("campos", camera->GetPosition().x, camera->GetPosition().y, camera->GetPosition().z);
+    lightingPass->SetUniform1i("gposition", 0);
+    lightingPass->SetUniform1i("galbedo", 1);
+    lightingPass->SetUniform1i("gnormal", 2);
+    lightingPass->SetUniform1i("gemission", 3);
+    lightingPass->SetUniform1i("gcombined", 4);
+    Material::UpdateShaderEnvironment(lightingPass);
+
+    for(int i = 0; i < lightsVector.size(); i++)
+        dynamic_cast<Light*>(lightsVector[i])->Update(lightingPass, i);
+
+    size = fbo->GetSize();
+    glViewport(0, 0, size.x, size.y);
+    fbo->Bind();
+
     if(skybox)
     {
         glDepthFunc(GL_LEQUAL);
@@ -48,18 +98,25 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         glDepthFunc(GL_LESS);
     }
 
-    fbo->Unbind();
+    gBuffer->Draw();
 
-    if(shadowPass)
-        return;
-        
+    fbo->Unbind();
+    
     if(!transparency) transparency = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency);
+
+    SetMainShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward), true);
 
     glFrontFace(GL_CW);
     glDisable(GL_CULL_FACE);
     transparency->Bind();
     size = transparency->GetSize();
     glViewport(0, 0, size.x, size.y);
+
+    for(int i = 0; i < 8; i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 
     std::for_each(models.begin(), models.end(), [&](auto p)
         { if(!p.second->GetParent()) p.second->Draw(camera, lightsVector, true); });
@@ -73,7 +130,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 
     post->Bind();
     glActiveTexture(GL_TEXTURE19);
-	glBindTexture(GL_TEXTURE_2D, fbo->GetTexture(true));
+	glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(true));
     glActiveTexture(GL_TEXTURE20);
 	glBindTexture(GL_TEXTURE_2D, transparency->GetTexture(true));
 

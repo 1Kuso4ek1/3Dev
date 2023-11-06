@@ -15,7 +15,9 @@ public:
 
     enum class ShaderType
     {
-        Main,
+        Deffered,
+        Forward,
+        LightingPass,
         Skybox,
         Depth,
         Post,
@@ -28,6 +30,7 @@ public:
 
     enum class FramebufferType
     {
+        GBuffer,
         Main,
         Transparency,
         BloomPingPong0,

@@ -4,17 +4,18 @@
 class ShadowManager
 {
 public:
-    ShadowManager(SceneManager* scene, glm::ivec2 size, Shader* mainShader = nullptr, Shader* depthShader = nullptr);
+    ShadowManager(SceneManager* scene, glm::ivec2 size, Shader* depthShader = nullptr);
 
     void Update();
 
 private:
+    void UpdateShader(Shader* shader);
+
     SceneManager* scene;
 
     std::vector<Light*> lights;
     std::vector<std::unique_ptr<Framebuffer>> depthBuffers;
 
-    Shader* mainShader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Main);
     Shader* depthShader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Depth);
 
     glm::ivec2 shadowSize;

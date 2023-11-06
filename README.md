@@ -1,6 +1,6 @@
 # 3Dev
-![](https://img.shields.io/badge/3Dev-1.3.2-blue)
-![](https://img.shields.io/badge/3Dev_Editor-1.3.6-blue)
+![](https://img.shields.io/badge/3Dev-1.3.3-blue)
+![](https://img.shields.io/badge/3Dev_Editor-1.3.7-blue)
 ![](https://img.shields.io/badge/language-C++-green)
 ![](https://img.shields.io/github/license/1kuso4ek1/3Dev)
 ![](https://img.shields.io/github/issues/1kuso4ek1/3Dev)
@@ -9,13 +9,14 @@
 ## About
 - 3Dev is a lightweight, crossplatform and easy-to-use game engine with some useful instruments, besides the library itself.
 ## Features
+- Physically Based Rendering
+- Deffered + Forward (for transparency) rendering
 - Rigid body physics
-- Loading a lot of model formats (.obj, .dae, .fbx and much more...)
+- A lot of supported model formats (.obj, .dae, .fbx and much more...)
 - Good animation system
 - Skeletal animations support
 - HDR
 - Post-processing: ACES tonemapping, FXAA, Physically based bloom
-- Physically Based Rendering
 - Shadow mapping
 - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
 - 3D audio

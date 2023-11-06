@@ -114,6 +114,21 @@ void Material::UpdateShader(Shader* shader)
 	}
 }
 
+void Material::UpdateShaderEnvironment(Shader* shader)
+{
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, Renderer::GetInstance()->GetTexture(Renderer::TextureType::Irradiance));
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered));
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetTexture(Renderer::TextureType::LUT));
+
+	shader->SetUniform3f("nirradiance", -1, 0, 0);
+	shader->SetUniform1i("irradiance", 5);
+	shader->SetUniform1i("prefilteredMap", 6);
+	shader->SetUniform1i("lut", 7);
+}
+
 void Material::ResetShader(Shader* shader)
 {
 	shader->SetUniform3f("nalbedo", 0, 0, 0);
