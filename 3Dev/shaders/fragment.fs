@@ -19,7 +19,6 @@ uniform sampler2D lut;
 uniform vec3 nirradiance;
 
 uniform bool drawTransparency = false;
-uniform float shadowBias;
 
 uniform mat4 lspace[maxShadows];
 
@@ -55,7 +54,7 @@ struct Light
 uniform Light lights[maxLights];
 uniform Shadow shadows[maxShadows];
 
-float CalcShadow()
+float CalcShadow(float shadowBias)
 {
     float ret = 0.0;
     for(int i = 0; i < maxShadows; i++)
@@ -148,14 +147,20 @@ void main()
     float alpha = albedo.w;
     norm = texture(gnormal, coord).xyz;
     vec3 emission = texture(gemission, coord).xyz;
-    float metal = texture(gcombined, coord).x;
-    float rough = texture(gcombined, coord).y;
-    float ao = texture(gcombined, coord).z;
+    vec4 combined = texture(gcombined, coord);
+
+    float metal = combined.x;
+    float rough = combined.y;
+    float ao = combined.z;
+    float shadowBias = combined.w;
+    
     vec3 irr = (nirradiance.x < 0.0 ? texture(irradiance, norm).xyz : nirradiance);
     vec3 prefiltered = textureLod(prefilteredMap, reflect(-normalize(campos - pos), norm), rough * maxLodLevel).xyz;
 
     for(int i = 0; i < maxShadows; i++)
+    {
         lspaceout[i] = lspace[i] * vec4(pos, 1.0);
+    }
 
     vec3 total = vec3(0.0), totalNoShadow = vec3(0.0);
     float shadow = 0.0;
@@ -168,18 +173,17 @@ void main()
         else totalNoShadow += CalcLight(lights[i], rough, metal, alb, irr, f0);
         i++;
     }
-    shadow = CalcShadow();
+    shadow = CalcShadow(shadowBias);
 
     vec3 f = FresnelSchlick(max(dot(norm, normalize(campos - pos)), 0.0), f0, rough);
-    vec3 kspc = f;
-    vec3 kdif = (1.0 - kspc) * (1.0 - metal);
+    vec3 kdif = (1.0 - f) * (1.0 - metal);
 
     vec2 brdf = normalize(texture(lut, vec2(max(dot(norm, normalize(campos - pos)), 0.0), rough)).xy);
     vec3 spc = prefiltered * (f * brdf.x + brdf.y);
 
-    vec3 diffuse = irr * alb;
-    vec3 ambient = ((kdif * diffuse) + spc) * ao;
+    vec3 ambient = ((kdif * irr * alb) + spc) * ao;
 
+    float shadowCoef = (length(emission) > 0.0 ? 1.0 : (1.0 - shadow));
     total += ambient / 2;
-    color = vec4((total * (length(emission) > 0.0 ? 1.0 : (1.0 - shadow)) + ambient / 2) + (emission * 6) + totalNoShadow, alpha);
+    color = vec4(total * shadowCoef + (ambient / 2) + (emission * 6) + totalNoShadow, alpha);
 }

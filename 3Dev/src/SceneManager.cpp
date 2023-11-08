@@ -45,6 +45,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 
     SetMainShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Deffered), true);
 
+    glDisable(GL_BLEND);
+
     auto gBuffer = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer);
     auto size = gBuffer->GetSize();
     glViewport(0, 0, size.x, size.y);
@@ -84,6 +86,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 
     for(int i = 0; i < lightsVector.size(); i++)
         dynamic_cast<Light*>(lightsVector[i])->Update(lightingPass, i);
+
+    glEnable(GL_BLEND);
 
     size = fbo->GetSize();
     glViewport(0, 0, size.x, size.y);

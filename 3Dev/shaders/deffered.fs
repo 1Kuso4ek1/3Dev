@@ -8,6 +8,7 @@ uniform sampler2D emission;
 uniform sampler2D roughness;
 uniform sampler2D opacity;
 
+uniform float shadowBias;
 uniform vec3 nalbedo;
 uniform bool nnormalMap;
 uniform vec3 nemission;
@@ -50,5 +51,5 @@ void main()
     galbedo = vec4(alb, alpha);
     gnormal = vec4(norm, 1.0);
     gemission = vec4(emission, 1.0);
-    gcombined = vec4(metal, rough, ao, 1.0);
+    gcombined = vec4(metal, rough, ao, shadowBias);
 }
