@@ -43,7 +43,6 @@ int main()
     auto man = std::make_shared<PhysicsManager>(st);
 
     Light l({ 0, 0, 0 }, { 50.1, 100.0, 50.1 }, true);
-    l.SetDirection({ 0.0, -1.0, 0.0 });
 
     Material skyboxMaterial(
     {

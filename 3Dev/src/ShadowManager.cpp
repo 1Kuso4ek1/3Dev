@@ -68,7 +68,7 @@ void ShadowManager::UpdateShader(Shader* shader)
     for(int i = 0; i < (lights.size() > 8 ? 8 : lights.size()); i++)
     {
         shader->SetUniformMatrix4("lspace[" + std::to_string(i) + "]", lights[i]->GetLightSpaceMatrix());
-        auto pos = lights[i]->GetPosition();
+        auto pos = lights[i]->GetPosition(true);
 
         glActiveTexture(GL_TEXTURE16 + i);
         glBindTexture(GL_TEXTURE_2D, depthBuffers[i]->GetTexture(true));

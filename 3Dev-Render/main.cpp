@@ -121,7 +121,6 @@ int main(int argc, char* argv[])
     auto man = std::make_shared<PhysicsManager>(st);
 
     Light shadowSource({ 0, 0, 0 }, { 30.1, 50.0, -30.1 }, true);
-    shadowSource.SetDirection({ 0.0, -1.0, 0.0 });
 
     Material skyboxMaterial(
     {

@@ -570,7 +570,6 @@ int main()
     cam.SetViewportSize({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 });
 
     Light shadowSource({ 0, 0, 0 }, { 30.1, 50.0, -30.1 }, true);
-    shadowSource.SetDirection({ 0.0, -1.0, 0.0 });
 
     Material skyboxMaterial(
     {
@@ -1500,15 +1499,15 @@ int main()
                         {
                         case 0:
                             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-                                light->SetPosition(light->GetPosition() + m);
+                                light->Move(m);
                             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-                                light->SetPosition(light->GetPosition() - m);
+                                light->Move(-m);
                             break;
                         case 1:
                             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-                                light->SetDirection(light->GetDirection() + m);
+                                light->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
                             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-                                light->SetDirection(light->GetDirection() - m);
+                                light->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
                             break;
                         }
                     }
@@ -1516,7 +1515,7 @@ int main()
                     if((!lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem().back()) || objectMode)
                     {
                         rp3d::Vector3 position = light->GetPosition();
-                        rp3d::Vector3 direction = light->GetDirection();
+                        rp3d::Quaternion orientation = light->GetOrientation();
                         rp3d::Vector3 color = light->GetColor();
                         rp3d::Vector3 attenuation = light->GetAttenuation();
                         float innerCutoff = light->GetCutoff();
@@ -1531,9 +1530,11 @@ int main()
                         lposEditY->setText(tgui::String(position.y));
                         lposEditZ->setText(tgui::String(position.z));
 
-                        lrotEditX->setText(tgui::String(direction.x));
-                        lrotEditY->setText(tgui::String(direction.y));
-                        lrotEditZ->setText(tgui::String(direction.z));
+                        glm::vec3 euler = glm::eulerAngles(toglm(orientation));
+
+                        lrotEditX->setText(tgui::String(glm::degrees(euler.x)));
+                        lrotEditY->setText(tgui::String(glm::degrees(euler.y)));
+                        lrotEditZ->setText(tgui::String(glm::degrees(euler.z)));
 
                         rEdit->setText(tgui::String(color.x));
                         gEdit->setText(tgui::String(color.y));
@@ -1560,10 +1561,10 @@ int main()
                     pos.y = lposEditY->getText().toFloat();
                     pos.z = lposEditZ->getText().toFloat();
 
-                    rp3d::Vector3 dir;
-                    dir.x = lrotEditX->getText().toFloat();
-                    dir.y = lrotEditY->getText().toFloat();
-                    dir.z = lrotEditZ->getText().toFloat();
+                    rp3d::Vector3 euler;
+                    euler.x = glm::radians(lrotEditX->getText().toFloat());
+                    euler.y = glm::radians(lrotEditY->getText().toFloat());
+                    euler.z = glm::radians(lrotEditZ->getText().toFloat());
 
                     rp3d::Vector3 color;
                     color.x = rEdit->getText().toInt();
@@ -1578,7 +1579,7 @@ int main()
                     if(!objectMode)
                     {
                         light->SetPosition(pos);
-                        light->SetDirection(dir);
+                        light->SetOrientation(rp3d::Quaternion::fromEulerAngles(euler));
                         light->SetColor(color);
                         light->SetAttenuation(att.x, att.y, att.z);
                         light->SetCutoff(innerCutoffEdit->getText().toFloat());

@@ -1,8 +1,9 @@
 #include "Light.hpp"
 
 Light::Light(const rp3d::Vector3& color, const rp3d::Vector3& position, bool castShadows) 
-			: castShadows(castShadows), color(color), position(position)
+			: castShadows(castShadows), color(color)
 {
+	transform.setPosition(position);
 	if(castShadows)
 		CalcLightSpaceMatrix();
 }
@@ -14,12 +15,22 @@ void Light::SetColor(const rp3d::Vector3& color)
 
 void Light::SetPosition(const rp3d::Vector3& position)
 {
-	this->position = position;
+	transform.setPosition(position);
 }
 
-void Light::SetDirection(const rp3d::Vector3& direction)
+void Light::SetOrientation(const rp3d::Quaternion& orientation)
 {
-	this->direction = direction;
+	transform.setOrientation(orientation);
+}
+
+void Light::Move(const rp3d::Vector3& vec)
+{
+	transform.setPosition(transform.getPosition() + vec);
+}
+
+void Light::Rotate(const rp3d::Quaternion& quat)
+{
+	transform.setOrientation(quat * transform.getOrientation());
 }
 
 void Light::SetAttenuation(float constant, float linear, float quadratic)
@@ -43,15 +54,15 @@ void Light::CalcLightSpaceMatrix()
 {
 	glm::mat4 projection;
 
-	auto tr = Node::GetFinalTransform(this);
-	auto pos = (GetTransform() * tr).getPosition();
+	auto tr = Node::GetFinalTransform(this) * transform;
+	auto pos = tr.getPosition();
 
 	if(perspectiveShadows)
 		projection = glm::perspective(glm::radians(90.0), 1.0, 0.01, 1000.0);
 	else 
 		projection = glm::ortho(-200.0, 200.0, -200.0, 200.0, 0.01, 1000.0);
 	
-	glm::mat4 view = glm::lookAt(toglm(pos), toglm(direction), glm::vec3(0.0, 1.0, 0.0));
+	glm::mat4 view = glm::lookAt(toglm(pos), toglm(pos + (tr.getOrientation() * rp3d::Vector3(0, 0, -1))), glm::vec3(0.0, 1.0, 0.0));
 	lightSpaceMatrix = projection * view;
 }
 
@@ -67,8 +78,10 @@ void Light::SetIsCastingPerspectiveShadows(bool perspectiveShadows)
 
 void Light::Update(Shader* shader, int lightnum) 
 {
-	auto tr = Node::GetFinalTransform(this);
-	auto pos = (tr * GetTransform()).getPosition();
+	auto tr = Node::GetFinalTransform(this) * transform;
+	auto pos = tr.getPosition();
+
+	auto direction = tr.getOrientation() * rp3d::Vector3(0, 0, -1);
 
 	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].color", color.x, color.y, color.z);
 	shader->SetUniform3f("lights[" + std::to_string(lightnum) + "].position", pos.x, pos.y, pos.z);
@@ -102,14 +115,16 @@ rp3d::Vector3 Light::GetColor()
 	return color;
 }
 
-rp3d::Vector3 Light::GetPosition() 
+rp3d::Vector3 Light::GetPosition(bool world) 
 {
-	return position;
+	if(world)
+		return (Node::GetFinalTransform(this) * transform).getPosition();
+	return transform.getPosition();
 }
 
-rp3d::Vector3 Light::GetDirection()
+rp3d::Quaternion Light::GetOrientation()
 {
-	return direction;
+	return transform.getOrientation();
 }
 
 rp3d::Vector3 Light::GetAttenuation()
@@ -119,7 +134,7 @@ rp3d::Vector3 Light::GetAttenuation()
 
 rp3d::Transform Light::GetTransform()
 {
-	return rp3d::Transform(position, rp3d::Quaternion::identity());
+	return transform;
 }
 
 float Light::GetCutoff()
@@ -136,13 +151,14 @@ Json::Value Light::Serialize()
 {
 	Json::Value data;
 
-	data["position"]["x"] = position.x;
-	data["position"]["y"] = position.y;
-	data["position"]["z"] = position.z;
+	data["position"]["x"] = transform.getPosition().x;
+	data["position"]["y"] = transform.getPosition().y;
+	data["position"]["z"] = transform.getPosition().z;
 
-	data["direction"]["x"] = direction.x;
-	data["direction"]["y"] = direction.y;
-	data["direction"]["z"] = direction.z;
+	data["orientation"]["x"] = transform.getOrientation().x;
+	data["orientation"]["y"] = transform.getOrientation().y;
+	data["orientation"]["z"] = transform.getOrientation().z;
+	data["orientation"]["w"] = transform.getOrientation().w;
 
 	data["color"]["r"] = color.x;
 	data["color"]["g"] = color.y;
@@ -163,13 +179,16 @@ Json::Value Light::Serialize()
 
 void Light::Deserialize(Json::Value data)
 {
+	rp3d::Vector3 position;
 	position.x = data["position"]["x"].asFloat();
 	position.y = data["position"]["y"].asFloat();
 	position.z = data["position"]["z"].asFloat();
 
-	direction.x = data["direction"]["x"].asFloat();
-	direction.y = data["direction"]["y"].asFloat();
-	direction.z = data["direction"]["z"].asFloat();
+	rp3d::Quaternion orientation;
+	orientation.x = data["orientation"]["x"].asFloat();
+	orientation.y = data["orientation"]["y"].asFloat();
+	orientation.z = data["orientation"]["z"].asFloat();
+	orientation.w = data["orientation"]["w"].asFloat();
 
 	color.x = data["color"]["r"].asFloat();
 	color.y = data["color"]["g"].asFloat();
@@ -187,4 +206,7 @@ void Light::Deserialize(Json::Value data)
 
 	if(castShadows)
 		CalcLightSpaceMatrix();
+
+	transform.setPosition(position);
+	transform.setOrientation(orientation);
 }
