@@ -9,7 +9,7 @@ ShadowManager::ShadowManager(SceneManager* scene, glm::ivec2 size, Shader* depth
     glPolygonOffset(-2, 1);
 
     for(int i = 0; i < (lights.size() > 8 ? 8 : lights.size()); i++)
-        depthBuffers.emplace_back(std::make_unique<Framebuffer>(nullptr, shadowSize.x, shadowSize.y, true, 1, GL_LINEAR, GL_CLAMP_TO_BORDER));
+        depthBuffers.emplace_back(std::make_unique<Framebuffer>(nullptr, shadowSize.x, shadowSize.y, true, true, 1, GL_LINEAR, GL_CLAMP_TO_BORDER));
 }
 
 void ShadowManager::Update()
@@ -22,7 +22,7 @@ void ShadowManager::Update()
         
     if(lights.size() > depthBuffers.size())
         for(int i = 0; i < (lights.size() > 8 ? 8 - depthBuffers.size() : (lights.size() - depthBuffers.size())); i++)
-            depthBuffers.emplace_back(std::make_unique<Framebuffer>(nullptr, shadowSize.x, shadowSize.y, true, 1, GL_LINEAR, GL_CLAMP_TO_BORDER));
+            depthBuffers.emplace_back(std::make_unique<Framebuffer>(nullptr, shadowSize.x, shadowSize.y, true, true, 1, GL_LINEAR, GL_CLAMP_TO_BORDER));
     else if(lights.size() < depthBuffers.size())
         depthBuffers.resize(lights.size());
 

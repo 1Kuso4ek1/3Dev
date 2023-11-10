@@ -32,18 +32,18 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     shaders[ShaderType::BRDF] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "brdf.fs");
     shaders[ShaderType::Bloom] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "bloom.fs");
 
-    framebuffers[FramebufferType::GBuffer] = std::make_shared<Framebuffer>(shaders[ShaderType::LightingPass].get(), fbSize.x, fbSize.y, false, 5);
+    framebuffers[FramebufferType::GBuffer] = std::make_shared<Framebuffer>(shaders[ShaderType::LightingPass].get(), fbSize.x, fbSize.y, false, true, 5);
 
-    framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
+    framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y, false, false);
     framebuffers[FramebufferType::Transparency] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
 
-    framebuffers[FramebufferType::BloomPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale, fbSize.y / bloomResolutionScale, false, 1, GL_LINEAR);
-    framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale, fbSize.y / bloomResolutionScale, false, 1, GL_LINEAR);
+    framebuffers[FramebufferType::BloomPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale, fbSize.y / bloomResolutionScale, false, false, 1, GL_LINEAR);
+    framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale, fbSize.y / bloomResolutionScale, false, false, 1, GL_LINEAR);
 
-    capture = std::make_shared<Framebuffer>(nullptr, skyboxSideSize, skyboxSideSize);
-    captureIrr = std::make_shared<Framebuffer>(nullptr, irradianceSideSize, irradianceSideSize);
-    captureSpc = std::make_shared<Framebuffer>(nullptr, prefilteredSideSize, prefilteredSideSize);
-    captureBRDF = std::make_shared<Framebuffer>(shaders[ShaderType::BRDF].get(), 512, 512);
+    capture = std::make_shared<Framebuffer>(nullptr, skyboxSideSize, skyboxSideSize, false, false);
+    captureIrr = std::make_shared<Framebuffer>(nullptr, irradianceSideSize, irradianceSideSize, false, false);
+    captureSpc = std::make_shared<Framebuffer>(nullptr, prefilteredSideSize, prefilteredSideSize, false, false);
+    captureBRDF = std::make_shared<Framebuffer>(shaders[ShaderType::BRDF].get(), 128, 128, false, false);
 
     LoadEnvironment(environmentMapFilename);
 

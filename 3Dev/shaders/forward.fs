@@ -27,6 +27,7 @@ uniform float nopacity;
 uniform vec3 nirradiance;
 
 uniform bool drawTransparency = false;
+uniform float emissionStrength = 1.0;
 uniform float shadowBias;
 
 in vec2 coord;
@@ -192,5 +193,5 @@ void main()
     vec3 ambient = ((kdif * diffuse) + spc) * ao;
 
     total += ambient / 2;
-    color = vec4((total * (length(emission) > 0.0 ? 1.0 : (1.0 - shadow)) + ambient / 2) + (emission * 6) + totalNoShadow, (alpha < 1.0 ? min(alpha + ((total.x + total.y, + total.z) / 3.0) * alpha, 1.0) : 1.0));
+    color = vec4((total * (length(emission) > 0.0 ? 1.0 : (1.0 - shadow)) + ambient / 2) + (emission * emissionStrength) + totalNoShadow, (alpha < 1.0 ? min(alpha + ((total.x + total.y, + total.z) / 3.0) * alpha, 1.0) : 1.0));
 }

@@ -321,6 +321,7 @@ int main()
     auto metalEdit = editor.get<tgui::EditBox>("mtlbox");
     auto roughEdit = editor.get<tgui::EditBox>("rghbox");
     auto opacityEdit = editor.get<tgui::EditBox>("opcbox");
+    auto emissionStrengthEdit = editor.get<tgui::EditBox>("emissionStrength");
 
     auto metalSlider = editor.get<tgui::Slider>("metal");
     auto roughSlider = editor.get<tgui::Slider>("rough");
@@ -1687,6 +1688,7 @@ int main()
 					float metal = -1.0;
 					float rough = -1.0;
 					float opacity = -1.0;
+                    float emissionStrength = 1.0;
 
 					auto params = material->GetParameters();
                     for(auto& i : params)
@@ -1705,6 +1707,9 @@ int main()
                             if(std::holds_alternative<glm::vec3>(i.first))
                                 rough = std::get<0>(i.first).x;
                             break;
+                        case Material::Type::EmissionStrength:
+                            emissionStrength = std::get<0>(i.first).x;
+                            break;
                         case Material::Type::Opacity:
                             if(std::holds_alternative<glm::vec3>(i.first))
                                 opacity = std::get<0>(i.first).x;
@@ -1719,6 +1724,7 @@ int main()
 				    metalEdit->setText(tgui::String(metal));   metalSlider->setValue(metal < 0.0 ? 0.0 : metal);
 				    roughEdit->setText(tgui::String(rough));   roughSlider->setValue(rough < 0.0 ? 0.0 : rough);
 				    opacityEdit->setText(tgui::String(opacity));   opacitySlider->setValue(opacity < 0.0 ? 0.0 : opacity);
+                    emissionStrengthEdit->setText(tgui::String(emissionStrength));
 			    }
 
 			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && materialNameEdit->isFocused() && materialNameEdit->getText() != sceneTree->getSelectedItem().back())
@@ -1734,7 +1740,7 @@ int main()
 			    }
 
 			    std::optional<glm::vec3> color, ctmp, emission, etmp;
-			    float metal, rough, opacity;
+			    float metal, rough, opacity, emissionStrength;
 
 			    if(std::holds_alternative<glm::vec3>(material->GetParameter(Material::Type::Color)))
                     color = std::get<0>(material->GetParameter(Material::Type::Color));
@@ -1758,6 +1764,7 @@ int main()
 			    metal = metalSlider->getValue();
 			    rough = roughSlider->getValue();
 			    opacity = opacitySlider->getValue();
+                emissionStrength = emissionStrengthEdit->getText().toFloat();
 
 			    metalEdit->setText(tgui::String(metal));
 			    roughEdit->setText(tgui::String(rough));
@@ -1807,6 +1814,9 @@ int main()
                         }
                         if(emission.has_value() && etmp.has_value())
                             i.first = etmp.value();
+                        break;
+                    case Material::Type::EmissionStrength:
+                        i.first = glm::vec3(emissionStrength);
                         break;
                     case Material::Type::Opacity:
                         if(!std::holds_alternative<glm::vec3>(material->GetParameter(Material::Type::Opacity)) && opacity > 0.0)

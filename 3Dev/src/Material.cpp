@@ -75,6 +75,9 @@ void Material::UpdateShader(Shader* shader)
 				shader->SetUniform1i("emission", i);
 			shader->SetUniform3f("nemission", (param1 == 0 ? param0.x : -1), param0.y, param0.z);
 			break;
+		case Material::Type::EmissionStrength:
+			shader->SetUniform1f("emissionStrength", param0.x);
+			break;
 		case Material::Type::Roughness:
 			if(param1 != 0)
 				shader->SetUniform1i("roughness", i);
@@ -217,6 +220,9 @@ Json::Value Material::Serialize()
 			}
 			else data["emission"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
 			break;
+		case Material::Type::EmissionStrength:
+			data["emission"]["strength"] = std::get<0>(i.first).z;
+			break;
 		case Material::Type::Roughness:
 			if(std::holds_alternative<glm::vec3>(i.first))
 				data["roughness"]["value"] = std::get<0>(i.first).x;
@@ -253,7 +259,7 @@ void Material::Deserialize(Json::Value data, bool loadTextures)
 
     if(!data["metalness"]["filename"].empty())
 		textureFilenames[Type::Metalness] = data["metalness"]["filename"].asString();
-    else parameters.push_back({ glm::vec3(data["metalness"]["value"].asDouble()), Type::Metalness});
+    else parameters.push_back({ glm::vec3(data["metalness"]["value"].asDouble()), Type::Metalness });
 
     if(!data["emission"]["filename"].empty())
 		textureFilenames[Type::Emission] = data["emission"]["filename"].asString();
@@ -263,14 +269,15 @@ void Material::Deserialize(Json::Value data, bool loadTextures)
                                          data["emission"]["g"].asDouble(),
                                          data["emission"]["b"].asDouble()), Type::Emission });
 	}
+	parameters.push_back({ glm::vec3(data["emission"]["strength"].asDouble()), Type::EmissionStrength });
 	
 	if(!data["roughness"]["filename"].empty())
 		textureFilenames[Type::Roughness] = data["roughness"]["filename"].asString();
-    else parameters.push_back({ glm::vec3(data["roughness"]["value"].asDouble()), Type::Roughness});
+    else parameters.push_back({ glm::vec3(data["roughness"]["value"].asDouble()), Type::Roughness });
 
 	if(!data["opacity"]["filename"].empty())
 		textureFilenames[Type::Opacity] = data["opacity"]["filename"].asString();
-    else parameters.push_back({ glm::vec3(data["opacity"]["value"].asDouble()), Type::Opacity});
+    else parameters.push_back({ glm::vec3(data["opacity"]["value"].asDouble()), Type::Opacity });
 
 	if(loadTextures)
 		LoadTextures();

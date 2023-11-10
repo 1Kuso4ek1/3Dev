@@ -18,8 +18,6 @@ uniform sampler2D lut;
 
 uniform vec3 nirradiance;
 
-uniform bool drawTransparency = false;
-
 uniform mat4 lspace[maxShadows];
 
 in vec2 coord;
@@ -185,5 +183,5 @@ void main()
 
     float shadowCoef = (length(emission) > 0.0 ? 1.0 : (1.0 - shadow));
     total += ambient / 2;
-    color = vec4(total * shadowCoef + (ambient / 2) + (emission * 6) + totalNoShadow, alpha);
+    color = vec4(total * shadowCoef + (ambient / 2) + emission + totalNoShadow, alpha);
 }

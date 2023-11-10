@@ -1,17 +1,21 @@
 #include <Framebuffer.hpp>
 
-Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, uint32_t attachments, GLint filter, GLint wrap) : shader(shader), size(w, h)
+Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, bool createDepthAttachment, uint32_t attachments, GLint filter, GLint wrap) : shader(shader), size(w, h)
 {
 	CalcPixelSize(glm::vec2(w, h));
     if(!isDepth)
 		for(int i = 0; i < attachments; i++)
 			textures.push_back(TextureManager::GetInstance()->CreateTexture(w, h, false, filter, wrap));
-	
-	depth = TextureManager::GetInstance()->CreateTexture(w, h, true, filter, wrap);
+		
     glGenFramebuffers(1, &fbo);
     
 	Bind();
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
+
+	if(createDepthAttachment)
+	{
+		depth = TextureManager::GetInstance()->CreateTexture(w, h, true, filter, wrap);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
+	}
     
 	if(!isDepth)
 	{
@@ -53,8 +57,12 @@ void Framebuffer::Resize(int w, int h)
 			TextureManager::GetInstance()->ResizeTexture(name, false, w, h);
 		}
 	}
-	auto name = TextureManager::GetInstance()->GetName(depth);
-	TextureManager::GetInstance()->ResizeTexture(name, true, w, h);
+	
+	if(depth)
+	{
+		auto name = TextureManager::GetInstance()->GetName(depth);
+		TextureManager::GetInstance()->ResizeTexture(name, true, w, h);
+	}
 }
 
 void Framebuffer::CalcPixelSize(glm::vec2 v)

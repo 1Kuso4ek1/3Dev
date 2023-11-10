@@ -941,7 +941,6 @@ ChildWindow.objectEditorWindow {
         Position = (10, 10);
         Renderer = &5;
         Size = (250, 510);
-        Visible = false;
 
         Slider.metal {
             ChangeValueOnScroll = true;
@@ -1069,7 +1068,7 @@ ChildWindow.objectEditorWindow {
 
         Label.Label16 {
             HorizontalAlignment = Center;
-            Position = (30, 307);
+            Position = (30, 297);
             Renderer = &7;
             Size = (188.2, 18);
             Text = "Ambient occlusion";
@@ -1077,7 +1076,7 @@ ChildWindow.objectEditorWindow {
         }
 
         Button.loadAo {
-            Position = (65, 327);
+            Position = (65, 317);
             Renderer = &1;
             Size = (116, 20);
             Text = "Load texture...";
@@ -1086,7 +1085,7 @@ ChildWindow.objectEditorWindow {
 
         Label.Label17 {
             HorizontalAlignment = Center;
-            Position = (30, 359);
+            Position = (30, 349);
             Renderer = &7;
             Size = (188.2, 18);
             Text = Emission;
@@ -1094,7 +1093,7 @@ ChildWindow.objectEditorWindow {
         }
 
         Button.loadEmission {
-            Position = (132, 379);
+            Position = (132, 369);
             Renderer = &1;
             Size = (116, 20);
             Text = "Load texture...";
@@ -1140,11 +1139,56 @@ ChildWindow.objectEditorWindow {
         }
 
         Button.emissionPicker {
-            Position = (0, 380);
+            Position = (0, 370);
             Renderer = &1;
             Size = (116, 20);
             Text = "Pick...";
             TextSize = 13;
+        }
+
+        EditBox.emissionStrength {
+            InputValidator = Float;
+            Position = (130, 396);
+            Size = (120, 22);
+            Text = "0.0";
+            TextSize = 13;
+
+            Renderer {
+                CaretColor = rgb(110, 110, 255);
+                DefaultTextColor = rgb(120, 120, 120);
+                Padding = (6, 4, 6, 4);
+                SelectedTextBackgroundColor = rgb( 10, 110, 255);
+                SelectedTextColor = White;
+                TextColor = rgb(190, 190, 190);
+                Texture = "themes/Black.png" Part(34, 246, 60, 40) Middle(15, 0) Smooth;
+                TextureDisabled = None;
+                TextureFocused = "themes/Black.png" Part(0, 288, 60, 40) Middle(15, 0) Smooth;
+                TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
+            }
+        }
+
+        Label.Label45 {
+            HorizontalAlignment = Center;
+            Position = (0, 398);
+            Size = (106, 18);
+            Text = Strength;
+            TextSize = 13;
+
+            Renderer {
+                TextColor = rgb(190, 190, 190);
+                TextureBackground = None;
+
+                Scrollbar {
+                    TextureArrowDown = "themes/Black.png" Part(0, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowDownHover = "themes/Black.png" Part(22, 0, 20, 20) Middle(0, 1, 20, 19) Smooth;
+                    TextureArrowUp = "themes/Black.png" Part(44, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureArrowUpHover = "themes/Black.png" Part(66, 0, 20, 20) Middle(0, 0, 20, 19) Smooth;
+                    TextureThumb = "themes/Black.png" Part(68, 465, 20, 20) Smooth;
+                    TextureThumbHover = "themes/Black.png" Part(90, 465, 20, 20) Smooth;
+                    TextureTrack = "themes/Black.png" Part(0, 499, 20, 20) Smooth;
+                    TextureTrackHover = "themes/Black.png" Part(22, 499, 20, 20) Smooth;
+                }
+            }
         }
     }
 
@@ -2318,6 +2362,7 @@ ChildWindow.objectEditorWindow {
         Position = (10, 10);
         Renderer = &5;
         Size = (250, 420);
+        Visible = false;
 
         EditBox.animName {
             Size = (250, 24);

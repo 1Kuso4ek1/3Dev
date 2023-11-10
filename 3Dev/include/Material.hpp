@@ -17,6 +17,7 @@ public:
 		AmbientOcclusion,
 		Metalness,
 		Emission,
+		EmissionStrength,
 		Roughness,
 		Opacity,
 		Cubemap,
@@ -71,6 +72,7 @@ private:
 		{ glm::vec3(1.0), Type::Color },
 		{ glm::vec3(0.5), Type::Metalness },
 		{ glm::vec3(0.0), Type::Emission },
+		{ glm::vec3(1.0), Type::EmissionStrength },
 		{ glm::vec3(0.5), Type::Roughness },
 		{ glm::vec3(1.0), Type::Opacity }
 	};

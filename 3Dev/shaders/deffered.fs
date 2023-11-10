@@ -12,6 +12,7 @@ uniform float shadowBias;
 uniform vec3 nalbedo;
 uniform bool nnormalMap;
 uniform vec3 nemission;
+uniform float emissionStrength;
 uniform float nmetalness;
 uniform float nroughness;
 uniform bool nao;
@@ -50,6 +51,6 @@ void main()
     gposition = vec4(mpos, 1.0);
     galbedo = vec4(alb, alpha);
     gnormal = vec4(norm, 1.0);
-    gemission = vec4(emission, 1.0);
+    gemission = vec4(emission * emissionStrength, 1.0);
     gcombined = vec4(metal, rough, ao, shadowBias);
 }
