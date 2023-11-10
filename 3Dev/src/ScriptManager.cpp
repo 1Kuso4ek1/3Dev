@@ -917,7 +917,7 @@ void ScriptManager::RegisterMaterial()
 {
     SetDefaultNamespace("MaterialParameter");
     AddEnum("Type", { "Color", "Normal", "AmbientOcclusion", "Metalness",
-                      "Emission", "Roughness", "Opacity" });
+                      "Emission", "EmissionStrength", "Roughness", "Opacity" });
     SetDefaultNamespace("");
     AddType("Material", sizeof(Material),
     {
