@@ -6,6 +6,7 @@
 class Light : public Node
 {
 public:
+	Light(Light* light);
 	Light(const rp3d::Vector3& color, const rp3d::Vector3& position, bool castShadows = false);
 	
 	void SetColor(const rp3d::Vector3& color);

@@ -426,6 +426,7 @@ void ScriptManager::RegisterSceneManager()
         { "Node@ GetNode(const string& in)", WRAP_MFN(SceneManager, GetNode) },
         { "Animation@ GetAnimation(const string& in)", WRAP_MFN(SceneManager, GetAnimationPtr) },
         { "Model@ CloneModel(Model@, bool = true, const string& in = \"model\")", WRAP_MFN(SceneManager, CloneModel) },
+        { "Light@ CloneLight(Light@, bool = true, const string& in = \"light\")", WRAP_MFN(SceneManager, CloneLight) },
         { "Camera@ GetCamera()", WRAP_MFN(SceneManager, GetCamera) },
         { "PhysicsManager@ GetPhysicsManager()", WRAP_MFN(SceneManager, GetPhysicsManagerPtr) },
         { "SoundManager@ GetSoundManager()", WRAP_MFN(SceneManager, GetSoundManagerPtr) },

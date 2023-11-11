@@ -1,5 +1,19 @@
 #include "Light.hpp"
 
+Light::Light(Light* light)
+{
+	color = light->color;
+	transform = light->transform;
+	constant = light->constant;
+	linear = light->linear;
+	quadratic = light->quadratic;
+	cutoff = light->cutoff;
+	outerCutoff = light->outerCutoff;
+	castShadows = light->castShadows;
+	perspectiveShadows = light->perspectiveShadows;
+	lightSpaceMatrix = light->lightSpaceMatrix;
+}
+
 Light::Light(const rp3d::Vector3& color, const rp3d::Vector3& position, bool castShadows) 
 			: castShadows(castShadows), color(color)
 {

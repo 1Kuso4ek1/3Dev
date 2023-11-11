@@ -81,6 +81,7 @@ public:
     void RemoveAnimationPtr(Animation* animation);
 
     Model* CloneModel(Model* model, bool isTemporary = true, const std::string& name = "model");
+    Light* CloneLight(Light* light, bool isTemporary = true, const std::string& name = "light");
 
     std::vector<Model*> GetModelPtrGroup(const std::string& name);
 
@@ -117,7 +118,7 @@ private:
     std::shared_ptr<SoundManager> sManager;
     std::shared_ptr<PhysicsManager> pManager;
 
-    std::vector<std::string> temporaryModelCopies;
+    std::vector<std::string> temporaryModelCopies, temporaryLightCopies;
 
     std::map<std::string, std::vector<std::shared_ptr<Model>>> modelGroups;
 

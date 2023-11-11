@@ -84,8 +84,10 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     lightingPass->SetUniform1i("gcombined", 4);
     Material::UpdateShaderEnvironment(lightingPass);
 
-    for(int i = 0; i < lightsVector.size(); i++)
-        dynamic_cast<Light*>(lightsVector[i])->Update(lightingPass, i);
+    for(int i = 0; i < 64; i++)
+        if(i >= lightsVector.size())
+            lightingPass->SetUniform1i("lights[" + std::to_string(i) + "].isactive", 0);
+        else dynamic_cast<Light*>(lightsVector[i])->Update(lightingPass, i);
 
     glEnable(GL_BLEND);
 
@@ -575,8 +577,11 @@ void SceneManager::LoadState()
     
     for(auto& i : temporaryModelCopies)
         RemoveModel(GetModel(i));
+    for(auto& i : temporaryLightCopies)
+        RemoveLight(GetLight(i));
 
     temporaryModelCopies.clear();
+    temporaryLightCopies.clear();
 }
 
 void SceneManager::LoadEnvironment(const std::string& filename)
@@ -811,6 +816,15 @@ Model* SceneManager::CloneModel(Model* model, bool isTemporary, const std::strin
     if(isTemporary)
         temporaryModelCopies.push_back(GetLastAdded());
     return ret.get();
+}
+
+Light* SceneManager::CloneLight(Light* light, bool isTemporary, const std::string& name)
+{
+    auto ret = new Light(light);
+    AddLight(ret, name);
+    if(isTemporary)
+        temporaryLightCopies.push_back(GetLastAdded());
+    return ret;
 }
 
 std::vector<Model*> SceneManager::GetModelPtrGroup(const std::string& name)
