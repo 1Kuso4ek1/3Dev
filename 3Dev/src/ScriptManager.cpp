@@ -284,6 +284,8 @@ void ScriptManager::RegisterModel()
     AddType("Model", sizeof(Model),
     {
         { "void Load()", WRAP_MFN_PR(Model, Load, (), void) },
+        { "void Unload()", WRAP_MFN(Model, Unload) },
+        { "void SetTransform(const Transform& in)", WRAP_MFN(Model, SetTransform) },
         { "void SetPosition(const Vector3& in)", WRAP_MFN(Model, SetPosition) },
         { "void SetOrientation(const Quaternion& in)", WRAP_MFN(Model, SetOrientation) },
         { "void SetSize(const Vector3& in)", WRAP_MFN(Model, SetSize) },
@@ -299,6 +301,7 @@ void ScriptManager::RegisterModel()
         { "void Expand(const Vector3& in)", WRAP_MFN(Model, Expand) },
         { "Node@ opCast()", WRAP_OBJ_LAST(CastModel) },
         { "bool IsDrawable()", WRAP_MFN(Model, IsDrawable) },
+        { "Transform GetTransform()", WRAP_MFN(Model, GetTransform) },
         { "Vector3 GetPosition()", WRAP_MFN(Model, GetPosition) },
         { "Quaternion GetOrientation()", WRAP_MFN(Model, GetOrientation) },
         { "Vector3 GetSize()", WRAP_MFN(Model, GetSize) },
@@ -314,6 +317,7 @@ void ScriptManager::RegisterLight()
 {
     AddType("Light", sizeof(Light),
     {
+        { "void SetTransform(const Transform& in)", WRAP_MFN(Light, SetTransform) },
         { "void SetPosition(const Vector3& in)", WRAP_MFN(Light, SetPosition) },
         { "void SetOrientation(const Quaternion& in)", WRAP_MFN(Light, SetOrientation) },
         { "void Move(const Vector3& in)", WRAP_MFN(Light, Move) },
@@ -326,6 +330,7 @@ void ScriptManager::RegisterLight()
         { "void SetIsCastingShadows(bool)", WRAP_MFN(Light, SetIsCastingShadows) },
         { "Node@ opCast()", WRAP_OBJ_LAST(CastLight) },
         { "bool IsCastingShadows()", WRAP_MFN(Light, IsCastingShadows) },
+        { "Transform GetTransform()", WRAP_MFN(Light, GetTransform) },
         { "Vector3 GetPosition()", WRAP_MFN(Light, GetPosition) },
         { "Quaternion GetOrientation()", WRAP_MFN(Light, GetOrientation) },
         { "Vector3 GetColor()", WRAP_MFN(Light, GetColor) },
@@ -397,6 +402,7 @@ void ScriptManager::RegisterCamera()
         { "void SetFOV(float)", WRAP_MFN(Camera, SetFOV) },
         { "void AlwaysUp(bool)", WRAP_MFN(Camera, AlwaysUp) },
         { "Node@ opCast()", WRAP_OBJ_LAST(CastCamera) },
+        { "Transform GetTransform()", WRAP_MFN(Camera, GetTransform) },
         { "Vector3 GetPosition(bool = false)", WRAP_MFN(Camera, GetPosition) },
         { "Quaternion GetOrientation()", WRAP_MFN(Camera, GetOrientation) },
         { "float GetSpeed()", WRAP_MFN(Camera, GetSpeed) },
@@ -489,6 +495,7 @@ void ScriptManager::RegisterTransform()
         { "Vector3 getPosition()", WRAP_MFN(rp3d::Transform, getPosition) },
         { "Quaternion getOrientation()", WRAP_MFN(rp3d::Transform, getOrientation) }
     }, {});
+
     AddTypeConstructor("Transform", "void f()", WRAP_OBJ_LAST(MakeType<rp3d::Transform>));
     AddTypeConstructor("Transform", "void f(const Transform& in)", WRAP_OBJ_LAST(CopyType<rp3d::Transform>));
     AddTypeDestructor("Transform", "void f()", WRAP_OBJ_LAST(DestroyType<rp3d::Transform>));
@@ -1044,4 +1051,6 @@ void ScriptManager::RegisterNode()
         { "void AddChild(Node@)", WRAP_MFN(Node, AddChild) },
         { "void SetParent(Node@)", WRAP_MFN(Node, SetParent) }
     }, {});
+
+    AddFunction("Transform GetFinalTransform(Node@, Transform = Transform())", WRAP_FN(Node::GetFinalTransform));
 }

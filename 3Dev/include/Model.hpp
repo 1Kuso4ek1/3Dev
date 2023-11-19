@@ -23,6 +23,7 @@ public:
 
 	void Load(std::string filename, unsigned int flags = 0);
 	void Load();
+	void Unload();
 
 	void Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass = false) override;
 	void DrawSkybox();

@@ -133,6 +133,19 @@ void Model::Load()
 		Deserialize(data);
 }
 
+void Model::Unload()
+{
+	meshes.clear();
+	shapes.clear();
+	colliders.clear();
+	
+	if(man && body)
+	{
+		man->GetWorld()->destroyRigidBody(body);
+		body = nullptr;
+	}
+}
+
 void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
 {
 	m->PushMatrix();
