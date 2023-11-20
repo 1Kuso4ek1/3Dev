@@ -435,7 +435,8 @@ void SceneManager::Load(const std::string& filename, bool loadEverything)
     while(!data["objects"]["models"][counter].empty())
     {
         for(auto& i : data["objects"]["models"][counter]["material"])
-            usedMaterials.push_back(i["name"].asString());
+            if(data["objects"]["models"][counter]["immediateLoad"].asBool())
+                usedMaterials.push_back(i["name"].asString());
         counter++;
     }
     counter = 0;
@@ -464,18 +465,11 @@ void SceneManager::Load(const std::string& filename, bool loadEverything)
         bool load = !filename.empty() && (data["objects"]["models"][counter]["immediateLoad"].asBool() || loadEverything);
         if(load)
             model = std::make_shared<Model>(filename, material, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes, pManager.get());
-        else if(filename.empty())
-        {
-            model = std::make_shared<Model>(true);
-            model->SetMaterial(material);
-            model->SetPhysicsManager(pManager.get());
-            model->CreateRigidBody();
-        }
         else
         {
-            model = std::make_shared<Model>();
+            model = std::make_shared<Model>(filename.empty());
             model->SetFilename(filename);
-            model->SetMaterial(material);
+            model->SetMaterial(material, false);
             model->SetPhysicsManager(pManager.get());
             model->CreateRigidBody();
         }

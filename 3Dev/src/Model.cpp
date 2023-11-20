@@ -6,6 +6,7 @@ Model::Model(bool defaultCubeMesh)
 	{
 		meshes.emplace_back(std::make_shared<Mesh>());
 		meshes.back()->CreateCube();
+		loaded = true;
 	}
 }
 
@@ -25,8 +26,10 @@ Model::Model(Model* model)
 	filename = model->filename;
 	size = model->size;
 	transform = model->transform;
+	shadowBias = model->shadowBias;
+	loaded = model->loaded;
 
-	if(!filename.empty())
+	if(!filename.empty() && loaded)
 		Load(filename, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
 	else meshes = model->meshes;
 
@@ -123,7 +126,11 @@ void Model::Load(std::string filename, unsigned int flags)
 	if(mat.size() != meshes.size())
 		mat.resize(meshes.size(), mat.back());
 
+	for(auto& i : mat)
+		i->LoadTextures();
+
 	this->filename = filename;
+	loaded = true;
 }
 
 void Model::Load()
@@ -133,21 +140,28 @@ void Model::Load()
 		Deserialize(data);
 }
 
-void Model::Unload()
+void Model::Unload(bool unloadTextures)
 {
 	meshes.clear();
 	shapes.clear();
+
+	if(body)
+		for(auto i : colliders)
+			body->removeCollider(i);
+
 	colliders.clear();
-	
-	if(man && body)
-	{
-		man->GetWorld()->destroyRigidBody(body);
-		body = nullptr;
-	}
+
+	if(unloadTextures)
+		for(auto& i : mat)
+			i->UnloadTextures();
+
+	loaded = false;
 }
 
 void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
 {
+	if(!loaded) return;
+
 	m->PushMatrix();
 
 	auto tr = Node::GetFinalTransform(this);
@@ -278,10 +292,11 @@ void Model::SetSize(const rp3d::Vector3& size)
 	}
 }
 
-void Model::SetMaterial(std::vector<Material*> mat)
+void Model::SetMaterial(std::vector<Material*> mat, bool loadTextures)
 {
-	for(auto i : mat)
-		i->LoadTextures();
+	if(loadTextures)
+		for(auto i : mat)
+			i->LoadTextures();
 	this->mat = mat;
 }
 
@@ -545,6 +560,11 @@ void Model::CreateConvexShape(unsigned int mesh, rp3d::Transform tr)
 int Model::GetMeshesCount()
 {
 	return meshes.size();
+}
+
+bool Model::IsLoaded()
+{
+	return loaded;
 }
 
 bool Model::IsDrawable()
@@ -857,7 +877,7 @@ void Model::Deserialize(Json::Value data, bool storeData)
 	drawable = data["drawable"].asBool();
 	immLoad = data["immediateLoad"].asBool();
 
-	if(body)
+	if(body && !storeData)
 	{
 	    cstype = (CollisionShapeType)data["rigidBody"]["collider"].asInt();
         for(int i = 0; i < meshes.size(); i++)

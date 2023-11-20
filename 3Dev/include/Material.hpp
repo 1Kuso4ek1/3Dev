@@ -47,6 +47,7 @@ public:
 	void ResetShader(Shader* shader);
 	void GetEnvironmentFromRenderer();
 	void LoadTextures();
+	void UnloadTextures();
 
 	bool Contains(Type type);
 

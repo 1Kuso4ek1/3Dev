@@ -23,7 +23,7 @@ public:
 
 	void Load(std::string filename, unsigned int flags = 0);
 	void Load();
-	void Unload();
+	void Unload(bool unloadTextures);
 
 	void Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass = false) override;
 	void DrawSkybox();
@@ -32,7 +32,7 @@ public:
 	void SetPosition(const rp3d::Vector3& position);
 	void SetOrientation(const rp3d::Quaternion& orientation);
 	void SetSize(const rp3d::Vector3& size) override;
-	void SetMaterial(std::vector<Material*> mat);
+	void SetMaterial(std::vector<Material*> mat, bool loadTextures = true);
 	void SetMaterialSlot(Material* mat, unsigned int slot = 0);
 	void SetShader(Shader* shader, bool temp = false);
 	void SetPhysicsManager(PhysicsManager* man);
@@ -57,6 +57,7 @@ public:
 
 	int GetMeshesCount();
 
+	bool IsLoaded();
 	bool IsDrawable();
 	bool IsLoadingImmediatelly();
 
@@ -98,7 +99,7 @@ private:
 
 	bool ProcessBone(aiNode* node, std::shared_ptr<Bone>& out);
 
-	bool drawable = true, immLoad = true;
+	bool drawable = true, immLoad = true, loaded = false;
 
 	float shadowBias = 0.0000001;
 

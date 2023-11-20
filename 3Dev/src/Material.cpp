@@ -175,6 +175,23 @@ void Material::LoadTextures()
 	texturesLoaded = true;
 }
 
+void Material::UnloadTextures()
+{
+	if(!texturesLoaded) return;
+
+	for(auto i = parameters.begin(); i < parameters.end(); i++)
+	{
+		if((int)i->second < (int)Type::Cubemap && std::holds_alternative<GLuint>(i->first))
+		{
+			auto name = TextureManager::GetInstance()->GetName(std::get<1>(i->first));
+			TextureManager::GetInstance()->DeleteTexture(name);
+			parameters.erase(i);
+		}
+	}
+
+	texturesLoaded = false;
+}
+
 bool Material::Contains(Type type)
 {
 	return std::find_if(parameters.begin(), parameters.end(), [&](auto& a)

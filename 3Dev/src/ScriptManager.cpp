@@ -284,7 +284,7 @@ void ScriptManager::RegisterModel()
     AddType("Model", sizeof(Model),
     {
         { "void Load()", WRAP_MFN_PR(Model, Load, (), void) },
-        { "void Unload()", WRAP_MFN(Model, Unload) },
+        { "void Unload(bool)", WRAP_MFN(Model, Unload) },
         { "void SetTransform(const Transform& in)", WRAP_MFN(Model, SetTransform) },
         { "void SetPosition(const Vector3& in)", WRAP_MFN(Model, SetPosition) },
         { "void SetOrientation(const Quaternion& in)", WRAP_MFN(Model, SetOrientation) },
@@ -300,6 +300,7 @@ void ScriptManager::RegisterModel()
         { "void Rotate(const Quaternion& in)", WRAP_MFN(Model, Rotate) },
         { "void Expand(const Vector3& in)", WRAP_MFN(Model, Expand) },
         { "Node@ opCast()", WRAP_OBJ_LAST(CastModel) },
+        { "bool IsLoaded()", WRAP_MFN(Model, IsLoaded) },
         { "bool IsDrawable()", WRAP_MFN(Model, IsDrawable) },
         { "Transform GetTransform()", WRAP_MFN(Model, GetTransform) },
         { "Vector3 GetPosition()", WRAP_MFN(Model, GetPosition) },
