@@ -40,7 +40,7 @@ GLuint TextureManager::CreateTexture(uint32_t w, uint32_t h, bool depth, GLint f
 
     int nameCount = std::count_if(textures.begin(), textures.end(), [&](auto& p)
                     { return p.first.find(name) != std::string::npos; });
-    textures[name + (nameCount ? std::to_string(nameCount) : "")] = texture;
+    textures[name + (nameCount ? std::to_string(texture) : "")] = texture;
 
 	return texture;
 }
@@ -71,8 +71,8 @@ GLuint TextureManager::LoadTexture(std::string filename, std::string name)
 
         int nameCount = std::count_if(textures.begin(), textures.end(), [&](auto& p)
                     { return p.first.find(name) != std::string::npos; });
-        textures[name + (nameCount ? std::to_string(nameCount) : "")] = texture;
-        filenames[name + (nameCount ? std::to_string(nameCount) : "")] = filename;
+        textures[name + (nameCount ? std::to_string(texture) : "")] = texture;
+        filenames[name + (nameCount ? std::to_string(texture) : "")] = filename;
 
         Log::Write("Texture " + filename + " loaded", Log::Type::Info);
 
@@ -100,8 +100,8 @@ GLuint TextureManager::LoadTexture(std::string filename, std::string name)
 
         int nameCount = std::count_if(textures.begin(), textures.end(), [&](auto& p)
                     { return p.first.find(name) != std::string::npos; });
-        textures[name + (nameCount ? std::to_string(nameCount) : "")] = texture;
-        filenames[name + (nameCount ? std::to_string(nameCount) : "")] = filename;
+        textures[name + (nameCount ? std::to_string(texture) : "")] = texture;
+        filenames[name + (nameCount ? std::to_string(texture) : "")] = filename;
 
         Log::Write("Texture " + filename + " loaded", Log::Type::Info);
 
@@ -128,7 +128,7 @@ GLuint TextureManager::CreateCubemap(uint32_t size, GLuint filter, std::string n
 
     int nameCount = std::count_if(textures.begin(), textures.end(), [&](auto& p)
                     { return p.first.find(name) != std::string::npos; });
-    textures[name + (nameCount ? std::to_string(nameCount) : "")] = texture;
+    textures[name + (nameCount ? std::to_string(texture) : "")] = texture;
 
 	return texture;
 }

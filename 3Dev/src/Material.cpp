@@ -183,8 +183,7 @@ void Material::UnloadTextures()
 	{
 		if((int)i->second < (int)Type::Cubemap && std::holds_alternative<GLuint>(i->first))
 		{
-			auto name = TextureManager::GetInstance()->GetName(std::get<1>(i->first));
-			TextureManager::GetInstance()->DeleteTexture(name);
+			TextureManager::GetInstance()->DeleteTexture("texture" + std::to_string(std::get<1>(i->first)));
 			parameters.erase(i);
 		}
 	}
