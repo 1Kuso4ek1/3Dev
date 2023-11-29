@@ -10,7 +10,7 @@
 - 3Dev is a lightweight, crossplatform and easy-to-use game engine with some useful instruments, besides the library itself.
 ## Features
 - Physically Based Rendering
-- Deffered + Forward (for transparency) rendering
+- Deferred + Forward (for transparency) rendering
 - Rigid body physics
 - A lot of supported model formats (.obj, .dae, .fbx and much more...)
 - Good animation system
