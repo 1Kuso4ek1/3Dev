@@ -786,6 +786,14 @@ void ScriptManager::RegisterTGUI()
     {
         { "void setEnabled(bool)", WRAP_MFN(tgui::ListView, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ListView, setVisible) },
+        { "uint64 addItem(const String& in)", WRAP_MFN_PR(tgui::ListView, addItem, (const tgui::String&), size_t) },
+        { "uint64 addItem(const array<string>& in)", WRAP_OBJ_LAST(AddListViewItem) },
+        { "void insertItem(uint64, const String& in)", WRAP_MFN_PR(tgui::ListView, insertItem, (size_t, const tgui::String&), void) },
+        { "void insertItem(uint64, const array<string>& in)", WRAP_OBJ_LAST(InsertListViewItem) },
+        { "bool changeItem(uint64, const array<string>& in)", WRAP_OBJ_LAST(ChangeListViewItem) },
+        { "bool removeItem(uint64)", WRAP_MFN(tgui::ListView, removeItem) },
+        { "void removeAllItems()", WRAP_MFN(tgui::ListView, removeAllItems) },
+        { "int getSelectedItemIndex()", WRAP_MFN(tgui::ListView, getSelectedItemIndex) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListView, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListView, hideWithEffect) }
     }, {});
@@ -836,6 +844,15 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::RangeSlider, setVisible) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RangeSlider, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RangeSlider, hideWithEffect) }
+    }, {});
+
+    AddType("RichTextLabel", sizeof(tgui::RichTextLabel),
+    {
+        { "void setText(const String& in)", WRAP_MFN(tgui::RichTextLabel, setText) },
+        { "void setEnabled(bool)", WRAP_MFN(tgui::RichTextLabel, setEnabled) },
+        { "void setVisible(bool)", WRAP_MFN(tgui::RichTextLabel, setVisible) },
+        { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RichTextLabel, showWithEffect) },
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RichTextLabel, hideWithEffect) }
     }, {});
 
     AddType("Slider", sizeof(tgui::Slider),

@@ -218,3 +218,27 @@ static sf::IpAddress ResolveIp(std::string addr)
 
 static int Stoi(const std::string& str, int base) { return std::stoi(str, nullptr, base); }
 static float Stof(const std::string& str) { return std::stof(str); }
+
+static size_t AddListViewItem(const CScriptArray& array, tgui::ListView* listView)
+{
+    std::vector<tgui::String> data;
+    for(asUINT i = 0; i < array.GetSize(); i++)
+        data.push_back(*(std::string*)(array.At(i)));
+    return listView->addItem(data);
+}
+
+static void InsertListViewItem(size_t index, const CScriptArray& array, tgui::ListView* listView)
+{
+    std::vector<tgui::String> data;
+    for(asUINT i = 0; i < array.GetSize(); i++)
+        data.push_back(*(std::string*)(array.At(i)));
+    listView->insertItem(index, data);
+}
+
+static bool ChangeListViewItem(size_t index, const CScriptArray& array, tgui::ListView* listView)
+{
+    std::vector<tgui::String> data;
+    for(asUINT i = 0; i < array.GetSize(); i++)
+        data.push_back(*(std::string*)(array.At(i)));
+    return listView->changeItem(index, data);
+}
