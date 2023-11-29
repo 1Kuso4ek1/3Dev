@@ -43,7 +43,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     }
     else clock.restart();
 
-    SetMainShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Deffered), true);
+    SetMainShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Deferred), true);
 
     glDisable(GL_BLEND);
 

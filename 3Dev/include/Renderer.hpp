@@ -15,7 +15,7 @@ public:
 
     enum class ShaderType
     {
-        Deffered,
+        Deferred,
         Forward,
         LightingPass,
         Skybox,

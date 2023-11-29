@@ -20,7 +20,7 @@ void Renderer::DeleteInstance()
 
 void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilename, uint32_t skyboxSideSize, uint32_t irradianceSideSize, uint32_t prefilteredSideSize, float bloomResolutionScale)
 {
-    shaders[ShaderType::Deffered] = std::make_shared<Shader>(shadersDir + "vertex.vs", shadersDir + "deffered.fs");
+    shaders[ShaderType::Deferred] = std::make_shared<Shader>(shadersDir + "vertex.vs", shadersDir + "deferred.fs");
     shaders[ShaderType::Forward] = std::make_shared<Shader>(shadersDir + "vertex.vs", shadersDir + "forward.fs");
     shaders[ShaderType::LightingPass] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "fragment.fs");
     shaders[ShaderType::Skybox] = std::make_shared<Shader>(shadersDir + "skybox.vs", shadersDir + "skybox.fs");
