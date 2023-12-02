@@ -44,7 +44,7 @@ void ShadowManager::Update()
             lights[i]->CalcLightSpaceMatrix();
         depthShader->SetUniformMatrix4("light", lights[i]->GetLightSpaceMatrix());
 
-        scene->Draw(depthBuffers[i].get(), nullptr, true, true);
+        scene->Draw(depthBuffers[i].get(), nullptr, i == 0, true);
     }
 
     UpdateShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::LightingPass));
