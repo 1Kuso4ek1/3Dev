@@ -666,20 +666,15 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 		for(int j = 0; j < 3; j++)
 			indices.push_back(mesh->mFaces[i].mIndices[j]);
 
-	std::string a;
-
 	for(int i = 0; i < mesh->mNumBones; i++)
 	{
 		auto bone = mesh->mBones[i];
-		std::string tmp;
-		if(std::string(bone->mName.C_Str()).find(a) == std::string::npos)
-			tmp = a + bone->mName.C_Str();
-		else tmp = bone->mName.C_Str();
 
-		bonemap[tmp] = { i, toglm(bone->mOffsetMatrix) };
+		if(bonemap.find(bone->mName.C_Str()) == bonemap.end())
+			bonemap[bone->mName.C_Str()] = { i, toglm(bone->mOffsetMatrix) };
 		std::vector<int> nbones;
 		nbones.resize(mesh->mNumVertices, 0);
-		for(int j = 0; j < bone->mNumWeights; j++)
+		for(int j = 0; j < bone->mNumWeights ? 1 : 0; j++)
 		{
 			int id = bone->mWeights[j].mVertexId;
 			float weight = bone->mWeights[j].mWeight;
@@ -687,14 +682,6 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 			data[id].weights[nbones[id]] = weight;
 			nbones[id]++;
 		}
-	}
-
-	for (int i = 0; i < data.size(); i++)
-	{
-		glm::vec4& weights = data[i].weights;
-		float total = weights.x + weights.y + weights.z + weights.w;
-		if(total > 0.0f)
-			data[i].weights /= total;
 	}
 
 	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB, tr));
