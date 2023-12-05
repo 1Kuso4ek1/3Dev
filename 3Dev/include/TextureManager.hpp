@@ -8,7 +8,8 @@ public:
     static TextureManager* GetInstance();
     static void DeleteInstance();
 
-    GLuint CreateTexture(uint32_t w, uint32_t h, bool depth = false, GLint filter = GL_NEAREST, GLint wrap = GL_CLAMP_TO_EDGE, bool generateMipmap = false, std::string name = "texture");
+    GLuint CreateTexture(uint32_t w, uint32_t h, bool depth = false, GLint filter = GL_NEAREST, GLint wrap = GL_CLAMP_TO_EDGE, GLuint internalFormat = GL_RGBA16F,
+                         GLuint format = GL_RGBA, bool generateMipmap = false, void* data = nullptr, std::string name = "texture");
     GLuint LoadTexture(std::string filename, std::string name = "texture");
     GLuint CreateCubemap(uint32_t size, GLuint filter = GL_LINEAR, std::string name = "cubemap");
 

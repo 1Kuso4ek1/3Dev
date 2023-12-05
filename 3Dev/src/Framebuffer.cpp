@@ -1,11 +1,12 @@
 #include <Framebuffer.hpp>
 
-Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, bool createDepthAttachment, uint32_t attachments, GLint filter, GLint wrap) : shader(shader), size(w, h)
+Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, bool createDepthAttachment, uint32_t attachments,
+						 GLint filter, GLint wrap, GLuint internalFormat, GLuint format) : shader(shader), size(w, h)
 {
 	CalcPixelSize(glm::vec2(w, h));
     if(!isDepth)
 		for(int i = 0; i < attachments; i++)
-			textures.push_back(TextureManager::GetInstance()->CreateTexture(w, h, false, filter, wrap));
+			textures.push_back(TextureManager::GetInstance()->CreateTexture(w, h, false, filter, wrap, internalFormat, format));
 		
     glGenFramebuffers(1, &fbo);
     

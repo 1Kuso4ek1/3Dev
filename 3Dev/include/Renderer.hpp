@@ -10,7 +10,8 @@ public:
         Skybox,
         Irradiance,
         Prefiltered,
-        LUT
+        LUT,
+        Noise
     };
 
     enum class ShaderType
@@ -18,6 +19,8 @@ public:
         Deferred,
         Forward,
         LightingPass,
+        ViewGBuffer,
+        SSAO,
         Skybox,
         Depth,
         Post,
@@ -33,6 +36,8 @@ public:
         GBuffer,
         Main,
         Transparency,
+        ViewGBuffer,
+        SSAO,
         BloomPingPong0,
         BloomPingPong1
     };
@@ -40,14 +45,22 @@ public:
     static Renderer* GetInstance();
     static void DeleteInstance();
 
-    void Init(sf::Vector2u fbSize, const std::string& environmentMapFilename, uint32_t skyboxSideSize = 256, uint32_t irradianceSideSize = 32, uint32_t prefilteredSideSize = 256, float bloomResolutionScale = 10);
+    void Init(sf::Vector2u fbSize, const std::string& environmentMapFilename, uint32_t skyboxSideSize = 256,
+              uint32_t irradianceSideSize = 32, uint32_t prefilteredSideSize = 256, float bloomResolutionScale = 10);
     void LoadEnvironment(const std::string& environmentMapFilename);
     void SetShadersDirectory(std::string dir);
+
+    void Bloom();
+    void SSAO();
+
+    void DrawFramebuffers();
 
     GLuint GetTexture(TextureType type);
     Shader* GetShader(ShaderType type);
     Framebuffer* GetFramebuffer(FramebufferType type);
     Matrices* GetMatrices();
+
+    std::vector<glm::vec3> ssaoSamples, noise;
 
 private:
     Renderer() {}
@@ -57,6 +70,8 @@ private:
     std::string shadersDir;
 
     Matrices m;
+
+    //std::vector<glm::vec3> ssaoSamples, noise;
 
     std::shared_ptr<Framebuffer> capture, captureIrr, captureSpc, captureBRDF;
 

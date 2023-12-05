@@ -12,6 +12,7 @@ uniform sampler2D gnormal;
 uniform sampler2D gemission;
 uniform sampler2D gcombined;
 uniform sampler2D opacity;
+uniform sampler2D ssao;
 uniform samplerCube irradiance;
 uniform samplerCube prefilteredMap;
 uniform sampler2D lut;
@@ -149,7 +150,7 @@ void main()
 
     float metal = combined.x;
     float rough = combined.y;
-    float ao = combined.z;
+    float ao = texture(ssao, coord).r;
     float shadowBias = combined.w;
     
     vec3 irr = (nirradiance.x < 0.0 ? texture(irradiance, norm).xyz : nirradiance);

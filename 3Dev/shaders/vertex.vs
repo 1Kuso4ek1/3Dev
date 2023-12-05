@@ -22,7 +22,10 @@ out vec2 coord;
 out vec3 camposout;
 out vec3 mnormal;
 out vec3 mpos;
+out vec3 mvnormal;
+out vec3 mvpos;
 out mat3 tbn;
+out mat3 mvtbn;
 out vec4 lspaceout[maxShadows];
 
 void main()
@@ -41,9 +44,11 @@ void main()
     pos = transform * pos;
 
     mpos = (model * pos).xyz;
+    mvpos = (view * model * pos).xyz;
     for(int i = 0; i < maxShadows; i++)
 	    lspaceout[i] = lspace[i] * vec4(mpos, 1.0);
     mnormal = normalize(mat3(model * transform) * normal);
+    mvnormal = normalize(mat3(view * model * transform) * normal);
     coord = uv;
     camposout = campos;
 
@@ -52,6 +57,12 @@ void main()
     vec3 n = mnormal;
     vec3 b = cross(n, t);
     tbn = mat3(t, b, n);
+    
+    tangent = cross(mvnormal, vec3(0.5, 0.5, 0.5));
+    t = normalize(mat3(view * model * transform) * tangent);
+    n = mvnormal;
+    b = cross(n, t);
+    mvtbn = mat3(t, b, n);
 
     gl_Position = (projection * view * model) * pos;
 }

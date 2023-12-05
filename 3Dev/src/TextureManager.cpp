@@ -19,12 +19,12 @@ void TextureManager::DeleteInstance()
     delete instance;
 }
 
-GLuint TextureManager::CreateTexture(uint32_t w, uint32_t h, bool depth, GLint filter, GLint wrap, bool generateMipmap, std::string name)
+GLuint TextureManager::CreateTexture(uint32_t w, uint32_t h, bool depth, GLint filter, GLint wrap, GLuint internalFormat, GLuint format, bool generateMipmap, void* data, std::string name)
 {
     GLuint texture = 0;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, (depth ? GL_DEPTH_COMPONENT32F : GL_RGBA16F), w, h, 0, (depth ? GL_DEPTH_COMPONENT : GL_RGBA), GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, (depth ? GL_DEPTH_COMPONENT32F : internalFormat), w, h, 0, (depth ? GL_DEPTH_COMPONENT : format), GL_FLOAT, data);
     if(generateMipmap) glGenerateMipmap(GL_TEXTURE_2D);
     if(depth) glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);

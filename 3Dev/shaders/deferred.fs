@@ -21,13 +21,18 @@ uniform float nopacity;
 in vec2 coord;
 in vec3 mnormal;
 in vec3 mpos;
+in vec3 mvnormal;
+in vec3 mvpos;
 in mat3 tbn;
+in mat3 mvtbn;
 
 layout (location = 0) out vec4 gposition;
 layout (location = 1) out vec4 galbedo;
 layout (location = 2) out vec4 gnormal;
 layout (location = 3) out vec4 gemission;
 layout (location = 4) out vec4 gcombined;
+layout (location = 5) out vec4 gmvposition;
+layout (location = 6) out vec4 gmvnormal;
 
 void main()
 {
@@ -38,9 +43,17 @@ void main()
     
     if(alpha < 1.0) return;
 
-    vec3 norm;
-    if(nnormalMap) norm = normalize(tbn * normalize(texture(normalMap, coord).xyz * 2.0 - 1.0));
-    else norm = normalize(mnormal);
+    vec3 norm, mvnorm;
+    if(nnormalMap)
+    {
+        norm = normalize(tbn * normalize(texture(normalMap, coord).xyz * 2.0 - 1.0));
+        mvnorm = normalize(mvtbn * normalize(texture(normalMap, coord).xyz * 2.0 - 1.0));
+    }
+    else
+    {
+        norm = normalize(mnormal);
+        mvnorm = normalize(mvnormal);
+    }
 
     vec3 emission = (nemission.x < 0.0 ? texture(emission, coord).xyz : nemission);
     float rough = (nroughness < 0.0 ? texture(roughness, coord).x : nroughness);
@@ -53,4 +66,6 @@ void main()
     gnormal = vec4(norm, 1.0);
     gemission = vec4(emission * emissionStrength, 1.0);
     gcombined = vec4(metal, rough, ao, shadowBias);
+    gmvposition = vec4(mvpos, 1.0);
+    gmvnormal = vec4(mvnorm, 1.0);
 }

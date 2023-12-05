@@ -59,10 +59,10 @@ void ShadowManager::UpdateShader(Shader* shader)
     shader->Bind();
     for(int i = 0; i < 8; i++)
 	{
-		glActiveTexture(GL_TEXTURE16 + i);
+		glActiveTexture(GL_TEXTURE18 + i);
         glBindTexture(GL_TEXTURE_2D, 0);
         shader->SetUniform1i("shadows[" + std::to_string(i) + "].isactive", false);
-		shader->SetUniform1i("shadows[" + std::to_string(i) + "].shadowMap", 16 + i);
+		shader->SetUniform1i("shadows[" + std::to_string(i) + "].shadowMap", 18 + i);
 	}
 
     for(int i = 0; i < (lights.size() > 8 ? 8 : lights.size()); i++)
@@ -70,10 +70,10 @@ void ShadowManager::UpdateShader(Shader* shader)
         shader->SetUniformMatrix4("lspace[" + std::to_string(i) + "]", lights[i]->GetLightSpaceMatrix());
         auto pos = lights[i]->GetPosition(true);
 
-        glActiveTexture(GL_TEXTURE16 + i);
+        glActiveTexture(GL_TEXTURE18 + i);
         glBindTexture(GL_TEXTURE_2D, depthBuffers[i]->GetTexture(true));
         shader->SetUniform3f("shadows[" + std::to_string(i) + "].sourcepos", pos.x, pos.y, pos.z);
         shader->SetUniform1i("shadows[" + std::to_string(i) + "].isactive", true);
-        shader->SetUniform1i("shadows[" + std::to_string(i) + "].shadowMap", 16 + i);
+        shader->SetUniform1i("shadows[" + std::to_string(i) + "].shadowMap", 18 + i);
     }
 }

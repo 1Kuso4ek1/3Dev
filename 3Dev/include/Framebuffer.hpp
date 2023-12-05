@@ -17,7 +17,8 @@ public:
      * @param w width of the framebuffer texture
      * @param h height of the framebuffer texture
      */
-    Framebuffer(Shader* shader, int w, int h, bool isDepth = false, bool createDepthAttachment = true, uint32_t attachments = 1, GLint filter = GL_NEAREST, GLint wrap = GL_CLAMP_TO_EDGE);
+    Framebuffer(Shader* shader, int w, int h, bool isDepth = false, bool createDepthAttachment = true, uint32_t attachments = 1,
+                GLint filter = GL_NEAREST, GLint wrap = GL_CLAMP_TO_EDGE, GLuint internalFormat = GL_RGBA16F, GLuint format = GL_RGBA);
     ~Framebuffer();
 
     void Resize(int w, int h);

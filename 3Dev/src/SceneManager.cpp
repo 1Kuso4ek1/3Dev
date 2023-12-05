@@ -62,6 +62,22 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         { if(!p.second->GetParent()) p.second->Draw(camera, lightsVector); });
     camera->Draw(camera, lightsVector);
 
+    Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->Bind();
+    glViewport(0, 0, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->GetSize().x, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->GetSize().y);
+    glActiveTexture(GL_TEXTURE15);
+    glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->GetTexture(false, 5));
+    glActiveTexture(GL_TEXTURE16);
+    glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->GetTexture(false, 6));
+    glActiveTexture(GL_TEXTURE17);
+    glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetTexture(Renderer::TextureType::Noise));
+    Renderer::GetInstance()->GetShader(Renderer::ShaderType::SSAO)->Bind();
+    Renderer::GetInstance()->GetShader(Renderer::ShaderType::SSAO)->SetUniform1i("gposition", 15);
+    Renderer::GetInstance()->GetShader(Renderer::ShaderType::SSAO)->SetUniform1i("gnormal", 16);
+    Renderer::GetInstance()->GetShader(Renderer::ShaderType::SSAO)->SetUniform1i("noise", 17);
+    Renderer::GetInstance()->GetShader(Renderer::ShaderType::SSAO)->SetUniformMatrix4("projection", Renderer::GetInstance()->GetMatrices()->GetProjection());
+    Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->Draw();
+    Framebuffer::Unbind();
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 0));
     glActiveTexture(GL_TEXTURE1);
@@ -72,6 +88,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 3));
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 4));
+    glActiveTexture(GL_TEXTURE15);
+    glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->GetTexture());
 
     auto lightingPass = Renderer::GetInstance()->GetShader(Renderer::ShaderType::LightingPass);
     lightingPass->Bind();
@@ -82,6 +100,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     lightingPass->SetUniform1i("gnormal", 2);
     lightingPass->SetUniform1i("gemission", 3);
     lightingPass->SetUniform1i("gcombined", 4);
+    lightingPass->SetUniform1i("ssao", 15);
     Material::UpdateShaderEnvironment(lightingPass);
 
     for(int i = 0; i < 64; i++)
