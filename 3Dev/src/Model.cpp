@@ -108,6 +108,7 @@ void Model::Load(std::string filename, unsigned int flags)
 
 	LoadAnimations(scene);
 	ProcessNode(scene->mRootNode, scene);
+	FindBoneNodes(scene->mRootNode, bones);
 
 	pose.resize(64);
 
@@ -696,7 +697,6 @@ void Model::ProcessMesh(aiMesh* mesh, aiNode* node, aiNode* mnode)
 			data[i].weights /= total;
 	}
 
-	FindBoneNodes(node, bones);
 	meshes.emplace_back(std::make_shared<Mesh>(data, indices, mesh->mAABB, tr));
 }
 
