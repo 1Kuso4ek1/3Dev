@@ -24,7 +24,7 @@ endif()
 
 add_executable(editor main.cpp)
 
-add_definitions("-DEDITOR_VERSION=\"1.3.7\"")
+add_definitions("-DEDITOR_VERSION=\"1.3.8\"")
 
 if(3DEV_RELEASE)
 	add_definitions("-DSHADERS_DIRECTORY=\"../../shaders/\"")

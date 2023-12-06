@@ -46,6 +46,9 @@ Json::Value DefaultProperties(const Json::Value& recentProjects = "", const Json
     p["renderer"]["prefilteredSideSize"] = 256;
     p["renderer"]["shadowMapResolution"] = 2048;
     p["renderer"]["bloomResolutionScale"] = 10;
+    p["renderer"]["ssaoSamples"] = 64;
+    p["renderer"]["ssaoStrength"] = 2.0;
+    p["renderer"]["ssaoRadius"] = 0.5;
     p["renderer"]["exposure"] = 0.5;
 
     if(!recentProjects.isArray())
@@ -553,6 +556,8 @@ int main()
     engine.GetWindow().display();
         
     Renderer::GetInstance()->SetShadersDirectory(properties["renderer"]["shadersDir"].asString());
+    if(properties["renderer"]["ssaoSamples"].asInt() > 0)
+        Renderer::GetInstance()->SetSSAOSamples(properties["renderer"]["ssaoSamples"].asInt());
     Renderer::GetInstance()->Init({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 },
                                     properties["renderer"]["hdriPath"].asString(),
                                     properties["renderer"]["skyboxSideSize"].asInt(),
@@ -672,8 +677,8 @@ int main()
     float bloomStrength = 0.3;
     float mouseSensitivity = 1.0;
     
-    float ssaoStrength = 2.0;
-    float ssaoRadius = 0.5;
+    float ssaoStrength = properties["renderer"]["ssaoStrength"].asFloat();
+    float ssaoRadius = properties["renderer"]["ssaoRadius"].asFloat();
 
     int blurIterations = 8;
 

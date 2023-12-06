@@ -47,7 +47,7 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     std::default_random_engine eng(dev());
     std::uniform_real_distribution<float> dist(0.0, 1.0);
 
-    ssaoSamples.reserve(64);
+    ssaoSamples.reserve(samples);
     noise.reserve(4096);
 
     auto lerp = [](float a, float b, float f)
@@ -55,10 +55,10 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
         return a + f * (b - a);
     };
 
-    for(int i = 0; i < 64; i++)
+    for(int i = 0; i < samples; i++)
     {
         glm::vec3 sample(dist(eng) * 2.0 - 1.0, dist(eng) * 2.0 - 1.0, dist(eng));
-        ssaoSamples[i] = glm::normalize(sample) * dist(eng) * lerp(0.1, 1.0, pow((float)i / 64.0, 2));
+        ssaoSamples[i] = glm::normalize(sample) * dist(eng) * lerp(0.1, 1.0, pow((float)i / samples, 2));
     }
 
     for(int i = 0; i < 4096; i++)
@@ -67,7 +67,7 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     textures[TextureType::Noise] = TextureManager::GetInstance()->CreateTexture(64, 64, false, GL_NEAREST, GL_REPEAT, GL_RGB16F, GL_RGB, false, &noise[0]);
 
     shaders[ShaderType::SSAO]->Bind();
-    for(int i = 0; i < 64; i++)
+    for(int i = 0; i < samples; i++)
         shaders[ShaderType::SSAO]->SetUniform3f("samples[" + std::to_string(i) + "]", ssaoSamples[i].x, ssaoSamples[i].y, ssaoSamples[i].z);
 
     capture = std::make_shared<Framebuffer>(nullptr, skyboxSideSize, skyboxSideSize, false, false);
@@ -132,6 +132,11 @@ void Renderer::SetSSAORadius(float radius)
     ssaoRadius = radius;
 }
 
+void Renderer::SetSSAOSamples(int samples)
+{
+    this->samples = samples > 128 ? 128 : samples;
+}
+
 void Renderer::SetBloomStrength(float strength)
 {
     bloomStrength = strength;
@@ -186,6 +191,7 @@ void Renderer::SSAO()
     shaders[ShaderType::SSAO]->SetUniform1i("gposition", 15);
     shaders[ShaderType::SSAO]->SetUniform1i("gnormal", 16);
     shaders[ShaderType::SSAO]->SetUniform1i("noise", 17);
+    shaders[ShaderType::SSAO]->SetUniform1i("numSamples", samples);
     shaders[ShaderType::SSAO]->SetUniform1f("radius", ssaoRadius);
     shaders[ShaderType::SSAO]->SetUniform1f("strength", ssaoStrength);
     shaders[ShaderType::SSAO]->SetUniformMatrix4("projection", m.GetProjection());

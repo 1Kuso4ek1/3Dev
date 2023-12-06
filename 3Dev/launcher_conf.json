@@ -18,6 +18,9 @@
         "prefilteredSideSize" : 512,
         "shadowMapResolution" : 4096,
         "bloomResolutionScale" : 10,
+        "ssaoSamples" : 64,
+        "ssaoStrength" : 2.0,
+        "ssaoRadius" : 0.5,
         "exposure" : 1.0
     },
     "log" :

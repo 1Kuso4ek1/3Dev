@@ -6,10 +6,12 @@ uniform sampler2D gposition;
 uniform sampler2D gnormal;
 uniform sampler2D noise;
 
+uniform int numSamples;
+
 uniform float radius;
 uniform float strength;
 
-uniform vec3 samples[64];
+uniform vec3 samples[128];
 uniform mat4 projection;
 
 in vec2 coord;
@@ -32,7 +34,7 @@ void main()
     mat3 tbn = mat3(t, b, normal);
 
     float occlusion = 0.0;
-    for(int i = 0; i < 64; i++)
+    for(int i = 0; i < numSamples; i++)
     {
         vec3 samplePos = tbn * samples[i];
         samplePos = pos + samplePos * radius;
@@ -47,5 +49,5 @@ void main()
         occlusion += (sampleDepth >= samplePos.z + 0.1 ? 1.0 : 0.0) * smoothstep(0.0, 1.0, radius / abs(pos.z - sampleDepth));
     }
 
-    color = pow(1.0 - (occlusion / 64.0), strength);
+    color = pow(1.0 - (occlusion / numSamples), strength);
 }

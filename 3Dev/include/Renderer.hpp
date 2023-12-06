@@ -52,6 +52,7 @@ public:
 
     void SetSSAOStrength(float strength);
     void SetSSAORadius(float radius);
+    void SetSSAOSamples(int samples);
     
     void SetBloomStrength(float strength);
     void SetBlurIterations(int iterations);
@@ -76,6 +77,7 @@ private:
     float ssaoRadius = 0.5;
     float bloomStrength = 0.3;
     int blurIterations = 8;
+    int samples = 64;
 
     bool horizontal = true;
     bool buffer = true;

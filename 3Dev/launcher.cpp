@@ -30,6 +30,8 @@ int main()
 
     if(cfg["renderer"]["shadersDir"].asString() != "default")
         Renderer::GetInstance()->SetShadersDirectory(cfg["renderer"]["shadersDir"].asString());
+    if(cfg["renderer"]["ssaoSamples"].asInt() > 0)
+        Renderer::GetInstance()->SetSSAOSamples(cfg["renderer"]["ssaoSamples"].asInt());
     Renderer::GetInstance()->Init(engine.GetWindow().getSize(),
                                   cfg["renderer"]["hdriPath"].asString(),
                                   cfg["renderer"]["skyboxSideSize"].asInt(),
@@ -72,8 +74,8 @@ int main()
     float bloomStrength = 0.3;
     float mouseSensitivity = 1.0;
 
-    float ssaoStrength = 2.0;
-    float ssaoRadius = 0.5;
+    float ssaoStrength = cfg["renderer"]["ssaoStrength"].asFloat();
+    float ssaoRadius = cfg["renderer"]["ssaoRadius"].asFloat();
 
     int blurIterations = 8;
 
@@ -116,6 +118,7 @@ int main()
         {
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Resize(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Resize(event.size.width, event.size.height);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->Resize(event.size.width / 2.0, event.size.height / 2.0);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(event.size.width / bloomResolutionScale, event.size.height / bloomResolutionScale);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->Resize(event.size.width / bloomResolutionScale, event.size.height / bloomResolutionScale);
 
