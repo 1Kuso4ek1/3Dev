@@ -72,6 +72,9 @@ int main()
     float bloomStrength = 0.3;
     float mouseSensitivity = 1.0;
 
+    float ssaoStrength = 2.0;
+    float ssaoRadius = 0.5;
+
     int blurIterations = 8;
 
     ScriptManager scman;
@@ -90,6 +93,8 @@ int main()
     scman.AddProperty("float exposure", &exposure);
     scman.AddProperty("float bloomStrength", &bloomStrength);
     scman.AddProperty("int blurIterations", &blurIterations);
+    scman.AddProperty("float ssaoStrength", &ssaoStrength);
+    scman.AddProperty("float ssaoRadius", &ssaoRadius);
     scman.SetDefaultNamespace("");
 
     auto scPath = cfg["scenePath"].asString();
@@ -104,12 +109,6 @@ int main()
     scman.ExecuteFunction("void Start()");
 
     ShadowManager shadows(&scene, glm::ivec2(cfg["renderer"]["shadowMapResolution"].asInt()));
-
-    std::vector<Framebuffer*> pingPongBuffers = 
-    {
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0),
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)
-    };
 
     engine.EventLoop([&](sf::Event& event)
     {
@@ -138,6 +137,12 @@ int main()
 
         ListenerWrapper::SetPosition(cam.GetPosition());
         ListenerWrapper::SetOrientation(cam.GetOrientation());
+
+        Renderer::GetInstance()->SetExposure(exposure);
+        Renderer::GetInstance()->SetBloomStrength(bloomStrength);
+        Renderer::GetInstance()->SetBlurIterations(blurIterations);
+        Renderer::GetInstance()->SetSSAOStrength(ssaoStrength);
+        Renderer::GetInstance()->SetSSAORadius(ssaoRadius);
         
         cam.Update();
         if(manageCameraMovement) cam.Move(1);
@@ -147,52 +152,7 @@ int main()
         if(updateShadows) shadows.Update();
         if(manageSceneRendering) scene.Draw(nullptr, nullptr, !updateShadows);
 
-        bool horizontal = true;
-        bool buffer = true;
-
-        if(bloomStrength > 0)
-        {
-            pingPongBuffers[0]->Bind();
-            glViewport(0, 0, pingPongBuffers[0]->GetSize().x, pingPongBuffers[0]->GetSize().y);
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
-            glDisable(GL_DEPTH_TEST);
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", true);
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
-            glEnable(GL_DEPTH_TEST);
-
-            for(int i = 0; i < blurIterations; i++)
-            {
-                pingPongBuffers[buffer]->Bind();
-                Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
-                Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
-                pingPongBuffers[!buffer]->Draw();
-                buffer = !buffer; horizontal = !horizontal;
-            }
-        }
-
-        Framebuffer::Unbind();
-        auto size = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->GetSize();
-        glViewport(0, 0, size.x, size.y);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glActiveTexture(GL_TEXTURE15);
-        glBindTexture(GL_TEXTURE_2D, pingPongBuffers[buffer]->GetTexture());
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exposure);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("bloomStrength", bloomStrength);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom", 15);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
-        glDisable(GL_DEPTH_TEST);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", true);
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
-        glEnable(GL_DEPTH_TEST);
+        Renderer::GetInstance()->DrawFramebuffers();
     });
 
     engine.Launch();

@@ -62,21 +62,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         { if(!p.second->GetParent()) p.second->Draw(camera, lightsVector); });
     camera->Draw(camera, lightsVector);
 
-    Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->Bind();
-    glViewport(0, 0, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->GetSize().x, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->GetSize().y);
-    glActiveTexture(GL_TEXTURE15);
-    glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->GetTexture(false, 5));
-    glActiveTexture(GL_TEXTURE16);
-    glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->GetTexture(false, 6));
-    glActiveTexture(GL_TEXTURE17);
-    glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetTexture(Renderer::TextureType::Noise));
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::SSAO)->Bind();
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::SSAO)->SetUniform1i("gposition", 15);
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::SSAO)->SetUniform1i("gnormal", 16);
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::SSAO)->SetUniform1i("noise", 17);
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::SSAO)->SetUniformMatrix4("projection", Renderer::GetInstance()->GetMatrices()->GetProjection());
-    Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->Draw();
-    Framebuffer::Unbind();
+    Renderer::GetInstance()->SSAO();
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 0));
@@ -161,6 +147,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 
     post->SetUniform1i("frameDepth", 19);
     post->SetUniform1i("transparencyDepth", 20);
+
+    Renderer::GetInstance()->Bloom();
 }
 
 void SceneManager::AddModel(std::shared_ptr<Model> model, const std::string& name, bool checkUniqueness)

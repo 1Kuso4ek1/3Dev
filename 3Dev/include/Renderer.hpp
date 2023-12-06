@@ -19,7 +19,6 @@ public:
         Deferred,
         Forward,
         LightingPass,
-        ViewGBuffer,
         SSAO,
         Skybox,
         Depth,
@@ -36,7 +35,6 @@ public:
         GBuffer,
         Main,
         Transparency,
-        ViewGBuffer,
         SSAO,
         BloomPingPong0,
         BloomPingPong1
@@ -50,6 +48,14 @@ public:
     void LoadEnvironment(const std::string& environmentMapFilename);
     void SetShadersDirectory(std::string dir);
 
+    void SetExposure(float exposure);
+
+    void SetSSAOStrength(float strength);
+    void SetSSAORadius(float radius);
+    
+    void SetBloomStrength(float strength);
+    void SetBlurIterations(int iterations);
+
     void Bloom();
     void SSAO();
 
@@ -60,18 +66,26 @@ public:
     Framebuffer* GetFramebuffer(FramebufferType type);
     Matrices* GetMatrices();
 
-    std::vector<glm::vec3> ssaoSamples, noise;
-
 private:
     Renderer() {}
 
     static Renderer* instance;
 
+    float exposure = 1.0;
+    float ssaoStrength = 2.0;
+    float ssaoRadius = 0.5;
+    float bloomStrength = 0.3;
+    int blurIterations = 8;
+
+    bool horizontal = true;
+    bool buffer = true;
+
     std::string shadersDir;
 
     Matrices m;
 
-    //std::vector<glm::vec3> ssaoSamples, noise;
+    std::vector<glm::vec3> ssaoSamples, noise;
+    std::vector<Framebuffer*> pingPongBuffers;
 
     std::shared_ptr<Framebuffer> capture, captureIrr, captureSpc, captureBRDF;
 

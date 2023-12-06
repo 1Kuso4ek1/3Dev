@@ -33,7 +33,7 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     shaders[ShaderType::BRDF] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "brdf.fs");
     shaders[ShaderType::Bloom] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "bloom.fs");
 
-    framebuffers[FramebufferType::GBuffer] = std::make_shared<Framebuffer>(shaders[ShaderType::LightingPass].get(), fbSize.x, fbSize.y, false, true, 7);
+    framebuffers[FramebufferType::GBuffer] = std::make_shared<Framebuffer>(shaders[ShaderType::LightingPass].get(), fbSize.x, fbSize.y, false, true, 7, GL_LINEAR);
 
     framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y, false, false);
     framebuffers[FramebufferType::Transparency] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
@@ -41,14 +41,14 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     framebuffers[FramebufferType::BloomPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale, fbSize.y / bloomResolutionScale, false, false, 1, GL_LINEAR);
     framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale, fbSize.y / bloomResolutionScale, false, false, 1, GL_LINEAR);
 
-    framebuffers[FramebufferType::SSAO] = std::make_shared<Framebuffer>(shaders[ShaderType::SSAO].get(), fbSize.x, fbSize.y, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_R16F, GL_RED);
+    framebuffers[FramebufferType::SSAO] = std::make_shared<Framebuffer>(shaders[ShaderType::SSAO].get(), fbSize.x / 2.0, fbSize.y / 2.0, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_R16F, GL_RED);
     
     std::random_device dev;
     std::default_random_engine eng(dev());
     std::uniform_real_distribution<float> dist(0.0, 1.0);
 
     ssaoSamples.reserve(64);
-    noise.reserve(16);
+    noise.reserve(4096);
 
     auto lerp = [](float a, float b, float f)
     {
@@ -61,17 +61,12 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
         ssaoSamples[i] = glm::normalize(sample) * dist(eng) * lerp(0.1, 1.0, pow((float)i / 64.0, 2));
     }
 
-    for(int i = 0; i < 16; i++)
+    for(int i = 0; i < 4096; i++)
         noise[i] = glm::vec3(dist(eng) * 2.0 - 1.0, dist(eng) * 2.0 - 1.0, 0.0f);
 
-    textures[TextureType::Noise] = TextureManager::GetInstance()->CreateTexture(4, 4, false, GL_NEAREST, GL_REPEAT, GL_RGBA16F, GL_RGB, false, &noise[0]);
+    textures[TextureType::Noise] = TextureManager::GetInstance()->CreateTexture(64, 64, false, GL_NEAREST, GL_REPEAT, GL_RGB16F, GL_RGB, false, &noise[0]);
 
     shaders[ShaderType::SSAO]->Bind();
-    /*shaders[ShaderType::SSAO]->Bind();
-    shaders[ShaderType::SSAO]->SetUniform1i("gposition", 15);
-    shaders[ShaderType::SSAO]->SetUniform1i("gnormal", 16);
-    shaders[ShaderType::SSAO]->SetUniform1i("noise", 17);
-    shaders[ShaderType::SSAO]->SetUniformMatrix4("projection", m.GetProjection());*/
     for(int i = 0; i < 64; i++)
         shaders[ShaderType::SSAO]->SetUniform3f("samples[" + std::to_string(i) + "]", ssaoSamples[i].x, ssaoSamples[i].y, ssaoSamples[i].z);
 
@@ -79,6 +74,12 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     captureIrr = std::make_shared<Framebuffer>(nullptr, irradianceSideSize, irradianceSideSize, false, false);
     captureSpc = std::make_shared<Framebuffer>(nullptr, prefilteredSideSize, prefilteredSideSize, false, false);
     captureBRDF = std::make_shared<Framebuffer>(shaders[ShaderType::BRDF].get(), 128, 128, false, false);
+
+    pingPongBuffers = 
+    {
+        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0),
+        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)
+    };
 
     LoadEnvironment(environmentMapFilename);
 
@@ -114,6 +115,103 @@ void Renderer::LoadEnvironment(const std::string& environmentMapFilename)
 void Renderer::SetShadersDirectory(std::string dir)
 {
     shadersDir = dir;
+}
+
+void Renderer::SetExposure(float exposure)
+{
+    this->exposure = exposure;
+}
+
+void Renderer::SetSSAOStrength(float strength)
+{
+    ssaoStrength = strength;
+}
+
+void Renderer::SetSSAORadius(float radius)
+{
+    ssaoRadius = radius;
+}
+
+void Renderer::SetBloomStrength(float strength)
+{
+    bloomStrength = strength;
+}
+
+void Renderer::SetBlurIterations(int iterations)
+{
+    blurIterations = iterations;
+}
+
+void Renderer::Bloom()
+{
+    horizontal = buffer = true;
+
+    if(bloomStrength > 0)
+    {
+        pingPongBuffers[0]->Bind();
+        glViewport(0, 0, pingPongBuffers[0]->GetSize().x, pingPongBuffers[0]->GetSize().y);
+        shaders[ShaderType::Post]->Bind();
+        shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);
+        shaders[ShaderType::Post]->SetUniform1i("rawColor", true);
+        framebuffers[FramebufferType::Main]->Draw();
+        shaders[ShaderType::Post]->Bind();
+        shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", true);
+        shaders[ShaderType::Post]->SetUniform1i("rawColor", true);
+        framebuffers[FramebufferType::Transparency]->Draw();
+
+        for(int i = 0; i < blurIterations; i++)
+        {
+            pingPongBuffers[buffer]->Bind();
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
+            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
+            pingPongBuffers[!buffer]->Draw();
+            buffer = !buffer; horizontal = !horizontal;
+        }
+
+        Framebuffer::Unbind();
+    }
+}
+
+void Renderer::SSAO()
+{
+    framebuffers[FramebufferType::SSAO]->Bind();
+    glViewport(0, 0, framebuffers[FramebufferType::SSAO]->GetSize().x, framebuffers[FramebufferType::SSAO]->GetSize().y);
+    glActiveTexture(GL_TEXTURE15);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 5));
+    glActiveTexture(GL_TEXTURE16);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 6));
+    glActiveTexture(GL_TEXTURE17);
+    glBindTexture(GL_TEXTURE_2D, textures[Renderer::TextureType::Noise]);
+    shaders[ShaderType::SSAO]->Bind();
+    shaders[ShaderType::SSAO]->SetUniform1i("gposition", 15);
+    shaders[ShaderType::SSAO]->SetUniform1i("gnormal", 16);
+    shaders[ShaderType::SSAO]->SetUniform1i("noise", 17);
+    shaders[ShaderType::SSAO]->SetUniform1f("radius", ssaoRadius);
+    shaders[ShaderType::SSAO]->SetUniform1f("strength", ssaoStrength);
+    shaders[ShaderType::SSAO]->SetUniformMatrix4("projection", m.GetProjection());
+    framebuffers[FramebufferType::SSAO]->Draw();
+    Framebuffer::Unbind();
+}
+
+void Renderer::DrawFramebuffers()
+{
+    auto size = framebuffers[FramebufferType::Main]->GetSize();
+    glViewport(0, 0, size.x, size.y);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glActiveTexture(GL_TEXTURE15);
+    glBindTexture(GL_TEXTURE_2D, pingPongBuffers[buffer]->GetTexture());
+    shaders[ShaderType::Post]->Bind();
+    shaders[ShaderType::Post]->SetUniform1f("exposure", exposure);
+    shaders[ShaderType::Post]->SetUniform1f("bloomStrength", bloomStrength);
+    shaders[ShaderType::Post]->SetUniform1i("bloom", 15);
+    shaders[ShaderType::Post]->SetUniform1i("rawColor", false);
+    shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);
+    framebuffers[FramebufferType::Main]->Draw();
+    glDisable(GL_DEPTH_TEST);
+    shaders[ShaderType::Post]->Bind();
+    shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", true);
+    framebuffers[FramebufferType::Transparency]->Draw();
+    glEnable(GL_DEPTH_TEST);
 }
 
 GLuint Renderer::GetTexture(TextureType type)

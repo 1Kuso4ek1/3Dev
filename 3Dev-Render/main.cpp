@@ -60,18 +60,22 @@ int main(int argc, char* argv[])
                   << "  -h <int>          Height of the output (720 is default)" << std::endl
                   << "  -b <int>          Size of a skybox side (512 is default)" << std::endl
                   << "  -f <int>          Output video framerate (30 is default)" << std::endl
-                  << "  -x <float>        Exposure (1.5 is default)" << std::endl
+                  << "  -x <float>        Exposure (1.0 is default)" << std::endl
                   << "  -r <int>          Shadow map resolution (4096 is default)" << std::endl
                   << "  -i <int>          Blur iterations (8 is default)" << std::endl
                   << "  -n <float>        Bloom strength (0.3 is default)" << std::endl
-                  << "  -c <float>        Bloom resolution scale (10 is default)" << std::endl;
+                  << "  -c <float>        Bloom resolution scale (10 is default)" << std::endl
+                  << "  -r <float>        SSAO strength (2.0 is default)" << std::endl
+                  << "  -d <float>        SSAO radius (0.5 is default)" << std::endl;
         return 0;
     }
 
     uint32_t w = 1280, h = 720, b = 256, r = 4096, fps = 30;
     int blurIterations = 8;
     float bloomStrength = 0.3;
-    float exp = 1.0;
+    float exposure = 1.0;
+    float ssaoStrength = 2.0;
+    float ssaoRadius = 0.5;
     float bloomResolutionScale = 10.0;
     #ifdef _WIN32
     	std::string env = std::string(getenv("HOMEPATH")) + "/.3Dev-Editor/default/hdri.hdr";
@@ -91,12 +95,14 @@ int main(int argc, char* argv[])
     if(!GetArgument(argc, argv, "-b").empty()) b = std::stoi(GetArgument(argc, argv, "-b"));
     if(!GetArgument(argc, argv, "-r").empty()) r = std::stoi(GetArgument(argc, argv, "-r"));
     if(!GetArgument(argc, argv, "-f").empty()) fps = std::stoi(GetArgument(argc, argv, "-f"));
-    if(!GetArgument(argc, argv, "-x").empty()) exp = std::stof(GetArgument(argc, argv, "-x"));
+    if(!GetArgument(argc, argv, "-x").empty()) exposure = std::stof(GetArgument(argc, argv, "-x"));
     if(!GetArgument(argc, argv, "-i").empty()) blurIterations = std::stof(GetArgument(argc, argv, "-i"));
     if(!GetArgument(argc, argv, "-n").empty()) bloomStrength = std::stof(GetArgument(argc, argv, "-n"));
     if(!GetArgument(argc, argv, "-c").empty()) bloomResolutionScale = std::stof(GetArgument(argc, argv, "-c"));
     if(!GetArgument(argc, argv, "-o").empty()) out = GetArgument(argc, argv, "-o");
     if(!GetArgument(argc, argv, "-e").empty()) env = GetArgument(argc, argv, "-e");
+    if(!GetArgument(argc, argv, "-l").empty()) ssaoStrength = std::stof(GetArgument(argc, argv, "-l"));
+    if(!GetArgument(argc, argv, "-d").empty()) ssaoRadius = std::stof(GetArgument(argc, argv, "-r"));
 
     if(!animation.empty())
     {
@@ -161,6 +167,12 @@ int main(int argc, char* argv[])
 
     sf::Image image;
 
+    Renderer::GetInstance()->SetExposure(exposure);
+    Renderer::GetInstance()->SetBloomStrength(bloomStrength);
+    Renderer::GetInstance()->SetBlurIterations(blurIterations);
+    Renderer::GetInstance()->SetSSAOStrength(ssaoStrength);
+    Renderer::GetInstance()->SetSSAORadius(ssaoRadius);
+
     auto draw = [&]()
     {
         cam.Look();
@@ -169,42 +181,14 @@ int main(int argc, char* argv[])
 
         scene.Draw();
 
-        bool horizontal = true;
-        bool buffer = true;
-
-        if(bloomStrength > 0)
-        {
-            pingPongBuffers[0]->Bind();
-            glViewport(0, 0, pingPongBuffers[0]->GetSize().x, pingPongBuffers[0]->GetSize().y);
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
-            glDisable(GL_DEPTH_TEST);
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", true);
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
-            glEnable(GL_DEPTH_TEST);
-
-            for(int i = 0; i < blurIterations; i++)
-            {
-                pingPongBuffers[buffer]->Bind();
-                Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
-                Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
-                pingPongBuffers[!buffer]->Draw();
-                buffer = !buffer; horizontal = !horizontal;
-            }
-        }
-
         render.Bind();
         auto size = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->GetSize();
         glViewport(0, 0, size.x, size.y);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glActiveTexture(GL_TEXTURE15);
-        glBindTexture(GL_TEXTURE_2D, pingPongBuffers[buffer]->GetTexture());
+        glBindTexture(GL_TEXTURE_2D, pingPongBuffers[blurIterations % 2 == 0]->GetTexture());
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exp);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exposure);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("bloomStrength", bloomStrength);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom", 15);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);

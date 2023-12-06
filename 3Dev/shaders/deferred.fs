@@ -66,6 +66,6 @@ void main()
     gnormal = vec4(norm, 1.0);
     gemission = vec4(emission * emissionStrength, 1.0);
     gcombined = vec4(metal, rough, ao, shadowBias);
-    gmvposition = vec4(mvpos, 1.0);
+    gmvposition = vec4(mvpos, ao == 1.0 ? 1.0 : 0.0);
     gmvnormal = vec4(mvnorm, 1.0);
 }
