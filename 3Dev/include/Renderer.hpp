@@ -20,6 +20,7 @@ public:
         Forward,
         LightingPass,
         SSAO,
+        Decals,
         Skybox,
         Depth,
         Post,
@@ -36,6 +37,7 @@ public:
         Main,
         Transparency,
         SSAO,
+        DecalsGBuffer,
         BloomPingPong0,
         BloomPingPong1
     };

@@ -30,7 +30,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         auto size = fbo->GetSize();
         glViewport(0, 0, size.x, size.y);
         std::for_each(models.begin(), models.end(), [&](auto p) 
-            { if(!p.second->GetParent()) p.second->Draw(camera, lightsVector); });
+            { if(!p.second->GetParent() && GetModelName(p.second).find("decal") == std::string::npos) p.second->Draw(camera, lightsVector); });
         camera->Draw(camera, lightsVector);
         fbo->Unbind();
         return;
@@ -58,14 +58,31 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
+    std::vector<std::shared_ptr<Model>> decals;
+
     std::for_each(models.begin(), models.end(), [&](auto p) 
-        { if(!p.second->GetParent()) p.second->Draw(camera, lightsVector); });
+        { if(GetModelName(p.second).find("decal") != std::string::npos)
+            decals.push_back(p.second);
+          else if(!p.second->GetParent())
+            p.second->Draw(camera, lightsVector); });
     camera->Draw(camera, lightsVector);
 
     Renderer::GetInstance()->SSAO();
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 0));
+
+    auto decalsGBuffer = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer);
+    glViewport(0, 0, size.x, size.y);
+    decalsGBuffer->Bind();
+    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->Bind();
+    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->SetUniform1i("gposition", 0);
+
+    std::for_each(decals.begin(), decals.end(), [&](auto p) 
+        { p->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals), true);
+          if(!p->GetParent()) 
+            p->Draw(camera, lightsVector); });
+
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 1));
     glActiveTexture(GL_TEXTURE2);
@@ -76,6 +93,14 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 4));
     glActiveTexture(GL_TEXTURE15);
     glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->GetTexture());
+    glActiveTexture(GL_TEXTURE16);
+    glBindTexture(GL_TEXTURE_2D, decalsGBuffer->GetTexture(false, 0));
+    glActiveTexture(GL_TEXTURE17);
+    glBindTexture(GL_TEXTURE_2D, decalsGBuffer->GetTexture(false, 1));
+    glActiveTexture(GL_TEXTURE18);
+    glBindTexture(GL_TEXTURE_2D, decalsGBuffer->GetTexture(false, 2));
+    glActiveTexture(GL_TEXTURE19);
+    glBindTexture(GL_TEXTURE_2D, decalsGBuffer->GetTexture(false, 3));
 
     auto lightingPass = Renderer::GetInstance()->GetShader(Renderer::ShaderType::LightingPass);
     lightingPass->Bind();
@@ -87,6 +112,10 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     lightingPass->SetUniform1i("gemission", 3);
     lightingPass->SetUniform1i("gcombined", 4);
     lightingPass->SetUniform1i("ssao", 15);
+    lightingPass->SetUniform1i("decalsAlbedo", 16);
+    lightingPass->SetUniform1i("decalsNormal", 17);
+    lightingPass->SetUniform1i("decalsEmission", 18);
+    lightingPass->SetUniform1i("decalsCombined", 19);
     Material::UpdateShaderEnvironment(lightingPass);
 
     for(int i = 0; i < 64; i++)
@@ -130,7 +159,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 	}
 
     std::for_each(models.begin(), models.end(), [&](auto p)
-        { if(!p.second->GetParent()) p.second->Draw(camera, lightsVector, true); });
+        { if(!p.second->GetParent() && GetModelName(p.second).find("decal") == std::string::npos) p.second->Draw(camera, lightsVector, true); });
     camera->Draw(camera, lightsVector, true);
 
     transparency->Unbind();

@@ -13,6 +13,10 @@ uniform sampler2D gemission;
 uniform sampler2D gcombined;
 uniform sampler2D opacity;
 uniform sampler2D ssao;
+uniform sampler2D decalsAlbedo;
+uniform sampler2D decalsNormal;
+uniform sampler2D decalsEmission;
+uniform sampler2D decalsCombined;
 uniform samplerCube irradiance;
 uniform samplerCube prefilteredMap;
 uniform sampler2D lut;
@@ -142,11 +146,25 @@ void main()
 {
     pos = texture(gposition, coord).xyz;
     vec4 albedo = texture(galbedo, coord);
+    
+    vec4 decalsAlbedo = texture(decalsAlbedo, coord);
     vec3 alb = albedo.xyz;
+    if(length(decalsAlbedo.xyz) > 0.0)
+        alb = mix(alb, decalsAlbedo.xyz, decalsAlbedo.w);
     float alpha = albedo.w;
-    norm = texture(gnormal, coord).xyz;
+    
+    norm = texture(decalsNormal, coord).xyz;
+    if(length(norm) <= 0.0)
+        norm = texture(gnormal, coord).xyz;
+
+    vec3 decalsEmission = texture(decalsEmission, coord).xyz;
     vec3 emission = texture(gemission, coord).xyz;
-    vec4 combined = texture(gcombined, coord);
+    if(length(decalsEmission.xyz) > 0.0)
+        emission = mix(emission, decalsEmission.xyz, 0.5);
+
+    /*vec4 combined = texture(decalsCombined, coord);
+    if(length(combined) == 0.0)*/
+        vec4 combined = texture(gcombined, coord);
 
     float metal = combined.x;
     float rough = combined.y;

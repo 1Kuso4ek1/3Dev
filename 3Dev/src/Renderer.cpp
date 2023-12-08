@@ -24,6 +24,7 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     shaders[ShaderType::Forward] = std::make_shared<Shader>(shadersDir + "vertex.vs", shadersDir + "forward.fs");
     shaders[ShaderType::LightingPass] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "fragment.fs");
     shaders[ShaderType::SSAO] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "ssao.fs");
+    shaders[ShaderType::Decals] = std::make_shared<Shader>(shadersDir + "decals.vs", shadersDir + "decals.fs");
     shaders[ShaderType::Skybox] = std::make_shared<Shader>(shadersDir + "skybox.vs", shadersDir + "skybox.fs");
     shaders[ShaderType::Depth] = std::make_shared<Shader>(shadersDir + "depth.vs", shadersDir + "depth.fs");
     shaders[ShaderType::Post] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "post.fs");
@@ -34,6 +35,7 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     shaders[ShaderType::Bloom] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "bloom.fs");
 
     framebuffers[FramebufferType::GBuffer] = std::make_shared<Framebuffer>(shaders[ShaderType::LightingPass].get(), fbSize.x, fbSize.y, false, true, 7, GL_LINEAR);
+    framebuffers[FramebufferType::DecalsGBuffer] = std::make_shared<Framebuffer>(nullptr, fbSize.x, fbSize.y, false, true, 4, GL_LINEAR);
 
     framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y, false, false);
     framebuffers[FramebufferType::Transparency] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);
