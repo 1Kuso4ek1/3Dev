@@ -36,10 +36,7 @@ layout (location = 6) out vec4 gmvnormal;
 
 void main()
 {
-    float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity);
-    float w = texture(albedo, coord).w;
-    if(w != alpha && w != 1.0)
-    	alpha = w;
+    float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity) * texture(albedo, coord).w;
     
     if(alpha < 1.0) return;
 

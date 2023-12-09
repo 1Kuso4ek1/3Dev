@@ -36,7 +36,7 @@ void main()
 
     vec4 pos = invModel * vec4(texture(gposition, uv).xyz, 1.0);
     vec3 bounds = 1.0 - abs(pos.xyz);
-    if(bounds.x <= 0.0 || bounds.y <= 0.0 || bounds.z <= 0.0)
+    if(bounds.x < 0.0 || bounds.y < 0.0 || bounds.z < 0.0)
         discard;
 
     vec2 decalUv = pos.xz * 0.5 + 0.5;

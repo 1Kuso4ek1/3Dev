@@ -34,8 +34,8 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     shaders[ShaderType::BRDF] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "brdf.fs");
     shaders[ShaderType::Bloom] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "bloom.fs");
 
-    framebuffers[FramebufferType::GBuffer] = std::make_shared<Framebuffer>(shaders[ShaderType::LightingPass].get(), fbSize.x, fbSize.y, false, true, 7, GL_LINEAR);
-    framebuffers[FramebufferType::DecalsGBuffer] = std::make_shared<Framebuffer>(nullptr, fbSize.x, fbSize.y, false, true, 4, GL_LINEAR);
+    framebuffers[FramebufferType::GBuffer] = std::make_shared<Framebuffer>(shaders[ShaderType::LightingPass].get(), fbSize.x, fbSize.y, false, true, 7, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGBA32F, GL_RGBA);
+    framebuffers[FramebufferType::DecalsGBuffer] = std::make_shared<Framebuffer>(nullptr, fbSize.x, fbSize.y, false, false, 4, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGBA32F, GL_RGBA);
 
     framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y, false, false);
     framebuffers[FramebufferType::Transparency] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y);

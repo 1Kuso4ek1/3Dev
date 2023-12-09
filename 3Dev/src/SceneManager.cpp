@@ -78,10 +78,12 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->Bind();
     Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->SetUniform1i("gposition", 0);
 
+    glDepthMask(GL_FALSE);
     std::for_each(decals.begin(), decals.end(), [&](auto p) 
         { p->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals), true);
           if(!p->GetParent()) 
             p->Draw(camera, lightsVector); });
+    glDepthMask(true);
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 1));
