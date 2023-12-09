@@ -32,39 +32,25 @@ layout (location = 3) out vec4 gcombined;
 
 void main()
 {
-    float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity);
-    float w = texture(albedo, coord).w;
-    if(w != alpha && w != 1.0)
-    	alpha = w;
-
     vec2 uv = (mpos.xy / mpos.w) * 0.5 + 0.5;
 
     vec4 pos = invModel * vec4(texture(gposition, uv).xyz, 1.0);
     vec3 bounds = 1.0 - abs(pos.xyz);
-    if(bounds.x <= 0.0 || bounds.y <= 0.0 || bounds.z <= 0.0 || alpha == 0.0)
+    if(bounds.x <= 0.0 || bounds.y <= 0.0 || bounds.z <= 0.0)
         discard;
-
-    vec3 emission = (nemission.x < 0.0 ? texture(emission, coord).xyz : nemission);
-    float rough = (nroughness < 0.0 ? texture(roughness, coord).x : nroughness);
-    float metal = (nmetalness < 0.0 ? texture(metalness, coord).x : nmetalness);
-    float ao = (nao ? texture(ao, coord).x : 1.0);
 
     vec2 decalUv = pos.xz * 0.5 + 0.5;
     decalUv.x = 1.0 - decalUv.x;
 
-    vec3 norm;
-    /*if(nnormalMap)
-    {
-        vec3 dx = texture(gposition, decalUv).xyz - texture(gposition, decalUv + vec2(0.1, 0.0)).xyz;
-        vec3 dy = texture(gposition, decalUv).xyz - texture(gposition, decalUv + vec2(0.0, 0.1)).xyz;
+    vec3 emission = (nemission.x < 0.0 ? texture(emission, decalUv).xyz : nemission);
+    float rough = (nroughness < 0.0 ? texture(roughness, decalUv).x : nroughness);
+    float metal = (nmetalness < 0.0 ? texture(metalness, decalUv).x : nmetalness);
+    float ao = (nao ? texture(ao, decalUv).x : 1.0);
+    float alpha = (nopacity < 0.0 ? texture(opacity, decalUv).x : nopacity) * texture(albedo, decalUv).w;
 
-        mat3 tbn = mat3(normalize(dx), normalize(dy), normalize(cross(dx, dy)));
-        
-        norm = normalize(tbn * normalize(texture(normalMap, decalUv).xyz * 2.0 - 1.0));
-    }
-    else */norm = vec3(0.0);
+    vec3 norm = vec3(0.0);
 
-    galbedo = vec4(nalbedo.x < 0.0 ? texture(albedo, decalUv).xyz : nalbedo, texture(albedo, decalUv).w);
+    galbedo = vec4(nalbedo.x < 0.0 ? texture(albedo, decalUv).xyz : nalbedo, alpha);
     gnormal = vec4(norm, 1.0);
     gemission = vec4(emission * emissionStrength, 1.0);
     gcombined = vec4(metal, rough, ao, shadowBias);

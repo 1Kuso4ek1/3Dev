@@ -162,9 +162,9 @@ void main()
     if(length(decalsEmission.xyz) > 0.0)
         emission = mix(emission, decalsEmission.xyz, 0.5);
 
-    /*vec4 combined = texture(decalsCombined, coord);
-    if(length(combined) == 0.0)*/
-        vec4 combined = texture(gcombined, coord);
+    vec4 combined = texture(decalsCombined, coord);
+    if(length(combined) == 0.0)
+        combined = texture(gcombined, coord);
 
     float metal = combined.x;
     float rough = combined.y;
