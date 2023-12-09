@@ -66,12 +66,14 @@ int main(int argc, char* argv[])
                   << "  -n <float>        Bloom strength (0.3 is default)" << std::endl
                   << "  -c <float>        Bloom resolution scale (10 is default)" << std::endl
                   << "  -r <float>        SSAO strength (2.0 is default)" << std::endl
-                  << "  -d <float>        SSAO radius (0.5 is default)" << std::endl;
+                  << "  -d <float>        SSAO radius (0.5 is default)" << std::endl
+                  << "  -m <int>          SSAO samples (64 is default)" << std::endl;
         return 0;
     }
 
     uint32_t w = 1280, h = 720, b = 256, r = 4096, fps = 30;
     int blurIterations = 8;
+    int ssaoSamples = 64;
     float bloomStrength = 0.3;
     float exposure = 1.0;
     float ssaoStrength = 2.0;
@@ -102,7 +104,8 @@ int main(int argc, char* argv[])
     if(!GetArgument(argc, argv, "-o").empty()) out = GetArgument(argc, argv, "-o");
     if(!GetArgument(argc, argv, "-e").empty()) env = GetArgument(argc, argv, "-e");
     if(!GetArgument(argc, argv, "-l").empty()) ssaoStrength = std::stof(GetArgument(argc, argv, "-l"));
-    if(!GetArgument(argc, argv, "-d").empty()) ssaoRadius = std::stof(GetArgument(argc, argv, "-r"));
+    if(!GetArgument(argc, argv, "-d").empty()) ssaoRadius = std::stof(GetArgument(argc, argv, "-d"));
+    if(!GetArgument(argc, argv, "-m").empty()) ssaoSamples = std::stof(GetArgument(argc, argv, "-m"));
 
     if(!animation.empty())
     {
@@ -119,6 +122,7 @@ int main(int argc, char* argv[])
 
     engine.Init();
 
+    Renderer::GetInstance()->SetSSAOSamples(ssaoSamples);
     Renderer::GetInstance()->Init({ w, h }, env, b, 128, b, bloomResolutionScale);
 
     Camera cam({ w, h });
