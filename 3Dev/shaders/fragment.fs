@@ -156,16 +156,16 @@ void main()
     float alpha = albedo.w;
     
     norm = texture(decalsNormal, coord).xyz;
-    if(length(norm) <= 0.0)
+    if(length(norm) <= 0.0 || decalsAlbedo.w < 0.1)
         norm = texture(gnormal, coord).xyz;
 
     vec3 decalsEmission = texture(decalsEmission, coord).xyz;
     vec3 emission = texture(gemission, coord).xyz;
-    if(length(decalsEmission.xyz) > 0.0)
+    if(length(decalsEmission.xyz) > 0.0 && decalsAlbedo.w > 0.0)
         emission = mix(emission, decalsEmission.xyz, 0.5);
 
     vec4 combined = texture(decalsCombined, coord);
-    if(length(combined) == 0.0)
+    if(length(combined) == 0.0 || decalsAlbedo.w < 0.1)
         combined = texture(gcombined, coord);
 
     float metal = combined.x;
