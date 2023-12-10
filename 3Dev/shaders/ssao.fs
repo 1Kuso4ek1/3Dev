@@ -20,7 +20,7 @@ out float color;
 
 void main()
 {
-    if(texture(gposition, coord).w < 1.0 || strength == 0.0)
+    if(texture(gposition, coord).w < 1.0)
     {
         color = 1.0;
         return;

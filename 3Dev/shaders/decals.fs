@@ -49,6 +49,16 @@ void main()
     float alpha = (nopacity < 0.0 ? texture(opacity, decalUv).x : nopacity) * texture(albedo, decalUv).w;
 
     vec3 norm = vec3(0.0);
+    if(nnormalMap)
+    {
+        vec3 posdx = pos.xyz - (invModel * vec4(texture(gposition, uv + vec2(0.00001, 0.0)).xyz, 1.0)).xyz;
+        vec3 posdy = pos.xyz - (invModel * vec4(texture(gposition, uv + vec2(0.0, 0.00001)).xyz, 1.0)).xyz;
+
+        vec3 normal = normalize(cross(posdx, posdy));
+        mat3 tbn = mat3(normalize(posdx), normalize(posdy), normal);
+
+        norm = normalize(tbn * normalize(texture(normalMap, decalUv).xyz * 2.0 - 1.0));
+    }
 
     galbedo = vec4(nalbedo.x < 0.0 ? texture(albedo, decalUv).xyz : nalbedo, alpha);
     gnormal = vec4(norm, 1.0);
