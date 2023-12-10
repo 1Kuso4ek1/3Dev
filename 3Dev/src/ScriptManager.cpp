@@ -47,6 +47,8 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     AddFunction("float radians(float)", WRAP_FN(glm::radians<float>));
     AddFunction("float degrees(float)", WRAP_FN(glm::degrees<float>));
 
+    AddFunction("Quaternion LookAt(const Vector3& in, const Vector3& in, const Vector3& in)", WRAP_FN(LookAt));
+
     SetDefaultNamespace("Log");
     AddEnum("Type", { "Critical", "Error", "Warning", "Info" });
     AddFunction("void Write(string, int = Info)", WRAP_FN(Log::Write));
@@ -217,7 +219,10 @@ void ScriptManager::RegisterVector3()
 {
     AddValueType("Vector3", sizeof(rp3d::Vector3), asGetTypeTraits<rp3d::Vector3>(),
     {
+        { "void normalize()", WRAP_MFN(rp3d::Vector3, normalize) },
         { "float length() const", WRAP_MFN(rp3d::Vector3, length) },
+        { "float dot(const Vector3& in) const", WRAP_MFN(rp3d::Vector3, dot) },
+        { "Vector3 cross(const Vector3& in) const", WRAP_MFN(rp3d::Vector3, cross) },
         { "string to_string()", WRAP_MFN(rp3d::Vector3, to_string) },
         { "Vector3& opAssign(const Vector3& in)", WRAP_MFN_PR(rp3d::Vector3, operator=, (const rp3d::Vector3&), rp3d::Vector3&) },
         { "Vector3& opAddAssign(const Vector3& in)", WRAP_MFN_PR(rp3d::Vector3, operator+=, (const rp3d::Vector3&), rp3d::Vector3&) },

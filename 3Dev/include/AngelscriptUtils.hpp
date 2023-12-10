@@ -242,3 +242,10 @@ static bool ChangeListViewItem(size_t index, const CScriptArray& array, tgui::Li
         data.push_back(*(std::string*)(array.At(i)));
     return listView->changeItem(index, data);
 }
+
+static rp3d::Quaternion LookAt(const rp3d::Vector3& eye, const rp3d::Vector3& center, const rp3d::Vector3& up)
+{
+    auto q = glm::conjugate(glm::toQuat(glm::lookAt(toglm(eye), toglm(center), toglm(up))));
+
+    return rp3d::Quaternion(q.x, q.y, q.z, q.w);
+}
