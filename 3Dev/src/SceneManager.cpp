@@ -30,8 +30,11 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         auto size = fbo->GetSize();
         glViewport(0, 0, size.x, size.y);
         std::for_each(models.begin(), models.end(), [&](auto p) 
-            { if(!p.second->GetParent() && GetModelName(p.second).find("decal") == std::string::npos) p.second->Draw(camera, lightsVector); });
-        camera->Draw(camera, lightsVector);
+            { p.second->SetIsMaterialsEnabled(false);
+              if(GetModelName(p.second).find("decal") == std::string::npos)
+                  p.second->Draw(camera, lightsVector);
+              p.second->SetIsMaterialsEnabled(true);
+            });
         fbo->Unbind();
         return;
     }
@@ -63,9 +66,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     std::for_each(models.begin(), models.end(), [&](auto p) 
         { if(GetModelName(p.second).find("decal") != std::string::npos)
             decals.push_back(p.second);
-          else if(!p.second->GetParent())
+          else// if(!p.second->GetParent())
             p.second->Draw(camera, lightsVector); });
-    camera->Draw(camera, lightsVector);
 
     if(Renderer::GetInstance()->GetSSAOStrength() > 0.0)
         Renderer::GetInstance()->SSAO();
@@ -84,7 +86,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         glDepthMask(GL_FALSE);
         std::for_each(decals.begin(), decals.end(), [&](auto p) 
             { p->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals), true);
-            if(!p->GetParent()) 
+            //if(!p->GetParent()) 
                 p->Draw(camera, lightsVector); });
         glDepthMask(true);
     }
@@ -166,8 +168,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 	}
 
     std::for_each(models.begin(), models.end(), [&](auto p)
-        { if(!p.second->GetParent() && GetModelName(p.second).find("decal") == std::string::npos) p.second->Draw(camera, lightsVector, true); });
-    camera->Draw(camera, lightsVector, true);
+        { if(GetModelName(p.second).find("decal") == std::string::npos) p.second->Draw(camera, lightsVector, true); });
 
     transparency->Unbind();
     glEnable(GL_CULL_FACE);

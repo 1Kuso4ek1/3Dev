@@ -39,6 +39,7 @@ public:
 	void SetFilename(const std::string& filename);
 	void SetIsDrawable(bool drawable);
 	void SetIsLoadingImmediatelly(bool imm);
+	void SetIsMaterialsEnabled(bool materialsEnabled);
 	void SetShadowBias(float bias);
 	void AddChild(Node* child) override;
 	void DefaultPose();
@@ -99,7 +100,7 @@ private:
 
 	bool ProcessBone(aiNode* node, std::shared_ptr<Bone>& out);
 
-	bool drawable = true, immLoad = true, loaded = false;
+	bool drawable = true, immLoad = true, loaded = false, materialsEnabled = true;
 
 	float shadowBias = 0.0000001;
 

@@ -190,7 +190,8 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
         for(unsigned int mesh = 0; mesh < meshes.size(); mesh++)
         {
             shader->Bind();
-            mat[mesh]->UpdateShader(shader);
+			if(materialsEnabled)
+            	mat[mesh]->UpdateShader(shader);
 			if(transparencyPass)
 			{
 				for(int i = 0; i < 64; i++)
@@ -211,15 +212,16 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
             m->UpdateShader(shader);
 
             meshes[mesh]->Draw();
-
-            mat[mesh]->ResetShader(shader);
+			
+			if(materialsEnabled)
+            	mat[mesh]->ResetShader(shader);
         }
     }
 
 	m->PopMatrix();
 
-	for(auto i : children)
-		i->Draw(cam, lights, transparencyPass);
+	/*for(auto i : children)
+		i->Draw(cam, lights, transparencyPass);*/
 
 	tempShader = nullptr;
 }
@@ -339,6 +341,11 @@ void Model::SetIsDrawable(bool drawable)
 void Model::SetIsLoadingImmediatelly(bool imm)
 {
 	immLoad = imm;
+}
+
+void Model::SetIsMaterialsEnabled(bool materialsEnabled)
+{
+	this->materialsEnabled = materialsEnabled;
 }
 
 void Model::SetShadowBias(float bias)

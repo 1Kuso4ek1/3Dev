@@ -142,7 +142,7 @@ void Material::ResetShader(Shader* shader)
 	shader->SetUniform1i("ao", 0);
 	shader->SetUniform1f("nmetalness", 0);
 	shader->SetUniform1i("metalness", 0);
-	shader->SetUniform1f("nemission", 0);
+	shader->SetUniform3f("nemission", 0, 0, 0);
 	shader->SetUniform1i("emission", 0);
 	shader->SetUniform1f("nroughness", 0);
 	shader->SetUniform1i("roughness", 0);

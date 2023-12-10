@@ -4,7 +4,7 @@ precision mediump float;
 const float pi = 3.14159265;
 
 uniform samplerCube cubemap;
-uniform uint samples = 1024u;
+uniform int samples = 1024;
 uniform float roughness = 0.05;
 
 in vec3 coord;
@@ -28,7 +28,7 @@ float GGX(float ndoth)
     return pow(roughness, 4.0) / dn;
 }
 
-vec2 Hammersley(uint i, uint n)
+vec2 Hammersley(int i, uint n)
 {
     return vec2(float(i) / float(n), RadicalInverse(i));
 }  
@@ -61,7 +61,7 @@ void main()
 
     float size = float(textureSize(cubemap, 0));
 
-    for(uint i = 0u; i < samples; i++)
+    for(int i = 0; i < samples; i++)
     {
         vec2 xi = Hammersley(i, samples);
         vec3 h  = ImportanceSample(xi, n);
