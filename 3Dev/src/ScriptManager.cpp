@@ -292,6 +292,7 @@ void ScriptManager::RegisterModel()
         { "void SetMaterial(Material@, uint32 = 0)", WRAP_MFN(Model, SetMaterialSlot) },
         { "void SetPhysicsManager(PhysicsManager@)", WRAP_MFN(Model, SetPhysicsManager) },
         { "void SetShader(Shader@, bool = false)", WRAP_MFN(Model, SetShader) },
+        { "void SetFilename(const string& in)", WRAP_MFN(Model, SetFilename) },
         { "void SetIsDrawable(bool)", WRAP_MFN(Model, SetIsDrawable) },
         { "void SetShadowBias(float)", WRAP_MFN(Model, SetShadowBias) },
         { "void DefaultPose()", WRAP_MFN(Model, DefaultPose) },

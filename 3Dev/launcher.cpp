@@ -37,7 +37,7 @@ int main()
                                   cfg["renderer"]["skyboxSideSize"].asInt(),
                                   cfg["renderer"]["irradianceSideSize"].asInt(),
                                   cfg["renderer"]["prefilteredSideSize"].asInt(),
-                                  bloomResolutionScale);
+                                  bloomResolutionScale, cfg["renderer"]["useRGBA16F"].asBool());
 
     Camera cam(&engine.GetWindow(), { 0, 0, 0 });
 

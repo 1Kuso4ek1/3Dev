@@ -25,6 +25,8 @@ uniform vec3 nirradiance;
 
 uniform mat4 lspace[maxShadows];
 
+uniform bool ssaoEnabled;
+
 in vec2 coord;
 uniform vec3 campos;
 
@@ -168,7 +170,7 @@ void main()
 
     float metal = combined.x;
     float rough = combined.y;
-    float ao = combined.z == 1.0 ? texture(ssao, coord).r : combined.z;
+    float ao = combined.z == 1.0 && ssaoEnabled ? texture(ssao, coord).r : combined.z;
     float shadowBias = combined.w;
     
     vec3 irr = (nirradiance.x < 0.0 ? texture(irradiance, norm).xyz : nirradiance);

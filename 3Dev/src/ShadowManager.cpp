@@ -6,7 +6,7 @@ ShadowManager::ShadowManager(SceneManager* scene, glm::ivec2 size, Shader* depth
     if(depthShader) this->depthShader = depthShader;
 
     glEnable(GL_CULL_FACE);
-    glPolygonOffset(-1.4, 0.0);
+    glPolygonOffset(-1.0, 0.0);
 
     for(int i = 0; i < (lights.size() > 8 ? 8 : lights.size()); i++)
         depthBuffers.emplace_back(std::make_unique<Framebuffer>(nullptr, shadowSize.x, shadowSize.y, true, true, 1, GL_LINEAR, GL_CLAMP_TO_BORDER));

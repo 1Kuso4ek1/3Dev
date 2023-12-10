@@ -46,7 +46,8 @@ public:
     static void DeleteInstance();
 
     void Init(sf::Vector2u fbSize, const std::string& environmentMapFilename, uint32_t skyboxSideSize = 256,
-              uint32_t irradianceSideSize = 32, uint32_t prefilteredSideSize = 256, float bloomResolutionScale = 10);
+              uint32_t irradianceSideSize = 32, uint32_t prefilteredSideSize = 256, float bloomResolutionScale = 10,
+              bool useRGBA16F = false);
     void LoadEnvironment(const std::string& environmentMapFilename);
     void SetShadersDirectory(std::string dir);
 
@@ -63,6 +64,15 @@ public:
     void SSAO();
 
     void DrawFramebuffers();
+
+    float GetExposure();
+
+    float GetSSAOStrength();
+    float GetSSAORadius();
+    int GetSSAOSamples();
+    
+    float GetBloomStrength();
+    int GetBlurIterations();
 
     GLuint GetTexture(TextureType type);
     Shader* GetShader(ShaderType type);

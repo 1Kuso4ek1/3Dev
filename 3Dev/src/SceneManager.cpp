@@ -67,23 +67,27 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
             p.second->Draw(camera, lightsVector); });
     camera->Draw(camera, lightsVector);
 
-    Renderer::GetInstance()->SSAO();
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 0));
+    if(Renderer::GetInstance()->GetSSAOStrength() > 0.0)
+        Renderer::GetInstance()->SSAO();
 
     auto decalsGBuffer = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer);
-    glViewport(0, 0, size.x, size.y);
-    decalsGBuffer->Bind();
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->Bind();
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->SetUniform1i("gposition", 0);
+    if(!decals.empty())
+    {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 0));
 
-    glDepthMask(GL_FALSE);
-    std::for_each(decals.begin(), decals.end(), [&](auto p) 
-        { p->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals), true);
-          if(!p->GetParent()) 
-            p->Draw(camera, lightsVector); });
-    glDepthMask(true);
+        glViewport(0, 0, size.x, size.y);
+        decalsGBuffer->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->SetUniform1i("gposition", 0);
+
+        glDepthMask(GL_FALSE);
+        std::for_each(decals.begin(), decals.end(), [&](auto p) 
+            { p->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals), true);
+            if(!p->GetParent()) 
+                p->Draw(camera, lightsVector); });
+        glDepthMask(true);
+    }
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 1));
@@ -118,6 +122,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     lightingPass->SetUniform1i("decalsNormal", 17);
     lightingPass->SetUniform1i("decalsEmission", 18);
     lightingPass->SetUniform1i("decalsCombined", 19);
+    lightingPass->SetUniform1i("ssaoEnabled", Renderer::GetInstance()->GetSSAOStrength() > 0.0);
     Material::UpdateShaderEnvironment(lightingPass);
 
     for(int i = 0; i < 64; i++)
