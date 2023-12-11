@@ -16,7 +16,7 @@
 - Good animation system
 - Skeletal animations support
 - HDR
-- Post-processing: ACES tonemapping, FXAA, Physically based bloom
+- Post-processing: ACES tonemapping, FXAA, Physically based bloom, SSAO, Deferred decals
 - Shadow mapping
 - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
 - 3D audio

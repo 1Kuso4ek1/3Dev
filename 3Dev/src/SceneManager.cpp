@@ -82,6 +82,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         decalsGBuffer->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->SetUniform1i("gposition", 0);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->SetUniformMatrix4("invView", glm::inverse(Renderer::GetInstance()->GetMatrices()->GetView()));
 
         glDepthMask(GL_FALSE);
         std::for_each(decals.begin(), decals.end(), [&](auto p) 
@@ -125,6 +126,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     lightingPass->SetUniform1i("decalsEmission", 18);
     lightingPass->SetUniform1i("decalsCombined", 19);
     lightingPass->SetUniform1i("ssaoEnabled", Renderer::GetInstance()->GetSSAOStrength() > 0.0);
+    lightingPass->SetUniformMatrix4("invView", glm::inverse(Renderer::GetInstance()->GetMatrices()->GetView()));
     Material::UpdateShaderEnvironment(lightingPass);
 
     for(int i = 0; i < 64; i++)

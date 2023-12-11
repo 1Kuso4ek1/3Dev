@@ -34,7 +34,7 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     shaders[ShaderType::BRDF] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "brdf.fs");
     shaders[ShaderType::Bloom] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "bloom.fs");
 
-    framebuffers[FramebufferType::GBuffer] = std::make_shared<Framebuffer>(shaders[ShaderType::LightingPass].get(), fbSize.x, fbSize.y, false, true, 7, GL_LINEAR, GL_CLAMP_TO_EDGE, useRGBA16F ? GL_RGBA16F : GL_RGBA32F, GL_RGBA);
+    framebuffers[FramebufferType::GBuffer] = std::make_shared<Framebuffer>(shaders[ShaderType::LightingPass].get(), fbSize.x, fbSize.y, false, true, 5, GL_LINEAR, GL_CLAMP_TO_EDGE, useRGBA16F ? GL_RGBA16F : GL_RGBA32F, GL_RGBA);
     framebuffers[FramebufferType::DecalsGBuffer] = std::make_shared<Framebuffer>(nullptr, fbSize.x, fbSize.y, false, false, 4, GL_LINEAR, GL_CLAMP_TO_EDGE, useRGBA16F ? GL_RGBA16F : GL_RGBA32F, GL_RGBA);
 
     framebuffers[FramebufferType::Main] = std::make_shared<Framebuffer>(shaders[ShaderType::Post].get(), fbSize.x, fbSize.y, false, false);
@@ -184,9 +184,9 @@ void Renderer::SSAO()
     framebuffers[FramebufferType::SSAO]->Bind();
     glViewport(0, 0, framebuffers[FramebufferType::SSAO]->GetSize().x, framebuffers[FramebufferType::SSAO]->GetSize().y);
     glActiveTexture(GL_TEXTURE15);
-    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 5));
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 0));
     glActiveTexture(GL_TEXTURE16);
-    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 6));
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 2));
     glActiveTexture(GL_TEXTURE17);
     glBindTexture(GL_TEXTURE_2D, textures[Renderer::TextureType::Noise]);
     shaders[ShaderType::SSAO]->Bind();

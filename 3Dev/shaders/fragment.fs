@@ -24,6 +24,7 @@ uniform sampler2D lut;
 uniform vec3 nirradiance;
 
 uniform mat4 lspace[maxShadows];
+uniform mat4 invView;
 
 uniform bool ssaoEnabled;
 
@@ -146,7 +147,7 @@ vec3 CalcLight(Light light, float rough, float metal, vec3 albedo, vec3 irr, vec
 
 void main()
 {
-    pos = texture(gposition, coord).xyz;
+    pos = (invView * texture(gposition, coord)).xyz;
     vec4 albedo = texture(galbedo, coord);
     
     vec4 decalsAlbedo = texture(decalsAlbedo, coord);
@@ -157,7 +158,7 @@ void main()
     
     norm = texture(decalsNormal, coord).xyz;
     if(length(norm) <= 0.0 || decalsAlbedo.w < 0.1)
-        norm = texture(gnormal, coord).xyz;
+        norm = mat3(invView) * texture(gnormal, coord).xyz;
 
     vec3 decalsEmission = texture(decalsEmission, coord).xyz;
     vec3 emission = texture(gemission, coord).xyz;
