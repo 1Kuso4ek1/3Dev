@@ -29,6 +29,7 @@ uniform vec3 nirradiance;
 uniform bool drawTransparency = false;
 uniform float emissionStrength = 1.0;
 uniform float shadowBias;
+uniform mat4 invView;
 
 in vec2 coord;
 in vec3 camposout;
@@ -62,6 +63,8 @@ struct Light
 
 uniform Light lights[maxLights];
 uniform Shadow shadows[maxShadows];
+
+vec3 pos;
 
 float CalcShadow()
 {
@@ -111,15 +114,15 @@ vec3 FresnelSchlick(float cosTh, vec3 f0, float rough)
 
 vec3 CalcLight(Light light, vec3 norm, float rough, float metal, vec3 albedo, vec3 irr, vec3 f0)
 {
-    float theta = dot(normalize(light.position - mpos), normalize(-light.direction));
+    float theta = dot(normalize(light.position - pos), normalize(-light.direction));
     float intensity = 1.0;
     if(light.cutoff != 1.0)
         intensity = clamp((theta - light.outerCutoff) / (light.cutoff - light.outerCutoff), 0.0, 1.0);
     if(theta < light.cutoff && intensity <= 0.0) return vec3(0.0);
 
-    vec3 v = normalize(camposout - mpos);
+    vec3 v = normalize(camposout - pos);
 
-    vec3 l = (light.cutoff == 1.0 ? normalize(light.position - mpos) : normalize(-light.direction));
+    vec3 l = (light.cutoff == 1.0 ? normalize(light.position - pos) : normalize(-light.direction));
     vec3 h = normalize(v + l);
 
     float attenuation = 1.0 / (light.attenuation.x + light.attenuation.y * length(l) + light.attenuation.z * pow(length(l), 2));
@@ -150,16 +153,15 @@ vec3 CalcLight(Light light, vec3 norm, float rough, float metal, vec3 albedo, ve
 
 void main()
 {
-    float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity);
-    float w = texture(albedo, coord).w;
-    if(w != alpha && w != 1.0)
-    	alpha = w;
+    float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity) * texture(albedo, coord).w;
 
     if((drawTransparency && alpha >= 1.0) || (!drawTransparency && alpha < 1.0)) discard;
 
     vec3 norm;
-    if(nnormalMap) norm = normalize(tbn * normalize(texture(normalMap, coord).xyz * 2.0 - 1.0));
-    else norm = normalize(mnormal);
+    if(nnormalMap) norm = mat3(invView) * normalize(tbn * normalize(texture(normalMap, coord).xyz * 2.0 - 1.0));
+    else norm = mat3(invView) * normalize(mnormal);
+
+    pos = (invView * vec4(mpos, 1.0)).xyz;
 
     vec3 emission = (nemission.x < 0.0 ? texture(emission, coord).xyz : nemission);
     float rough = (nroughness < 0.0 ? texture(roughness, coord).x : nroughness);
@@ -167,7 +169,7 @@ void main()
     float ao = (nao ? texture(ao, coord).x : 1.0);
     vec3 alb = (nalbedo.x < 0.0 ? texture(albedo, coord).xyz : nalbedo);
     vec3 irr = (nirradiance.x < 0.0 ? texture(irradiance, norm).xyz : nirradiance);
-    vec3 prefiltered = textureLod(prefilteredMap, reflect(-normalize(camposout - mpos), norm), rough * maxLodLevel).xyz;
+    vec3 prefiltered = textureLod(prefilteredMap, reflect(-normalize(camposout - pos), norm), rough * maxLodLevel).xyz;
 
     vec3 total = vec3(0.0), totalNoShadow = vec3(0.0);
     float shadow = 0.0;
@@ -182,11 +184,11 @@ void main()
     }
     shadow = CalcShadow();
 
-    vec3 f = FresnelSchlick(max(dot(norm, normalize(camposout - mpos)), 0.0), f0, rough);
+    vec3 f = FresnelSchlick(max(dot(norm, normalize(camposout - pos)), 0.0), f0, rough);
     vec3 kspc = f;
     vec3 kdif = (1.0 - kspc) * (1.0 - metal);
 
-    vec2 brdf = normalize(texture(lut, vec2(max(dot(norm, normalize(camposout - mpos)), 0.0), rough)).xy);
+    vec2 brdf = normalize(texture(lut, vec2(max(dot(norm, normalize(camposout - pos)), 0.0), rough)).xy);
     vec3 spc = prefiltered * (f * brdf.x + brdf.y);
 
     vec3 diffuse = irr * alb;

@@ -72,6 +72,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     if(Renderer::GetInstance()->GetSSAOStrength() > 0.0)
         Renderer::GetInstance()->SSAO();
 
+    auto invView = glm::inverse(Renderer::GetInstance()->GetMatrices()->GetView());
+
     auto decalsGBuffer = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer);
     if(!decals.empty())
     {
@@ -82,7 +84,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         decalsGBuffer->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->SetUniform1i("gposition", 0);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->SetUniformMatrix4("invView", glm::inverse(Renderer::GetInstance()->GetMatrices()->GetView()));
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->SetUniformMatrix4("invView", invView);
 
         glDepthMask(GL_FALSE);
         std::for_each(decals.begin(), decals.end(), [&](auto p) 
@@ -168,6 +170,9 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+
+    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->Bind();
+    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->SetUniformMatrix4("invView", invView);
 
     std::for_each(models.begin(), models.end(), [&](auto p)
         { if(GetModelName(p.second).find("decal") == std::string::npos) p.second->Draw(camera, lightsVector, true); });
