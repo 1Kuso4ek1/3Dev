@@ -151,9 +151,7 @@ void main()
     vec4 albedo = texture(galbedo, coord);
     
     vec4 decalsAlbedo = texture(decalsAlbedo, coord);
-    vec3 alb = albedo.xyz;
-    if(length(decalsAlbedo.xyz) > 0.0)
-        alb = mix(alb, decalsAlbedo.xyz, decalsAlbedo.w);
+    vec3 alb = mix(albedo.xyz, decalsAlbedo.xyz, decalsAlbedo.w);
     float alpha = albedo.w;
     
     norm = texture(decalsNormal, coord).xyz;
@@ -162,8 +160,7 @@ void main()
 
     vec3 decalsEmission = texture(decalsEmission, coord).xyz;
     vec3 emission = texture(gemission, coord).xyz;
-    if(length(decalsEmission.xyz) > 0.0 && decalsAlbedo.w > 0.0)
-        emission = mix(emission, decalsEmission.xyz, 0.5);
+    emission = mix(emission, decalsEmission.xyz, decalsAlbedo.w);
 
     vec4 combined = texture(decalsCombined, coord);
     if(length(combined) == 0.0 || decalsAlbedo.w < 0.1)
