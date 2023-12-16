@@ -578,8 +578,13 @@ void SceneManager::Load(const std::string& filename, bool loadEverything)
         auto light = GetLight(data["lights"][counter]["name"].asString());
         for(auto& i : data["lights"][counter]["children"])
             light->AddChild(GetNode(i.asString()));
+        auto parent = data["lights"][counter]["parent"].asString();
         if(!data["lights"][counter]["parent"].empty())
-            light->SetParent(GetNode(data["lights"][counter]["parent"].asString()));
+        {
+            light->SetParent(GetNode(parent));
+            if(bones.find(parent) != bones.end())
+                GetNode(parent)->AddChild(light);
+        }
 
         counter++;
     }
@@ -587,8 +592,13 @@ void SceneManager::Load(const std::string& filename, bool loadEverything)
 
     for(auto& i : data["camera"]["children"])
         camera->AddChild(GetNode(i.asString()));
+    auto parent = data["camera"]["parent"].asString();
     if(!data["camera"]["parent"].empty())
-        camera->SetParent(GetNode(data["camera"]["parent"].asString()));
+    {
+        camera->SetParent(GetNode(parent));
+        if(bones.find(parent) != bones.end())
+            GetNode(parent)->AddChild(camera);
+    }
 
     sManager->Deserialize(data["sounds"]);
 }
