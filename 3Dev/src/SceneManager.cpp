@@ -31,7 +31,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         glViewport(0, 0, size.x, size.y);
         std::for_each(models.begin(), models.end(), [&](auto p) 
             { p.second->SetIsMaterialsEnabled(false);
-              if(GetModelName(p.second).find("decal") == std::string::npos)
+              if(ParseName(p.first).second != "decals")
                   p.second->Draw(camera, lightsVector);
               p.second->SetIsMaterialsEnabled(true);
             });
@@ -61,12 +61,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-    std::vector<std::shared_ptr<Model>> decals;
-
     std::for_each(models.begin(), models.end(), [&](auto p) 
-        { if(GetModelName(p.second).find("decal") != std::string::npos)
-            decals.push_back(p.second);
-          else// if(!p.second->GetParent())
+        { if(ParseName(p.first).second != "decals")
             p.second->Draw(camera, lightsVector); });
 
     if(Renderer::GetInstance()->GetSSAOStrength() > 0.0)
@@ -75,6 +71,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     auto invView = glm::inverse(Renderer::GetInstance()->GetMatrices()->GetView());
 
     auto decalsGBuffer = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer);
+    auto decals = modelGroups["decals"];
     if(!decals.empty())
     {
         glActiveTexture(GL_TEXTURE0);
@@ -175,7 +172,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->SetUniformMatrix4("invView", invView);
 
     std::for_each(models.begin(), models.end(), [&](auto p)
-        { if(GetModelName(p.second).find("decal") == std::string::npos) p.second->Draw(camera, lightsVector, true); });
+        { if(ParseName(p.first).second != "decals")
+            p.second->Draw(camera, lightsVector, true); });
 
     transparency->Unbind();
     glEnable(GL_CULL_FACE);

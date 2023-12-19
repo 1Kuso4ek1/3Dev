@@ -120,7 +120,7 @@ private:
 
     std::vector<std::string> temporaryModelCopies, temporaryLightCopies;
 
-    std::map<std::string, std::vector<std::shared_ptr<Model>>> modelGroups;
+    std::map<std::string, std::vector<std::shared_ptr<Model>>> modelGroups = { { "decals", {} } };
 
     std::map<std::string, Node*> nodes;
     std::map<std::string, Bone*> bones;
