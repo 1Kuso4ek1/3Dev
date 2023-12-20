@@ -1,5 +1,4 @@
 #version 450 core
-precision mediump float;
 
 const int maxLights = 64;
 const int maxShadows = 8;

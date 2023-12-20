@@ -1,5 +1,4 @@
 #version 450 core
-precision mediump float;
 
 uniform vec2 pixelsize;
 uniform sampler2D gposition;
