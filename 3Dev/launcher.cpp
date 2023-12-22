@@ -65,6 +65,8 @@ int main()
     if(scene.GetNames()[2].empty())
         scene.AddLight(&l);
 
+    std::vector<bool> varState;
+
     bool manageCameraMovement = true, manageCameraLook = true,
          manageCameraMouse = true, manageSceneRendering = true,
          updateShadows = true, mouseCursorGrabbed = true,
@@ -126,6 +128,20 @@ int main()
                                       float(event.size.height) * (guiHeight / float(event.size.height)) });
 
             engine.SetGuiViewport({ 0, 0, float(event.size.width), float(event.size.height) });
+        }
+
+        if(event.type == sf::Event::LostFocus)
+        {
+            varState = { manageCameraMovement, manageCameraLook, manageCameraMouse, manageSceneRendering, updateShadows, mouseCursorGrabbed, mouseCursorVisible };
+            engine.GetWindow().setFramerateLimit(1);
+        }
+        else if(event.type == sf::Event::GainedFocus && !varState.empty())
+        {
+            manageCameraMovement = varState[0]; manageCameraLook = varState[1];
+            manageCameraMouse = varState[2]; manageSceneRendering = varState[3];
+            updateShadows = varState[4]; mouseCursorGrabbed = varState[5];
+            mouseCursorVisible = varState[6];
+            engine.GetWindow().setFramerateLimit(cfg["window"]["maxFps"].asInt());
         }
 
         if(event.type == sf::Event::Closed) engine.Close();
