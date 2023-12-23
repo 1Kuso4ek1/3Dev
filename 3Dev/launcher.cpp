@@ -133,7 +133,8 @@ int main()
         if(event.type == sf::Event::LostFocus)
         {
             varState = { manageCameraMovement, manageCameraLook, manageCameraMouse, manageSceneRendering, updateShadows, mouseCursorGrabbed, mouseCursorVisible };
-            engine.GetWindow().setFramerateLimit(1);
+            manageCameraMouse = false; manageSceneRendering = false; updateShadows = false; mouseCursorGrabbed = false; mouseCursorVisible = true;
+            engine.GetWindow().setFramerateLimit(10);
         }
         else if(event.type == sf::Event::GainedFocus && !varState.empty())
         {
