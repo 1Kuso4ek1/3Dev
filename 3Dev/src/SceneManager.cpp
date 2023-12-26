@@ -841,26 +841,23 @@ Model* SceneManager::CloneModel(Model* model, bool isTemporary, const std::strin
 {
     auto ret = std::make_shared<Model>(model);
     AddModel(ret, name);
-    if(model->GetAnimations().empty())
+    for(auto& i : animations)
     {
-        for(auto& i : animations)
+        if(i.first.find("-" + GetModelName(model)) != std::string::npos)
         {
-            if(i.first.find("-" + GetModelName(model)) != std::string::npos)
+            auto animName = i.second->GetName().empty() ? i.first.substr(0, i.first.find_last_of("-")) : i.second->GetName();
+            animations[animName + "-" + lastAdded] = std::make_shared<Animation>(*i.second.get());
+            std::vector<std::string> kfNames;
+
+            for(auto& [name, kf] : animations[animName + "-" + lastAdded]->GetKeyframes())
+                kfNames.push_back(name);
+            for(auto& j : kfNames)
             {
-                auto animName = i.second->GetName().empty() ? i.first.substr(0, i.first.find_last_of("-")) : i.second->GetName();
-                animations[animName + "-" + lastAdded] = std::make_shared<Animation>(*i.second.get());
-                std::vector<std::string> kfNames;
-    
-                for(auto& [name, kf] : animations[animName + "-" + lastAdded]->GetKeyframes())
-                    kfNames.push_back(name);
-                for(auto& j : kfNames)
+                if(bones.find(j) != bones.end())
                 {
-                    if(bones.find(j) != bones.end())
-                    {
-                        auto n = animations[animName + "-" + lastAdded]->GetKeyframes().extract(j);
-                        n.key() = j.substr(0, j.find_last_of("-")) + "-" + lastAdded;
-                        animations[animName + "-" + lastAdded]->GetKeyframes().insert(std::move(n));
-                    }
+                    auto n = animations[animName + "-" + lastAdded]->GetKeyframes().extract(j);
+                    n.key() = j.substr(0, j.find_last_of("-")) + "-" + lastAdded;
+                    animations[animName + "-" + lastAdded]->GetKeyframes().insert(std::move(n));
                 }
             }
         }
