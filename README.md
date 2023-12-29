@@ -1,6 +1,6 @@
 # 3Dev
-![](https://img.shields.io/badge/3Dev-1.3.3-blue)
-![](https://img.shields.io/badge/3Dev_Editor-1.3.7-blue)
+![](https://img.shields.io/badge/3Dev-1.3.4-blue)
+![](https://img.shields.io/badge/3Dev_Editor-1.3.8-blue)
 ![](https://img.shields.io/badge/language-C++-green)
 ![](https://img.shields.io/github/license/1kuso4ek1/3Dev)
 ![](https://img.shields.io/github/issues/1kuso4ek1/3Dev)
@@ -16,7 +16,7 @@
 - Good animation system
 - Skeletal animations support
 - HDR
-- Post-processing: ACES tonemapping, FXAA, Physically based bloom, SSAO, Deferred decals
+- Post-processing: ACES tonemapping, FXAA, Physically based bloom, SSAO, Deferred decals, Simple Depth Of Field
 - Shadow mapping
 - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
 - 3D audio

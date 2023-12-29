@@ -14,7 +14,9 @@ uniform sampler2D frameDepth;
 uniform sampler2D transparencyDepth;
 uniform float exposure = 1.0;
 uniform float bloomStrength = 0.3;
-uniform float brightnessThreshold = 2.5;
+uniform float dofMinDistance = 1.0;
+uniform float dofMaxDistance = 1.0;
+uniform float dofFocusDistance = 1.0;
 uniform bool fxaa = true;
 uniform bool rawColor;
 uniform bool transparentBuffer;
@@ -98,7 +100,9 @@ void main()
 
     if(fxaa) color = FXAA();
 
-    color.rgb = mix(color.rgb, texture(bloom, coord).rgb, bloomStrength);
+    float depth = pow(transparentBuffer ? texture(transparencyDepth, coord).x : texture(frameDepth, coord).x, 300.0);
+    float dof = smoothstep(dofMinDistance, dofMaxDistance, abs(depth - dofFocusDistance));
+    color.rgb = mix(color.rgb, texture(bloom, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0));
 
     /*color.rgb = color.rgb / (color.rgb + vec3(1.0));
     color.rgb *= exposure;

@@ -139,6 +139,21 @@ void Renderer::SetSSAOSamples(int samples)
     this->samples = samples > 128 ? 128 : samples;
 }
 
+void Renderer::SetDOFMinDistance(float dist)
+{
+    dofMinDistance = dist;
+}
+
+void Renderer::SetDOFMaxDistance(float dist)
+{
+    dofMaxDistance = dist;
+}
+
+void Renderer::SetDOFFocusDistance(float dist)
+{
+    dofFocusDistance = dist;
+}
+
 void Renderer::SetBloomStrength(float strength)
 {
     bloomStrength = strength;
@@ -211,6 +226,9 @@ void Renderer::DrawFramebuffers()
     shaders[ShaderType::Post]->Bind();
     shaders[ShaderType::Post]->SetUniform1f("exposure", exposure);
     shaders[ShaderType::Post]->SetUniform1f("bloomStrength", bloomStrength);
+    shaders[ShaderType::Post]->SetUniform1f("dofMinDistance", dofMinDistance);
+    shaders[ShaderType::Post]->SetUniform1f("dofMaxDistance", dofMaxDistance);
+    shaders[ShaderType::Post]->SetUniform1f("dofFocusDistance", dofFocusDistance);
     shaders[ShaderType::Post]->SetUniform1i("bloom", 15);
     shaders[ShaderType::Post]->SetUniform1i("rawColor", false);
     shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);
@@ -240,6 +258,21 @@ float Renderer::GetSSAORadius()
 int Renderer::GetSSAOSamples()
 {
     return samples;
+}
+
+float Renderer::GetDOFMinDistance()
+{
+    return dofMinDistance;
+}
+
+float Renderer::GetDOFMaxDistance()
+{
+    return dofMaxDistance;
+}
+
+float Renderer::GetDOFFocusDistance()
+{
+    return dofFocusDistance;
 }
 
 float Renderer::GetBloomStrength()

@@ -676,6 +676,10 @@ int main()
     float exposure = properties["renderer"]["exposure"].asFloat();
     float bloomStrength = 0.3;
     float mouseSensitivity = 1.0;
+
+    float dofMinDistance = 1.0;
+    float dofMaxDistance = 1.0;
+    float dofFocusDistance = 1.0;
     
     float ssaoStrength = properties["renderer"]["ssaoStrength"].asFloat();
     float ssaoRadius = properties["renderer"]["ssaoRadius"].asFloat();
@@ -700,6 +704,9 @@ int main()
     scman.AddProperty("int blurIterations", &blurIterations);
     scman.AddProperty("float ssaoStrength", &ssaoStrength);
     scman.AddProperty("float ssaoRadius", &ssaoRadius);
+    scman.AddProperty("float dofMinDistance", &dofMinDistance);
+    scman.AddProperty("float dofMaxDistance", &dofMaxDistance);
+    scman.AddProperty("float dofFocusDistance", &dofFocusDistance);
     scman.SetDefaultNamespace("");
 	std::string startDecl = "void Start()", loopDecl = "void Loop()";
 
@@ -981,6 +988,8 @@ int main()
             scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString())->GetKeyframes().erase(sceneTree->getSelectedItem()[3].toStdString());
         else scene.RemoveAnimation(scene.GetAnimation(sceneTree->getSelectedItem()[2].toStdString()));
         readSceneTree();
+        if(sceneTree->getSelectedItem().size() > 3)
+            sceneTree->selectItem({ "Scene", "Animations", sceneTree->getSelectedItem()[2].toStdString() });
     });
 
     aplayButton->onPress([&]()
@@ -1888,7 +1897,7 @@ int main()
                 {
                     scene.SetAnimationName(sceneTree->getSelectedItem()[2].toStdString(), animNameEdit->getText().toStdString());
                     readSceneTree();
-                
+                    sceneTree->selectItem({ "Scene", "Animations", animNameEdit->getText() });
                     animNameEdit->setFocused(false);
                 }
 
@@ -2113,6 +2122,9 @@ int main()
         Renderer::GetInstance()->SetBlurIterations(blurIterations);
         Renderer::GetInstance()->SetSSAOStrength(ssaoStrength);
         Renderer::GetInstance()->SetSSAORadius(ssaoRadius);
+        Renderer::GetInstance()->SetDOFMinDistance(dofMinDistance);
+        Renderer::GetInstance()->SetDOFMaxDistance(dofMaxDistance);
+        Renderer::GetInstance()->SetDOFFocusDistance(dofFocusDistance);
 
 		if(engine.GetWindow().hasFocus())
             engine.GetWindow().setFramerateLimit(60);

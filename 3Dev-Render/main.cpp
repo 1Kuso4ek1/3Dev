@@ -65,9 +65,12 @@ int main(int argc, char* argv[])
                   << "  -i <int>          Blur iterations (8 is default)" << std::endl
                   << "  -n <float>        Bloom strength (0.3 is default)" << std::endl
                   << "  -c <float>        Bloom resolution scale (10 is default)" << std::endl
-                  << "  -r <float>        SSAO strength (2.0 is default)" << std::endl
+                  << "  -l <float>        SSAO strength (2.0 is default)" << std::endl
                   << "  -d <float>        SSAO radius (0.5 is default)" << std::endl
-                  << "  -m <int>          SSAO samples (64 is default)" << std::endl;
+                  << "  -m <int>          SSAO samples (64 is default)" << std::endl
+                  << "  -t <float>        DOF min distance (1.0 is default)" << std::endl
+                  << "  -g <float>        DOF max distance (1.0 is default)" << std::endl
+                  << "  -u <float>        DOF focus distance (1.0 is default)" << std::endl;
         return 0;
     }
 
@@ -79,6 +82,9 @@ int main(int argc, char* argv[])
     float ssaoStrength = 2.0;
     float ssaoRadius = 0.5;
     float bloomResolutionScale = 10.0;
+    float dofMinDistance = 1.0;
+    float dofMaxDistance = 1.0;
+    float dofFocusDistance = 1.0;
     #ifdef _WIN32
     	std::string env = std::string(getenv("HOMEPATH")) + "/.3Dev-Editor/default/hdri.hdr";
     #else
@@ -106,6 +112,9 @@ int main(int argc, char* argv[])
     if(!GetArgument(argc, argv, "-l").empty()) ssaoStrength = std::stof(GetArgument(argc, argv, "-l"));
     if(!GetArgument(argc, argv, "-d").empty()) ssaoRadius = std::stof(GetArgument(argc, argv, "-d"));
     if(!GetArgument(argc, argv, "-m").empty()) ssaoSamples = std::stof(GetArgument(argc, argv, "-m"));
+    if(!GetArgument(argc, argv, "-t").empty()) dofMinDistance = std::stof(GetArgument(argc, argv, "-t"));
+    if(!GetArgument(argc, argv, "-g").empty()) dofMaxDistance = std::stof(GetArgument(argc, argv, "-g"));
+    if(!GetArgument(argc, argv, "-u").empty()) dofFocusDistance = std::stof(GetArgument(argc, argv, "-u"));
 
     if(!animation.empty())
     {
@@ -176,6 +185,9 @@ int main(int argc, char* argv[])
     Renderer::GetInstance()->SetBlurIterations(blurIterations);
     Renderer::GetInstance()->SetSSAOStrength(ssaoStrength);
     Renderer::GetInstance()->SetSSAORadius(ssaoRadius);
+    Renderer::GetInstance()->SetDOFMinDistance(dofMinDistance);
+    Renderer::GetInstance()->SetDOFMaxDistance(dofMaxDistance);
+    Renderer::GetInstance()->SetDOFFocusDistance(dofFocusDistance);
 
     auto draw = [&]()
     {

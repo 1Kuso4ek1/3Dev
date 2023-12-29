@@ -22,6 +22,10 @@ int main()
 
     float guiWidth = cfg["gui"]["width"].asInt(), guiHeight = cfg["gui"]["height"].asInt();
     float bloomResolutionScale = cfg["renderer"]["bloomResolutionScale"].asFloat();
+    if(bloomResolutionScale <= 0) bloomResolutionScale = 10.0;
+
+    float renderResolutionScale = cfg["renderer"]["renderResolutionScale"].asFloat();
+    if(renderResolutionScale <= 0) renderResolutionScale = 1.0;
 
     engine.SetGuiView({ 0, 0, float(engine.GetWindow().getSize().x) * (guiWidth / float(engine.GetWindow().getSize().x)),
                               float(engine.GetWindow().getSize().y) * (guiHeight / float(engine.GetWindow().getSize().y)) });
@@ -76,6 +80,10 @@ int main()
     float bloomStrength = 0.3;
     float mouseSensitivity = 1.0;
 
+    float dofMinDistance = 1.0;
+    float dofMaxDistance = 1.0;
+    float dofFocusDistance = 1.0;
+
     float ssaoStrength = cfg["renderer"]["ssaoStrength"].asFloat();
     float ssaoRadius = cfg["renderer"]["ssaoRadius"].asFloat();
 
@@ -99,6 +107,9 @@ int main()
     scman.AddProperty("int blurIterations", &blurIterations);
     scman.AddProperty("float ssaoStrength", &ssaoStrength);
     scman.AddProperty("float ssaoRadius", &ssaoRadius);
+    scman.AddProperty("float dofMinDistance", &dofMinDistance);
+    scman.AddProperty("float dofMaxDistance", &dofMaxDistance);
+    scman.AddProperty("float dofFocusDistance", &dofFocusDistance);
     scman.SetDefaultNamespace("");
 
     auto scPath = cfg["scenePath"].asString();
@@ -118,6 +129,7 @@ int main()
     {
         if(event.type == sf::Event::Resized)
         {
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->Resize(event.size.width / renderResolutionScale, event.size.height / renderResolutionScale);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Resize(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Resize(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->Resize(event.size.width / 2.0, event.size.height / 2.0);
@@ -163,6 +175,9 @@ int main()
         Renderer::GetInstance()->SetBlurIterations(blurIterations);
         Renderer::GetInstance()->SetSSAOStrength(ssaoStrength);
         Renderer::GetInstance()->SetSSAORadius(ssaoRadius);
+        Renderer::GetInstance()->SetDOFMinDistance(dofMinDistance);
+        Renderer::GetInstance()->SetDOFMaxDistance(dofMaxDistance);
+        Renderer::GetInstance()->SetDOFFocusDistance(dofFocusDistance);
         
         cam.Update();
         if(manageCameraMovement) cam.Move(1);

@@ -56,6 +56,10 @@ public:
     void SetSSAOStrength(float strength);
     void SetSSAORadius(float radius);
     void SetSSAOSamples(int samples);
+
+    void SetDOFMinDistance(float dist);
+    void SetDOFMaxDistance(float dist);
+    void SetDOFFocusDistance(float dist);
     
     void SetBloomStrength(float strength);
     void SetBlurIterations(int iterations);
@@ -70,6 +74,10 @@ public:
     float GetSSAOStrength();
     float GetSSAORadius();
     int GetSSAOSamples();
+
+    float GetDOFMinDistance();
+    float GetDOFMaxDistance();
+    float GetDOFFocusDistance();
     
     float GetBloomStrength();
     int GetBlurIterations();
@@ -88,6 +96,9 @@ private:
     float ssaoStrength = 2.0;
     float ssaoRadius = 0.5;
     float bloomStrength = 0.3;
+    float dofMinDistance = 1.0;
+    float dofMaxDistance = 1.0;
+    float dofFocusDistance = 1.0;
     int blurIterations = 8;
     int samples = 64;
 
