@@ -91,7 +91,6 @@ void SoundManager::Stop(const std::string& name, int id)
     if(it != sounds.end())
     {
         it->second->stop();
-        it->second->resetBuffer();
         sounds.erase(it);
     }
 }

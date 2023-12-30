@@ -1126,7 +1126,7 @@ int main()
 
     sceneTree->onItemSelect([&]()
     {
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift))
         {
             selectedWithShift.push_back(sceneTree->getSelectedItem());
             if(selectedWithShift.size() == 2)
@@ -1325,7 +1325,7 @@ int main()
         bool focusCodeArea = false;
         if(codeArea->isFocused())
         {
-            if(Shortcut({ sf::Keyboard::Tab }, 0.1))
+            if(Shortcut({ sf::Keyboard::Key::Tab }, 0.1))
             {
                 auto pos = codeArea->getCaretPosition();
                 auto text = codeArea->getText().toStdString();
@@ -1391,21 +1391,21 @@ int main()
                         switch(param)
                         {
                         case 0:
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
                                 object->Move(m);
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
                                 object->Move(-m);
                             break;
                         case 1:
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
                                 object->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
                                 object->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
                             break;
                         case 2:
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
                                 object->Expand(m);
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
                                 object->Expand(-m);
                             break;
                         }
@@ -1447,7 +1447,7 @@ int main()
                         sizeEditZ->setText(tgui::String(size.z));
                     }
 
-                    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem().back())
+                    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem().back())
                     {
                         scene.SetModelName(sceneTree->getSelectedItem().back().toStdString(), nameEdit->getText().toStdString());
                         readSceneTree();
@@ -1518,15 +1518,15 @@ int main()
                         switch(param)
                         {
                         case 0:
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
                                 light->Move(m);
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
                                 light->Move(-m);
                             break;
                         case 1:
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
                                 light->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
                                 light->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
                             break;
                         }
@@ -1568,7 +1568,7 @@ int main()
                         outerCutoffEdit->setText(tgui::String(outerCutoff));
                     }
 
-                    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem().back())
+                    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem().back())
                     {
                         scene.SetLightName(sceneTree->getSelectedItem().back().toStdString(), lightNameEdit->getText().toStdString());
                         readSceneTree();
@@ -1621,21 +1621,21 @@ int main()
 					switch(param)
 					{
 					case 0:
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
 							bone->Move(m);
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
 							bone->Move(-m);
 						break;
 					case 1:
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
 							bone->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
 							bone->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
 						break;
 					case 2:
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
 							bone->Expand(m);
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
 							bone->Expand(-m);
 						break;
 					}
@@ -1746,7 +1746,7 @@ int main()
                     emissionStrengthEdit->setText(tgui::String(emissionStrength));
 			    }
 
-			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && materialNameEdit->isFocused() && materialNameEdit->getText() != sceneTree->getSelectedItem().back())
+			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && materialNameEdit->isFocused() && materialNameEdit->getText() != sceneTree->getSelectedItem().back())
 			    {
 		    		scene.SetMaterialName(sceneTree->getSelectedItem().back().toStdString(), materialNameEdit->getText().toStdString());
 		    		sceneTree->removeItem(sceneTree->getSelectedItem(), false);
@@ -1893,7 +1893,7 @@ int main()
 
                 lastAnimation.time = timelineSlider->getValue();
 
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && animNameEdit->isFocused() && animNameEdit->getText() != sceneTree->getSelectedItem().back())
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && animNameEdit->isFocused() && animNameEdit->getText() != sceneTree->getSelectedItem().back())
                 {
                     scene.SetAnimationName(sceneTree->getSelectedItem()[2].toStdString(), animNameEdit->getText().toStdString());
                     readSceneTree();
@@ -1923,9 +1923,9 @@ int main()
 					switch(param)
 					{
 					case 0:
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
 							sman->SetPosition(sman->GetPosition(sound) + m, sound);
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
 							sman->SetPosition(sman->GetPosition(sound) - m, sound);
 						break;
 					}
@@ -1952,7 +1952,7 @@ int main()
                     loopBox->setChecked(sman->GetLoop(sound));
 			    }
 
-			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && soundNameEdit->isFocused() && soundNameEdit->getText() != sceneTree->getSelectedItem().back())
+			    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && soundNameEdit->isFocused() && soundNameEdit->getText() != sceneTree->getSelectedItem().back())
 			    {
                     sman->SetName(sceneTree->getSelectedItem().back().toStdString(), soundNameEdit->getText().toStdString());
                     sceneTree->removeItem(sceneTree->getSelectedItem(), false);
@@ -2021,9 +2021,9 @@ int main()
 			engine.GetWindow().setMouseCursorVisible(false);
 			engine.GetWindow().setMouseCursorGrabbed(true);
 
-			if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift))
                 cam.SetSpeed(2.0);
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl))
                 cam.SetSpeed(0.5);
             else cam.SetSpeed(1.0);
 
@@ -2043,7 +2043,7 @@ int main()
         	engine.GetWindow().setMouseCursorVisible(true);
         	engine.GetWindow().setMouseCursorGrabbed(false);
 
-        	if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::S }))
+        	if(Shortcut({ sf::Keyboard::Key::LControl, sf::Keyboard::Key::S }))
             {
                 if(!codeEditor->isFocused())
         		    saveProject();
@@ -2053,35 +2053,35 @@ int main()
         }
         if(manageCameraLook) cam.Look();
 
-        if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::G }))
+        if(Shortcut({ sf::Keyboard::Key::LControl, sf::Keyboard::Key::G }))
             objectMode = !objectMode;
 
         if(objectMode)
         {
-            if(Shortcut({ sf::Keyboard::X })) axis = 0;
-            if(Shortcut({ sf::Keyboard::Y })) axis = 1;
-            if(Shortcut({ sf::Keyboard::Z })) axis = 2;
+            if(Shortcut({ sf::Keyboard::Key::X })) axis = 0;
+            if(Shortcut({ sf::Keyboard::Key::Y })) axis = 1;
+            if(Shortcut({ sf::Keyboard::Key::Z })) axis = 2;
 
-            if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::M })) param = 0;
-            if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::R })) param = 1;
-            if(Shortcut({ sf::Keyboard::LAlt, sf::Keyboard::S })) param = 2;
+            if(Shortcut({ sf::Keyboard::Key::LAlt, sf::Keyboard::Key::M })) param = 0;
+            if(Shortcut({ sf::Keyboard::Key::LAlt, sf::Keyboard::Key::R })) param = 1;
+            if(Shortcut({ sf::Keyboard::Key::LAlt, sf::Keyboard::Key::S })) param = 2;
         }
 
         else if(lastAnimation.ptr && sceneTree->getSelectedItem().size() > 1)
         {
             if(sceneTree->getSelectedItem()[1] == "Objects" && !nameEdit->isFocused())
             {
-                if(Shortcut({ sf::Keyboard::K }))
+                if(Shortcut({ sf::Keyboard::Key::K }))
                     addKf(sceneTree->getSelectedItem().back().toStdString());
-                if(Shortcut({ sf::Keyboard::I }))
+                if(Shortcut({ sf::Keyboard::Key::I }))
                     addAction(sceneTree->getSelectedItem().back().toStdString());
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Period) || 
-                   sf::Keyboard::isKeyPressed(sf::Keyboard::Comma))
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Period) || 
+                   sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Comma))
                 {
-                    float timeChangeSpeed = 0.1 + (0.4 * sf::Keyboard::isKeyPressed(sf::Keyboard::LShift));
-                    if(Shortcut({ sf::Keyboard::Period }, 0.1))
+                    float timeChangeSpeed = 0.1 + (0.4 * sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift));
+                    if(Shortcut({ sf::Keyboard::Key::Period }, 0.1))
                         lastAnimation.time += timeChangeSpeed;
-                    if(Shortcut({ sf::Keyboard::Comma }, 0.1))
+                    if(Shortcut({ sf::Keyboard::Key::Comma }, 0.1))
                         lastAnimation.time -= timeChangeSpeed;
                     
                     if(lastAnimation.time < 0) lastAnimation.time = 0;
@@ -2094,7 +2094,7 @@ int main()
 
         if(viewport->isFocused() || sceneTree->isFocused())
         {
-            if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::C }))
+            if(Shortcut({ sf::Keyboard::Key::LControl, sf::Keyboard::Key::C }))
             {
                 if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[0]))
                 {
@@ -2103,7 +2103,7 @@ int main()
                 }
             }
 
-            if(Shortcut({ sf::Keyboard::LControl, sf::Keyboard::V }))
+            if(Shortcut({ sf::Keyboard::Key::LControl, sf::Keyboard::Key::V }))
             {
                 if(buffer.object)
                 {

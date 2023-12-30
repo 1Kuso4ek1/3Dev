@@ -130,6 +130,7 @@ int main()
         if(event.type == sf::Event::Resized)
         {
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->Resize(event.size.width / renderResolutionScale, event.size.height / renderResolutionScale);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer)->Resize(event.size.width / renderResolutionScale, event.size.height / renderResolutionScale);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Resize(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Resize(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->Resize(event.size.width / 2.0, event.size.height / 2.0);

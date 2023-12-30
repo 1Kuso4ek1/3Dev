@@ -28,16 +28,16 @@ rp3d::Vector3 Camera::Move(float time, bool onlyOffset)
 {
 	rp3d::Vector3 offset;
 
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 		offset += (orient * rp3d::Vector3(0, 0, -1)) * speed * time;
 
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
 		offset -= (orient * rp3d::Vector3(0, 0, -1)) * speed * time;
 
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 		offset += (orient * rp3d::Vector3(1, 0, 0)) * speed * time;
 
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 		offset -= (orient * rp3d::Vector3(1, 0, 0)) * speed * time;
 
 	if(!onlyOffset)
