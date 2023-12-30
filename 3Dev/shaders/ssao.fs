@@ -15,13 +15,13 @@ uniform mat4 projection;
 
 in vec2 coord;
 
-out float color;
+out vec4 color;
 
 void main()
 {
     if(texture(gposition, coord).w < 1.0)
     {
-        color = 1.0;
+        color = vec4(1.0);
         return;
     }
     vec3 pos = texture(gposition, coord).xyz;
@@ -49,5 +49,5 @@ void main()
         occlusion += (sampleDepth >= samplePos.z + 0.1 ? 1.0 : 0.0) * smoothstep(0.0, 1.0, radius / abs(pos.z - sampleDepth));
     }
 
-    color = pow(1.0 - (occlusion / numSamples), strength);
+    color = vec4(vec3(pow(1.0 - (occlusion / numSamples), strength)), 1.0);
 }
