@@ -31,7 +31,7 @@ layout (location = 4) out vec4 gcombined;
 
 void main()
 {
-    float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity) * texture(albedo, coord).w;
+    float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity) * (nalbedo.x < 0.0 ? texture(albedo, coord).w : 1.0);
     
     if(alpha < 1.0) return;
 

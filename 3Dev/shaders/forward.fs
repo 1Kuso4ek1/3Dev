@@ -152,7 +152,7 @@ vec3 CalcLight(Light light, vec3 norm, float rough, float metal, vec3 albedo, ve
 
 void main()
 {
-    float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity) * texture(albedo, coord).w;
+    float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity) * (nalbedo.x < 0.0 ? texture(albedo, coord).w : 1.0);
 
     if((drawTransparency && alpha >= 1.0) || (!drawTransparency && alpha < 1.0)) discard;
 
