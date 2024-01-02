@@ -150,7 +150,7 @@ void ScriptManager::Load(std::string filename)
     }
 
     for(int i = 0; i < data["scripts"].size(); i++)
-        scripts.push_back(std::filesystem::absolute(data["scripts"][i].asString()).string());
+        scripts.push_back(data["scripts"][i].asString());
 }
 
 void ScriptManager::LoadScript(std::string filename)
