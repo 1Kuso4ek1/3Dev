@@ -57,6 +57,12 @@ static T& AssignType(const T& src, T* dst) { return *dst = src; }
 template<class T>
 static T* TypeFactory() { return new T(); }
 
+static void MakeVector2(float x, float y, float z, rp3d::Vector3* vec) { new(vec) rp3d::Vector2(x, y); }
+static rp3d::Vector2 AddVector2(const rp3d::Vector2& r, rp3d::Vector2* l) { return *l + r; }
+static rp3d::Vector2 SubVector2(const rp3d::Vector2& r, rp3d::Vector2* l) { return *l - r; }
+static rp3d::Vector2 MulVector2(float r, rp3d::Vector2* l) { return *l * r; }
+static rp3d::Vector2 DivVector2(float r, rp3d::Vector2* l) { return *l / r; }
+
 static void MakeVector3(float x, float y, float z, rp3d::Vector3* vec) { new(vec) rp3d::Vector3(x, y, z); }
 static rp3d::Vector3 AddVector3(const rp3d::Vector3& r, rp3d::Vector3* l) { return *l + r; }
 static rp3d::Vector3 SubVector3(const rp3d::Vector3& r, rp3d::Vector3* l) { return *l - r; }
@@ -131,6 +137,9 @@ static void MakeDuration(const sf::Time& time, tgui::Duration* duration) { new(d
 
 template<class T>
 static T* GetWidget(std::string name, tgui::Gui* gui) { return gui->get<T>(name).get(); }
+static void SetPosition(float x, float y, tgui::Widget* widget) { widget->setPosition(x, y); }
+
+static void CopyWidget(tgui::Widget* widget, std::string name, tgui::Gui* gui) { gui->add(widget->clone(), name); }
 
 static void SetMaterialParameter(rp3d::Vector3 value, Material::Type parameter, Material* material)
 {

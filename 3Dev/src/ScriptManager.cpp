@@ -13,6 +13,7 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterScriptDictionary(engine);
     RegisterScriptDateTime(engine);
     RegisterScriptFile(engine);
+    RegisterVector2();
     RegisterVector3();
     RegisterQuaternion();
     RegisterTransform();
@@ -215,6 +216,36 @@ std::unordered_map<std::string, void*> ScriptManager::GetGlobalVariables()
     return globalVariables;
 }
 
+void ScriptManager::RegisterVector2()
+{
+    AddValueType("Vector2", sizeof(rp3d::Vector2), asGetTypeTraits<rp3d::Vector2>(),
+    {
+        { "void normalize()", WRAP_MFN(rp3d::Vector2, normalize) },
+        { "float length() const", WRAP_MFN(rp3d::Vector2, length) },
+        { "float dot(const Vector2& in) const", WRAP_MFN(rp3d::Vector2, dot) },
+        { "string to_string()", WRAP_MFN(rp3d::Vector2, to_string) },
+        { "Vector2& opAssign(const Vector2& in)", WRAP_MFN_PR(rp3d::Vector2, operator=, (const rp3d::Vector2&), rp3d::Vector2&) },
+        { "Vector2& opAddAssign(const Vector2& in)", WRAP_MFN_PR(rp3d::Vector2, operator+=, (const rp3d::Vector2&), rp3d::Vector2&) },
+        { "Vector2& opSubAssign(const Vector2& in)", WRAP_MFN_PR(rp3d::Vector2, operator-=, (const rp3d::Vector2&), rp3d::Vector2&) },
+        { "Vector2& opMulAssign(float)", WRAP_MFN_PR(rp3d::Vector2, operator*=, (float), rp3d::Vector2&) },
+        { "Vector2& opDivAssign(float)", WRAP_MFN_PR(rp3d::Vector2, operator/=, (float), rp3d::Vector2&) },
+        { "Vector2 opAdd(const Vector2& in)", WRAP_OBJ_LAST(AddVector2) },
+        { "Vector2 opSub(const Vector2& in)", WRAP_OBJ_LAST(SubVector2) },
+        { "Vector2 opMul(float)", WRAP_OBJ_LAST(MulVector2) },
+        { "Vector2 opDiv(float)", WRAP_OBJ_LAST(DivVector2) },
+        { "bool opEquals(const Vector2& in) const", WRAP_MFN_PR(rp3d::Vector2, operator==, (const rp3d::Vector2&) const, bool) }
+    },
+    {
+        { "float x", asOFFSET(rp3d::Vector2, x) },
+        { "float y", asOFFSET(rp3d::Vector2, y) }
+    });
+
+    AddTypeConstructor("Vector2", "void f()", WRAP_OBJ_LAST(MakeType<rp3d::Vector2>));
+    AddTypeConstructor("Vector2", "void f(float, float)", WRAP_OBJ_LAST(MakeVector2));
+    AddTypeConstructor("Vector2", "void f(const Vector2& in)", WRAP_OBJ_LAST(CopyType<rp3d::Vector2>));
+    AddTypeDestructor("Vector2", "void f()", WRAP_OBJ_LAST(DestroyType<rp3d::Vector2>));
+}
+
 void ScriptManager::RegisterVector3()
 {
     AddValueType("Vector3", sizeof(rp3d::Vector3), asGetTypeTraits<rp3d::Vector3>(),
@@ -410,14 +441,15 @@ void ScriptManager::RegisterCamera()
         { "void SetSpeed(float)", WRAP_MFN(Camera, SetSpeed) },
         { "void SetFOV(float)", WRAP_MFN(Camera, SetFOV) },
         { "void AlwaysUp(bool)", WRAP_MFN(Camera, AlwaysUp) },
+        { "void Look()", WRAP_MFN_PR(Camera, Look, (), void) },
+        { "void Look(const Vector3& in)", WRAP_MFN_PR(Camera, Look, (const rp3d::Vector3&), void) },
         { "Node@ opCast()", WRAP_OBJ_LAST(CastCamera) },
         { "Transform GetTransform()", WRAP_MFN(Camera, GetTransform) },
         { "Vector3 GetPosition(bool = false)", WRAP_MFN(Camera, GetPosition) },
         { "Quaternion GetOrientation()", WRAP_MFN(Camera, GetOrientation) },
+        { "Vector2 WorldPositionToScreen(const Vector3& in)", WRAP_MFN(Camera, WorldPositionToScreen) },
         { "float GetSpeed()", WRAP_MFN(Camera, GetSpeed) },
-        { "float GetFOV()", WRAP_MFN(Camera, GetFOV) },
-        { "void Look()", WRAP_MFN_PR(Camera, Look, (), void) },
-        { "void Look(const Vector3& in)", WRAP_MFN_PR(Camera, Look, (const rp3d::Vector3&), void) }
+        { "float GetFOV()", WRAP_MFN(Camera, GetFOV) }
     }, {});
 
     engine->RegisterObjectMethod("Node", "Camera@ opCast()", WRAP_OBJ_LAST(CastToCamera), asCALL_GENERIC);
@@ -683,6 +715,7 @@ void ScriptManager::RegisterTGUI()
     engine->RegisterFuncdef("void OnPress()");
     AddType("BitmapButton", sizeof(tgui::BitmapButton),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void onPress(OnPress@)", WRAP_OBJ_LAST(OnPress) },
         { "void setImageScaling(float)", WRAP_MFN(tgui::BitmapButton, setImageScaling) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::BitmapButton, setEnabled) },
@@ -694,6 +727,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("Button", sizeof(tgui::Button),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void onPress(OnPress@)", WRAP_OBJ_LAST(OnPress) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Button, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Button, setVisible) },
@@ -704,6 +738,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("ChatBox", sizeof(tgui::ChatBox),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void addLine(const String& in)", WRAP_MFN_PR(tgui::ChatBox, addLine, (const tgui::String&), void) },
         { "void addLine(const String& in, Color)", WRAP_MFN_PR(tgui::ChatBox, addLine, (const tgui::String&, tgui::Color), void) },
         { "bool removeLine(uint)", WRAP_MFN(tgui::ChatBox, removeLine) },
@@ -717,6 +752,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("CheckBox", sizeof(tgui::CheckBox),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setChecked(bool)", WRAP_MFN(tgui::CheckBox, setChecked) },
         { "bool isChecked()", WRAP_MFN(tgui::CheckBox, isChecked) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::CheckBox, setEnabled) },
@@ -727,6 +763,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("ChildWindow", sizeof(tgui::ChildWindow),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ChildWindow, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ChildWindow, setVisible) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChildWindow, showWithEffect) },
@@ -735,6 +772,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("ComboBox", sizeof(tgui::ComboBox),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void addItem(const String& in, const string& in = \"\")", WRAP_MFN(tgui::ComboBox, addItem) },
         { "bool setSelectedItem(const String& in)", WRAP_MFN(tgui::ComboBox, setSelectedItem) },
         { "bool setSelectedItemById(const String& in)", WRAP_MFN(tgui::ComboBox, setSelectedItemById) },
@@ -749,6 +787,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("EditBox", sizeof(tgui::EditBox),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setText(const String& in)", WRAP_MFN(tgui::EditBox, setText) },
         { "const String& getText() const", WRAP_MFN(tgui::EditBox, getText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::EditBox, setEnabled) },
@@ -759,6 +798,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("Group", sizeof(tgui::Group),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Group, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Group, setVisible) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Group, showWithEffect) },
@@ -767,6 +807,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("Knob", sizeof(tgui::Knob),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Knob, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Knob, setVisible) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Knob, showWithEffect) },
@@ -775,6 +816,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("Label", sizeof(tgui::Label),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setText(const String& in)", WRAP_MFN(tgui::Label, setText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Label, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Label, setVisible) },
@@ -784,6 +826,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("ListBox", sizeof(tgui::ListBox),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ListBox, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ListBox, setVisible) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListBox, showWithEffect) },
@@ -792,6 +835,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("ListView", sizeof(tgui::ListView),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ListView, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ListView, setVisible) },
         { "uint64 addItem(const String& in)", WRAP_MFN_PR(tgui::ListView, addItem, (const tgui::String&), size_t) },
@@ -808,6 +852,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("Panel", sizeof(tgui::Panel),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Panel, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Panel, setVisible) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Panel, showWithEffect) },
@@ -816,6 +861,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("Picture", sizeof(tgui::Picture),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Picture, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Picture, setVisible) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Picture, showWithEffect) },
@@ -824,6 +870,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("ProgressBar", sizeof(tgui::ProgressBar),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setValue(uint)", WRAP_MFN(tgui::ProgressBar, setValue) },
         { "uint getValue()", WRAP_MFN(tgui::ProgressBar, getValue) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ProgressBar, setEnabled) },
@@ -834,6 +881,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("RadioButton", sizeof(tgui::RadioButton),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setChecked(bool)", WRAP_MFN(tgui::RadioButton, setChecked) },
         { "bool isChecked()", WRAP_MFN(tgui::RadioButton, isChecked) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::RadioButton, setEnabled) },
@@ -844,6 +892,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("RangeSlider", sizeof(tgui::RangeSlider),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setSelectionStart(float)", WRAP_MFN(tgui::RangeSlider, setSelectionStart) },
         { "void setSelectionEnd(float)", WRAP_MFN(tgui::RangeSlider, setSelectionEnd) },
         { "float getSelectionStart()", WRAP_MFN(tgui::RangeSlider, getSelectionStart) },
@@ -856,6 +905,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("RichTextLabel", sizeof(tgui::RichTextLabel),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setText(const String& in)", WRAP_MFN(tgui::RichTextLabel, setText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::RichTextLabel, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::RichTextLabel, setVisible) },
@@ -865,6 +915,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("Slider", sizeof(tgui::Slider),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setValue(float)", WRAP_MFN(tgui::Slider, setValue) },
         { "float getValue()", WRAP_MFN(tgui::Slider, getValue) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Slider, setEnabled) },
@@ -875,6 +926,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("SpinButton", sizeof(tgui::SpinButton),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::SpinButton, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::SpinButton, setVisible) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinButton, showWithEffect) },
@@ -883,6 +935,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("SpinControl", sizeof(tgui::SpinControl),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::SpinControl, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::SpinControl, setVisible) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinControl, showWithEffect) },
@@ -891,6 +944,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("Tabs", sizeof(tgui::Tabs),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Tabs, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Tabs, setVisible) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Tabs, showWithEffect) },
@@ -899,6 +953,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("TextArea", sizeof(tgui::TextArea),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "String getText() const", WRAP_MFN(tgui::TextArea, getText) },
         { "void setText(const String& in)", WRAP_MFN(tgui::TextArea, setText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::TextArea, setEnabled) },
@@ -909,6 +964,7 @@ void ScriptManager::RegisterTGUI()
 
     AddType("TreeView", sizeof(tgui::TreeView),
     {
+        { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::TreeView, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::TreeView, setVisible) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TreeView, showWithEffect) },
@@ -936,12 +992,14 @@ void ScriptManager::RegisterTGUI()
         { "ProgressBar@ getProgressBar(string)", WRAP_OBJ_LAST(GetWidget<tgui::ProgressBar>) },
         { "RadioButton@ getRadioButton(string)", WRAP_OBJ_LAST(GetWidget<tgui::RadioButton>) },
         { "RangeSlider@ getRangeSlider(string)", WRAP_OBJ_LAST(GetWidget<tgui::RangeSlider>) },
+        { "RichTextLabel@ getRichTextLabel(string)", WRAP_OBJ_LAST(GetWidget<tgui::RichTextLabel>) },
         { "Slider@ getSlider(string)", WRAP_OBJ_LAST(GetWidget<tgui::Slider>) },
         { "SpinButton@ getSpinButton(string)", WRAP_OBJ_LAST(GetWidget<tgui::SpinButton>) },
         { "SpinControl@ getSpinControl(string)", WRAP_OBJ_LAST(GetWidget<tgui::SpinControl>) },
         { "Tabs@ getTabs(string)", WRAP_OBJ_LAST(GetWidget<tgui::Tabs>) },
         { "TextArea@ getTextArea(string)", WRAP_OBJ_LAST(GetWidget<tgui::TextArea>) },
-        { "TreeView@ getTreeView(string)", WRAP_OBJ_LAST(GetWidget<tgui::TreeView>) }
+        { "TreeView@ getTreeView(string)", WRAP_OBJ_LAST(GetWidget<tgui::TreeView>) },
+        { "void copyLabel(Label@, string)", WRAP_OBJ_LAST(CopyWidget) }
     }, {});
     
     SetDefaultNamespace("");

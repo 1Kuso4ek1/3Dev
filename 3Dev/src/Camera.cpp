@@ -4,6 +4,7 @@ Camera::Camera(sf::Window* window, rp3d::Vector3 pos, float speed, float fov, fl
 {
 	if(m) this->m = m;
 	aspect = (float)window->getSize().x / (float)window->getSize().y;
+	viewportSize = window->getSize();
 	UpdateMatrix();
 }
 
@@ -16,10 +17,9 @@ Camera::Camera(sf::Vector2u viewportSize, rp3d::Vector3 pos, float speed, float 
 
 void Camera::Update(bool force)
 {
-    sf::Vector2u size = (window ? window->getSize() : viewportSize);
-	if((((float)size.x / (float)size.y) != aspect || force))
+	if((((float)viewportSize.x / (float)viewportSize.y) != aspect || force))
 	{
-		aspect = (float)size.x / (float)size.y;
+		aspect = (float)viewportSize.x / (float)viewportSize.y;
 		UpdateMatrix();
 	}
 }
@@ -142,6 +142,21 @@ rp3d::Vector3 Camera::GetPosition(bool world)
 rp3d::Quaternion Camera::GetOrientation()
 {
 	return orient;
+}
+
+rp3d::Vector2 Camera::WorldPositionToScreen(const rp3d::Vector3& world)
+{
+	auto asdf = (m->GetView() * glm::vec4(toglm(world), 1.0));
+	if(asdf.z > 0.0) return { -1000, -1000 };
+	std::cout << asdf.x << " " << asdf.y << " " << asdf.z << " " << asdf.w << std::endl;
+	auto clipSpace = m->GetProjection() * m->GetView() * glm::vec4(toglm(world), 1.0);
+	if(clipSpace.w == 0.0)
+		return { -1000, -1000 };
+
+	auto ndcSpace = glm::vec3(clipSpace) / clipSpace.w;
+	auto windowSpace = ((glm::vec2(ndcSpace) + glm::vec2(1.0)) / glm::vec2(2.0)) * glm::vec2(float(viewportSize.x), float(viewportSize.y));
+
+	return { windowSpace.x, viewportSize.y - windowSpace.y };
 }
 
 float Camera::GetSpeed()

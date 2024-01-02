@@ -34,6 +34,8 @@ public:
 	rp3d::Vector3 GetPosition(bool world = false);
 	rp3d::Quaternion GetOrientation();
 
+	rp3d::Vector2 WorldPositionToScreen(const rp3d::Vector3& world);
+
 	float GetSpeed();
 	float GetFOV();
 	float GetNear();

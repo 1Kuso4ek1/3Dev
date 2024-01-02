@@ -37,6 +37,7 @@ public:
     std::unordered_map<std::string, void*> GetGlobalVariables();
 
 private:
+    void RegisterVector2();
     void RegisterVector3();
     void RegisterQuaternion();
     void RegisterModel();

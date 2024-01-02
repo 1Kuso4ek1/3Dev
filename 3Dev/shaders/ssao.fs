@@ -19,11 +19,6 @@ out vec4 color;
 
 void main()
 {
-    if(texture(gposition, coord).w < 1.0)
-    {
-        color = vec4(1.0);
-        return;
-    }
     vec3 pos = texture(gposition, coord).xyz;
     vec3 normal = texture(gnormal, coord).xyz;
     vec3 random = texture(noise, coord * pixelsize * 1.0).xyz;
