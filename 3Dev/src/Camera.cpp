@@ -146,10 +146,11 @@ rp3d::Quaternion Camera::GetOrientation()
 
 rp3d::Vector2 Camera::WorldPositionToScreen(const rp3d::Vector3& world)
 {
-	auto asdf = (m->GetView() * glm::vec4(toglm(world), 1.0));
-	if(asdf.z > 0.0) return { -1000, -1000 };
-	std::cout << asdf.x << " " << asdf.y << " " << asdf.z << " " << asdf.w << std::endl;
-	auto clipSpace = m->GetProjection() * m->GetView() * glm::vec4(toglm(world), 1.0);
+	auto viewSpace = (m->GetView() * glm::vec4(toglm(world), 1.0));
+	if(viewSpace.z > 0.0)
+		return { -1000, -1000 };
+
+	auto clipSpace = m->GetProjection() * viewSpace;
 	if(clipSpace.w == 0.0)
 		return { -1000, -1000 };
 
