@@ -157,9 +157,9 @@ void main()
     if(length(norm) <= 0.0 || decalsAlbedo.w < 0.1)
         norm = mat3(invView) * texture(gnormal, coord).xyz;
 
-    vec3 decalsEmission = texture(decalsEmission, coord).xyz;
-    vec3 emission = texture(gemission, coord).xyz;
-    emission = mix(emission, decalsEmission.xyz, decalsAlbedo.w);
+    vec3 emission = texture(decalsEmission, coord).xyz;
+    if(length(emission) <= 0.0 || decalsAlbedo.w < 0.1)
+        emission = texture(gemission, coord).xyz;
 
     vec4 combined = texture(decalsCombined, coord);
     if(length(combined) == 0.0 || decalsAlbedo.w < 0.1)
