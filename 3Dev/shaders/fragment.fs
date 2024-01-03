@@ -118,7 +118,7 @@ vec3 CalcLight(Light light, float rough, float metal, vec3 albedo, vec3 irr, vec
     vec3 l = (light.cutoff == 1.0 ? normalize(light.position - pos) : normalize(-light.direction));
     vec3 h = normalize(v + l);
 
-    float attenuation = 1.0 / (light.attenuation.x + light.attenuation.y * length(l) + light.attenuation.z * pow(length(l), 2));
+    float attenuation = 1.0 / (light.attenuation.x + light.attenuation.y * length(light.position - pos) + light.attenuation.z * pow(length(light.position - pos), 2));
 
     float ndoth = max(dot(norm, h), 0.0);
     float ndotv = max(dot(norm, v), 0.0);
