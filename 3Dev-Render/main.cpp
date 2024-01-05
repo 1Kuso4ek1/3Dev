@@ -1,3 +1,4 @@
+#define DISABLE_MULTITHREADING
 #include <Engine.hpp>
 
 std::string GetArgument(int argc, char* argv[], std::string arg)
@@ -70,7 +71,10 @@ int main(int argc, char* argv[])
                   << "  -m <int>          SSAO samples (64 is default)" << std::endl
                   << "  -t <float>        DOF min distance (1.0 is default)" << std::endl
                   << "  -g <float>        DOF max distance (1.0 is default)" << std::endl
-                  << "  -u <float>        DOF focus distance (1.0 is default)" << std::endl;
+                  << "  -u <float>        DOF focus distance (1.0 is default)" << std::endl
+                  << "  -v <float>        Fog start (0.0 is default)" << std::endl
+                  << "  -k <float>        Fog end (0.0 is default)" << std::endl
+                  << "  -p <float>        Fog height (0.0 is default)" << std::endl;
         return 0;
     }
 
@@ -85,6 +89,9 @@ int main(int argc, char* argv[])
     float dofMinDistance = 1.0;
     float dofMaxDistance = 1.0;
     float dofFocusDistance = 1.0;
+    float fogStart = 0.0;
+    float fogEnd = 0.0;
+    float fogHeight = 0.0;
     #ifdef _WIN32
     	std::string env = std::string(getenv("HOMEPATH")) + "/.3Dev-Editor/default/hdri.hdr";
     #else
@@ -115,6 +122,9 @@ int main(int argc, char* argv[])
     if(!GetArgument(argc, argv, "-t").empty()) dofMinDistance = std::stof(GetArgument(argc, argv, "-t"));
     if(!GetArgument(argc, argv, "-g").empty()) dofMaxDistance = std::stof(GetArgument(argc, argv, "-g"));
     if(!GetArgument(argc, argv, "-u").empty()) dofFocusDistance = std::stof(GetArgument(argc, argv, "-u"));
+    if(!GetArgument(argc, argv, "-v").empty()) fogStart = std::stof(GetArgument(argc, argv, "-v"));
+    if(!GetArgument(argc, argv, "-k").empty()) fogEnd = std::stof(GetArgument(argc, argv, "-k"));
+    if(!GetArgument(argc, argv, "-p").empty()) fogHeight = std::stof(GetArgument(argc, argv, "-p"));
 
     if(!animation.empty())
     {
@@ -161,6 +171,7 @@ int main(int argc, char* argv[])
     scene.SetSoundManager(sman);
     scene.UpdatePhysics(false);
 
+    Multithreading::GetInstance()->SetIsEnabled(false);
     scene.Load(scenePath, true);
     
     if(scene.GetNames()[2].empty())
@@ -188,6 +199,9 @@ int main(int argc, char* argv[])
     Renderer::GetInstance()->SetDOFMinDistance(dofMinDistance);
     Renderer::GetInstance()->SetDOFMaxDistance(dofMaxDistance);
     Renderer::GetInstance()->SetDOFFocusDistance(dofFocusDistance);
+    Renderer::GetInstance()->SetFogStart(fogStart);
+    Renderer::GetInstance()->SetFogEnd(fogEnd);
+    Renderer::GetInstance()->SetFogHeight(fogHeight);
 
     auto draw = [&]()
     {

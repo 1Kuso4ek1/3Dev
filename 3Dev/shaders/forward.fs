@@ -28,6 +28,9 @@ uniform vec3 nirradiance;
 uniform bool drawTransparency = false;
 uniform float emissionStrength = 1.0;
 uniform float shadowBias;
+uniform float fogStart = 10.0;
+uniform float fogEnd = 30.0;
+uniform float fogHeight = 5.0;
 uniform mat4 invView;
 
 in vec2 coord;
@@ -150,6 +153,25 @@ vec3 CalcLight(Light light, vec3 norm, float rough, float metal, vec3 albedo, ve
     return lo;
 }
 
+float LayeredFog()
+{
+	vec3 camProj = camposout; camProj.y = 0.0;
+	vec3 worldProj = pos; worldProj.y = 0.0;
+	
+	float deltaD = length(camProj - worldProj) / fogEnd;
+	float deltaY = 0.0;
+	float density = 0.0;
+	
+	if(pos.y < fogHeight)
+	{
+		deltaY = (fogHeight - pos.y) / fogHeight;
+		density = pow(deltaY, 2.0) * 0.5;
+	}
+	if(deltaY != 0.0 && fogEnd != fogStart)
+		return clamp((sqrt(1.0 + ((deltaD / deltaY) * (deltaD / deltaY)))) * density * clamp((length(camposout - pos) - fogStart) / (fogEnd - fogStart), 0.0, 1.0), 0.0, 1.0); 
+	else return 0.0;
+}
+
 void main()
 {
     float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity) * (nalbedo.x < 0.0 ? texture(albedo, coord).w : 1.0);
@@ -195,4 +217,5 @@ void main()
 
     total += ambient / 2;
     color = vec4((total * (length(emission) > 0.0 ? 1.0 : (1.0 - shadow)) + ambient / 2) + (emission * emissionStrength) + totalNoShadow, (alpha < 1.0 ? min(alpha + ((total.x + total.y, + total.z) / 3.0) * alpha, 1.0) : 1.0));
+    color.rgb = mix(color.rgb, irr, LayeredFog() * (1.0 - clamp(length(emission), 0.0, 1.0)));
 }

@@ -9,18 +9,19 @@ public:
     static Multithreading* GetInstance();
 
     void Update();
-
     void AddJob(std::thread::id threadID, std::future<void>&& future);
-    
     void AddMainThreadJob(std::function<void()> job);
+    void SetIsEnabled(bool enabled);
+
+    size_t GetJobsNum();
+    bool IsEnabled();
 
 private:
     Multithreading() {};
 
     static Multithreading* instance;
 
-    /*std::unordered_map<std::thread::id, std::future<void>> jobs;
-    std::unordered_map<std::thread::id, std::function<void()>> mainThread;*/
+    bool enabled = true;
 
     std::vector<std::future<void>> jobs;
     std::vector<std::function<void()>> mainThread;

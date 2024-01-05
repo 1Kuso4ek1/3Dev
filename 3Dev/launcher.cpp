@@ -84,6 +84,10 @@ int main()
     float dofMaxDistance = 1.0;
     float dofFocusDistance = 1.0;
 
+    float fogStart = 0.0;
+    float fogEnd = 0.0;
+    float fogHeight = 0.0;
+
     float ssaoStrength = cfg["renderer"]["ssaoStrength"].asFloat();
     float ssaoRadius = cfg["renderer"]["ssaoRadius"].asFloat();
 
@@ -110,6 +114,9 @@ int main()
     scman.AddProperty("float dofMinDistance", &dofMinDistance);
     scman.AddProperty("float dofMaxDistance", &dofMaxDistance);
     scman.AddProperty("float dofFocusDistance", &dofFocusDistance);
+    scman.AddProperty("float fogStart", &fogStart);
+    scman.AddProperty("float fogEnd", &fogEnd);
+    scman.AddProperty("float fogHeight", &fogHeight);
     scman.SetDefaultNamespace("");
 
     auto scPath = cfg["scenePath"].asString();
@@ -179,6 +186,9 @@ int main()
         Renderer::GetInstance()->SetDOFMinDistance(dofMinDistance);
         Renderer::GetInstance()->SetDOFMaxDistance(dofMaxDistance);
         Renderer::GetInstance()->SetDOFFocusDistance(dofFocusDistance);
+        Renderer::GetInstance()->SetFogStart(fogStart);
+        Renderer::GetInstance()->SetFogEnd(fogEnd);
+        Renderer::GetInstance()->SetFogHeight(fogHeight);
         
         cam.Update();
         if(manageCameraMovement) cam.Move(1);

@@ -680,6 +680,10 @@ int main()
     float dofMinDistance = 1.0;
     float dofMaxDistance = 1.0;
     float dofFocusDistance = 1.0;
+
+    float fogStart = 0.0;
+    float fogEnd = 0.0;
+    float fogHeight = 0.0;
     
     float ssaoStrength = properties["renderer"]["ssaoStrength"].asFloat();
     float ssaoRadius = properties["renderer"]["ssaoRadius"].asFloat();
@@ -707,6 +711,9 @@ int main()
     scman.AddProperty("float dofMinDistance", &dofMinDistance);
     scman.AddProperty("float dofMaxDistance", &dofMaxDistance);
     scman.AddProperty("float dofFocusDistance", &dofFocusDistance);
+    scman.AddProperty("float fogStart", &fogStart);
+    scman.AddProperty("float fogEnd", &fogEnd);
+    scman.AddProperty("float fogHeight", &fogHeight);
     scman.SetDefaultNamespace("");
 	std::string startDecl = "void Start()", loopDecl = "void Loop()";
 
@@ -2125,6 +2132,9 @@ int main()
         Renderer::GetInstance()->SetDOFMinDistance(dofMinDistance);
         Renderer::GetInstance()->SetDOFMaxDistance(dofMaxDistance);
         Renderer::GetInstance()->SetDOFFocusDistance(dofFocusDistance);
+        Renderer::GetInstance()->SetFogStart(fogStart);
+        Renderer::GetInstance()->SetFogEnd(fogEnd);
+        Renderer::GetInstance()->SetFogHeight(fogHeight);
 
 		if(engine.GetWindow().hasFocus())
             engine.GetWindow().setFramerateLimit(60);

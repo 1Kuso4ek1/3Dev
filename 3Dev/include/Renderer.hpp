@@ -64,6 +64,10 @@ public:
     void SetBloomStrength(float strength);
     void SetBlurIterations(int iterations);
 
+    void SetFogStart(float start);
+    void SetFogEnd(float end);
+    void SetFogHeight(float height);
+
     void Bloom();
     void SSAO();
 
@@ -78,6 +82,10 @@ public:
     float GetDOFMinDistance();
     float GetDOFMaxDistance();
     float GetDOFFocusDistance();
+
+    float GetFogStart();
+    float GetFogEnd();
+    float GetFogHeight();
     
     float GetBloomStrength();
     int GetBlurIterations();
@@ -99,6 +107,9 @@ private:
     float dofMinDistance = 1.0;
     float dofMaxDistance = 1.0;
     float dofFocusDistance = 1.0;
+    float fogStart = 0.0;
+    float fogEnd = 0.0;
+    float fogHeight = 0.0;
     int blurIterations = 8;
     int samples = 64;
 

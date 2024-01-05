@@ -39,3 +39,18 @@ void Multithreading::AddMainThreadJob(std::function<void()> job)
 {
     mainThread.push_back(job);
 }
+
+void Multithreading::SetIsEnabled(bool enabled)
+{
+    this->enabled = enabled;
+}
+
+size_t Multithreading::GetJobsNum()
+{
+    return jobs.size();
+}
+
+bool Multithreading::IsEnabled()
+{
+    return enabled;
+}

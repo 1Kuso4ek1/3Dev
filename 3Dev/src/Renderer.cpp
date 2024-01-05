@@ -163,6 +163,21 @@ void Renderer::SetBlurIterations(int iterations)
     blurIterations = iterations;
 }
 
+void Renderer::SetFogStart(float start)
+{
+    fogStart = start;
+}
+
+void Renderer::SetFogEnd(float end)
+{
+    fogEnd = end;
+}
+
+void Renderer::SetFogHeight(float height)
+{
+    fogHeight = height;
+}
+
 void Renderer::Bloom()
 {
     horizontal = buffer = true;
@@ -272,6 +287,21 @@ float Renderer::GetDOFMaxDistance()
 float Renderer::GetDOFFocusDistance()
 {
     return dofFocusDistance;
+}
+
+float Renderer::GetFogStart()
+{
+    return fogStart;
+}
+
+float Renderer::GetFogEnd()
+{
+    return fogEnd;
+}
+
+float Renderer::GetFogHeight()
+{
+    return fogHeight;
 }
 
 float Renderer::GetBloomStrength()

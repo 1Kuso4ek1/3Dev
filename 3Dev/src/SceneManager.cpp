@@ -128,6 +128,9 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     lightingPass->SetUniform1i("decalsEmission", 18);
     lightingPass->SetUniform1i("decalsCombined", 19);
     lightingPass->SetUniform1i("ssaoEnabled", Renderer::GetInstance()->GetSSAOStrength() > 0.0);
+    lightingPass->SetUniform1f("fogStart", Renderer::GetInstance()->GetFogStart());
+    lightingPass->SetUniform1f("fogEnd", Renderer::GetInstance()->GetFogEnd());
+    lightingPass->SetUniform1f("fogHeight", Renderer::GetInstance()->GetFogHeight());
     lightingPass->SetUniformMatrix4("invView", glm::inverse(Renderer::GetInstance()->GetMatrices()->GetView()));
     Material::UpdateShaderEnvironment(lightingPass);
 
@@ -173,6 +176,9 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 
     Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->Bind();
     Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->SetUniformMatrix4("invView", invView);
+    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->SetUniform1f("fogStart", Renderer::GetInstance()->GetFogStart());
+    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->SetUniform1f("fogEnd", Renderer::GetInstance()->GetFogEnd());
+    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->SetUniform1f("fogHeight", Renderer::GetInstance()->GetFogHeight());
 
     std::for_each(models.begin(), models.end(), [&](auto p)
         { if(ParseName(p.first).second != "decals")
