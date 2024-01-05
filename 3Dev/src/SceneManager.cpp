@@ -21,8 +21,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     {
         if(this->updatePhysics && updatePhysics)
         {
-            float time = clock.restart().asSeconds();
-            pManager->Update(time);
+            physicsTime += clock.restart().asSeconds();
+            pManager->Update(physicsTime);
         }
         else clock.restart();
         
@@ -41,8 +41,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 
     if(this->updatePhysics && updatePhysics)
     {
-        float time = clock.restart().asSeconds();
-        pManager->Update(time);
+        physicsTime += clock.restart().asSeconds();
+        pManager->Update(physicsTime);
     }
     else clock.restart();
 

@@ -39,7 +39,8 @@ void main()
         offset.xyz = offset.xyz * 0.5 + 0.5;
 
         float sampleDepth = texture(gposition, offset.xy).z;
-        if(sampleDepth == 0.0) continue;
+        vec3 sampleNormal = texture(gnormal, offset.xy).xyz;
+        if(sampleDepth == 0.0 || (dot(normal, sampleNormal) > 0.99)) continue;
 
         occlusion += (sampleDepth >= samplePos.z + 0.1 ? 1.0 : 0.0) * smoothstep(0.0, 1.0, radius / abs(pos.z - sampleDepth));
     }

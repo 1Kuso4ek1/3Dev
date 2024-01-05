@@ -112,6 +112,8 @@ private:
 
     bool updatePhysics = true;
 
+    float physicsTime = 0.0;
+
     std::string lastAdded = "";
 
     std::shared_ptr<Model> skybox;

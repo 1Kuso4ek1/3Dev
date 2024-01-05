@@ -18,7 +18,7 @@ public:
      * Updates the physics
      * @param time time elapsed from the last frame (in seconds)
      */
-    void Update(float time);
+    void Update(float& time);
 
     // @param timeStep new time step
     void SetTimeStep(float timeStep);

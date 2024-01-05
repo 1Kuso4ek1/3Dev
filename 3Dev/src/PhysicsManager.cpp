@@ -10,13 +10,13 @@ PhysicsManager::~PhysicsManager()
     common.destroyPhysicsWorld(world);
 }
 
-void PhysicsManager::Update(float time)
+void PhysicsManager::Update(float& time)
 {
-    do
+    while(time >= timeStep)
     {
         world->update(timeStep);
         time -= timeStep;
-    } while (time >= timeStep);
+    }
 }
 
 void PhysicsManager::SetTimeStep(float timeStep)
