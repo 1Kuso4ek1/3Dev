@@ -1,5 +1,6 @@
 #pragma once
 #include "Utils.hpp"
+#include "Multithreading.hpp"
 #include "Node.hpp"
 #include "Camera.hpp"
 #include "Model.hpp"
@@ -14,8 +15,6 @@
 #include "Renderer.hpp"
 #include "ScriptManager.hpp"
 #include "TextureManager.hpp"
-
-#include <functional>
 
 /*
  * This class is responsible for creating a window, handling events and launching game loop

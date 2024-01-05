@@ -1,5 +1,6 @@
 #pragma once
 #include "Utils.hpp"
+#include "Multithreading.hpp"
 #include <stb_image.h>
 
 class TextureManager

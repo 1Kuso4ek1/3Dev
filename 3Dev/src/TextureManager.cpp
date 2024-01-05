@@ -6,12 +6,9 @@ TextureManager* TextureManager::instance = nullptr;
 
 TextureManager* TextureManager::GetInstance()
 {
-    if(instance) return instance;
-    else
-    {
+    if(!instance)
         instance = new TextureManager;
-        return instance;
-    }
+    return instance;
 }
 
 void TextureManager::DeleteInstance()

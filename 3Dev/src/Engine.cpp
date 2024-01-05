@@ -76,6 +76,8 @@ void Engine::Launch(bool handleResize)
 
     while(running)
     {
+        Multithreading::GetInstance()->Update();
+
         while(window.pollEvent(event))
         {
             eloop(event);

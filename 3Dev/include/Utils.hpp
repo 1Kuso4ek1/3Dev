@@ -8,6 +8,10 @@
 #include <unordered_map>
 #include <filesystem>
 #include <random>
+#include <thread>
+#include <functional>
+#include <future>
+#include <chrono>
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics/Image.hpp>

@@ -4,13 +4,12 @@ Renderer* Renderer::instance = nullptr;
 
 Renderer* Renderer::GetInstance()
 {
-    if(instance) return instance;
-    else
+    if(!instance)
     {
         instance = new Renderer;
         instance->SetShadersDirectory(SHADERS_DIRECTORY);
-        return instance;
     }
+    return instance;
 }
 
 void Renderer::DeleteInstance()
