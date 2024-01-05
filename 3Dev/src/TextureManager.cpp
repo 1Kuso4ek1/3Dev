@@ -78,30 +78,46 @@ GLuint TextureManager::LoadTexture(std::string filename, std::string name)
     }
     else
     {
-        sf::Image image;
-        if (!image.loadFromFile(filename))
-        {
-            Log::Write("Can't load texture '" + filename + "'", Log::Type::Error);
-            return 0;
-        }
-
         GLuint texture = 0;
         glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.getSize().x, image.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getPixelsPtr());
-        glGenerateMipmap(GL_TEXTURE_2D);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        std::promise<void> promise;
+        auto future = promise.get_future();
+
+        std::shared_ptr<sf::Image> image = std::make_shared<sf::Image>();
+        
+        std::thread th([image, filename, texture](std::promise<void> pr)
+        {
+            if(!image->loadFromFile(filename))
+            {
+                Log::Write("Can't load texture '" + filename + "'", Log::Type::Error);
+                return;
+            }
+
+            Multithreading::GetInstance()->AddMainThreadJob([image, texture, filename]()
+            {
+                glBindTexture(GL_TEXTURE_2D, texture);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image->getSize().x, image->getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->getPixelsPtr());
+                glGenerateMipmap(GL_TEXTURE_2D);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+                Log::Write("Texture " + filename + " loaded", Log::Type::Info);
+            });
+
+            pr.set_value();
+        }, std::move(promise));
+
+        Multithreading::GetInstance()->AddJob(th.get_id(), std::move(future));
+        th.detach();
 
         int nameCount = std::count_if(textures.begin(), textures.end(), [&](auto& p)
                     { return p.first.find(name) != std::string::npos; });
         textures[name + (nameCount ? std::to_string(texture) : "")] = texture;
         filenames[name + (nameCount ? std::to_string(texture) : "")] = filename;
-
-        Log::Write("Texture " + filename + " loaded", Log::Type::Info);
 
         return texture;
     }

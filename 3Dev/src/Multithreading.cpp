@@ -10,35 +10,32 @@ Multithreading* Multithreading::GetInstance()
 }
 
 void Multithreading::Update()
-{    
+{
     for(auto& i : deleted)
-    {
-        jobs.erase(jobs.find(i));
-        auto it = mainThread.find(i);
-        if(it != mainThread.end())
-        {
-            it->second();
-            mainThread.erase(it);
-        }
-    }
+        jobs.erase(i);
 
     deleted.clear();
 
-    for(auto& i : jobs)
+    if(jobs.empty())
+        for(auto i = mainThread.begin(); i < mainThread.end(); i++)
+        {
+            (*i)();
+            mainThread.erase(i);
+        }
+
+    for(auto i = jobs.begin(); i < jobs.end(); i++)
     {
-        if(i.second.wait_for(0ms) == std::future_status::ready)
-            deleted.push_back(i.first);
+        if(i->wait_for(0ms) == std::future_status::ready)
+            deleted.push_back(i);
     }
 }
 
 void Multithreading::AddJob(std::thread::id threadID, std::future<void>&& future)
 {
-    jobs[threadID] = std::move(future);
+    jobs.emplace_back(std::move(future));
 }
 
 void Multithreading::AddMainThreadJob(std::function<void()> job)
 {
-    std::lock_guard<std::mutex> lock(mtx);
-
-    mainThread[std::this_thread::get_id()] = job;
+    mainThread.push_back(job);
 }

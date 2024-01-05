@@ -11,6 +11,7 @@ public:
     void Update();
 
     void AddJob(std::thread::id threadID, std::future<void>&& future);
+    
     void AddMainThreadJob(std::function<void()> job);
 
 private:
@@ -18,10 +19,11 @@ private:
 
     static Multithreading* instance;
 
-    std::unordered_map<std::thread::id, std::future<void>> jobs;
-    std::unordered_map<std::thread::id, std::function<void()>> mainThread;
+    /*std::unordered_map<std::thread::id, std::future<void>> jobs;
+    std::unordered_map<std::thread::id, std::function<void()>> mainThread;*/
 
-    std::vector<std::thread::id> deleted;
+    std::vector<std::future<void>> jobs;
+    std::vector<std::function<void()>> mainThread;
 
-    std::mutex mtx;
+    std::vector<std::vector<std::future<void>>::iterator> deleted;
 };
