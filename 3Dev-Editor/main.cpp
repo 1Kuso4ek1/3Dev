@@ -38,6 +38,7 @@ Json::Value DefaultProperties(const Json::Value& recentProjects = "", const Json
 
     p["logFilename"] = homeFolder + "log/EditorLog.txt";
     p["defaultResorces"] = homeFolder + "default/";
+    p["enableMultithreading"] = true;
 
     p["renderer"]["shadersDir"] = std::filesystem::absolute(std::string(SHADERS_DIRECTORY)).string();
     p["renderer"]["hdriPath"] = homeFolder + "default/hdri.hdr";
@@ -50,6 +51,7 @@ Json::Value DefaultProperties(const Json::Value& recentProjects = "", const Json
     p["renderer"]["ssaoStrength"] = 2.0;
     p["renderer"]["ssaoRadius"] = 0.5;
     p["renderer"]["exposure"] = 0.5;
+    p["renderer"]["useRGBA16F"] = true;
 
     if(!recentProjects.isArray())
     {
@@ -563,7 +565,8 @@ int main()
                                     properties["renderer"]["skyboxSideSize"].asInt(),
                                     properties["renderer"]["irradianceSideSize"].asInt(),
                                     properties["renderer"]["prefilteredSideSize"].asInt(),
-                                    properties["renderer"]["bloomResolutionScale"].asFloat());
+                                    properties["renderer"]["bloomResolutionScale"].asFloat(),
+                                    properties["renderer"]["useRGBA16F"].asBool());
     
     progressBar->setValue(20);
     progressBar->setText("Setting up defaults");
@@ -627,6 +630,8 @@ int main()
         SaveProperties(properties);
         Log::Write(path + " saved", Log::Type::Info);
     };
+
+    Multithreading::GetInstance()->SetIsEnabled(properties["enableMultithreading"].asBool());
 
     SceneManager scene;
 

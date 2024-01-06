@@ -11,6 +11,8 @@ int main()
     if(!Json::parseFromStream(rbuilder, file, &cfg, &errors))
         Log::Write("Launcher config parsing failed: " + errors, Log::Type::Critical);
 
+    Multithreading::GetInstance()->SetIsEnabled(cfg["enableMultithreading"].asBool());
+    
     Engine engine(cfg["log"]["init"].asBool(), cfg["log"]["silent"].asBool());
 
     engine.CreateWindow(cfg["window"]["width"].asInt(), cfg["window"]["height"].asInt(), cfg["window"]["title"].asString(),

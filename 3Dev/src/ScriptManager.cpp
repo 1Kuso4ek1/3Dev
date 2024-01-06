@@ -448,6 +448,7 @@ void ScriptManager::RegisterCamera()
         { "Vector3 GetPosition(bool = false)", WRAP_MFN(Camera, GetPosition) },
         { "Quaternion GetOrientation()", WRAP_MFN(Camera, GetOrientation) },
         { "Vector2 WorldPositionToScreen(const Vector3& in)", WRAP_MFN(Camera, WorldPositionToScreen) },
+        { "Vector3 ScreenPositionToWorld(bool, const Vector2& in = Vector2(0, 0))", WRAP_MFN(Camera, ScreenPositionToWorld) },
         { "float GetSpeed()", WRAP_MFN(Camera, GetSpeed) },
         { "float GetFOV()", WRAP_MFN(Camera, GetFOV) }
     }, {});
@@ -720,6 +721,7 @@ void ScriptManager::RegisterTGUI()
         { "void setImageScaling(float)", WRAP_MFN(tgui::BitmapButton, setImageScaling) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::BitmapButton, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::BitmapButton, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::BitmapButton, setFocused) },
         { "void setText(const String& in)", WRAP_MFN(tgui::BitmapButton, setText) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::BitmapButton, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::BitmapButton, hideWithEffect) }
@@ -731,6 +733,7 @@ void ScriptManager::RegisterTGUI()
         { "void onPress(OnPress@)", WRAP_OBJ_LAST(OnPress) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Button, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Button, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::Button, setFocused) },
         { "void setText(const String& in)", WRAP_MFN(tgui::Button, setText) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Button, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Button, hideWithEffect) }
@@ -746,6 +749,7 @@ void ScriptManager::RegisterTGUI()
         { "uint getLineAmount()", WRAP_MFN(tgui::ChatBox, getLineAmount) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ChatBox, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ChatBox, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::ChatBox, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChatBox, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChatBox, hideWithEffect) }
     }, {});
@@ -757,6 +761,7 @@ void ScriptManager::RegisterTGUI()
         { "bool isChecked()", WRAP_MFN(tgui::CheckBox, isChecked) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::CheckBox, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::CheckBox, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::CheckBox, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::CheckBox, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::CheckBox, hideWithEffect) }
     }, {});
@@ -766,6 +771,7 @@ void ScriptManager::RegisterTGUI()
         { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ChildWindow, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ChildWindow, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::ChildWindow, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChildWindow, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChildWindow, hideWithEffect) }
     }, {});
@@ -773,7 +779,7 @@ void ScriptManager::RegisterTGUI()
     AddType("ComboBox", sizeof(tgui::ComboBox),
     {
         { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
-        { "void addItem(const String& in, const string& in = \"\")", WRAP_MFN(tgui::ComboBox, addItem) },
+        { "void addItem(const String& in, const String& in = \"\")", WRAP_MFN(tgui::ComboBox, addItem) },
         { "bool setSelectedItem(const String& in)", WRAP_MFN(tgui::ComboBox, setSelectedItem) },
         { "bool setSelectedItemById(const String& in)", WRAP_MFN(tgui::ComboBox, setSelectedItemById) },
         { "bool setSelectedItemByIndex(uint)", WRAP_MFN(tgui::ComboBox, setSelectedItemByIndex) },
@@ -781,6 +787,7 @@ void ScriptManager::RegisterTGUI()
         { "void deselectItem()", WRAP_MFN(tgui::ComboBox, deselectItem) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ComboBox, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ComboBox, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::ComboBox, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ComboBox, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ComboBox, hideWithEffect) }
     }, {});
@@ -792,6 +799,7 @@ void ScriptManager::RegisterTGUI()
         { "const String& getText() const", WRAP_MFN(tgui::EditBox, getText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::EditBox, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::EditBox, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::EditBox, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::EditBox, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::EditBox, hideWithEffect) }
     }, {});
@@ -801,6 +809,7 @@ void ScriptManager::RegisterTGUI()
         { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Group, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Group, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::Group, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Group, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Group, hideWithEffect) }
     }, {});
@@ -810,6 +819,7 @@ void ScriptManager::RegisterTGUI()
         { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Knob, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Knob, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::Knob, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Knob, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Knob, hideWithEffect) }
     }, {});
@@ -820,6 +830,7 @@ void ScriptManager::RegisterTGUI()
         { "void setText(const String& in)", WRAP_MFN(tgui::Label, setText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Label, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Label, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::Label, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Label, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Label, hideWithEffect) }
     }, {});
@@ -829,6 +840,7 @@ void ScriptManager::RegisterTGUI()
         { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ListBox, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ListBox, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::ListBox, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListBox, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListBox, hideWithEffect) }
     }, {});
@@ -838,6 +850,7 @@ void ScriptManager::RegisterTGUI()
         { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ListView, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ListView, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::ListView, setFocused) },
         { "uint64 addItem(const String& in)", WRAP_MFN_PR(tgui::ListView, addItem, (const tgui::String&), size_t) },
         { "uint64 addItem(const array<string>& in)", WRAP_OBJ_LAST(AddListViewItem) },
         { "void insertItem(uint64, const String& in)", WRAP_MFN_PR(tgui::ListView, insertItem, (size_t, const tgui::String&), void) },
@@ -855,6 +868,7 @@ void ScriptManager::RegisterTGUI()
         { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Panel, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Panel, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::Panel, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Panel, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Panel, hideWithEffect) }
     }, {});
@@ -864,6 +878,7 @@ void ScriptManager::RegisterTGUI()
         { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Picture, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Picture, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::Picture, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Picture, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Picture, hideWithEffect) }
     }, {});
@@ -875,6 +890,7 @@ void ScriptManager::RegisterTGUI()
         { "uint getValue()", WRAP_MFN(tgui::ProgressBar, getValue) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ProgressBar, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ProgressBar, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::ProgressBar, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ProgressBar, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ProgressBar, hideWithEffect) }
     }, {});
@@ -886,6 +902,7 @@ void ScriptManager::RegisterTGUI()
         { "bool isChecked()", WRAP_MFN(tgui::RadioButton, isChecked) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::RadioButton, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::RadioButton, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::RadioButton, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RadioButton, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RadioButton, hideWithEffect) }
     }, {});
@@ -899,6 +916,7 @@ void ScriptManager::RegisterTGUI()
         { "float getSelectionEnd()", WRAP_MFN(tgui::RangeSlider, getSelectionEnd) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::RangeSlider, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::RangeSlider, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::RangeSlider, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RangeSlider, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RangeSlider, hideWithEffect) }
     }, {});
@@ -909,6 +927,7 @@ void ScriptManager::RegisterTGUI()
         { "void setText(const String& in)", WRAP_MFN(tgui::RichTextLabel, setText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::RichTextLabel, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::RichTextLabel, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::RichTextLabel, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RichTextLabel, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RichTextLabel, hideWithEffect) }
     }, {});
@@ -920,6 +939,7 @@ void ScriptManager::RegisterTGUI()
         { "float getValue()", WRAP_MFN(tgui::Slider, getValue) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Slider, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Slider, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::Slider, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Slider, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Slider, hideWithEffect) }
     }, {});
@@ -929,6 +949,7 @@ void ScriptManager::RegisterTGUI()
         { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::SpinButton, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::SpinButton, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::SpinButton, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinButton, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinButton, hideWithEffect) }
     }, {});
@@ -938,6 +959,7 @@ void ScriptManager::RegisterTGUI()
         { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::SpinControl, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::SpinControl, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::SpinControl, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinControl, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinControl, hideWithEffect) }
     }, {});
@@ -947,6 +969,7 @@ void ScriptManager::RegisterTGUI()
         { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::Tabs, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Tabs, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::Tabs, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Tabs, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Tabs, hideWithEffect) }
     }, {});
@@ -958,6 +981,7 @@ void ScriptManager::RegisterTGUI()
         { "void setText(const String& in)", WRAP_MFN(tgui::TextArea, setText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::TextArea, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::TextArea, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::TextArea, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TextArea, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TextArea, hideWithEffect) }
     }, {});
@@ -967,6 +991,7 @@ void ScriptManager::RegisterTGUI()
         { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::TreeView, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::TreeView, setVisible) },
+        { "void setFocused(bool)", WRAP_MFN(tgui::TreeView, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TreeView, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TreeView, hideWithEffect) }
     }, {});

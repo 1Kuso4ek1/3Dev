@@ -35,6 +35,7 @@ public:
 	rp3d::Quaternion GetOrientation();
 
 	rp3d::Vector2 WorldPositionToScreen(const rp3d::Vector3& world);
+	rp3d::Vector3 ScreenPositionToWorld(bool useMousePos, const rp3d::Vector2& screen = { 0, 0 });
 
 	float GetSpeed();
 	float GetFOV();

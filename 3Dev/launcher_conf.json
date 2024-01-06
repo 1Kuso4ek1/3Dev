@@ -1,5 +1,6 @@
 {
     "scenePath" : "",
+    "enableMultithreading" : true,
     "window" :
     {
         "title" : "",

@@ -160,6 +160,31 @@ rp3d::Vector2 Camera::WorldPositionToScreen(const rp3d::Vector3& world)
 	return { windowSpace.x, viewportSize.y - windowSpace.y };
 }
 
+rp3d::Vector3 Camera::ScreenPositionToWorld(bool useMousePos, const rp3d::Vector2& screen)
+{
+	glm::vec2 screenPos;
+	if(useMousePos)
+	{
+		auto pos = sf::Mouse::getPosition(*window);
+		screenPos = glm::vec2(float(pos.x), float(pos.y));
+	}
+	else screenPos = toglm(screen);
+
+	std::cout << screenPos.x << " " << screenPos.y << std::endl;
+
+	screenPos.x = ((screenPos.x * 2.0) / float(viewportSize.x)) - 1.5;
+	screenPos.y = -(((screenPos.y * 2.0) / float(viewportSize.y)) - 1.5);
+
+	std::cout << screenPos.x << " " << screenPos.y << std::endl;
+
+	glm::vec4 clipPos = glm::vec4(screenPos.x, screenPos.y, -1.0, 1.0);
+	clipPos = glm::inverse(m->GetProjection()) * clipPos;
+
+	glm::vec4 worldPos = glm::normalize(glm::inverse(m->GetView()) * glm::vec4(clipPos.x, clipPos.y, -1.0, 0.0));
+
+	return { worldPos.x, worldPos.y, worldPos.z };
+}
+
 float Camera::GetSpeed()
 {
 	return speed;

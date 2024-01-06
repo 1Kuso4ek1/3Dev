@@ -134,6 +134,8 @@ int main(int argc, char* argv[])
         animationsQueue = ParseAnimations(animation);
     }
 
+    Multithreading::GetInstance()->SetIsEnabled(false);
+    
     Engine engine;
 
     sf::Context ctx;
@@ -171,7 +173,6 @@ int main(int argc, char* argv[])
     scene.SetSoundManager(sman);
     scene.UpdatePhysics(false);
 
-    Multithreading::GetInstance()->SetIsEnabled(false);
     scene.Load(scenePath, true);
     
     if(scene.GetNames()[2].empty())
