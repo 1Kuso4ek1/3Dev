@@ -170,12 +170,8 @@ rp3d::Vector3 Camera::ScreenPositionToWorld(bool useMousePos, const rp3d::Vector
 	}
 	else screenPos = toglm(screen);
 
-	std::cout << screenPos.x << " " << screenPos.y << std::endl;
-
 	screenPos.x = ((screenPos.x * 2.0) / float(viewportSize.x)) - 1.5;
 	screenPos.y = -(((screenPos.y * 2.0) / float(viewportSize.y)) - 1.5);
-
-	std::cout << screenPos.x << " " << screenPos.y << std::endl;
 
 	glm::vec4 clipPos = glm::vec4(screenPos.x, screenPos.y, -1.0, 1.0);
 	clipPos = glm::inverse(m->GetProjection()) * clipPos;
