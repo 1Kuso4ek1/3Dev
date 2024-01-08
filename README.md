@@ -27,8 +27,9 @@
 - 3Dev Editor
 - Node-based hierarchy
 - Built-in code editor
-## TODO
-TODO list is in the [projects](https://github.com/1Kuso4ek1/3Dev/projects/1)!
+## Made with 3Dev
+Check out my big project made with 3Dev - [Bloodbath](https://1kuso4ek1.itch.io/bloodbath)!
+![](./Screenshots/bloodbath.jpg)
 ## Building
 All building instructions are [here](https://1kuso4ek1.github.io/3Dev/build.html)!
 ## Tutorial
