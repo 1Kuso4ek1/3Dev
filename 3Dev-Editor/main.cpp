@@ -439,7 +439,7 @@ int main()
     #endif
 
     bool objectMode = false;
-    int axis = 0, param = 0;
+    int axis = -1, param = 0;
 
     tgui::Color matColor = tgui::Color::White;
 
@@ -633,6 +633,64 @@ int main()
 
     Multithreading::GetInstance()->SetIsEnabled(properties["enableMultithreading"].asBool());
 
+    // Gizmos
+    sf::Vector2i prevMPos;
+    auto gizmosFb = std::make_shared<Framebuffer>(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post), (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28);
+
+    Material gizmoXMat(
+    {
+        { glm::vec3(1.0, 0.0, 0.0), Material::Type::Color },
+        { glm::vec3(0.0), Material::Type::Metalness },
+        { glm::vec3(1.0), Material::Type::Roughness },
+        { glm::vec3(1.0, 0.0, 0.0), Material::Type::Emission },
+        { glm::vec3(1.0), Material::Type::EmissionStrength },
+        { glm::vec3(1.0), Material::Type::Opacity }
+    });
+
+    Material gizmoYMat(
+    {
+        { glm::vec3(0.0, 1.0, 0.0), Material::Type::Color },
+        { glm::vec3(0.0), Material::Type::Metalness },
+        { glm::vec3(1.0), Material::Type::Roughness },
+        { glm::vec3(0.0, 1.0, 0.0), Material::Type::Emission },
+        { glm::vec3(1.0), Material::Type::EmissionStrength },
+        { glm::vec3(1.0), Material::Type::Opacity }
+    });
+
+    Material gizmoZMat(
+    {
+        { glm::vec3(0.0, 0.0, 1.0), Material::Type::Color },
+        { glm::vec3(0.0), Material::Type::Metalness },
+        { glm::vec3(1.0), Material::Type::Roughness },
+        { glm::vec3(0.0, 0.0, 1.0), Material::Type::Emission },
+        { glm::vec3(1.0), Material::Type::EmissionStrength },
+        { glm::vec3(1.0), Material::Type::Opacity }
+    });
+
+    auto gizmoX = std::make_shared<Model>(true);
+    gizmoX->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward));
+    gizmoX->SetMaterial({ &gizmoXMat });
+    gizmoX->SetPhysicsManager(man.get());
+    gizmoX->CreateRigidBody();
+    gizmoX->CreateBoxShape();
+    gizmoX->GetRigidBody()->setType(rp3d::BodyType::STATIC);
+
+    auto gizmoY = std::make_shared<Model>(true);
+    gizmoY->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward));
+    gizmoY->SetMaterial({ &gizmoYMat });
+    gizmoY->SetPhysicsManager(man.get());
+    gizmoY->CreateRigidBody();
+    gizmoY->CreateBoxShape();
+    gizmoY->GetRigidBody()->setType(rp3d::BodyType::STATIC);
+
+    auto gizmoZ = std::make_shared<Model>(true);
+    gizmoZ->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward));
+    gizmoZ->SetMaterial({ &gizmoZMat });
+    gizmoZ->SetPhysicsManager(man.get());
+    gizmoZ->CreateRigidBody();
+    gizmoZ->CreateBoxShape();
+    gizmoZ->GetRigidBody()->setType(rp3d::BodyType::STATIC);
+
     SceneManager scene;
 
 	scene.SetPhysicsManager(man);
@@ -663,7 +721,7 @@ int main()
         filenameEdit->setText(projectFilename.empty() ? "scene.json" : projectFilename);
         projectFilename.clear();
     }
-    
+
     progressBar->setValue(70);
     progressBar->setText("Loading scripts");
     
@@ -1397,32 +1455,6 @@ int main()
                 }
                 else
                 {
-                    if(objectMode)
-                    {
-                        rp3d::Vector3 m(axis == 0 ? 0.1 : 0, axis == 1 ? 0.1 : 0, axis == 2 ? 0.1 : 0);
-                        switch(param)
-                        {
-                        case 0:
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-                                object->Move(m);
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-                                object->Move(-m);
-                            break;
-                        case 1:
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-                                object->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-                                object->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
-                            break;
-                        case 2:
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-                                object->Expand(m);
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-                                object->Expand(-m);
-                            break;
-                        }
-                    }
-                
                     std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == objectEditorGroup) return; g->setEnabled(false); g->setVisible(false); });
                     objectEditorGroup->setEnabled(true);
                     objectEditorGroup->setVisible(true);
@@ -1524,26 +1556,6 @@ int main()
                 }
                 if(light)
                 {
-                    if(objectMode)
-                    {
-                        rp3d::Vector3 m(axis == 0 ? 0.1 : 0, axis == 1 ? 0.1 : 0, axis == 2 ? 0.1 : 0);
-                        switch(param)
-                        {
-                        case 0:
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-                                light->Move(m);
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-                                light->Move(-m);
-                            break;
-                        case 1:
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-                                light->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-                                light->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
-                            break;
-                        }
-                    }
-
                     if((!lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem().back()) || objectMode)
                     {
                         rp3d::Vector3 position = light->GetPosition();
@@ -1627,31 +1639,6 @@ int main()
             else if(findNode(sceneTree->getSelectedItem().back().toStdString(), scene.GetNames()[4]) && sceneTree->getSelectedItem()[1] != "Animations")
             {
                 auto bone = scene.GetBone(sceneTree->getSelectedItem().back().toStdString());
-                if(objectMode)
-				{
-					rp3d::Vector3 m(axis == 0 ? 0.1 : 0, axis == 1 ? 0.1 : 0, axis == 2 ? 0.1 : 0);
-					switch(param)
-					{
-					case 0:
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-							bone->Move(m);
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-							bone->Move(-m);
-						break;
-					case 1:
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-							bone->Rotate(rp3d::Quaternion::fromEulerAngles(m / 10));
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-							bone->Rotate(rp3d::Quaternion::fromEulerAngles(-m / 10));
-						break;
-					case 2:
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-							bone->Expand(m);
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-							bone->Expand(-m);
-						break;
-					}
-				}
 			
                 std::for_each(groups.begin(), groups.end(), [&](auto g) { if(g == boneEditorGroup) return; g->setEnabled(false); g->setVisible(false); });
 				boneEditorGroup->setEnabled(true);
@@ -1929,20 +1916,6 @@ int main()
 
                 auto sound = sceneTree->getSelectedItem().back().toStdString();
 
-                if(objectMode)
-				{
-					rp3d::Vector3 m(axis == 0 ? 0.1 : 0, axis == 1 ? 0.1 : 0, axis == 2 ? 0.1 : 0);
-					switch(param)
-					{
-					case 0:
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-							sman->SetPosition(sman->GetPosition(sound) + m, sound);
-						if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-							sman->SetPosition(sman->GetPosition(sound) - m, sound);
-						break;
-					}
-				}
-
                 if((!soundNameEdit->isFocused() && soundNameEdit->getText() != sceneTree->getSelectedItem().back()) || objectMode)
 				{
 					rp3d::Vector3 position = sman->GetPosition(sound);
@@ -2046,11 +2019,8 @@ int main()
         }
         else
         {
-            if(!objectMode)
-                modeLabel->setText("");
-            else modeLabel->setText(std::string("Object mode") +
-            				(param == 0 ? " (Move)" : (param == 1 ? " (Rotate)" : " (Scale)")) +
-            				(axis == 0 ? " (X)" : (axis == 1 ? " (Y)" : " (Z)")));
+            if(!objectMode) modeLabel->setText("");
+            else modeLabel->setText(std::string("Object mode") + (param == 0 ? " (Move)" : (param == 1 ? " (Rotate)" : " (Scale)")));
 
         	engine.GetWindow().setMouseCursorVisible(true);
         	engine.GetWindow().setMouseCursorGrabbed(false);
@@ -2077,9 +2047,77 @@ int main()
             if(Shortcut({ sf::Keyboard::Key::LAlt, sf::Keyboard::Key::M })) param = 0;
             if(Shortcut({ sf::Keyboard::Key::LAlt, sf::Keyboard::Key::R })) param = 1;
             if(Shortcut({ sf::Keyboard::Key::LAlt, sf::Keyboard::Key::S })) param = 2;
+
+            if(sceneTree->getSelectedItem().size() > 2)
+            {
+                if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) &&
+                   sceneTree->getSelectedItem()[1] == "Objects" && !nameEdit->isFocused())
+                {
+                    auto vpPos = viewport->getAbsolutePosition();
+                    auto mPos = sf::Mouse::getPosition(engine.GetWindow());
+                    auto mouse = cam.ScreenPositionToWorld(false, rp3d::Vector2(float(mPos.x) - vpPos.x, float(mPos.y) - vpPos.y));
+                    auto selectedNode = scene.GetNode(sceneTree->getSelectedItem().back().toStdString());
+                    auto selectedNodeTransform = selectedNode->GetTransform();
+                    auto camVec = cam.GetPosition() - selectedNodeTransform.getPosition();
+                    auto camDist = camVec.length();
+
+                    rp3d::Ray ray(cam.GetPosition(true), cam.GetPosition(true) + mouse * 200);
+                    rp3d::RaycastInfo info;
+
+                    if(gizmoX->GetRigidBody()->raycast(ray, info) || axis == 0)
+                    {
+                        axis = 0;
+                        float dx = -float(prevMPos.x - mPos.x) * (camDist / 300) * (camVec.z > 0 ? 1 : -1);
+                        switch(param)
+                        {
+                        case 0:
+                            selectedNode->SetTransform({ selectedNodeTransform.getPosition() + rp3d::Vector3(dx, 0, 0), selectedNodeTransform.getOrientation() }); break;
+                        case 1:
+                            selectedNode->SetTransform({ selectedNodeTransform.getPosition(), selectedNodeTransform.getOrientation() * rp3d::Quaternion::fromEulerAngles(rp3d::Vector3(glm::radians(dx) * 5, 0, 0)) }); break;
+                        case 2:
+                            selectedNode->SetSize(selectedNode->GetSize() + rp3d::Vector3(dx / 5, 0, 0)); break;
+                        }
+                    }
+                    if(gizmoY->GetRigidBody()->raycast(ray, info) || axis == 1)
+                    {
+                        axis = 1;
+                        float dy = float(prevMPos.y - mPos.y) * (camDist / 300);
+                        switch(param)
+                        {
+                        case 0:
+                            selectedNode->SetTransform({ selectedNodeTransform.getPosition() + rp3d::Vector3(0, dy, 0), selectedNodeTransform.getOrientation() }); break;
+                        case 1:
+                            selectedNode->SetTransform({ selectedNodeTransform.getPosition(), selectedNodeTransform.getOrientation() * rp3d::Quaternion::fromEulerAngles(rp3d::Vector3(0, glm::radians(dy) * 5, 0)) }); break;
+                        case 2:
+                            selectedNode->SetSize(selectedNode->GetSize() + rp3d::Vector3(0, dy / 5, 0)); break;
+                        }
+                    }
+                    if(gizmoZ->GetRigidBody()->raycast(ray, info) || axis == 2)
+                    {
+                        axis = 2;
+                        float dz = float(prevMPos.x - mPos.x) * (camDist / 300) * (camVec.x > 0 ? 1 : -1);
+                        switch(param)
+                        {
+                        case 0:
+                            selectedNode->SetTransform({ selectedNodeTransform.getPosition() + rp3d::Vector3(0, 0, dz), selectedNodeTransform.getOrientation() }); break;
+                        case 1:
+                            selectedNode->SetTransform({ selectedNodeTransform.getPosition(), selectedNodeTransform.getOrientation() * rp3d::Quaternion::fromEulerAngles(rp3d::Vector3(0, 0, glm::radians(dz) * 5)) }); break;
+                        case 2:
+                            selectedNode->SetSize(selectedNode->GetSize() + rp3d::Vector3(0, 0, dz / 5)); break;
+                        }
+                    }
+
+                    prevMPos = mPos;
+                }
+                else
+                {
+                    axis = -1;
+                    prevMPos = sf::Mouse::getPosition(engine.GetWindow());
+                }
+            }
         }
 
-        else if(lastAnimation.ptr && sceneTree->getSelectedItem().size() > 1)
+        if(lastAnimation.ptr && sceneTree->getSelectedItem().size() > 2)
         {
             if(sceneTree->getSelectedItem()[1] == "Objects" && !nameEdit->isFocused())
             {
@@ -2126,6 +2164,32 @@ int main()
             }
         }
 
+        gizmoX->SetIsDrawable(false);
+        gizmoY->SetIsDrawable(false);
+        gizmoZ->SetIsDrawable(false);
+
+        if(sceneTree->getSelectedItem().size() > 2 && objectMode)
+        {
+            if(sceneTree->getSelectedItem()[1] == "Objects" && !nameEdit->isFocused())
+            {
+                auto selectedNode = scene.GetNode(sceneTree->getSelectedItem().back().toStdString());
+                auto selectedNodeTransform = Node::GetFinalTransform(selectedNode, selectedNode->GetTransform());
+                auto camDist = (cam.GetPosition() - selectedNodeTransform.getPosition()).length();
+
+                gizmoX->SetPosition(selectedNodeTransform.getPosition() + rp3d::Vector3(1.1 * camDist / 10.0, 0, 0));
+                gizmoY->SetPosition(selectedNodeTransform.getPosition() + rp3d::Vector3(0, 1.1 * camDist / 10.0, 0));
+                gizmoZ->SetPosition(selectedNodeTransform.getPosition() + rp3d::Vector3(0, 0, 1.1 * camDist / 10.0));
+
+                gizmoX->SetSize(rp3d::Vector3(1.0, 0.1, 0.1) * camDist / 10.0);
+                gizmoY->SetSize(rp3d::Vector3(0.1, 1.0, 0.1) * camDist / 10.0);
+                gizmoZ->SetSize(rp3d::Vector3(0.1, 0.1, 1.0) * camDist / 10.0);
+
+                gizmoX->SetIsDrawable(true);
+                gizmoY->SetIsDrawable(true);
+                gizmoZ->SetIsDrawable(true);
+            }
+        }
+
 		ListenerWrapper::SetPosition(cam.GetPosition());
 		ListenerWrapper::SetOrientation(cam.GetOrientation());
 
@@ -2148,8 +2212,21 @@ int main()
 		if(updateShadows) shadows.Update();
         if(manageSceneRendering) scene.Draw(nullptr, nullptr, !updateShadows);
 
+        gizmosFb->Bind();
+        auto size = gizmosFb->GetSize();
+        glViewport(0, 0, size.x, size.y);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        gizmoX->Draw(&cam, {});
+        gizmoY->Draw(&cam, {});
+        gizmoZ->Draw(&cam, {});
+
 		viewport->bindFramebuffer();
         Renderer::GetInstance()->DrawFramebuffers();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
+        gizmosFb->Draw();
         Framebuffer::Unbind();
 
         editor.draw();

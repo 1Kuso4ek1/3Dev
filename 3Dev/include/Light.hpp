@@ -12,6 +12,7 @@ public:
 	void SetColor(const rp3d::Vector3& color);
 	void SetPosition(const rp3d::Vector3& position);
 	void SetOrientation(const rp3d::Quaternion& orientation);
+	void SetTransform(const rp3d::Transform& transform) override;
 
 	void Move(const rp3d::Vector3& vec);
 	void Rotate(const rp3d::Quaternion& quat);

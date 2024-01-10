@@ -37,6 +37,11 @@ void Light::SetOrientation(const rp3d::Quaternion& orientation)
 	transform.setOrientation(orientation);
 }
 
+void Light::SetTransform(const rp3d::Transform& transform)
+{
+	this->transform = transform;
+}
+
 void Light::Move(const rp3d::Vector3& vec)
 {
 	transform.setPosition(transform.getPosition() + vec);
