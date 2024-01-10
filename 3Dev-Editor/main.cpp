@@ -2067,6 +2067,10 @@ int main()
                     rp3d::Ray ray(cam.GetPosition(true), cam.GetPosition(true) + mouse * 200);
                     rp3d::RaycastInfo info;
 
+                    gizmoX->GetRigidBody()->setIsActive(true);
+                    gizmoY->GetRigidBody()->setIsActive(true);
+                    gizmoZ->GetRigidBody()->setIsActive(true);
+
                     if(gizmoX->GetRigidBody()->raycast(ray, info) || axis == 0)
                     {
                         axis = 0;
@@ -2109,6 +2113,10 @@ int main()
                             selectedNode->SetSize(selectedNode->GetSize() + rp3d::Vector3(0, 0, dz / 5)); break;
                         }
                     }
+
+                    gizmoX->GetRigidBody()->setIsActive(false);
+                    gizmoY->GetRigidBody()->setIsActive(false);
+                    gizmoZ->GetRigidBody()->setIsActive(false);
 
                     prevMPos = mPos;
                 }
