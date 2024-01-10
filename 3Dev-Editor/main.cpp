@@ -673,6 +673,7 @@ int main()
     gizmoX->SetPhysicsManager(man.get());
     gizmoX->CreateRigidBody();
     gizmoX->CreateBoxShape();
+    gizmoX->GetRigidBody()->setIsActive(false);
     gizmoX->GetRigidBody()->setType(rp3d::BodyType::STATIC);
 
     auto gizmoY = std::make_shared<Model>(true);
@@ -681,6 +682,7 @@ int main()
     gizmoY->SetPhysicsManager(man.get());
     gizmoY->CreateRigidBody();
     gizmoY->CreateBoxShape();
+    gizmoY->GetRigidBody()->setIsActive(false);
     gizmoY->GetRigidBody()->setType(rp3d::BodyType::STATIC);
 
     auto gizmoZ = std::make_shared<Model>(true);
@@ -689,6 +691,7 @@ int main()
     gizmoZ->SetPhysicsManager(man.get());
     gizmoZ->CreateRigidBody();
     gizmoZ->CreateBoxShape();
+    gizmoZ->GetRigidBody()->setIsActive(false);
     gizmoZ->GetRigidBody()->setType(rp3d::BodyType::STATIC);
 
     SceneManager scene;
