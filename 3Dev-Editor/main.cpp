@@ -592,6 +592,7 @@ int main()
 
 	rp3d::PhysicsWorld::WorldSettings st;
     auto man = std::make_shared<PhysicsManager>(st);
+    auto gizmosMan = std::make_shared<PhysicsManager>(st);
 
     progressBar->setValue(40);
     progressBar->setText("Loading scene");
@@ -670,28 +671,25 @@ int main()
     auto gizmoX = std::make_shared<Model>(true);
     gizmoX->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward));
     gizmoX->SetMaterial({ &gizmoXMat });
-    gizmoX->SetPhysicsManager(man.get());
+    gizmoX->SetPhysicsManager(gizmosMan.get());
     gizmoX->CreateRigidBody();
     gizmoX->CreateBoxShape();
-    gizmoX->GetRigidBody()->setIsActive(false);
     gizmoX->GetRigidBody()->setType(rp3d::BodyType::STATIC);
 
     auto gizmoY = std::make_shared<Model>(true);
     gizmoY->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward));
     gizmoY->SetMaterial({ &gizmoYMat });
-    gizmoY->SetPhysicsManager(man.get());
+    gizmoY->SetPhysicsManager(gizmosMan.get());
     gizmoY->CreateRigidBody();
     gizmoY->CreateBoxShape();
-    gizmoY->GetRigidBody()->setIsActive(false);
     gizmoY->GetRigidBody()->setType(rp3d::BodyType::STATIC);
 
     auto gizmoZ = std::make_shared<Model>(true);
     gizmoZ->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward));
     gizmoZ->SetMaterial({ &gizmoZMat });
-    gizmoZ->SetPhysicsManager(man.get());
+    gizmoZ->SetPhysicsManager(gizmosMan.get());
     gizmoZ->CreateRigidBody();
     gizmoZ->CreateBoxShape();
-    gizmoZ->GetRigidBody()->setIsActive(false);
     gizmoZ->GetRigidBody()->setType(rp3d::BodyType::STATIC);
 
     SceneManager scene;
@@ -2043,10 +2041,6 @@ int main()
 
         if(objectMode)
         {
-            if(Shortcut({ sf::Keyboard::Key::X })) axis = 0;
-            if(Shortcut({ sf::Keyboard::Key::Y })) axis = 1;
-            if(Shortcut({ sf::Keyboard::Key::Z })) axis = 2;
-
             if(Shortcut({ sf::Keyboard::Key::LAlt, sf::Keyboard::Key::M })) param = 0;
             if(Shortcut({ sf::Keyboard::Key::LAlt, sf::Keyboard::Key::R })) param = 1;
             if(Shortcut({ sf::Keyboard::Key::LAlt, sf::Keyboard::Key::S })) param = 2;
@@ -2064,59 +2058,36 @@ int main()
                     auto camVec = cam.GetPosition() - selectedNodeTransform.getPosition();
                     auto camDist = camVec.length();
 
+                    rp3d::Vector3 delta;
+
                     rp3d::Ray ray(cam.GetPosition(true), cam.GetPosition(true) + mouse * 200);
                     rp3d::RaycastInfo info;
-
-                    gizmoX->GetRigidBody()->setIsActive(true);
-                    gizmoY->GetRigidBody()->setIsActive(true);
-                    gizmoZ->GetRigidBody()->setIsActive(true);
 
                     if((gizmoX->GetRigidBody()->raycast(ray, info) && axis == -1) || axis == 0)
                     {
                         axis = 0;
-                        float dx = -float(prevMPos.x - mPos.x) * (camDist / 300) * (camVec.z > 0 ? 1 : -1);
-                        switch(param)
-                        {
-                        case 0:
-                            selectedNode->SetTransform({ selectedNodeTransform.getPosition() + rp3d::Vector3(dx, 0, 0), selectedNodeTransform.getOrientation() }); break;
-                        case 1:
-                            selectedNode->SetTransform({ selectedNodeTransform.getPosition(), selectedNodeTransform.getOrientation() * rp3d::Quaternion::fromEulerAngles(rp3d::Vector3(glm::radians(dx) * 5, 0, 0)) }); break;
-                        case 2:
-                            selectedNode->SetSize(selectedNode->GetSize() + rp3d::Vector3(dx / 5, 0, 0)); break;
-                        }
+                        delta.x = -float(prevMPos.x - mPos.x) * (camDist / 300) * (camVec.z > 0 ? 1 : -1);
                     }
                     if((gizmoY->GetRigidBody()->raycast(ray, info) && axis == -1) || axis == 1)
                     {
                         axis = 1;
-                        float dy = float(prevMPos.y - mPos.y) * (camDist / 300);
-                        switch(param)
-                        {
-                        case 0:
-                            selectedNode->SetTransform({ selectedNodeTransform.getPosition() + rp3d::Vector3(0, dy, 0), selectedNodeTransform.getOrientation() }); break;
-                        case 1:
-                            selectedNode->SetTransform({ selectedNodeTransform.getPosition(), selectedNodeTransform.getOrientation() * rp3d::Quaternion::fromEulerAngles(rp3d::Vector3(0, glm::radians(dy) * 5, 0)) }); break;
-                        case 2:
-                            selectedNode->SetSize(selectedNode->GetSize() + rp3d::Vector3(0, dy / 5, 0)); break;
-                        }
+                        delta.y = float(prevMPos.y - mPos.y) * (camDist / 300);
                     }
                     if((gizmoZ->GetRigidBody()->raycast(ray, info) && axis == -1) || axis == 2)
                     {
                         axis = 2;
-                        float dz = float(prevMPos.x - mPos.x) * (camDist / 300) * (camVec.x > 0 ? 1 : -1);
-                        switch(param)
-                        {
-                        case 0:
-                            selectedNode->SetTransform({ selectedNodeTransform.getPosition() + rp3d::Vector3(0, 0, dz), selectedNodeTransform.getOrientation() }); break;
-                        case 1:
-                            selectedNode->SetTransform({ selectedNodeTransform.getPosition(), selectedNodeTransform.getOrientation() * rp3d::Quaternion::fromEulerAngles(rp3d::Vector3(0, 0, glm::radians(dz) * 5)) }); break;
-                        case 2:
-                            selectedNode->SetSize(selectedNode->GetSize() + rp3d::Vector3(0, 0, dz / 5)); break;
-                        }
+                        delta.z = float(prevMPos.x - mPos.x) * (camDist / 300) * (camVec.x > 0 ? 1 : -1);   
                     }
 
-                    gizmoX->GetRigidBody()->setIsActive(false);
-                    gizmoY->GetRigidBody()->setIsActive(false);
-                    gizmoZ->GetRigidBody()->setIsActive(false);
+                    switch(param)
+                    {
+                    case 0:
+                        selectedNode->SetTransform({ selectedNodeTransform.getPosition() + delta, selectedNodeTransform.getOrientation() }); break;
+                    case 1:
+                        selectedNode->SetTransform({ selectedNodeTransform.getPosition(), selectedNodeTransform.getOrientation() * rp3d::Quaternion::fromEulerAngles(delta) }); break;
+                    case 2:
+                        selectedNode->SetSize(selectedNode->GetSize() + (delta / 5)); break;
+                    }
 
                     prevMPos = mPos;
                 }
