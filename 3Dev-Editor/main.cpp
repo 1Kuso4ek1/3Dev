@@ -2084,7 +2084,7 @@ int main()
                     case 0:
                         selectedNode->SetTransform({ selectedNodeTransform.getPosition() + delta, selectedNodeTransform.getOrientation() }); break;
                     case 1:
-                        selectedNode->SetTransform({ selectedNodeTransform.getPosition(), selectedNodeTransform.getOrientation() * rp3d::Quaternion::fromEulerAngles(delta) }); break;
+                        selectedNode->SetTransform({ selectedNodeTransform.getPosition(), selectedNodeTransform.getOrientation() * rp3d::Quaternion::fromEulerAngles(delta / 3) }); break;
                     case 2:
                         selectedNode->SetSize(selectedNode->GetSize() + (delta / 5)); break;
                     }
@@ -2166,9 +2166,13 @@ int main()
                 gizmoY->SetSize(rp3d::Vector3(0.1, 1.0, 0.1) * camDist / 10.0);
                 gizmoZ->SetSize(rp3d::Vector3(0.1, 0.1, 1.0) * camDist / 10.0);
 
-                gizmoX->SetIsDrawable(true);
-                gizmoY->SetIsDrawable(true);
-                gizmoZ->SetIsDrawable(true);
+                switch(axis)
+                {
+                case -1:
+                case 0: gizmoX->SetIsDrawable(true); if(axis != -1) break;
+                case 1: gizmoY->SetIsDrawable(true); if(axis != -1) break;
+                case 2: gizmoZ->SetIsDrawable(true); if(axis != -1) break;
+                }
             }
         }
 
