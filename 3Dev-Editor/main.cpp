@@ -2071,7 +2071,7 @@ int main()
                     gizmoY->GetRigidBody()->setIsActive(true);
                     gizmoZ->GetRigidBody()->setIsActive(true);
 
-                    if(gizmoX->GetRigidBody()->raycast(ray, info) || axis == 0)
+                    if((gizmoX->GetRigidBody()->raycast(ray, info) && axis == -1) || axis == 0)
                     {
                         axis = 0;
                         float dx = -float(prevMPos.x - mPos.x) * (camDist / 300) * (camVec.z > 0 ? 1 : -1);
@@ -2085,7 +2085,7 @@ int main()
                             selectedNode->SetSize(selectedNode->GetSize() + rp3d::Vector3(dx / 5, 0, 0)); break;
                         }
                     }
-                    if(gizmoY->GetRigidBody()->raycast(ray, info) || axis == 1)
+                    if((gizmoY->GetRigidBody()->raycast(ray, info) && axis == -1) || axis == 1)
                     {
                         axis = 1;
                         float dy = float(prevMPos.y - mPos.y) * (camDist / 300);
@@ -2099,7 +2099,7 @@ int main()
                             selectedNode->SetSize(selectedNode->GetSize() + rp3d::Vector3(0, dy / 5, 0)); break;
                         }
                     }
-                    if(gizmoZ->GetRigidBody()->raycast(ray, info) || axis == 2)
+                    if((gizmoZ->GetRigidBody()->raycast(ray, info) && axis == -1) || axis == 2)
                     {
                         axis = 2;
                         float dz = float(prevMPos.x - mPos.x) * (camDist / 300) * (camVec.x > 0 ? 1 : -1);
