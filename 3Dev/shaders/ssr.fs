@@ -36,14 +36,14 @@ vec3 SSR(vec3 pos, vec3 reflected)
 	vec3 marchingPos = pos + rayStep;
     float delta = 0.0;
 	
-	for(int i = 0; i < 50; i++)
+	for(int i = 0; i < 70; i++)
     {
 		uv = UV(marchingPos);
         float z = abs(texture(gposition, uv).z);
         if(z > 100.0) break;
 
 		delta = abs(marchingPos.z) - z;
-        falloff = 1.0 - abs(distance(pos, marchingPos) / 7);
+        falloff = 1.0 - abs(distance(pos, marchingPos) / 15);
         
         if(clamp(falloff, 0.0, 1.0) <= 0.0) break;
         if(abs(delta) < 0.01) return texture(gcolor, uv).rgb;
@@ -64,11 +64,6 @@ void main()
     vec4 combined = texture(gcombined, coord);
 
     vec3 ssr = SSR(pos.xyz, reflected);
-    vec3 f = FresnelSchlick(max(dot(pos.xyz, normalize(texture(gnormal, coord).xyz)), 0.0), mix(vec3(0.04), texture(gcolor, coord).xyz, combined.x), combined.y);
-    vec2 dCoords = smoothstep(0.2, 0.6, abs(vec2(0.5, 0.5) - uv));
-    float screenEdgefactor = clamp(1.0 - (dCoords.x + dCoords.y), 0.0, 1.0);
 
-    float reflectionCoef = pow(1.0 - combined.y, 3.0) * screenEdgefactor * -reflected.z;
-
-    color = vec4(ssr * f * clamp(reflectionCoef, 0.0, 0.9), clamp(falloff, 0.0, 1.0));
+    color = vec4(ssr, clamp(falloff * (1.0 - combined.y), 0.0, 1.0));
 }

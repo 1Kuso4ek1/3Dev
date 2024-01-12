@@ -70,6 +70,8 @@ public:
     void SetFogEnd(float end);
     void SetFogHeight(float height);
 
+    void SetIsSSREnabled(bool ssrEnabled);
+
     void Bloom();
     void SSAO();
     void SSR();
@@ -118,6 +120,7 @@ private:
 
     bool horizontal = true;
     bool buffer = true;
+    bool ssrEnabled = false;
 
     std::string shadersDir;
 

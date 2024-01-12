@@ -52,6 +52,7 @@ Json::Value DefaultProperties(const Json::Value& recentProjects = "", const Json
     p["renderer"]["ssaoRadius"] = 0.5;
     p["renderer"]["exposure"] = 0.5;
     p["renderer"]["useRGBA16F"] = true;
+    p["renderer"]["ssrEnabled"] = true;
 
     if(!recentProjects.isArray())
     {
@@ -560,6 +561,7 @@ int main()
     Renderer::GetInstance()->SetShadersDirectory(properties["renderer"]["shadersDir"].asString());
     if(properties["renderer"]["ssaoSamples"].asInt() > 0)
         Renderer::GetInstance()->SetSSAOSamples(properties["renderer"]["ssaoSamples"].asInt());
+    Renderer::GetInstance()->SetIsSSREnabled(properties["renderer"]["ssrEnabled"].asBool());
     Renderer::GetInstance()->Init({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 },
                                     properties["renderer"]["hdriPath"].asString(),
                                     properties["renderer"]["skyboxSideSize"].asInt(),

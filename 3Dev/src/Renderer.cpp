@@ -44,6 +44,7 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale, fbSize.y / bloomResolutionScale, false, false, 1, GL_LINEAR);
 
     framebuffers[FramebufferType::SSAO] = std::make_shared<Framebuffer>(shaders[ShaderType::SSAO].get(), fbSize.x / 2.0, fbSize.y / 2.0, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_R16F, GL_RED);
+
     framebuffers[FramebufferType::SSR] = std::make_shared<Framebuffer>(shaders[ShaderType::SSR].get(), fbSize.x, fbSize.y, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGBA16F, GL_RGBA);
     
     std::random_device dev;
@@ -180,34 +181,38 @@ void Renderer::SetFogHeight(float height)
     fogHeight = height;
 }
 
+void Renderer::SetIsSSREnabled(bool ssrEnabled)
+{
+    this->ssrEnabled = ssrEnabled;
+}
+
 void Renderer::Bloom()
 {
+    if(bloomStrength <= 0) return;
+
     horizontal = buffer = true;
 
-    if(bloomStrength > 0)
+    pingPongBuffers[0]->Bind();
+    glViewport(0, 0, pingPongBuffers[0]->GetSize().x, pingPongBuffers[0]->GetSize().y);
+    shaders[ShaderType::Post]->Bind();
+    shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);
+    shaders[ShaderType::Post]->SetUniform1i("rawColor", true);
+    framebuffers[FramebufferType::Main]->Draw();
+    shaders[ShaderType::Post]->Bind();
+    shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", true);
+    shaders[ShaderType::Post]->SetUniform1i("rawColor", true);
+    framebuffers[FramebufferType::Transparency]->Draw();
+
+    for(int i = 0; i < blurIterations; i++)
     {
-        pingPongBuffers[0]->Bind();
-        glViewport(0, 0, pingPongBuffers[0]->GetSize().x, pingPongBuffers[0]->GetSize().y);
-        shaders[ShaderType::Post]->Bind();
-        shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);
-        shaders[ShaderType::Post]->SetUniform1i("rawColor", true);
-        framebuffers[FramebufferType::Main]->Draw();
-        shaders[ShaderType::Post]->Bind();
-        shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", true);
-        shaders[ShaderType::Post]->SetUniform1i("rawColor", true);
-        framebuffers[FramebufferType::Transparency]->Draw();
-
-        for(int i = 0; i < blurIterations; i++)
-        {
-            pingPongBuffers[buffer]->Bind();
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
-            Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
-            pingPongBuffers[!buffer]->Draw();
-            buffer = !buffer; horizontal = !horizontal;
-        }
-
-        Framebuffer::Unbind();
+        pingPongBuffers[buffer]->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
+        pingPongBuffers[!buffer]->Draw();
+        buffer = !buffer; horizontal = !horizontal;
     }
+
+    Framebuffer::Unbind();
 }
 
 void Renderer::SSAO()
@@ -234,6 +239,8 @@ void Renderer::SSAO()
 
 void Renderer::SSR()
 {
+    if(!ssrEnabled) return;
+
     framebuffers[FramebufferType::SSR]->Bind();
     glViewport(0, 0, framebuffers[FramebufferType::SSR]->GetSize().x, framebuffers[FramebufferType::SSR]->GetSize().y);
     glActiveTexture(GL_TEXTURE15);
