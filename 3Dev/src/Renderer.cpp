@@ -280,6 +280,7 @@ void Renderer::DrawFramebuffers()
     shaders[ShaderType::Post]->SetUniform1i("bloom", 15);
     shaders[ShaderType::Post]->SetUniform1i("ssr", 16);
     shaders[ShaderType::Post]->SetUniform1i("rawColor", false);
+    shaders[ShaderType::Post]->SetUniform1i("ssrEnabled", ssrEnabled);
     shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);
     framebuffers[FramebufferType::Main]->Draw();
     glDisable(GL_DEPTH_TEST);

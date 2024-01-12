@@ -83,6 +83,11 @@ void Camera::SetViewportSize(sf::Vector2u size)
 	UpdateMatrix();
 }
 
+void Camera::SetGuiSize(sf::Vector2u size)
+{
+	guiSize = size;
+}
+
 void Camera::SetTransform(const rp3d::Transform& tr)
 {
 	pos = tr.getPosition();
@@ -144,7 +149,7 @@ rp3d::Quaternion Camera::GetOrientation()
 	return orient;
 }
 
-rp3d::Vector2 Camera::WorldPositionToScreen(const rp3d::Vector3& world)
+rp3d::Vector2 Camera::WorldPositionToScreen(const rp3d::Vector3& world, bool useGuiSize)
 {
 	auto viewSpace = (m->GetView() * glm::vec4(toglm(world), 1.0));
 	if(viewSpace.z > 0.0)
@@ -155,9 +160,9 @@ rp3d::Vector2 Camera::WorldPositionToScreen(const rp3d::Vector3& world)
 		return { -1000, -1000 };
 
 	auto ndcSpace = glm::vec3(clipSpace) / clipSpace.w;
-	auto windowSpace = ((glm::vec2(ndcSpace) + glm::vec2(1.0)) / glm::vec2(2.0)) * glm::vec2(float(viewportSize.x), float(viewportSize.y));
+	auto windowSpace = ((glm::vec2(ndcSpace) + glm::vec2(1.0)) / glm::vec2(2.0)) * glm::vec2(float(useGuiSize ? guiSize.x : viewportSize.x), float(useGuiSize ? guiSize.y : viewportSize.y));
 
-	return { windowSpace.x, viewportSize.y - windowSpace.y };
+	return { windowSpace.x, (useGuiSize ? guiSize.y : viewportSize.y) - windowSpace.y };
 }
 
 rp3d::Vector3 Camera::ScreenPositionToWorld(bool useMousePos, const rp3d::Vector2& screen)

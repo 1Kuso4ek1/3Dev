@@ -24,7 +24,8 @@
         "ssaoStrength" : 2.0,
         "ssaoRadius" : 0.5,
         "exposure" : 1.0,
-        "useRGBA16F" : false
+        "ssrEnabled" : false,
+        "useRGBA16F" : true
     },
     "log" :
     {

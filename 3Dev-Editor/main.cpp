@@ -579,6 +579,7 @@ int main()
 
     Camera cam(&engine.GetWindow());
     cam.SetViewportSize({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 });
+    cam.SetGuiSize({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 });
 
     Light shadowSource({ 0, 0, 0 }, { 30.1, 50.0, -30.1 }, true);
 
@@ -1464,19 +1465,21 @@ int main()
 
                     if((!nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem().back()) || objectMode)
                     {
-                        materialBox->deselectItem();
-
                         rp3d::Vector3 position = object->GetPosition();
                         rp3d::Quaternion orientation = object->GetOrientation();
                         rp3d::Vector3 size = object->GetSize();
 
-                        materialsList->removeAllItems();
-                        auto mtl = object->GetMaterial();
-                        for(int i = 0; i < mtl.size(); i++)
-                            materialsList->addItem(scene.GetMaterialName(mtl[i]), tgui::String(i));
-                        bodyTypeBox->setSelectedItemByIndex((int)object->GetRigidBody()->getType());
-                        isDrawableBox->setChecked(object->IsDrawable());
-                        immLoadBox->setChecked(object->IsLoadingImmediatelly());
+                        if(!objectMode)
+                        {
+                            materialBox->deselectItem();
+                            materialsList->removeAllItems();
+                            auto mtl = object->GetMaterial();
+                            for(int i = 0; i < mtl.size(); i++)
+                                materialsList->addItem(scene.GetMaterialName(mtl[i]), tgui::String(i));
+                            bodyTypeBox->setSelectedItemByIndex((int)object->GetRigidBody()->getType());
+                            isDrawableBox->setChecked(object->IsDrawable());
+                            immLoadBox->setChecked(object->IsLoadingImmediatelly());
+                        }
 
                         nameEdit->setText(sceneTree->getSelectedItem().back());
                         posEditX->setText(tgui::String(position.x));
@@ -1568,9 +1571,6 @@ int main()
                         float innerCutoff = light->GetCutoff();
                         float outerCutoff = light->GetOuterCutoff();
 
-                        castShadowsBox->setChecked(light->IsCastingShadows());
-                        perspectiveShadowsBox->setChecked(light->IsCastingPerspectiveShadows());
-
                         lightNameEdit->setText(sceneTree->getSelectedItem().back());
 
                         lposEditX->setText(tgui::String(position.x));
@@ -1582,17 +1582,23 @@ int main()
                         lrotEditX->setText(tgui::String(glm::degrees(euler.x)));
                         lrotEditY->setText(tgui::String(glm::degrees(euler.y)));
                         lrotEditZ->setText(tgui::String(glm::degrees(euler.z)));
+                        
+                        if(!objectMode)
+                        {
+                            rEdit->setText(tgui::String(color.x));
+                            gEdit->setText(tgui::String(color.y));
+                            bEdit->setText(tgui::String(color.z));
 
-                        rEdit->setText(tgui::String(color.x));
-                        gEdit->setText(tgui::String(color.y));
-                        bEdit->setText(tgui::String(color.z));
+                            constAttEdit->setText(tgui::String(attenuation.x));
+                            linAttEdit->setText(tgui::String(attenuation.y));
+                            quadAttEdit->setText(tgui::String(attenuation.z));
 
-                        constAttEdit->setText(tgui::String(attenuation.x));
-                        linAttEdit->setText(tgui::String(attenuation.y));
-                        quadAttEdit->setText(tgui::String(attenuation.z));
+                            innerCutoffEdit->setText(tgui::String(innerCutoff));
+                            outerCutoffEdit->setText(tgui::String(outerCutoff));
 
-                        innerCutoffEdit->setText(tgui::String(innerCutoff));
-                        outerCutoffEdit->setText(tgui::String(outerCutoff));
+                            castShadowsBox->setChecked(light->IsCastingShadows());
+                            perspectiveShadowsBox->setChecked(light->IsCastingPerspectiveShadows());
+                        }
                     }
 
                     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem().back())
@@ -1627,13 +1633,14 @@ int main()
                     {
                         light->SetPosition(pos);
                         light->SetOrientation(rp3d::Quaternion::fromEulerAngles(euler));
-                        light->SetColor(color);
-                        light->SetAttenuation(att.x, att.y, att.z);
-                        light->SetCutoff(innerCutoffEdit->getText().toFloat());
-                        light->SetOuterCutoff(outerCutoffEdit->getText().toFloat());
-                        light->SetIsCastingShadows(castShadowsBox->isChecked());
-                        light->SetIsCastingPerspectiveShadows(perspectiveShadowsBox->isChecked());
                     }
+                    
+                    light->SetColor(color);
+                    light->SetAttenuation(att.x, att.y, att.z);
+                    light->SetCutoff(innerCutoffEdit->getText().toFloat());
+                    light->SetOuterCutoff(outerCutoffEdit->getText().toFloat());
+                    light->SetIsCastingShadows(castShadowsBox->isChecked());
+                    light->SetIsCastingPerspectiveShadows(perspectiveShadowsBox->isChecked());
                 }
             }
             /////////////////////////////////////

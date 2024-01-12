@@ -447,7 +447,7 @@ void ScriptManager::RegisterCamera()
         { "Transform GetTransform()", WRAP_MFN(Camera, GetTransform) },
         { "Vector3 GetPosition(bool = false)", WRAP_MFN(Camera, GetPosition) },
         { "Quaternion GetOrientation()", WRAP_MFN(Camera, GetOrientation) },
-        { "Vector2 WorldPositionToScreen(const Vector3& in)", WRAP_MFN(Camera, WorldPositionToScreen) },
+        { "Vector2 WorldPositionToScreen(const Vector3& in, bool = true)", WRAP_MFN(Camera, WorldPositionToScreen) },
         { "Vector3 ScreenPositionToWorld(bool, const Vector2& in = Vector2(0, 0))", WRAP_MFN(Camera, ScreenPositionToWorld) },
         { "float GetSpeed()", WRAP_MFN(Camera, GetSpeed) },
         { "float GetFOV()", WRAP_MFN(Camera, GetFOV) }

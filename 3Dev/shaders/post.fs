@@ -19,6 +19,7 @@ uniform float dofMinDistance = 1.0;
 uniform float dofMaxDistance = 1.0;
 uniform float dofFocusDistance = 1.0;
 uniform bool fxaa = true;
+uniform bool ssrEnabled;
 uniform bool rawColor;
 uniform bool transparentBuffer;
 
@@ -112,9 +113,13 @@ void main()
     float mlum = (lum * (1.0 + lum)) / (1.0 + lum);
 
     color.rgb = (mlum / lum) * color.rgb;*/
-    vec4 ssr = texture(ssr, coord);
     color.rgb = ACES();
     color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
-    if(length(ssr.xyz) > 0.0)
-        color.rgb = mix(color.rgb, ssr.rgb, 0.1 * ssr.w);
+
+    if(ssrEnabled)
+    {
+        vec4 ssr = texture(ssr, coord);
+        if(length(ssr.xyz) > 0.0)
+            color.rgb = mix(color.rgb, ssr.rgb, 0.1 * ssr.w);
+    }
 }

@@ -17,6 +17,7 @@ public:
 	void Look(const rp3d::Vector3& vec);
 
 	void SetViewportSize(sf::Vector2u size);
+	void SetGuiSize(sf::Vector2u size);
 
 	void SetTransform(const rp3d::Transform& tr) override;
 	void SetPosition(const rp3d::Vector3& vec);
@@ -34,7 +35,7 @@ public:
 	rp3d::Vector3 GetPosition(bool world = false);
 	rp3d::Quaternion GetOrientation();
 
-	rp3d::Vector2 WorldPositionToScreen(const rp3d::Vector3& world);
+	rp3d::Vector2 WorldPositionToScreen(const rp3d::Vector3& world, bool useGuiSize = true);
 	rp3d::Vector3 ScreenPositionToWorld(bool useMousePos, const rp3d::Vector2& screen = { 0, 0 });
 
 	float GetSpeed();
@@ -55,7 +56,7 @@ private:
 	float angleX = 0, angleY = 0;
 	bool alwaysUp = true;
 
-	sf::Vector2u viewportSize = { 0, 0 };
+	sf::Vector2u viewportSize = { 0, 0 }, guiSize = { 0, 0 };
 
 	rp3d::Vector3 pos;
 	rp3d::Quaternion orient = rp3d::Quaternion::identity();

@@ -22,7 +22,7 @@ int main()
     engine.GetWindow().setVerticalSyncEnabled(cfg["window"]["vsync"].asBool());
     engine.GetWindow().setFramerateLimit(cfg["window"]["maxFps"].asInt());
 
-    float guiWidth = cfg["gui"]["width"].asInt(), guiHeight = cfg["gui"]["height"].asInt();
+    unsigned int guiWidth = cfg["gui"]["width"].asInt(), guiHeight = cfg["gui"]["height"].asInt();
     float bloomResolutionScale = cfg["renderer"]["bloomResolutionScale"].asFloat();
     if(bloomResolutionScale <= 0) bloomResolutionScale = 10.0;
 
@@ -47,6 +47,7 @@ int main()
                                   bloomResolutionScale, cfg["renderer"]["useRGBA16F"].asBool());
 
     Camera cam(&engine.GetWindow(), { 0, 0, 0 });
+    cam.SetGuiSize({ guiWidth, guiHeight });
 
     rp3d::PhysicsWorld::WorldSettings st;
     auto man = std::make_shared<PhysicsManager>(st);
