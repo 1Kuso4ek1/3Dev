@@ -157,6 +157,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     gBuffer->Draw();
 
     fbo->Unbind();
+
+    Renderer::GetInstance()->SSR();
     
     if(!transparency) transparency = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency);
 

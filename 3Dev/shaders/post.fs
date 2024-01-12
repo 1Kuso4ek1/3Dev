@@ -10,6 +10,7 @@ in vec2 coord;
 uniform vec2 pixelsize;
 uniform sampler2D frame;
 uniform sampler2D bloom;
+uniform sampler2D ssr;
 uniform sampler2D frameDepth;
 uniform sampler2D transparencyDepth;
 uniform float exposure = 1.0;
@@ -111,6 +112,9 @@ void main()
     float mlum = (lum * (1.0 + lum)) / (1.0 + lum);
 
     color.rgb = (mlum / lum) * color.rgb;*/
+    vec4 ssr = texture(ssr, coord);
     color.rgb = ACES();
     color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
+    if(length(ssr.xyz) > 0.0)
+        color.rgb = mix(color.rgb, ssr.rgb, 0.1 * ssr.w);
 }

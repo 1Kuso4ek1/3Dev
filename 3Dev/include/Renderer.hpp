@@ -20,6 +20,7 @@ public:
         Forward,
         LightingPass,
         SSAO,
+        SSR,
         Decals,
         Skybox,
         Depth,
@@ -37,6 +38,7 @@ public:
         Main,
         Transparency,
         SSAO,
+        SSR,
         DecalsGBuffer,
         BloomPingPong0,
         BloomPingPong1
@@ -70,6 +72,7 @@ public:
 
     void Bloom();
     void SSAO();
+    void SSR();
 
     void DrawFramebuffers();
 

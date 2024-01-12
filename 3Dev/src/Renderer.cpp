@@ -23,6 +23,7 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     shaders[ShaderType::Forward] = std::make_shared<Shader>(shadersDir + "vertex.vs", shadersDir + "forward.fs");
     shaders[ShaderType::LightingPass] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "fragment.fs");
     shaders[ShaderType::SSAO] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "ssao.fs");
+    shaders[ShaderType::SSR] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "ssr.fs");
     shaders[ShaderType::Decals] = std::make_shared<Shader>(shadersDir + "decals.vs", shadersDir + "decals.fs");
     shaders[ShaderType::Skybox] = std::make_shared<Shader>(shadersDir + "skybox.vs", shadersDir + "skybox.fs");
     shaders[ShaderType::Depth] = std::make_shared<Shader>(shadersDir + "depth.vs", shadersDir + "depth.fs");
@@ -43,6 +44,7 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale, fbSize.y / bloomResolutionScale, false, false, 1, GL_LINEAR);
 
     framebuffers[FramebufferType::SSAO] = std::make_shared<Framebuffer>(shaders[ShaderType::SSAO].get(), fbSize.x / 2.0, fbSize.y / 2.0, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_R16F, GL_RED);
+    framebuffers[FramebufferType::SSR] = std::make_shared<Framebuffer>(shaders[ShaderType::SSR].get(), fbSize.x, fbSize.y, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGBA16F, GL_RGBA);
     
     std::random_device dev;
     std::default_random_engine eng(dev());
@@ -230,6 +232,29 @@ void Renderer::SSAO()
     Framebuffer::Unbind();
 }
 
+void Renderer::SSR()
+{
+    framebuffers[FramebufferType::SSR]->Bind();
+    glViewport(0, 0, framebuffers[FramebufferType::SSR]->GetSize().x, framebuffers[FramebufferType::SSR]->GetSize().y);
+    glActiveTexture(GL_TEXTURE15);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 0));
+    glActiveTexture(GL_TEXTURE16);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 2));
+    glActiveTexture(GL_TEXTURE17);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::Main]->GetTexture(false));
+    glActiveTexture(GL_TEXTURE18);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 4));
+    shaders[ShaderType::SSR]->Bind();
+    shaders[ShaderType::SSR]->SetUniform1i("gposition", 15);
+    shaders[ShaderType::SSR]->SetUniform1i("gnormal", 16);
+    shaders[ShaderType::SSR]->SetUniform1i("gcolor", 17);
+    shaders[ShaderType::SSR]->SetUniform1i("gcombined", 18);
+    shaders[ShaderType::SSR]->SetUniformMatrix4("view", m.GetView());
+    shaders[ShaderType::SSR]->SetUniformMatrix4("projection", m.GetProjection());
+    framebuffers[FramebufferType::SSR]->Draw();
+    Framebuffer::Unbind();
+}
+
 void Renderer::DrawFramebuffers()
 {
     auto size = framebuffers[FramebufferType::Main]->GetSize();
@@ -237,6 +262,8 @@ void Renderer::DrawFramebuffers()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glActiveTexture(GL_TEXTURE15);
     glBindTexture(GL_TEXTURE_2D, pingPongBuffers[buffer]->GetTexture());
+    glActiveTexture(GL_TEXTURE16);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::SSR]->GetTexture());
     shaders[ShaderType::Post]->Bind();
     shaders[ShaderType::Post]->SetUniform1f("exposure", exposure);
     shaders[ShaderType::Post]->SetUniform1f("bloomStrength", bloomStrength);
@@ -244,6 +271,7 @@ void Renderer::DrawFramebuffers()
     shaders[ShaderType::Post]->SetUniform1f("dofMaxDistance", dofMaxDistance);
     shaders[ShaderType::Post]->SetUniform1f("dofFocusDistance", dofFocusDistance);
     shaders[ShaderType::Post]->SetUniform1i("bloom", 15);
+    shaders[ShaderType::Post]->SetUniform1i("ssr", 16);
     shaders[ShaderType::Post]->SetUniform1i("rawColor", false);
     shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);
     framebuffers[FramebufferType::Main]->Draw();
