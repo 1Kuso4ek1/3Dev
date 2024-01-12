@@ -652,6 +652,7 @@ void SceneManager::LoadEnvironment(const std::string& filename)
 {
     Renderer::GetInstance()->LoadEnvironment(filename);
     skybox->GetMaterial()[0]->SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap);
+    camera->Update(true);
 }
 
 void SceneManager::SetMainShader(Shader* shader, bool temp)
