@@ -120,6 +120,6 @@ void main()
     {
         vec4 ssr = texture(ssr, coord);
         if(length(ssr.xyz) > 0.0)
-            color.rgb = mix(color.rgb, ssr.rgb, 0.1 * ssr.w);
+            color.rgb = mix(color.rgb, ssr.rgb, 0.7 * ssr.w);
     }
 }

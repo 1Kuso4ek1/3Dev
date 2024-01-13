@@ -32,23 +32,23 @@ vec2 UV(vec3 pos)
 
 vec3 SSR(vec3 pos, vec3 reflected)
 {
-    vec3 rayStep = 0.1 * reflected;
+    vec3 rayStep = 0.05 * reflected;
 	vec3 marchingPos = pos + rayStep;
     float delta = 0.0;
 	
-	for(int i = 0; i < 70; i++)
+	for(int i = 0; i < 100; i++)
     {
 		uv = UV(marchingPos);
         float z = abs(texture(gposition, uv).z);
         if(z > 100.0) break;
 
 		delta = abs(marchingPos.z) - z;
-        falloff = 1.0 - abs(distance(pos, marchingPos) / 15);
+        falloff = 1.0 - abs(distance(pos, marchingPos) / 8);
         
         if(clamp(falloff, 0.0, 1.0) <= 0.0) break;
         if(abs(delta) < 0.01) return texture(gcolor, uv).rgb;
 
-        rayStep = rayStep * (1.0 - 0.1 * max(sign(delta), 0.0));
+        rayStep = rayStep * (1.0 - 0.05 * max(sign(delta), 0.0));
         marchingPos += rayStep * (-sign(delta));
     }
 
