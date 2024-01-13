@@ -43,7 +43,7 @@ vec3 SSR(vec3 pos, vec3 reflected)
         if(z > 100.0) break;
 
 		delta = abs(marchingPos.z) - z;
-        falloff = 1.0 - abs(distance(pos, marchingPos) / 8);
+        falloff = 1.0 - abs(distance(pos, marchingPos) / 10);
         
         if(clamp(falloff, 0.0, 1.0) <= 0.0) break;
         if(abs(delta) < 0.01) return texture(gcolor, uv).rgb;
