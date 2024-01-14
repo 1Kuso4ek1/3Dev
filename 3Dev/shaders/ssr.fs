@@ -34,12 +34,13 @@ void BinarySearch(vec3 dir, vec3 pos)
         float depth = texture(gposition, uv).z;
  
         float delta = pos.z - depth;
+        if(abs(delta) < 0.1) return;
 
         dir *= 0.5;
         pos += dir * sign(delta);
     }
  
-    uv = UV(pos);
+    uv = vec2(-1.0);
 }
 
 vec3 SSR(vec3 dir, vec3 pos)
@@ -61,7 +62,9 @@ vec3 SSR(vec3 dir, vec3 pos)
             if(delta <= 0.0)
             {
                 BinarySearch(dir, pos);
-                return texture(gcolor, uv).rgb;
+                if(uv != vec2(-1.0))
+                    return texture(gcolor, uv).rgb;
+                else break;
             }
         }
     }
@@ -76,23 +79,18 @@ vec3 hash(vec3 a)
     return fract((a.xxy + a.yxx) * a.zyx);
 }
 
-vec3 FresnelSchlick(float cosTh, vec3 f0, float rough)
-{
-    return f0 + (max(vec3(1.0 - rough), f0) - f0) * pow(1.0 - cosTh, 5.0);
-}
-
 void main()
 {
-    vec4 pos = texture(gposition, coord);
-    vec3 reflected = normalize(reflect(pos.xyz, normalize(texture(gnormal, coord).xyz)));
+    vec3 pos = texture(gposition, coord).xyz;
+    vec3 reflected = normalize(reflect(pos, normalize(texture(gnormal, coord).xyz)));
 
     vec4 combined = texture(gcombined, coord);
 
-    vec3 jitt = mix(vec3(0.0), hash((pos).xyz), combined.y);
-    vec3 ssr = SSR((jitt + reflected * max(0.1, -pos.z)), pos.xyz);
+    vec3 jitt = mix(vec3(0.0), hash((pos).xyz) / 3.0, combined.y);
+    vec3 ssr = SSR((jitt + reflected * max(0.1, -pos.z)), pos);
 
-    vec2 d = smoothstep(0.2, 0.6, abs(vec2(0.5, 0.5) - uv));
+    vec2 d = smoothstep(0.3, 0.8, abs(vec2(0.5, 0.5) - uv));
     float screenEdge = clamp(1.0 - (d.x + d.y), 0.0, 1.0);
 
-    color = vec4(ssr * screenEdge * 0.6, clamp(((1.0 - combined.y) / 1.5) + combined.x, 0.0, 1.0));
+    color = vec4(ssr, clamp(((1.0 - combined.y) / 1.5) + combined.x, 0.0, 1.0) * screenEdge);
 }

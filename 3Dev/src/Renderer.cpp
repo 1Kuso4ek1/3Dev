@@ -192,10 +192,15 @@ void Renderer::Bloom()
 
     horizontal = buffer = true;
 
+    glActiveTexture(GL_TEXTURE16);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::SSR]->GetTexture());
+
     pingPongBuffers[0]->Bind();
     glViewport(0, 0, pingPongBuffers[0]->GetSize().x, pingPongBuffers[0]->GetSize().y);
     shaders[ShaderType::Post]->Bind();
     shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);
+    shaders[ShaderType::Post]->SetUniform1i("ssrEnabled", ssrEnabled);
+    shaders[ShaderType::Post]->SetUniform1i("ssr", 16);
     shaders[ShaderType::Post]->SetUniform1i("rawColor", true);
     framebuffers[FramebufferType::Main]->Draw();
     shaders[ShaderType::Post]->Bind();

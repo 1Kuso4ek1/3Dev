@@ -97,6 +97,12 @@ void main()
     if(rawColor)
     {
         color.rgb = max(color.rgb, vec3(0.00001));
+        if(ssrEnabled && !transparentBuffer)
+        {
+            vec4 ssr = texture(ssr, coord);
+            if(length(ssr.xyz) > 0.0)
+                color.rgb = mix(color.rgb, ssr.rgb, ssr.w * 0.8);
+        }
         return;
     }
 
@@ -104,6 +110,12 @@ void main()
 
     float depth = pow(transparentBuffer ? texture(transparencyDepth, coord).x : texture(frameDepth, coord).x, 300.0);
     float dof = smoothstep(dofMinDistance, dofMaxDistance, abs(depth - dofFocusDistance));
+    if(ssrEnabled && !transparentBuffer)
+    {
+        vec4 ssr = texture(ssr, coord);
+        if(length(ssr.xyz) > 0.0)
+            color.rgb = mix(color.rgb, ssr.rgb, ssr.w * 0.8);
+    }
     color.rgb = mix(color.rgb, texture(bloom, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0));
 
     /*color.rgb = color.rgb / (color.rgb + vec3(1.0));
@@ -115,11 +127,4 @@ void main()
     color.rgb = (mlum / lum) * color.rgb;*/
     color.rgb = ACES();
     color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
-
-    if(ssrEnabled)
-    {
-        vec4 ssr = texture(ssr, coord);
-        if(length(ssr.xyz) > 0.0)
-            color.rgb = mix(color.rgb, ssr.rgb, 0.5 * ssr.w);
-    }
 }
