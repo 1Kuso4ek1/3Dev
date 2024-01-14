@@ -144,6 +144,7 @@ int main(int argc, char* argv[])
     engine.Init();
 
     Renderer::GetInstance()->SetSSAOSamples(ssaoSamples);
+    Renderer::GetInstance()->SetIsSSREnabled(true);
     Renderer::GetInstance()->Init({ w, h }, env, b, 128, b, bloomResolutionScale);
 
     Camera cam({ w, h });
