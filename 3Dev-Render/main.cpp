@@ -145,6 +145,9 @@ int main(int argc, char* argv[])
 
     Renderer::GetInstance()->SetSSAOSamples(ssaoSamples);
     Renderer::GetInstance()->SetIsSSREnabled(true);
+    Renderer::GetInstance()->SetSSRRayStep(0.005);
+    Renderer::GetInstance()->SetSSRMaxSteps(500);
+    Renderer::GetInstance()->SetSSRMaxBinarySearchSteps(100);
     Renderer::GetInstance()->Init({ w, h }, env, b, 128, b, bloomResolutionScale);
 
     Camera cam({ w, h });

@@ -186,6 +186,21 @@ void Renderer::SetIsSSREnabled(bool ssrEnabled)
     this->ssrEnabled = ssrEnabled;
 }
 
+void Renderer::SetSSRRayStep(float step)
+{
+    ssrRayStep = step;
+}
+
+void Renderer::SetSSRMaxSteps(int steps)
+{
+    ssrMaxSteps = steps;
+}
+
+void Renderer::SetSSRMaxBinarySearchSteps(int steps)
+{
+    ssrMaxBinarySearchSteps = steps;
+}
+
 void Renderer::Bloom()
 {
     if(bloomStrength <= 0) return;
@@ -261,7 +276,9 @@ void Renderer::SSR()
     shaders[ShaderType::SSR]->SetUniform1i("gnormal", 16);
     shaders[ShaderType::SSR]->SetUniform1i("gcolor", 17);
     shaders[ShaderType::SSR]->SetUniform1i("gcombined", 18);
-    shaders[ShaderType::SSR]->SetUniformMatrix4("view", m.GetView());
+    shaders[ShaderType::SSR]->SetUniform1f("rayStep", ssrRayStep);
+    shaders[ShaderType::SSR]->SetUniform1i("maxSteps", ssrMaxSteps);
+    shaders[ShaderType::SSR]->SetUniform1i("maxBinarySearchSteps", ssrMaxBinarySearchSteps);
     shaders[ShaderType::SSR]->SetUniformMatrix4("projection", m.GetProjection());
     framebuffers[FramebufferType::SSR]->Draw();
     Framebuffer::Unbind();
@@ -353,6 +370,21 @@ float Renderer::GetBloomStrength()
 int Renderer::GetBlurIterations()
 {
     return blurIterations;
+}
+
+float Renderer::GetSSRRayStep()
+{
+    return ssrRayStep;
+}
+
+int Renderer::GetSSRMaxSteps()
+{
+    return ssrMaxSteps;
+}
+
+int Renderer::GetSSRMaxBinarySearchSteps()
+{
+    return ssrMaxBinarySearchSteps;
 }
 
 GLuint Renderer::GetTexture(TextureType type)

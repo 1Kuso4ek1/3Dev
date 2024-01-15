@@ -45,12 +45,15 @@ Json::Value DefaultProperties(const Json::Value& recentProjects = "", const Json
     p["renderer"]["skyboxSideSize"] = 256;
     p["renderer"]["irradianceSideSize"] = 32;
     p["renderer"]["prefilteredSideSize"] = 256;
-    p["renderer"]["shadowMapResolution"] = 2048;
-    p["renderer"]["bloomResolutionScale"] = 10;
+    p["renderer"]["shadowMapResolution"] = 4096;
+    p["renderer"]["bloomResolutionScale"] = 8;
     p["renderer"]["ssaoSamples"] = 64;
-    p["renderer"]["ssaoStrength"] = 2.0;
+    p["renderer"]["ssaoStrength"] = 3.0;
     p["renderer"]["ssaoRadius"] = 0.5;
-    p["renderer"]["exposure"] = 0.5;
+    p["renderer"]["exposure"] = 0.8;
+    p["renderer"]["ssrRayStep"] = 0.1;
+    p["renderer"]["ssrMaxSteps"] = 100;
+    p["renderer"]["ssrMaxBinarySearchSteps"] = 20;
     p["renderer"]["useRGBA16F"] = true;
     p["renderer"]["ssrEnabled"] = true;
 
@@ -562,6 +565,9 @@ int main()
     if(properties["renderer"]["ssaoSamples"].asInt() > 0)
         Renderer::GetInstance()->SetSSAOSamples(properties["renderer"]["ssaoSamples"].asInt());
     Renderer::GetInstance()->SetIsSSREnabled(properties["renderer"]["ssrEnabled"].asBool());
+    Renderer::GetInstance()->SetSSRRayStep(properties["renderer"]["ssrRayStep"].asFloat());
+    Renderer::GetInstance()->SetSSRMaxSteps(properties["renderer"]["ssrMaxSteps"].asInt());
+    Renderer::GetInstance()->SetSSRMaxBinarySearchSteps(properties["renderer"]["ssrMaxBinarySearchSteps"].asInt());
     Renderer::GetInstance()->Init({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 },
                                     properties["renderer"]["hdriPath"].asString(),
                                     properties["renderer"]["skyboxSideSize"].asInt(),
@@ -1469,7 +1475,7 @@ int main()
                         rp3d::Quaternion orientation = object->GetOrientation();
                         rp3d::Vector3 size = object->GetSize();
 
-                        if(!objectMode)
+                        if(!nameEdit->isFocused() && nameEdit->getText() != sceneTree->getSelectedItem().back())
                         {
                             materialBox->deselectItem();
                             materialsList->removeAllItems();
@@ -1583,7 +1589,7 @@ int main()
                         lrotEditY->setText(tgui::String(glm::degrees(euler.y)));
                         lrotEditZ->setText(tgui::String(glm::degrees(euler.z)));
                         
-                        if(!objectMode)
+                        if(!lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem().back())
                         {
                             rEdit->setText(tgui::String(color.x));
                             gEdit->setText(tgui::String(color.y));
@@ -2093,7 +2099,7 @@ int main()
                     case 0:
                         selectedNode->SetTransform({ selectedNodeTransform.getPosition() + delta, selectedNodeTransform.getOrientation() }); break;
                     case 1:
-                        selectedNode->SetTransform({ selectedNodeTransform.getPosition(), selectedNodeTransform.getOrientation() * rp3d::Quaternion::fromEulerAngles(delta / 3) }); break;
+                        selectedNode->SetTransform({ selectedNodeTransform.getPosition(), selectedNodeTransform.getOrientation() * rp3d::Quaternion::fromEulerAngles(delta / 10) }); break;
                     case 2:
                         selectedNode->SetSize(selectedNode->GetSize() + (delta / 5)); break;
                     }

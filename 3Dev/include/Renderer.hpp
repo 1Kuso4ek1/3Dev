@@ -72,6 +72,10 @@ public:
 
     void SetIsSSREnabled(bool ssrEnabled);
 
+    void SetSSRRayStep(float step);
+    void SetSSRMaxSteps(int steps);
+    void SetSSRMaxBinarySearchSteps(int steps);
+
     void Bloom();
     void SSAO();
     void SSR();
@@ -95,6 +99,10 @@ public:
     float GetBloomStrength();
     int GetBlurIterations();
 
+    float GetSSRRayStep();
+    int GetSSRMaxSteps();
+    int GetSSRMaxBinarySearchSteps();
+
     GLuint GetTexture(TextureType type);
     Shader* GetShader(ShaderType type);
     Framebuffer* GetFramebuffer(FramebufferType type);
@@ -115,6 +123,9 @@ private:
     float fogStart = 0.0;
     float fogEnd = 0.0;
     float fogHeight = 0.0;
+    float ssrRayStep = 0.01;
+    int ssrMaxSteps = 100;
+    int ssrMaxBinarySearchSteps = 100;
     int blurIterations = 8;
     int samples = 64;
 

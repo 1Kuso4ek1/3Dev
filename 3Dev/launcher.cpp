@@ -39,6 +39,9 @@ int main()
     if(cfg["renderer"]["ssaoSamples"].asInt() > 0)
         Renderer::GetInstance()->SetSSAOSamples(cfg["renderer"]["ssaoSamples"].asInt());
     Renderer::GetInstance()->SetIsSSREnabled(cfg["renderer"]["ssrEnabled"].asBool());
+    Renderer::GetInstance()->SetSSRRayStep(cfg["renderer"]["ssrRayStep"].asFloat());
+    Renderer::GetInstance()->SetSSRMaxSteps(cfg["renderer"]["ssrMaxSteps"].asInt());
+    Renderer::GetInstance()->SetSSRMaxBinarySearchSteps(cfg["renderer"]["ssrMaxBinarySearchSteps"].asInt());
     Renderer::GetInstance()->Init(engine.GetWindow().getSize(),
                                   cfg["renderer"]["hdriPath"].asString(),
                                   cfg["renderer"]["skyboxSideSize"].asInt(),

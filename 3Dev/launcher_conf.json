@@ -24,7 +24,10 @@
         "ssaoStrength" : 2.0,
         "ssaoRadius" : 0.5,
         "exposure" : 1.0,
-        "ssrEnabled" : false,
+        "ssrRayStep" : 0.01,
+		"ssrMaxSteps" : 100,
+		"ssrMaxBinarySearchSteps" : 20,
+        "ssrEnabled" : true,
         "useRGBA16F" : true
     },
     "log" :

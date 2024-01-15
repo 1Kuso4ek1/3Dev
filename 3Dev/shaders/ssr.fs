@@ -6,10 +6,12 @@ uniform sampler2D gcolor;
 uniform sampler2D gnormal;
 uniform sampler2D gcombined;
 
-uniform mat4 view;
 uniform mat4 projection;
 
-uniform vec3 camPos;
+uniform int maxSteps = 100;
+uniform int maxBinarySearchSteps = 20;
+
+uniform float rayStep = 0.01;
 
 in vec2 coord;
 
@@ -27,7 +29,7 @@ vec2 UV(vec3 pos)
 
 void BinarySearch(vec3 dir, vec3 pos)
 {
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < maxBinarySearchSteps; i++)
     {
         uv = UV(pos);
  
@@ -45,9 +47,9 @@ void BinarySearch(vec3 dir, vec3 pos)
 
 vec3 SSR(vec3 dir, vec3 pos)
 {
-    dir *= 0.1;
+    dir *= rayStep;
  
-    for(int i = 0; i < 30; i++)
+    for(int i = 0; i < maxSteps; i++)
     {
         pos += dir;
  
@@ -72,11 +74,16 @@ vec3 SSR(vec3 dir, vec3 pos)
     return vec3(0.0);
 }
 
+float rand(vec2 v)
+{
+    return fract(sin(dot(v, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
 vec3 hash(vec3 a)
 {
     a = fract(a * 0.8);
     a += dot(a, a.yxz + 19.19);
-    return fract((a.xxy + a.yxx) * a.zyx);
+    return fract((a.xxy + a.yxx) * a.zyx) * rand(a.yz);
 }
 
 void main()
@@ -86,11 +93,11 @@ void main()
 
     vec4 combined = texture(gcombined, coord);
 
-    vec3 jitt = mix(vec3(0.0), hash((pos).xyz) / 3.0, combined.y);
+    vec3 jitt = mix(vec3(0.0), hash((pos).xyz), combined.y);
     vec3 ssr = SSR((jitt + reflected * max(0.1, -pos.z)), pos);
 
     vec2 d = smoothstep(0.3, 0.8, abs(vec2(0.5, 0.5) - uv));
     float screenEdge = clamp(1.0 - (d.x + d.y), 0.0, 1.0);
 
-    color = vec4(ssr, clamp(((1.0 - combined.y) / 1.5) + combined.x, 0.0, 1.0) * screenEdge);
+    color = vec4(ssr, clamp((((1.0 - combined.y) + combined.x) / 2.0), 0.1, 1.0) * screenEdge);
 }
