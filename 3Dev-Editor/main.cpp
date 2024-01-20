@@ -587,7 +587,7 @@ int main()
     cam.SetViewportSize({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 });
     cam.SetGuiSize({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 });
 
-    Light shadowSource({ 0, 0, 0 }, { 30.1, 50.0, -30.1 }, true);
+    Light* shadowSource = new Light({ 0, 0, 0 }, { 30.1, 50.0, -30.1 }, true);
 
     Material skyboxMaterial(
     {
@@ -714,13 +714,13 @@ int main()
         lastPath = projectFilename.substr(0, projectFilename.find_last_of("/"));
         scene.Load(projectFilename, true);
         if(scene.GetNames()[2].empty())
-            scene.AddLight(&shadowSource, "shadowSource");
+            scene.AddLight(shadowSource, "shadowSource");
         
         filenameEdit->setText(projectFilename.empty() ? "scene.json" : projectFilename);
     }
     else
     {
-        scene.AddLight(&shadowSource, "shadowSource");
+        scene.AddLight(shadowSource, "shadowSource");
         scene.AddMaterial(defaultMaterial, "default");
         materialBox->addItem("default");
         sceneTree->addItem({ "Scene", "Materials", "default" });
@@ -1577,18 +1577,6 @@ int main()
                         float innerCutoff = light->GetCutoff();
                         float outerCutoff = light->GetOuterCutoff();
 
-                        lightNameEdit->setText(sceneTree->getSelectedItem().back());
-
-                        lposEditX->setText(tgui::String(position.x));
-                        lposEditY->setText(tgui::String(position.y));
-                        lposEditZ->setText(tgui::String(position.z));
-
-                        glm::vec3 euler = glm::eulerAngles(toglm(orientation));
-
-                        lrotEditX->setText(tgui::String(glm::degrees(euler.x)));
-                        lrotEditY->setText(tgui::String(glm::degrees(euler.y)));
-                        lrotEditZ->setText(tgui::String(glm::degrees(euler.z)));
-                        
                         if(!lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem().back())
                         {
                             rEdit->setText(tgui::String(color.x));
@@ -1605,6 +1593,18 @@ int main()
                             castShadowsBox->setChecked(light->IsCastingShadows());
                             perspectiveShadowsBox->setChecked(light->IsCastingPerspectiveShadows());
                         }
+
+                        lightNameEdit->setText(sceneTree->getSelectedItem().back());
+
+                        lposEditX->setText(tgui::String(position.x));
+                        lposEditY->setText(tgui::String(position.y));
+                        lposEditZ->setText(tgui::String(position.z));
+
+                        glm::vec3 euler = glm::eulerAngles(toglm(orientation));
+
+                        lrotEditX->setText(tgui::String(glm::degrees(euler.x)));
+                        lrotEditY->setText(tgui::String(glm::degrees(euler.y)));
+                        lrotEditZ->setText(tgui::String(glm::degrees(euler.z)));
                     }
 
                     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && lightNameEdit->isFocused() && lightNameEdit->getText() != sceneTree->getSelectedItem().back())
