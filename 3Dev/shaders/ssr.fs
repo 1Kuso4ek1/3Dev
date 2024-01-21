@@ -83,7 +83,7 @@ vec3 hash(vec3 a)
 {
     a = fract(a * 0.8);
     a += dot(a, a.yxz + 19.19);
-    return fract((a.xxy + a.yxx) * a.zyx) * rand(a.yz);
+    return fract((a.xxy + a.yxx) * a.zyx) * rand(a.yz) * 2.0;
 }
 
 void main()
@@ -92,6 +92,9 @@ void main()
     vec3 reflected = normalize(reflect(pos, normalize(texture(gnormal, coord).xyz)));
 
     vec4 combined = texture(gcombined, coord);
+
+    if(combined.x == 0.0 && combined.y >= 0.9)
+        discard;
 
     vec3 jitt = mix(vec3(0.0), hash((pos).xyz), combined.y);
     vec3 ssr = SSR((jitt + reflected * max(0.1, -pos.z)), pos);

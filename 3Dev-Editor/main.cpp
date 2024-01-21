@@ -256,7 +256,7 @@ int main()
     auto progressBar = loading.get<tgui::ProgressBar>("progressBar");
 
 	auto viewportWindow = editor.get<tgui::ChildWindow>("viewport");
-    auto viewport = tgui::CanvasOpenGL3::create({ viewportWindow->getSize().x, viewportWindow->getSize().y - 28 });
+    auto viewport = tgui::CanvasOpenGL3::create({ "100%", "100%" });
 
     viewportWindow->add(viewport);
 
@@ -568,7 +568,7 @@ int main()
     Renderer::GetInstance()->SetSSRRayStep(properties["renderer"]["ssrRayStep"].asFloat());
     Renderer::GetInstance()->SetSSRMaxSteps(properties["renderer"]["ssrMaxSteps"].asInt());
     Renderer::GetInstance()->SetSSRMaxBinarySearchSteps(properties["renderer"]["ssrMaxBinarySearchSteps"].asInt());
-    Renderer::GetInstance()->Init({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 },
+    Renderer::GetInstance()->Init({ (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y },
                                     properties["renderer"]["hdriPath"].asString(),
                                     properties["renderer"]["skyboxSideSize"].asInt(),
                                     properties["renderer"]["irradianceSideSize"].asInt(),
@@ -584,8 +584,8 @@ int main()
     engine.GetWindow().display();
 
     Camera cam(&engine.GetWindow());
-    cam.SetViewportSize({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 });
-    cam.SetGuiSize({ (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28 });
+    cam.SetViewportSize({ (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y });
+    cam.SetGuiSize({ (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y });
 
     Light* shadowSource = new Light({ 0, 0, 0 }, { 30.1, 50.0, -30.1 }, true);
 
@@ -645,7 +645,7 @@ int main()
 
     // Gizmos
     sf::Vector2i prevMPos;
-    auto gizmosFb = std::make_shared<Framebuffer>(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post), (uint32_t)viewportWindow->getSize().x, (uint32_t)viewportWindow->getSize().y - 28);
+    auto gizmosFb = std::make_shared<Framebuffer>(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post), (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y);
 
     Material gizmoXMat(
     {
@@ -1418,6 +1418,41 @@ int main()
     	editor.handleEvent(event);
         if(focusCodeArea)
             codeArea->setFocused(true);
+        if(event.type == sf::Event::Resized)
+        {
+            auto p = editor.get<tgui::ChildWindow>("objectEditorWindow");
+            auto s = editor.get<tgui::ChildWindow>("sceneTreeWindow");
+            auto m = editor.get<tgui::ChildWindow>("messagesWindow");
+            auto c = editor.get<tgui::ChildWindow>("createWindow");
+
+            p->setPosition({ event.size.width - p->getSize().x, event.size.height - p->getSize().y });
+
+            s->setPosition({ event.size.width - s->getSize().x, 0 });
+            s->setSize({ 270, p->getPosition().y });
+
+            m->setPosition({ m->getPosition().x, event.size.height - m->getSize().y });
+            m->setSize({ p->getPosition().x - m->getPosition().x, m->getSize().y });
+
+            c->setSize({ c->getSize().x, event.size.height });
+
+            viewportWindow->setSize({ p->getPosition().x - c->getSize().x, event.size.height - m->getSize().y });
+            editor.get<tgui::ChildWindow>("codeEditor")->setSize(viewportWindow->getSize());
+
+            engine.SetGuiView({ 0, 0, viewportWindow->getSize().x * 1.65f, viewportWindow->getSize().y * 1.65f });
+            engine.SetGuiViewport({ 221, 26, viewportWindow->getSize().x - 1, viewportWindow->getSize().y - 28 });
+
+            cam.SetViewportSize({ (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y });
+            cam.SetGuiSize({ (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y });
+
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->Resize(viewport->getSize().x, viewport->getSize().y);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer)->Resize(viewport->getSize().x, viewport->getSize().y);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Resize(viewport->getSize().x, viewport->getSize().y);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Resize(viewport->getSize().x, viewport->getSize().y);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->Resize(viewport->getSize().x / 2.0, viewport->getSize().y / 2.0);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSR)->Resize(viewport->getSize().x, viewport->getSize().y);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(viewport->getSize().x / properties["renderer"]["bloomResolutionScale"].asFloat(), viewport->getSize().y / properties["renderer"]["bloomResolutionScale"].asFloat());
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->Resize(viewport->getSize().x / properties["renderer"]["bloomResolutionScale"].asFloat(), viewport->getSize().y / properties["renderer"]["bloomResolutionScale"].asFloat());
+        }
     	if(event.type == sf::Event::Closed)
     		engine.Close();
     });

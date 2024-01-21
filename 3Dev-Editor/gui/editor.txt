@@ -292,7 +292,7 @@ Renderer.21 {
     TextureHover = "themes/Black.png" Part(62, 288, 60, 40) Middle(15, 0) Smooth;
 }
 
-ChildWindow.ChildWindow1 {
+ChildWindow.createWindow {
     PositionLocked = true;
     Size = (220, 900);
     Title = Create;
@@ -474,7 +474,7 @@ ChildWindow.ChildWindow1 {
     }
 }
 
-ChildWindow.ChildWindow2 {
+ChildWindow.sceneTreeWindow {
     Position = (1330, 0);
     PositionLocked = true;
     Renderer = &4;
@@ -486,7 +486,7 @@ ChildWindow.ChildWindow2 {
 
     TreeView.scene {
         ItemHeight = 20;
-        Size = (270, 315);
+        Size = (270, 100%);
         TextSize = 13;
 
         Renderer {
@@ -2616,15 +2616,45 @@ ChildWindow.objectEditorWindow {
 ChildWindow.viewport {
     Position = (220, 0);
     PositionLocked = true;
-    Renderer = &4;
-    Size = (1110, 662);
+    Size = (1110, 660);
     Title = Viewport;
     TitleAlignment = Center;
     TitleButtons = None;
     TitleTextSize = 13;
 
+    Renderer {
+        BackgroundColor = rgb( 80, 80, 80);
+        BorderColor = Black;
+        Borders = (1, 1, 1, 1);
+        DistanceToSide = 5;
+        PaddingBetweenButtons = 2;
+        ShowTextOnTitleButtons = false;
+        TextureBackground = None;
+        TextureTitleBar = "themes/Black.png" Part(0, 580, 75, 25) Middle(25, 0) Smooth;
+        TitleBarHeight = 25;
+        TitleColor = rgb(190, 190, 190);
+
+        MaximizeButton {
+            Texture = "themes/Black.png" Part(0, 330, 15, 15) Smooth;
+            TextureDown = "themes/Black.png" Part(17, 330, 15, 15) Smooth;
+            TextureHover = "themes/Black.png" Part(34, 330, 15, 15) Smooth;
+        }
+
+        MinimizeButton {
+            Texture = "themes/Black.png" Part(81, 330, 15, 15) Smooth;
+            TextureDown = "themes/Black.png" Part(98, 330, 15, 15) Smooth;
+            TextureHover = "themes/Black.png" Part(0, 347, 15, 15) Smooth;
+        }
+
+        CloseButton {
+            Texture = "themes/Black.png" Part(34, 212, 15, 15) Smooth;
+            TextureDown = "themes/Black.png" Part(51, 212, 15, 15) Smooth;
+            TextureHover = "themes/Black.png" Part(68, 212, 15, 15) Smooth;
+        }
+    }
+
     Label.mode {
-        Position = (4, 608);
+        Position = (4, 96.05%);
         Size = (808.2, 26.0827);
         Text = "Mode: None";
         TextSize = 13;
@@ -2650,7 +2680,7 @@ ChildWindow.viewport {
     }
 }
 
-ChildWindow.ChildWindow3 {
+ChildWindow.messagesWindow {
     Position = (220, 660);
     PositionLocked = true;
     Renderer = &4;
@@ -2663,7 +2693,7 @@ ChildWindow.ChildWindow3 {
     ChatBox.messages {
         LinesStartFromTop = false;
         NewLinesBelowOthers = true;
-        Size = (1108, 214);
+        Size = (100%, 214);
         TextColor = black;
         TextSize = 13;
 
@@ -2729,7 +2759,7 @@ ChildWindow.codeEditor {
     TextArea.code {
         HorizontalScrollbarPolicy = Never;
         MaximumCharacters = 0;
-        Size = (1108, 601.432);
+        Size = (100%, 94.66%);
         Text = "";
         TextSize = 13;
 
@@ -2757,8 +2787,8 @@ ChildWindow.codeEditor {
 
     Tabs.fileTabs {
         AutoSize = 0;
-        Position = (0, 600);
-        Size = (1108, 33);
+        Position = (0, 94.43%);
+        Size = (100%, 5.19%);
         TextSize = 13;
 
         Renderer {
