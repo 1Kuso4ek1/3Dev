@@ -15,7 +15,7 @@ public:
     void AddModel(std::shared_ptr<Model> model, const std::string& name = "model", bool checkUniqueness = true);
     void AddMaterial(std::shared_ptr<Material> material, const std::string& name = "material");
     void AddAnimation(std::shared_ptr<Animation> animation, const std::string& name = "animation");
-    void AddLight(Light* light, const std::string& name = "light");
+    void AddLight(std::shared_ptr<Light> light, const std::string& name = "light");
 
     void StoreBones(std::shared_ptr<Model> model, Bone* bone = nullptr);
     void RemoveBones(std::shared_ptr<Model> model, Bone* bone = nullptr);
@@ -23,10 +23,15 @@ public:
     template<class... Args>
     std::shared_ptr<Model> CreateModel(const std::string& name, Args&&... args);
 
+    template<class... Args>
+    std::shared_ptr<Light> CreateLight(const std::string& name, Args&&... args);
+
+    std::shared_ptr<Material> CreateMaterial(const std::string& name);
+
     void RemoveModel(std::shared_ptr<Model> model);
     void RemoveMaterial(std::shared_ptr<Material> material);
     void RemoveAnimation(std::shared_ptr<Animation> animation);
-    void RemoveLight(Light* light);
+    void RemoveLight(std::shared_ptr<Light> light);
 
     void RemoveAllObjects();
 
@@ -54,6 +59,7 @@ public:
     std::string GetLastAdded();
 
     std::shared_ptr<Model> GetModel(const std::string& name);
+    std::shared_ptr<Light> GetLight(const std::string& name);
     std::shared_ptr<Material> GetMaterial(const std::string& name);
     std::shared_ptr<Animation> GetAnimation(const std::string& name);
     std::shared_ptr<PhysicsManager> GetPhysicsManager();
@@ -71,12 +77,18 @@ public:
 
     // For angelscript
     Model* GetModelPtr(const std::string& name);
+    Light* GetLightPtr(const std::string& name);
     Material* GetMaterialPtr(const std::string& name);
     Animation* GetAnimationPtr(const std::string& name);
     PhysicsManager* GetPhysicsManagerPtr();
     SoundManager* GetSoundManagerPtr();
 
+    Model* CreateModelPtr(const std::string& filename = "", bool isTemporary = true, const std::string& name = "model");
+    Light* CreateLightPtr(bool isTemporary = true, const std::string& name = "light");
+    Material* CreateMaterialPtr(const std::string& name = "material");
+
     void RemoveModelPtr(Model* model);
+    void RemoveLightPtr(Light* light);
     void RemoveMaterialPtr(Material* material);
     void RemoveAnimationPtr(Animation* animation);
 
@@ -86,7 +98,6 @@ public:
     std::vector<Model*> GetModelPtrGroup(const std::string& name);
 
     Camera* GetCamera();
-    Light* GetLight(const std::string& name);
     Bone* GetBone(const std::string& name);
 
     std::vector<Light*> GetShadowCastingLights();
@@ -128,7 +139,7 @@ private:
     std::map<std::string, Bone*> bones;
     std::map<std::string, std::shared_ptr<Model>> models;
     std::map<std::string, std::shared_ptr<Material>> materials; // for editor and scene saving
-    std::map<std::string, Light*> lights;
+    std::map<std::string, std::shared_ptr<Light>> lights;
 
     std::map<std::string, std::shared_ptr<Animation>> animations;
 

@@ -55,7 +55,7 @@ int main()
     rp3d::PhysicsWorld::WorldSettings st;
     auto man = std::make_shared<PhysicsManager>(st);
 
-    Light l({ 0, 0, 0 }, { 50.1, 100.0, 50.1 }, true);
+    auto l = std::make_shared<Light>(rp3d::Vector3(0, 0, 0), rp3d::Vector3(50.1, 100.0, 50.1), true);
 
     Material skyboxMaterial(
     {
@@ -74,7 +74,7 @@ int main()
     scene.SetSoundManager(sman);
     scene.Load(cfg["scenePath"].asString());
     if(scene.GetNames()[2].empty())
-        scene.AddLight(&l);
+        scene.AddLight(l);
 
     std::vector<bool> varState;
 

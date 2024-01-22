@@ -290,7 +290,7 @@ void Renderer::DrawFramebuffers()
     glViewport(0, 0, size.x, size.y);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glActiveTexture(GL_TEXTURE15);
-    glBindTexture(GL_TEXTURE_2D, pingPongBuffers[buffer]->GetTexture());
+    glBindTexture(GL_TEXTURE_2D, pingPongBuffers[!buffer]->GetTexture());
     glActiveTexture(GL_TEXTURE16);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::SSR]->GetTexture());
     shaders[ShaderType::Post]->Bind();

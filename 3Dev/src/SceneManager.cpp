@@ -259,15 +259,15 @@ void SceneManager::AddAnimation(std::shared_ptr<Animation> animation, const std:
     animations[lastAdded] = animation;
 }
 
-void SceneManager::AddLight(Light* light, const std::string& name)
+void SceneManager::AddLight(std::shared_ptr<Light> light, const std::string& name)
 {
     int nameCount = std::count_if(lights.begin(), lights.end(), [&](auto& p)
                     { return p.first.find(name) != std::string::npos; });
 
     lastAdded = name + (nameCount ? std::to_string(nameCount) : "");
-    nodes[lastAdded] = (Node*)(light);
+    nodes[lastAdded] = (Node*)(light.get());
     lights[lastAdded] = light;
-    lightsVector.push_back(light);
+    lightsVector.push_back(light.get());
 }
 
 void SceneManager::StoreBones(std::shared_ptr<Model> model, Bone* bone)
@@ -325,6 +325,21 @@ std::shared_ptr<Model> SceneManager::CreateModel(const std::string& name, Args&&
     return ret;
 }
 
+template<class... Args>
+std::shared_ptr<Light> SceneManager::CreateLight(const std::string& name, Args&&... args)
+{
+    auto ret = std::make_shared<Light>(args...);
+    AddLight(ret, name);
+    return ret;
+}
+
+std::shared_ptr<Material> SceneManager::CreateMaterial(const std::string& name)
+{
+    auto ret = std::make_shared<Material>();
+    AddMaterial(ret, name);
+    return ret;
+}
+
 void SceneManager::RemoveModel(std::shared_ptr<Model> model)
 {
     auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second == model; });
@@ -354,15 +369,15 @@ void SceneManager::RemoveAnimation(std::shared_ptr<Animation> animation)
         animations.erase(it);
 }
 
-void SceneManager::RemoveLight(Light* light)
+void SceneManager::RemoveLight(std::shared_ptr<Light> light)
 {
     auto it = std::find_if(lights.begin(), lights.end(), [&](auto& p) { return p.second == light; });
-    auto itn = std::find_if(nodes.begin(), nodes.end(), [&](auto& p) { return p.second == light; });
+    auto itn = std::find_if(nodes.begin(), nodes.end(), [&](auto& p) { return p.second == light.get(); });
     if(it != lights.end())
     {
         lights.erase(it);
         nodes.erase(itn);
-        lightsVector.erase(std::find(lightsVector.begin(), lightsVector.end(), it->second));
+        lightsVector.erase(std::find(lightsVector.begin(), lightsVector.end(), it->second.get()));
     }
 }
 
@@ -544,10 +559,10 @@ void SceneManager::Load(const std::string& filename, bool loadEverything)
     while(!data["lights"][counter].empty())
     {
         auto name = data["lights"][counter]["name"].asString();
-        lights[name] = new Light(rp3d::Vector3::zero(), rp3d::Vector3::zero());
+        lights[name] = std::make_shared<Light>(rp3d::Vector3::zero(), rp3d::Vector3::zero());
         lights[name]->Deserialize(data["lights"][counter]);
-        nodes[name] = lights[name];
-        lightsVector.push_back(lights[name]);
+        nodes[name] = lights[name].get();
+        lightsVector.push_back(lights[name].get());
 
         counter++;
     }
@@ -592,7 +607,7 @@ void SceneManager::Load(const std::string& filename, bool loadEverything)
         {
             light->SetParent(GetNode(parent));
             if(bones.find(parent) != bones.end())
-                GetNode(parent)->AddChild(light);
+                GetNode(parent)->AddChild(light.get());
         }
 
         counter++;
@@ -700,6 +715,15 @@ std::shared_ptr<Model> SceneManager::GetModel(const std::string& name)
     return nullptr;
 }
 
+std::shared_ptr<Light> SceneManager::GetLight(const std::string& name)
+{
+    if(lights.find(name) != lights.end())
+        return lights[name];
+    Log::Write("Could not find a light with name \""
+                + name + "\", function will return nullptr", Log::Type::Warning);
+    return nullptr;
+}
+
 std::shared_ptr<Material> SceneManager::GetMaterial(const std::string& name)
 {
     if(materials.find(name) != materials.end())
@@ -792,6 +816,15 @@ Model* SceneManager::GetModelPtr(const std::string& name)
     return nullptr;
 }
 
+Light* SceneManager::GetLightPtr(const std::string& name)
+{
+    if(lights.find(name) != lights.end())
+        return lights[name].get();
+    Log::Write("Could not find a light with name \""
+                + name + "\", function will return nullptr", Log::Type::Warning);
+    return nullptr;
+}
+
 Material* SceneManager::GetMaterialPtr(const std::string& name)
 {
     if(materials.find(name) != materials.end())
@@ -820,6 +853,39 @@ SoundManager* SceneManager::GetSoundManagerPtr()
     return sManager.get();
 }
 
+Model* SceneManager::CreateModelPtr(const std::string& filename, bool isTemporary, const std::string& name)
+{
+    std::shared_ptr<Model> ret;
+    if(filename.empty())
+    {
+        ret = CreateModel(name, true);
+        ret->SetMaterial({ materials.begin()->second.get() });
+    }
+    else ret = CreateModel(name, filename, std::vector<Material*>{ materials.begin()->second.get() });
+
+    ret->SetPhysicsManager(pManager.get());
+    ret->CreateRigidBody();
+    if(filename.empty())
+        ret->CreateBoxShape();
+    if(isTemporary)
+        temporaryModelCopies.push_back(GetLastAdded());
+
+    return ret.get();
+}
+
+Light* SceneManager::CreateLightPtr(bool isTemporary, const std::string& name)
+{
+    auto ret = CreateLight(name, rp3d::Vector3::zero(), rp3d::Vector3::zero());
+    if(isTemporary)
+        temporaryLightCopies.push_back(GetLastAdded());
+    return ret.get();
+}
+
+Material* SceneManager::CreateMaterialPtr(const std::string& name)
+{
+    return CreateMaterial(name).get();
+}
+
 void SceneManager::RemoveModelPtr(Model* model)
 {
     auto it = std::find_if(models.begin(), models.end(), [&](auto& p) { return p.second.get() == model; });
@@ -832,6 +898,18 @@ void SceneManager::RemoveModelPtr(Model* model)
             RemoveFromTheGroup(p.second, it->second);
         models.erase(it);
         nodes.erase(itn);
+    }
+}
+
+void SceneManager::RemoveLightPtr(Light* light)
+{
+    auto it = std::find_if(lights.begin(), lights.end(), [&](auto& p) { return p.second.get() == light; });
+    auto itn = std::find_if(nodes.begin(), nodes.end(), [&](auto& p) { return p.second == light; });
+    if(it != lights.end())
+    {
+        lights.erase(it);
+        nodes.erase(itn);
+        lightsVector.erase(std::find(lightsVector.begin(), lightsVector.end(), it->second.get()));
     }
 }
 
@@ -882,11 +960,11 @@ Model* SceneManager::CloneModel(Model* model, bool isTemporary, const std::strin
 
 Light* SceneManager::CloneLight(Light* light, bool isTemporary, const std::string& name)
 {
-    auto ret = new Light(light);
+    auto ret = std::make_shared<Light>(light);
     AddLight(ret, name);
     if(isTemporary)
         temporaryLightCopies.push_back(GetLastAdded());
-    return ret;
+    return ret.get();
 }
 
 std::vector<Model*> SceneManager::GetModelPtrGroup(const std::string& name)
@@ -900,15 +978,6 @@ std::vector<Model*> SceneManager::GetModelPtrGroup(const std::string& name)
 Camera* SceneManager::GetCamera()
 {
     return camera;
-}
-
-Light* SceneManager::GetLight(const std::string& name)
-{
-    if(lights.find(name) != lights.end())
-        return lights[name];
-    Log::Write("Could not find a light with name \""
-                + name + "\", function will return nullptr", Log::Type::Warning);
-    return nullptr;
 }
 
 Bone* SceneManager::GetBone(const std::string& name)
@@ -925,7 +994,7 @@ std::vector<Light*> SceneManager::GetShadowCastingLights()
     std::vector<Light*> ret;
     for(auto& i : lights)
         if(i.second->IsCastingShadows())
-            ret.push_back(i.second);
+            ret.push_back(i.second.get());
     return ret;
 }
 

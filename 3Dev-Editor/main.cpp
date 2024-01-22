@@ -587,7 +587,7 @@ int main()
     cam.SetViewportSize({ (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y });
     cam.SetGuiSize({ (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y });
 
-    Light* shadowSource = new Light({ 0, 0, 0 }, { 30.1, 50.0, -30.1 }, true);
+    auto shadowSource = std::make_shared<Light>(rp3d::Vector3(0, 0, 0), rp3d::Vector3(30.1, 50.0, -30.1), true);
 
     Material skyboxMaterial(
     {
@@ -920,7 +920,7 @@ int main()
 
     lightButton->onPress([&]()
     {
-        auto light = new Light(rp3d::Vector3(0, 0, 0), rp3d::Vector3::zero());
+        auto light = std::make_shared<Light>(rp3d::Vector3::zero(), rp3d::Vector3::zero());
         scene.AddLight(light);
         readSceneTree();
         sceneTree->selectItem({ "Scene", "Objects", scene.GetLastAdded() });
@@ -1025,7 +1025,6 @@ int main()
     {
         auto light = scene.GetLight(sceneTree->getSelectedItem().back().toStdString());
     	scene.RemoveLight(light);
-        delete light;
     	readSceneTree();
     });
 
@@ -2110,7 +2109,7 @@ int main()
 
                     rp3d::Vector3 delta;
 
-                    rp3d::Ray ray(cam.GetPosition(true), cam.GetPosition(true) + mouse * 200);
+                    rp3d::Ray ray(cam.GetPosition(true), cam.GetPosition(true) + mouse * 10000);
                     rp3d::RaycastInfo info;
 
                     if((gizmoX->GetRigidBody()->raycast(ray, info) && axis == -1) || axis == 0)

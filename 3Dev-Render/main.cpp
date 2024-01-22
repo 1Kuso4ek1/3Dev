@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
     rp3d::PhysicsWorld::WorldSettings st;
     auto man = std::make_shared<PhysicsManager>(st);
 
-    Light shadowSource({ 0, 0, 0 }, { 30.1, 50.0, -30.1 }, true);
+    auto shadowSource = std::make_shared<Light>(rp3d::Vector3(0, 0, 0), rp3d::Vector3(50.1, 100.0, 50.1), true);
 
     Material skyboxMaterial(
     {
@@ -180,7 +180,7 @@ int main(int argc, char* argv[])
     scene.Load(scenePath, true);
     
     if(scene.GetNames()[2].empty())
-        scene.AddLight(&shadowSource);
+        scene.AddLight(shadowSource);
 
     std::filesystem::current_path(path);
 

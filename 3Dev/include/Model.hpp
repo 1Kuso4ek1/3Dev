@@ -17,7 +17,7 @@ public:
 	Model(Model* model);
 	Model(Shader* shader);
 	Model(std::vector<std::shared_ptr<Mesh>> meshes, Shader* shader = nullptr);
-	Model(std::string filename, std::vector<Material*> mat, unsigned int flags = aiProcess_Triangulate | aiProcess_FlipUVs,
+	Model(std::string filename, std::vector<Material*> mat, unsigned int flags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes,
 		  PhysicsManager* man = nullptr, Shader* shader = nullptr, Matrices* m = nullptr);
 	~Model();
 
