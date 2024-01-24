@@ -440,6 +440,8 @@ void ScriptManager::RegisterCamera()
         { "void SetOrientation(const Quaternion& in)", WRAP_MFN(Camera, SetOrientation) },
         { "void SetSpeed(float)", WRAP_MFN(Camera, SetSpeed) },
         { "void SetFOV(float)", WRAP_MFN(Camera, SetFOV) },
+        { "void SetNear(float)", WRAP_MFN(Camera, SetNear) },
+        { "void SetFar(float)", WRAP_MFN(Camera, SetFar) },
         { "void AlwaysUp(bool)", WRAP_MFN(Camera, AlwaysUp) },
         { "void Look()", WRAP_MFN_PR(Camera, Look, (), void) },
         { "void Look(const Vector3& in)", WRAP_MFN_PR(Camera, Look, (const rp3d::Vector3&), void) },
@@ -450,7 +452,9 @@ void ScriptManager::RegisterCamera()
         { "Vector2 WorldPositionToScreen(const Vector3& in, bool = true)", WRAP_MFN(Camera, WorldPositionToScreen) },
         { "Vector3 ScreenPositionToWorld(bool, const Vector2& in = Vector2(0, 0))", WRAP_MFN(Camera, ScreenPositionToWorld) },
         { "float GetSpeed()", WRAP_MFN(Camera, GetSpeed) },
-        { "float GetFOV()", WRAP_MFN(Camera, GetFOV) }
+        { "float GetFOV()", WRAP_MFN(Camera, GetFOV) },
+        { "float GetNear()", WRAP_MFN(Camera, GetNear) },
+        { "float GetFar()", WRAP_MFN(Camera, GetFar) }
     }, {});
 
     engine->RegisterObjectMethod("Node", "Camera@ opCast()", WRAP_OBJ_LAST(CastToCamera), asCALL_GENERIC);
@@ -718,6 +722,8 @@ void ScriptManager::RegisterTGUI()
     AddEnum("ShowEffectType", { "Fade", "Scale", "SlideToRight", "SlideToLeft", "SlideToBottom", "SlideToTop", "SlideFromLeft", "SlideFromRight", "SlideTFromTop", "SlideFromBottom" });
 
     engine->RegisterFuncdef("void OnPress()");
+
+    // It's probably better to rewrite this whole mess
     AddType("BitmapButton", sizeof(tgui::BitmapButton),
     {
         { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
@@ -1028,7 +1034,12 @@ void ScriptManager::RegisterTGUI()
         { "Tabs@ getTabs(string)", WRAP_OBJ_LAST(GetWidget<tgui::Tabs>) },
         { "TextArea@ getTextArea(string)", WRAP_OBJ_LAST(GetWidget<tgui::TextArea>) },
         { "TreeView@ getTreeView(string)", WRAP_OBJ_LAST(GetWidget<tgui::TreeView>) },
-        { "void copyLabel(Label@, string)", WRAP_OBJ_LAST(CopyWidget) }
+        { "void copyBitmapButton(BitmapButton@, string)", WRAP_OBJ_LAST(CopyWidget) },
+        { "void copyButton(Button@, string)", WRAP_OBJ_LAST(CopyWidget) },
+        { "void copyLabel(Label@, string)", WRAP_OBJ_LAST(CopyWidget) },
+        { "void copyPicture(Picture@, string)", WRAP_OBJ_LAST(CopyWidget) },
+        { "void copyProgressBar(ProgressBar@, string)", WRAP_OBJ_LAST(CopyWidget) },
+        { "void copyRichTextLabel(RichTextLabel@, string)", WRAP_OBJ_LAST(CopyWidget) }
     }, {});
     
     SetDefaultNamespace("");

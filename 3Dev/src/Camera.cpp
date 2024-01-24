@@ -248,4 +248,6 @@ void Camera::Deserialize(Json::Value data)
     near = data["near"].asFloat();
     far = data["far"].asFloat();
     alwaysUp = data["alwaysUp"].asBool();
+
+	UpdateMatrix();
 }
