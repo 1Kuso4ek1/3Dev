@@ -2051,7 +2051,7 @@ int main()
 			scman.ExecuteFunction(loopDecl);
 
 		cam.Update();
-		if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
+		if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Right) && engine.GetWindow().hasFocus())
 		{
 			engine.GetWindow().setMouseCursorVisible(false);
 			engine.GetWindow().setMouseCursorGrabbed(true);
