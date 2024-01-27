@@ -257,14 +257,9 @@ void Renderer::Bloom()
 
     pingPongBuffers1[0]->Bind();
     glViewport(0, 0, pingPongBuffers1[0]->GetSize().x, pingPongBuffers1[0]->GetSize().y);
-    shaders[ShaderType::Post]->Bind();
-    shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);
-    framebuffers[FramebufferType::Main]->Draw();
-    shaders[ShaderType::Post]->Bind();
-    shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", true);
-    framebuffers[FramebufferType::Transparency]->Draw();
+    pingPongBuffers[buffer]->Draw();
 
-    for(int i = 0; i < blurIterations * 2; i++)
+    for(int i = 0; i < blurIterations; i++)
     {
         pingPongBuffers1[buffer]->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
