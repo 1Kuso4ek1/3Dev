@@ -192,6 +192,12 @@ int main(int argc, char* argv[])
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)
     };
 
+    std::vector<Framebuffer*> pingPongBuffers1 = 
+    {
+        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong2),
+        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong3)
+    };
+
     Framebuffer render(nullptr, w, h), renderTr(nullptr, w, h);
 
     sf::Image image;
@@ -226,12 +232,15 @@ int main(int argc, char* argv[])
         glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSR)->GetTexture());
         glActiveTexture(GL_TEXTURE17);
         glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)->GetTexture());
+        glActiveTexture(GL_TEXTURE18);
+        glBindTexture(GL_TEXTURE_2D, pingPongBuffers1[blurIterations % 2 == 0]->GetTexture());
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exposure);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("bloomStrength", bloomStrength);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom", 15);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssr", 16);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssgi", 17);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom1", 18);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();

@@ -44,6 +44,8 @@ public:
         DecalsGBuffer,
         BloomPingPong0,
         BloomPingPong1,
+        BloomPingPong2,
+        BloomPingPong3,
         SSGIPingPong0,
         SSGIPingPong1
     };
@@ -143,7 +145,7 @@ private:
     Matrices m;
 
     std::vector<glm::vec3> ssaoSamples, noise;
-    std::vector<Framebuffer*> pingPongBuffers, ssgiPingPong;
+    std::vector<Framebuffer*> pingPongBuffers, pingPongBuffers1, ssgiPingPong;
 
     std::shared_ptr<Framebuffer> capture, captureIrr, captureSpc, captureBRDF;
 
