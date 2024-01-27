@@ -23,6 +23,7 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     shaders[ShaderType::Forward] = std::make_shared<Shader>(shadersDir + "vertex.vs", shadersDir + "forward.fs");
     shaders[ShaderType::LightingPass] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "fragment.fs");
     shaders[ShaderType::SSAO] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "ssao.fs");
+    shaders[ShaderType::SSGI] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "ssgi.fs");
     shaders[ShaderType::SSR] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "ssr.fs");
     shaders[ShaderType::Decals] = std::make_shared<Shader>(shadersDir + "decals.vs", shadersDir + "decals.fs");
     shaders[ShaderType::Skybox] = std::make_shared<Shader>(shadersDir + "skybox.vs", shadersDir + "skybox.fs");
@@ -43,7 +44,12 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     framebuffers[FramebufferType::BloomPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale, fbSize.y / bloomResolutionScale, false, false, 1, GL_LINEAR);
     framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale, fbSize.y / bloomResolutionScale, false, false, 1, GL_LINEAR);
 
+    framebuffers[FramebufferType::SSGIPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / 8.0, fbSize.y / 8.0, false, false, 1, GL_LINEAR);
+    framebuffers[FramebufferType::SSGIPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / 8.0, fbSize.y / 8.0, false, false, 1, GL_LINEAR);
+
     framebuffers[FramebufferType::SSAO] = std::make_shared<Framebuffer>(shaders[ShaderType::SSAO].get(), fbSize.x / 2.0, fbSize.y / 2.0, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_R16F, GL_RED);
+
+    framebuffers[FramebufferType::SSGI] = std::make_shared<Framebuffer>(shaders[ShaderType::SSGI].get(), fbSize.x / 2.0, fbSize.y / 2.0, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGBA16F, GL_RGBA);
 
     framebuffers[FramebufferType::SSR] = std::make_shared<Framebuffer>(shaders[ShaderType::SSR].get(), fbSize.x, fbSize.y, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGBA16F, GL_RGBA);
     
@@ -83,6 +89,12 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     {
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0),
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)
+    };
+
+    ssgiPingPong = 
+    {
+        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong0),
+        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)
     };
 
     LoadEnvironment(environmentMapFilename);
@@ -257,6 +269,36 @@ void Renderer::SSAO()
     Framebuffer::Unbind();
 }
 
+void Renderer::SSGI()
+{
+    if(!ssrEnabled) return;
+
+    glActiveTexture(GL_TEXTURE15);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 0));
+    glActiveTexture(GL_TEXTURE16);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::Main]->GetTexture(false));
+    shaders[ShaderType::SSGI]->Bind();
+    shaders[ShaderType::SSGI]->SetUniform1i("gposition", 15);
+    shaders[ShaderType::SSGI]->SetUniform1i("galbedo", 16);
+
+    horizontal = buffer = true;
+
+    ssgiPingPong[0]->Bind();
+    glViewport(0, 0, ssgiPingPong[0]->GetSize().x, ssgiPingPong[0]->GetSize().y);
+    framebuffers[FramebufferType::SSGI]->Draw();
+
+    for(int i = 0; i < 32; i++)
+    {
+        ssgiPingPong[buffer]->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
+        ssgiPingPong[!buffer]->Draw();
+        buffer = !buffer; horizontal = !horizontal;
+    }
+
+    Framebuffer::Unbind();
+}
+
 void Renderer::SSR()
 {
     if(!ssrEnabled) return;
@@ -293,6 +335,8 @@ void Renderer::DrawFramebuffers()
     glBindTexture(GL_TEXTURE_2D, pingPongBuffers[!buffer]->GetTexture());
     glActiveTexture(GL_TEXTURE16);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::SSR]->GetTexture());
+    glActiveTexture(GL_TEXTURE17);
+    glBindTexture(GL_TEXTURE_2D, ssgiPingPong[0]->GetTexture());
     shaders[ShaderType::Post]->Bind();
     shaders[ShaderType::Post]->SetUniform1f("exposure", exposure);
     shaders[ShaderType::Post]->SetUniform1f("bloomStrength", bloomStrength);
@@ -301,6 +345,7 @@ void Renderer::DrawFramebuffers()
     shaders[ShaderType::Post]->SetUniform1f("dofFocusDistance", dofFocusDistance);
     shaders[ShaderType::Post]->SetUniform1i("bloom", 15);
     shaders[ShaderType::Post]->SetUniform1i("ssr", 16);
+    shaders[ShaderType::Post]->SetUniform1i("ssgi", 17);
     shaders[ShaderType::Post]->SetUniform1i("rawColor", false);
     shaders[ShaderType::Post]->SetUniform1i("ssrEnabled", ssrEnabled);
     shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);

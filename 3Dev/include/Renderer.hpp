@@ -20,6 +20,7 @@ public:
         Forward,
         LightingPass,
         SSAO,
+        SSGI,
         SSR,
         Decals,
         Skybox,
@@ -38,10 +39,13 @@ public:
         Main,
         Transparency,
         SSAO,
+        SSGI,
         SSR,
         DecalsGBuffer,
         BloomPingPong0,
-        BloomPingPong1
+        BloomPingPong1,
+        SSGIPingPong0,
+        SSGIPingPong1
     };
 
     static Renderer* GetInstance();
@@ -78,6 +82,7 @@ public:
 
     void Bloom();
     void SSAO();
+    void SSGI();
     void SSR();
 
     void DrawFramebuffers();
@@ -138,7 +143,7 @@ private:
     Matrices m;
 
     std::vector<glm::vec3> ssaoSamples, noise;
-    std::vector<Framebuffer*> pingPongBuffers;
+    std::vector<Framebuffer*> pingPongBuffers, ssgiPingPong;
 
     std::shared_ptr<Framebuffer> capture, captureIrr, captureSpc, captureBRDF;
 
