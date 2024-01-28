@@ -12,11 +12,10 @@
 - Physically Based Rendering
 - Deferred + Forward (for transparency) rendering
 - Rigid body physics
-- A lot of supported model formats (.obj, .dae, .fbx and much more...)
 - Good animation system
 - Skeletal animations support
 - HDR
-- Post-processing: ACES tonemapping, FXAA, Physically based bloom, SSAO, Deferred decals, Simple Depth Of Field, Screen Space Reflections
+- Post-processing: ACES tonemapping, FXAA, Physically based bloom, SSAO, Deferred decals, Simple Depth Of Field, Screen Space Reflections, Screen Space Global Illumination
 - Multithreading: parallel texture loading
 - Shadow mapping
 - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
@@ -25,8 +24,6 @@
 - Separate console program for scene or animation rendering
 - Scripting with Angelscript
 - 3Dev Editor
-- Node-based hierarchy
-- Built-in code editor
 ## Made with 3Dev
 Check out my big project made with 3Dev - [Bloodbath](https://1kuso4ek1.itch.io/bloodbath)!
 ![](./Screenshots/bloodbath.jpg)
