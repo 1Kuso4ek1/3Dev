@@ -33,7 +33,7 @@ void main()
 
         vec3 lightPosition = texture(gposition, coord + uv).xyz;
 
-        gi += lightColor;
+        gi += lightColor * clamp(1.0 - pow(length(lightPosition - pos) / 16.0, 4.0), 0.0, 1.0);;
     }
 
     color = vec4(max(gi / samples, vec3(0.000001)), 1.0);

@@ -228,5 +228,5 @@ void main()
     float shadowCoef = (length(emission) > 0.0 ? 1.0 : (1.0 - shadow));
     total += ambient / 2;
     color = vec4(total * shadowCoef + (ambient / 2) + emission + totalNoShadow, alpha);
-    color.rgb = mix(color.rgb, irr, LayeredFog() * (1.0 - clamp(length(emission), 0.0, 1.0)));
+    color.rgb = mix(color.rgb, (nirradiance.x < 0.0 ? texture(irradiance, norm).xyz : nirradiance), LayeredFog() * (1.0 - clamp(length(emission), 0.0, 1.0)));
 }
