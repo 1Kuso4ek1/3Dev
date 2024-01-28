@@ -33,7 +33,7 @@ void main()
 {
     float alpha = (nopacity < 0.0 ? texture(opacity, coord).x : nopacity) * (nalbedo.x < 0.0 ? texture(albedo, coord).w : 1.0);
     
-    if(alpha < 1.0) return;
+    if(alpha < 1.0) discard;
 
     vec3 norm;
     if(nnormalMap) norm = normalize(tbn * normalize(texture(normalMap, coord).xyz * 2.0 - 1.0));
