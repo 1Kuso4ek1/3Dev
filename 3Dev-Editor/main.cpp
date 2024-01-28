@@ -2244,8 +2244,7 @@ int main()
             engine.GetWindow().setFramerateLimit(60);
         else engine.GetWindow().setFramerateLimit(5);
 
-		if(updateShadows) shadows.Update();
-        if(manageSceneRendering) scene.Draw(nullptr, nullptr, !updateShadows);
+        if(manageSceneRendering) scene.Draw(nullptr, nullptr, updateShadows ? shadows.Update() : true);
 
         gizmosFb->Bind();
         auto size = gizmosFb->GetSize();

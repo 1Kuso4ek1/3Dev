@@ -68,6 +68,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     if(Renderer::GetInstance()->GetSSAOStrength() > 0.0)
         Renderer::GetInstance()->SSAO();
 
+    Renderer::GetInstance()->SSGI();
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 0));
 
@@ -112,6 +114,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     glBindTexture(GL_TEXTURE_2D, decalsGBuffer->GetTexture(false, 2));
     glActiveTexture(GL_TEXTURE19);
     glBindTexture(GL_TEXTURE_2D, decalsGBuffer->GetTexture(false, 3));
+    glActiveTexture(GL_TEXTURE20);
+    glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)->GetTexture());
 
     auto lightingPass = Renderer::GetInstance()->GetShader(Renderer::ShaderType::LightingPass);
     lightingPass->Bind();
@@ -127,6 +131,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     lightingPass->SetUniform1i("decalsNormal", 17);
     lightingPass->SetUniform1i("decalsEmission", 18);
     lightingPass->SetUniform1i("decalsCombined", 19);
+    lightingPass->SetUniform1i("ssgi", 20);
     lightingPass->SetUniform1i("ssaoEnabled", Renderer::GetInstance()->GetSSAOStrength() > 0.0);
     lightingPass->SetUniform1f("fogStart", Renderer::GetInstance()->GetFogStart());
     lightingPass->SetUniform1f("fogEnd", Renderer::GetInstance()->GetFogEnd());
@@ -158,7 +163,6 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 
     fbo->Unbind();
 
-    Renderer::GetInstance()->SSGI();
     Renderer::GetInstance()->SSR();
     
     if(!transparency) transparency = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency);

@@ -26,7 +26,7 @@ void main()
     for(int i = 0; i < samples; i++)
     {
         float sampleDistance = exp(i - samples) * randSample;
-        float phi = ((i + randAngle * samples) * 4.0 * 3.14159265) / samples;
+        float phi = ((i + randAngle * samples) * 2.0 * 3.14159265) / samples;
         vec2 uv = sampleDistance * vec2(cos(phi), sin(phi));
 
         vec3 lightColor = texture(galbedo, coord + uv).rgb;

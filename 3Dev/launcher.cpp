@@ -203,8 +203,7 @@ int main()
         if(manageCameraMouse) cam.Mouse(mouseSensitivity);
         if(manageCameraLook) cam.Look();
         
-        if(updateShadows) shadows.Update();
-        if(manageSceneRendering) scene.Draw(nullptr, nullptr, !updateShadows);
+        if(manageSceneRendering) scene.Draw(nullptr, nullptr, updateShadows ? shadows.Update() : true);
 
         Renderer::GetInstance()->DrawFramebuffers();
     });

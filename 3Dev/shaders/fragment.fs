@@ -16,6 +16,7 @@ uniform sampler2D decalsAlbedo;
 uniform sampler2D decalsNormal;
 uniform sampler2D decalsEmission;
 uniform sampler2D decalsCombined;
+uniform sampler2D ssgi;
 uniform samplerCube irradiance;
 uniform samplerCube prefilteredMap;
 uniform sampler2D lut;
@@ -194,6 +195,8 @@ void main()
     float shadowBias = combined.w;
     
     vec3 irr = (nirradiance.x < 0.0 ? texture(irradiance, norm).xyz : nirradiance);
+    if(length(texture(ssgi, coord).rgb) > 0.0)
+        irr = (irr / 2.0) + texture(ssgi, coord).rgb;
     vec3 prefiltered = textureLod(prefilteredMap, reflect(-normalize(campos - pos), norm), rough * maxLodLevel).xyz;
 
     for(int i = 0; i < maxShadows; i++)
@@ -220,7 +223,7 @@ void main()
     vec2 brdf = normalize(texture(lut, vec2(max(dot(norm, normalize(campos - pos)), 0.0), rough)).xy);
     vec3 spc = prefiltered * (f * brdf.x + brdf.y);
 
-    vec3 ambient = ((kdif * irr * alb) + spc) * ao;
+    vec3 ambient = (((kdif * irr * alb) + spc) * ao);// + texture(ssgi, coord).rgb / 2.0;
 
     float shadowCoef = (length(emission) > 0.0 ? 1.0 : (1.0 - shadow));
     total += ambient / 2;

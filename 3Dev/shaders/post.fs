@@ -11,7 +11,6 @@ uniform vec2 pixelsize;
 uniform sampler2D frame;
 uniform sampler2D bloom;
 uniform sampler2D ssr;
-uniform sampler2D ssgi;
 uniform sampler2D bloom1;
 uniform sampler2D frameDepth;
 uniform sampler2D transparencyDepth;
@@ -115,11 +114,8 @@ void main()
     if(ssrEnabled && !transparentBuffer)
     {
         vec4 ssr = texture(ssr, coord);
-        vec4 ssgi = texture(ssgi, coord);
         if(length(ssr.xyz) > 0.0)
             color.rgb = mix(color.rgb, ssr.rgb, ssr.w * 0.8);
-        if(length(ssgi.xyz) > 0.0)
-            color.rgb = mix(color.rgb, ssgi.rgb, 0.2);
     }
     color.rgb = mix(color.rgb, texture(bloom, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0) / 2.0);
     color.rgb = mix(color.rgb, texture(bloom1, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0));

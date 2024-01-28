@@ -6,7 +6,7 @@ class ShadowManager
 public:
     ShadowManager(SceneManager* scene, glm::ivec2 size, Shader* depthShader = nullptr);
 
-    void Update();
+    bool Update();
 
 private:
     void UpdateShader(Shader* shader);

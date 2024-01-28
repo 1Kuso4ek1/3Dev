@@ -360,8 +360,6 @@ void Renderer::DrawFramebuffers()
     glActiveTexture(GL_TEXTURE16);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::SSR]->GetTexture());
     glActiveTexture(GL_TEXTURE17);
-    glBindTexture(GL_TEXTURE_2D, ssgiPingPong[0]->GetTexture());
-    glActiveTexture(GL_TEXTURE18);
     glBindTexture(GL_TEXTURE_2D, pingPongBuffers1[!buffer]->GetTexture());
     shaders[ShaderType::Post]->Bind();
     shaders[ShaderType::Post]->SetUniform1f("exposure", exposure);
@@ -371,8 +369,7 @@ void Renderer::DrawFramebuffers()
     shaders[ShaderType::Post]->SetUniform1f("dofFocusDistance", dofFocusDistance);
     shaders[ShaderType::Post]->SetUniform1i("bloom", 15);
     shaders[ShaderType::Post]->SetUniform1i("ssr", 16);
-    shaders[ShaderType::Post]->SetUniform1i("ssgi", 17);
-    shaders[ShaderType::Post]->SetUniform1i("bloom1", 18);
+    shaders[ShaderType::Post]->SetUniform1i("bloom1", 17);
     shaders[ShaderType::Post]->SetUniform1i("rawColor", false);
     shaders[ShaderType::Post]->SetUniform1i("ssrEnabled", ssrEnabled);
     shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);

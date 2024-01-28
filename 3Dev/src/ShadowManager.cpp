@@ -12,13 +12,12 @@ ShadowManager::ShadowManager(SceneManager* scene, glm::ivec2 size, Shader* depth
         depthBuffers.emplace_back(std::make_unique<Framebuffer>(nullptr, shadowSize.x, shadowSize.y, true, true, 1, GL_LINEAR, GL_CLAMP_TO_BORDER));
 }
 
-void ShadowManager::Update()
+bool ShadowManager::Update()
 {
-    if(scene->GetShadowCastingLights().size() != lights.size())
-        lights = scene->GetShadowCastingLights();
+    lights = scene->GetShadowCastingLights();
 
     if(lights.empty())
-        return;
+        return true;
         
     if(lights.size() > depthBuffers.size())
         for(int i = 0; i < (lights.size() > 8 ? 8 - depthBuffers.size() : (lights.size() - depthBuffers.size())); i++)
@@ -52,6 +51,8 @@ void ShadowManager::Update()
 
     glCullFace(GL_BACK);
     glDisable(GL_POLYGON_OFFSET_FILL);
+
+    return false;
 }
 
 void ShadowManager::UpdateShader(Shader* shader)
