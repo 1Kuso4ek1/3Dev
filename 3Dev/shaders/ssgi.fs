@@ -8,7 +8,7 @@ in vec2 coord;
 
 out vec4 color;
 
-const int samples = 2;
+const int samples = 4;
 
 float rand(vec2 v)
 {
@@ -18,6 +18,7 @@ float rand(vec2 v)
 void main()
 {
     vec3 pos = texture(gposition, coord).xyz;
+    if(pos.z == 0.0) discard;
 
     float randAngle = rand(coord);
     float randSample = -0.7 * rand(coord.yx) + 1.0;
@@ -33,7 +34,7 @@ void main()
 
         vec3 lightPosition = texture(gposition, coord + uv).xyz;
 
-        gi += lightColor * clamp(1.0 - pow(length(lightPosition - pos) / 16.0, 4.0), 0.0, 1.0);;
+        gi += lightColor * (1.0 - clamp(pow(length(lightPosition - pos) / 64.0, 4.0), 0.0, 1.0));
     }
 
     color = vec4(max(gi / samples, vec3(0.000001)), 1.0);

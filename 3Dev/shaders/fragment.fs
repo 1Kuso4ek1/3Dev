@@ -195,8 +195,9 @@ void main()
     float shadowBias = combined.w;
     
     vec3 irr = (nirradiance.x < 0.0 ? texture(irradiance, norm).xyz : nirradiance);
-    if(length(texture(ssgi, coord).rgb) > 0.0)
-        irr = (irr / 2.0) + texture(ssgi, coord).rgb;
+    vec3 gi = texture(ssgi, coord).rgb;
+    if(length(gi) > 0.0)
+        irr = (irr / 2.0) + gi;
     vec3 prefiltered = textureLod(prefilteredMap, reflect(-normalize(campos - pos), norm), rough * maxLodLevel).xyz;
 
     for(int i = 0; i < maxShadows; i++)
@@ -223,7 +224,7 @@ void main()
     vec2 brdf = normalize(texture(lut, vec2(max(dot(norm, normalize(campos - pos)), 0.0), rough)).xy);
     vec3 spc = prefiltered * (f * brdf.x + brdf.y);
 
-    vec3 ambient = (((kdif * irr * alb) + spc) * ao);// + texture(ssgi, coord).rgb / 2.0;
+    vec3 ambient = (((kdif * irr * alb) + spc) * ao);
 
     float shadowCoef = (length(emission) > 0.0 ? 1.0 : (1.0 - shadow));
     total += ambient / 2;
