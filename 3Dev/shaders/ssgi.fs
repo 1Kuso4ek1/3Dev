@@ -34,6 +34,8 @@ void main()
 
         vec3 lightPosition = texture(gposition, coord + uv).xyz;
 
+        if(lightPosition.z == 0.0) continue;
+
         gi += lightColor * (1.0 - clamp(pow(length(lightPosition - pos) / 64.0, 4.0), 0.0, 1.0));
     }
 
