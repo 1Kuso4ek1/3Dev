@@ -197,7 +197,7 @@ void main()
     vec3 irr = (nirradiance.x < 0.0 ? texture(irradiance, norm).xyz : nirradiance);
     vec3 gi = texture(ssgi, coord).rgb;
     if(length(gi) > 0.0)
-        irr = mix(irr, gi * 1.5, 0.5);
+        irr = mix(irr, gi, 0.5);
     vec3 prefiltered = textureLod(prefilteredMap, reflect(-normalize(campos - pos), norm), rough * maxLodLevel).xyz;
 
     for(int i = 0; i < maxShadows; i++)

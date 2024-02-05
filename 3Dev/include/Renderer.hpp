@@ -82,6 +82,10 @@ public:
     void SetSSRMaxSteps(int steps);
     void SetSSRMaxBinarySearchSteps(int steps);
 
+    void SetIsSSGIEnabled(bool ssgiEnabled);
+
+    void SetSSGIStrength(float ssgiStrength);
+
     void Bloom();
     void SSAO();
     void SSGI();
@@ -131,6 +135,8 @@ private:
     float fogEnd = 0.0;
     float fogHeight = 0.0;
     float ssrRayStep = 0.01;
+    float ssgiStrength = 1.5;
+
     int ssrMaxSteps = 100;
     int ssrMaxBinarySearchSteps = 100;
     int blurIterations = 8;
@@ -139,6 +145,7 @@ private:
     bool horizontal = true;
     bool buffer = true;
     bool ssrEnabled = false;
+    bool ssgiEnabled = false;
 
     std::string shadersDir;
 

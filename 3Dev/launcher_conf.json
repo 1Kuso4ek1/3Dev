@@ -28,6 +28,8 @@
 		"ssrMaxSteps" : 100,
 		"ssrMaxBinarySearchSteps" : 20,
         "ssrEnabled" : true,
+        "ssgiEnabled" : true,
+        "ssgiStrength" : 1.5,
         "useRGBA16F" : true
     },
     "log" :

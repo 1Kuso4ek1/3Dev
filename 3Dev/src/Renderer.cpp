@@ -222,6 +222,16 @@ void Renderer::SetSSRMaxBinarySearchSteps(int steps)
     ssrMaxBinarySearchSteps = steps;
 }
 
+void Renderer::SetIsSSGIEnabled(bool ssgiEnabled)
+{
+    this->ssgiEnabled = ssgiEnabled;
+}
+
+void Renderer::SetSSGIStrength(float ssgiStrength)
+{
+    this->ssgiStrength = ssgiStrength;
+}
+
 void Renderer::Bloom()
 {
     if(bloomStrength <= 0) return;
@@ -295,7 +305,7 @@ void Renderer::SSAO()
 
 void Renderer::SSGI()
 {
-    if(!ssrEnabled) return;
+    if(!ssgiEnabled) return;
 
     glActiveTexture(GL_TEXTURE15);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 0));
@@ -304,6 +314,7 @@ void Renderer::SSGI()
     shaders[ShaderType::SSGI]->Bind();
     shaders[ShaderType::SSGI]->SetUniform1i("gposition", 15);
     shaders[ShaderType::SSGI]->SetUniform1i("galbedo", 16);
+    shaders[ShaderType::SSGI]->SetUniform1f("strength", ssgiStrength);
 
     horizontal = buffer = true;
 

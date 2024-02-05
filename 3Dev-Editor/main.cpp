@@ -568,6 +568,10 @@ int main()
     Renderer::GetInstance()->SetSSRRayStep(properties["renderer"]["ssrRayStep"].asFloat());
     Renderer::GetInstance()->SetSSRMaxSteps(properties["renderer"]["ssrMaxSteps"].asInt());
     Renderer::GetInstance()->SetSSRMaxBinarySearchSteps(properties["renderer"]["ssrMaxBinarySearchSteps"].asInt());
+    
+    Renderer::GetInstance()->SetIsSSGIEnabled(properties["renderer"]["ssgiEnabled"].asBool());
+    Renderer::GetInstance()->SetSSGIStrength(properties["renderer"]["ssgiStrength"].asFloat());
+
     Renderer::GetInstance()->Init({ (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y },
                                     properties["renderer"]["hdriPath"].asString(),
                                     properties["renderer"]["skyboxSideSize"].asInt(),

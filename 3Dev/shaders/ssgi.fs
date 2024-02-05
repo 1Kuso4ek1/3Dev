@@ -3,6 +3,7 @@
 uniform vec2 pixelsize;
 uniform sampler2D gposition;
 uniform sampler2D galbedo;
+uniform float strength;
 
 in vec2 coord;
 
@@ -36,8 +37,10 @@ void main()
 
         if(lightPosition.z == 0.0) continue;
 
+        if(length(lightColor) > 5.0) lightColor = normalize(lightColor) * 5.0;
+
         gi += lightColor * (1.0 - clamp(pow(length(lightPosition - pos) / 64.0, 4.0), 0.0, 1.0));
     }
 
-    color = vec4(max(gi / samples, vec3(0.000001)), 1.0);
+    color = vec4(max((gi / samples) * strength, vec3(0.000001)), 1.0);
 }
