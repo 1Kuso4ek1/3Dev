@@ -120,7 +120,8 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     auto lightingPass = Renderer::GetInstance()->GetShader(Renderer::ShaderType::LightingPass);
     lightingPass->Bind();
 
-    lightingPass->SetUniform3f("campos", camera->GetPosition().x, camera->GetPosition().y, camera->GetPosition().z);
+    auto camPos = camera->GetPosition(true);
+    lightingPass->SetUniform3f("campos", camPos.x, camPos.y, camPos.z);
     lightingPass->SetUniform1i("gposition", 0);
     lightingPass->SetUniform1i("galbedo", 1);
     lightingPass->SetUniform1i("gnormal", 2);

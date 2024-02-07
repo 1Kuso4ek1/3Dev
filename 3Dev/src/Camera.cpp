@@ -63,17 +63,17 @@ void Camera::Mouse(float sensitivity)
 
 void Camera::Look()
 {
-	auto position = GetPosition(true);
-	rp3d::Vector3 v = orient * rp3d::Vector3(0, 0, -1), tmpv;
+	auto tr = Node::GetFinalTransform(this) * GetTransform();
+	rp3d::Vector3 v = tr.getOrientation() * rp3d::Vector3(0, 0, -1), tmpv;
 	float tmp;
-	if(!alwaysUp) orient.getRotationAngleAxis(tmp, tmpv);
-	m->GetView() = glm::lookAt(toglm(position), toglm(position + v), alwaysUp ? glm::vec3(0.0, 1.0, 0.0) : toglm(tmpv));
+	if(!alwaysUp) tr.getOrientation().getRotationAngleAxis(tmp, tmpv);
+	m->GetView() = glm::lookAt(toglm(tr.getPosition()), toglm(tr.getPosition() + v), alwaysUp ? glm::vec3(0.0, 1.0, 0.0) : toglm(tmpv));
 }
 
 void Camera::Look(const rp3d::Vector3& vec)
 {
-	auto position = GetPosition(true);
-	m->GetView() = glm::lookAt(toglm(position), toglm(vec), glm::vec3(0, 1, 0));
+	auto tr = Node::GetFinalTransform(this) * GetTransform();
+	m->GetView() = glm::lookAt(toglm(tr.getPosition()), toglm(vec), glm::vec3(0, 1, 0));
 }
 
 void Camera::SetViewportSize(sf::Vector2u size)
