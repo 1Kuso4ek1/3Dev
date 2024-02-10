@@ -132,9 +132,10 @@ int main()
 
     auto scPath = cfg["scenePath"].asString();
     scPath.insert(scPath.find_last_of('.'), "_scripts");
-    scman.Load(scPath);
+    scman.Load(scPath, cfg["loadBytecode"].asBool());
 
-    scman.Build();
+    if(!cfg["loadBytecode"].asBool())
+        scman.Build();
     
     if(!scman.IsBuildSucceded())
         return -1;

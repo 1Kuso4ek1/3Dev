@@ -2,6 +2,33 @@
 #include "Engine.hpp"
 #include "AngelscriptUtils.hpp"
 
+#include <cstdio>
+
+// https://www.angelcode.com/angelscript/sdk/docs/manual/doc_adv_precompile.html
+class BytecodeStream : public asIBinaryStream
+{
+public:
+    BytecodeStream(FILE *fp) : f(fp) {}
+    ~BytecodeStream() { fclose(f); }
+
+    int Write(const void *ptr, asUINT size) override
+    {
+        if(size == 0) return -1;
+        fwrite(ptr, size, 1, f);
+        return 0;
+    }
+
+    int Read(void *ptr, asUINT size) override
+    {
+        if(size == 0) return -1;
+        fread(ptr, size, 1, f);
+        return 0;
+    }
+
+protected:
+    FILE *f;
+};
+
 class ScriptManager
 {
 public:
@@ -22,7 +49,7 @@ public:
     void SetDefaultNamespace(std::string name);
 
     void Save(std::string filename, bool relativePaths = false);
-    void Load(std::string filename);
+    void Load(std::string filename, bool loadBytecode = false);
 
     void LoadScript(std::string filename);
     void Build();

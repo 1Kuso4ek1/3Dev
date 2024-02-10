@@ -133,9 +133,15 @@ void ScriptManager::Save(std::string filename, bool relativePaths)
     std::ofstream file(filename);
     file << data.toStyledString();
     file.close();
+
+    if(scripts.size() > 0)
+    {
+        BytecodeStream stream(fopen((std::filesystem::path(scripts[0]).parent_path().string() + "/bytecode").c_str(), "w"));
+        builder.GetModule()->SaveByteCode(&stream, true);
+    }
 }
 
-void ScriptManager::Load(std::string filename)
+void ScriptManager::Load(std::string filename, bool loadBytecode)
 {
     Json::Value data;
     Json::CharReaderBuilder rbuilder;
@@ -151,6 +157,13 @@ void ScriptManager::Load(std::string filename)
 
     for(int i = 0; i < data["scripts"].size(); i++)
         scripts.push_back(data["scripts"][i].asString());
+
+    if(loadBytecode && scripts.size() > 0)
+    {
+        BytecodeStream stream(fopen((std::filesystem::path(scripts[0]).parent_path().string() + "/bytecode").c_str(), "r"));
+
+        buildSucceded = (builder.GetModule()->LoadByteCode(&stream) >= 0);
+    }
 }
 
 void ScriptManager::LoadScript(std::string filename)

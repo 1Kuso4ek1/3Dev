@@ -1,6 +1,7 @@
 {
     "scenePath" : "",
     "enableMultithreading" : true,
+    "loadBytecode" : false,
     "window" :
     {
         "title" : "",
