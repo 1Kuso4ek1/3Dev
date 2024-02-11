@@ -23,6 +23,12 @@ struct
     std::shared_ptr<Animation> ptr;
 } lastAnimation;
 
+struct
+{
+	std::string name;
+	std::shared_ptr<Model> object;
+} buffer;
+
 void SaveProperties(Json::Value data)
 {
     std::ofstream file(homeFolder + "properties.json");
@@ -50,12 +56,14 @@ Json::Value DefaultProperties(const Json::Value& recentProjects = "", const Json
     p["renderer"]["ssaoSamples"] = 64;
     p["renderer"]["ssaoStrength"] = 3.0;
     p["renderer"]["ssaoRadius"] = 0.5;
-    p["renderer"]["exposure"] = 0.8;
-    p["renderer"]["ssrRayStep"] = 0.1;
+    p["renderer"]["exposure"] = 1.8;
+    p["renderer"]["ssrRayStep"] = 0.05;
     p["renderer"]["ssrMaxSteps"] = 100;
     p["renderer"]["ssrMaxBinarySearchSteps"] = 20;
     p["renderer"]["useRGBA16F"] = true;
     p["renderer"]["ssrEnabled"] = true;
+    p["renderer"]["ssgiEnabled"] = true;
+    p["renderer"]["ssgiStrength"] = 2.0;
 
     if(!recentProjects.isArray())
     {
@@ -180,12 +188,6 @@ bool Shortcut(std::vector<sf::Keyboard::Key> keys, float delay = 0.3)
 		shortcutDelay.restart();
 	return ret;
 }
-
-struct
-{
-	std::string name;
-	std::shared_ptr<Model> object;
-} buffer;
 
 int main()
 {

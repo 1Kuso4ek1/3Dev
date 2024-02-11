@@ -89,5 +89,5 @@ void main()
     vec2 d = smoothstep(0.3, 0.8, abs(vec2(0.5, 0.5) - uv));
     float screenEdge = clamp(1.0 - (d.x + d.y), 0.0, 1.0);
 
-    color = vec4(ssr * screenEdge, 1.0);
+    color = vec4(clamp(ssr * screenEdge, vec3(0.0), vec3(500.0)), 1.0);
 }
