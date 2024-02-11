@@ -74,18 +74,6 @@ vec3 SSR(vec3 dir, vec3 pos)
     return vec3(0.0);
 }
 
-float rand(vec2 v)
-{
-    return fract(sin(dot(v, vec2(12.9898, 78.233))) * 43758.5453);
-}
-
-vec3 hash(vec3 a)
-{
-    a = fract(a * 0.8);
-    a += dot(a, a.yxz + 19.19);
-    return fract((a.xxy + a.yxx) * a.zyx) * rand(a.yz) * 2.0;
-}
-
 void main()
 {
     vec3 pos = texture(gposition, coord).xyz;
@@ -96,11 +84,10 @@ void main()
     if(combined.x == 0.0 && combined.y >= 0.9)
         discard;
 
-    vec3 jitt = mix(vec3(0.0), hash((pos).xyz), combined.y);
-    vec3 ssr = SSR((jitt + reflected * max(0.1, -pos.z)), pos);
+    vec3 ssr = SSR((reflected * max(0.1, -pos.z)), pos);
 
     vec2 d = smoothstep(0.3, 0.8, abs(vec2(0.5, 0.5) - uv));
     float screenEdge = clamp(1.0 - (d.x + d.y), 0.0, 1.0);
 
-    color = vec4(ssr, clamp((((1.0 - combined.y) + combined.x) / 2.0), 0.1, 1.0) * screenEdge);
+    color = vec4(ssr * screenEdge, 1.0);
 }

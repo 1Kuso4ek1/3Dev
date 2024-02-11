@@ -74,7 +74,8 @@ int main(int argc, char* argv[])
                   << "  -u <float>        DOF focus distance (1.0 is default)" << std::endl
                   << "  -v <float>        Fog start (0.0 is default)" << std::endl
                   << "  -k <float>        Fog end (0.0 is default)" << std::endl
-                  << "  -p <float>        Fog height (0.0 is default)" << std::endl;
+                  << "  -p <float>        Fog height (0.0 is default)" << std::endl
+                  << "  -y <float>        SSGI strength (2.0 is default)" << std::endl;
         return 0;
     }
 
@@ -92,6 +93,7 @@ int main(int argc, char* argv[])
     float fogStart = 0.0;
     float fogEnd = 0.0;
     float fogHeight = 0.0;
+    float ssgiStrength = 2.0;
     #ifdef _WIN32
     	std::string env = std::string(getenv("HOMEPATH")) + "/.3Dev-Editor/default/hdri.hdr";
     #else
@@ -125,6 +127,7 @@ int main(int argc, char* argv[])
     if(!GetArgument(argc, argv, "-v").empty()) fogStart = std::stof(GetArgument(argc, argv, "-v"));
     if(!GetArgument(argc, argv, "-k").empty()) fogEnd = std::stof(GetArgument(argc, argv, "-k"));
     if(!GetArgument(argc, argv, "-p").empty()) fogHeight = std::stof(GetArgument(argc, argv, "-p"));
+    if(!GetArgument(argc, argv, "-y").empty()) ssgiStrength = std::stof(GetArgument(argc, argv, "-y"));
 
     if(!animation.empty())
     {
@@ -145,10 +148,12 @@ int main(int argc, char* argv[])
 
     Renderer::GetInstance()->SetSSAOSamples(ssaoSamples);
     Renderer::GetInstance()->SetIsSSREnabled(true);
-    Renderer::GetInstance()->SetSSRRayStep(0.005);
-    Renderer::GetInstance()->SetSSRMaxSteps(500);
-    Renderer::GetInstance()->SetSSRMaxBinarySearchSteps(100);
-    Renderer::GetInstance()->Init({ w, h }, env, b, 128, b, bloomResolutionScale);
+    Renderer::GetInstance()->SetSSRRayStep(0.01);
+    Renderer::GetInstance()->SetSSRMaxSteps(5000);
+    Renderer::GetInstance()->SetSSRMaxBinarySearchSteps(500);
+    Renderer::GetInstance()->SetIsSSGIEnabled(true);
+    Renderer::GetInstance()->SetSSGIStrength(ssgiStrength);
+    Renderer::GetInstance()->Init({ w, h }, env, b, 256, b, bloomResolutionScale);
 
     Camera cam({ w, h });
 
@@ -230,17 +235,33 @@ int main(int argc, char* argv[])
         glActiveTexture(GL_TEXTURE15);
         glBindTexture(GL_TEXTURE_2D, pingPongBuffers[blurIterations % 2 == 0]->GetTexture());
         glActiveTexture(GL_TEXTURE16);
-        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSR)->GetTexture());
-        glActiveTexture(GL_TEXTURE17);
         glBindTexture(GL_TEXTURE_2D, pingPongBuffers1[blurIterations % 2 == 0]->GetTexture());
+        glActiveTexture(GL_TEXTURE17);
+        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSR)->GetTexture());
+        glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+        glActiveTexture(GL_TEXTURE18);
+        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->GetTexture(false, 1));
+        glActiveTexture(GL_TEXTURE19);
+        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->GetTexture(false, 4));
+
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exposure);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("bloomStrength", bloomStrength);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("dofMinDistance", dofMinDistance);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("dofMaxDistance", dofMaxDistance);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("dofFocusDistance", dofFocusDistance);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom", 15);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssr", 16);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom1", 17);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom1", 16);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssr", 17);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("galbedo", 18);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("gcombined", 19);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssrEnabled", true);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
+        
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
         auto pixels = render.GetPixels(glm::ivec2(0, 0), render.GetSize());
 

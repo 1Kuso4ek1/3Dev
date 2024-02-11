@@ -10,15 +10,19 @@ in vec2 coord;
 uniform vec2 pixelsize;
 uniform sampler2D frame;
 uniform sampler2D bloom;
-uniform sampler2D ssr;
 uniform sampler2D bloom1;
+uniform sampler2D ssr;
+uniform sampler2D gcombined;
+uniform sampler2D galbedo;
 uniform sampler2D frameDepth;
 uniform sampler2D transparencyDepth;
+
 uniform float exposure = 1.0;
 uniform float bloomStrength = 0.3;
 uniform float dofMinDistance = 1.0;
 uniform float dofMaxDistance = 1.0;
 uniform float dofFocusDistance = 1.0;
+
 uniform bool fxaa = true;
 uniform bool ssrEnabled;
 uniform bool rawColor;
@@ -82,6 +86,11 @@ vec3 ACES()
     return acesOut * (a / b);
 }
 
+float rand(vec2 v)
+{
+    return fract(sin(dot(v, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
 void main()
 {
     if(transparentBuffer)
@@ -100,9 +109,13 @@ void main()
         color.rgb = max(color.rgb, vec3(0.00001));
         if(ssrEnabled && !transparentBuffer)
         {
-            vec4 ssr = texture(ssr, coord);
-            if(length(ssr.xyz) > 0.0)
-                color.rgb = mix(color.rgb, ssr.rgb, ssr.w * 0.8);
+            vec4 combined = texture(gcombined, coord);
+            float lod = 8.0 * pow(combined.y, 2.0);
+
+            vec3 f0 = mix(vec3(0.04), texture(galbedo, coord).rgb, combined.x);
+
+            vec4 ssr = texture(ssr, coord + sqrt(lod) * pixelsize * rand(coord), lod);
+            color.rgb += f0 * ssr.rgb;
         }
         return;
     }
@@ -113,9 +126,13 @@ void main()
     float dof = smoothstep(dofMinDistance, dofMaxDistance, abs(depth - dofFocusDistance));
     if(ssrEnabled && !transparentBuffer)
     {
-        vec4 ssr = texture(ssr, coord);
-        if(length(ssr.xyz) > 0.0)
-            color.rgb = mix(color.rgb, ssr.rgb, ssr.w * 0.8);
+        vec4 combined = texture(gcombined, coord);
+        float lod = 8.0 * pow(combined.y, 2.0);
+
+        vec3 f0 = mix(vec3(0.04), texture(galbedo, coord).rgb, combined.x);
+
+        vec4 ssr = texture(ssr, coord + sqrt(lod) * pixelsize * rand(coord), lod);
+        color.rgb += f0 * ssr.rgb;
     }
     color.rgb = mix(color.rgb, texture(bloom, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0) / 2.0);
     color.rgb = mix(color.rgb, texture(bloom1, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0));

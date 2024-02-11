@@ -54,7 +54,7 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
 
     framebuffers[FramebufferType::SSGI] = std::make_shared<Framebuffer>(shaders[ShaderType::SSGI].get(), fbSize.x / 2.0, fbSize.y / 2.0, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGBA16F, GL_RGBA);
 
-    framebuffers[FramebufferType::SSR] = std::make_shared<Framebuffer>(shaders[ShaderType::SSR].get(), fbSize.x, fbSize.y, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGBA16F, GL_RGBA);
+    framebuffers[FramebufferType::SSR] = std::make_shared<Framebuffer>(shaders[ShaderType::SSR].get(), fbSize.x, fbSize.y, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGB16F, GL_RGB);
     
     std::random_device dev;
     std::default_random_engine eng(dev());
@@ -367,11 +367,23 @@ void Renderer::DrawFramebuffers()
     glViewport(0, 0, size.x, size.y);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glActiveTexture(GL_TEXTURE15);
-    glBindTexture(GL_TEXTURE_2D, pingPongBuffers[!buffer]->GetTexture());
+    glBindTexture(GL_TEXTURE_2D, pingPongBuffers[buffer]->GetTexture());
     glActiveTexture(GL_TEXTURE16);
-    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::SSR]->GetTexture());
+    glBindTexture(GL_TEXTURE_2D, pingPongBuffers1[buffer]->GetTexture());
     glActiveTexture(GL_TEXTURE17);
-    glBindTexture(GL_TEXTURE_2D, pingPongBuffers1[!buffer]->GetTexture());
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::SSR]->GetTexture());
+
+    if(ssrEnabled)
+    {
+        glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    }
+
+    glActiveTexture(GL_TEXTURE18);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 1));
+    glActiveTexture(GL_TEXTURE19);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 4));
     shaders[ShaderType::Post]->Bind();
     shaders[ShaderType::Post]->SetUniform1f("exposure", exposure);
     shaders[ShaderType::Post]->SetUniform1f("bloomStrength", bloomStrength);
@@ -379,8 +391,10 @@ void Renderer::DrawFramebuffers()
     shaders[ShaderType::Post]->SetUniform1f("dofMaxDistance", dofMaxDistance);
     shaders[ShaderType::Post]->SetUniform1f("dofFocusDistance", dofFocusDistance);
     shaders[ShaderType::Post]->SetUniform1i("bloom", 15);
-    shaders[ShaderType::Post]->SetUniform1i("ssr", 16);
-    shaders[ShaderType::Post]->SetUniform1i("bloom1", 17);
+    shaders[ShaderType::Post]->SetUniform1i("bloom1", 16);
+    shaders[ShaderType::Post]->SetUniform1i("ssr", 17);
+    shaders[ShaderType::Post]->SetUniform1i("galbedo", 18);
+    shaders[ShaderType::Post]->SetUniform1i("gcombined", 19);
     shaders[ShaderType::Post]->SetUniform1i("rawColor", false);
     shaders[ShaderType::Post]->SetUniform1i("ssrEnabled", ssrEnabled);
     shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);
