@@ -199,13 +199,13 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     auto post = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post);
 
     post->Bind();
-    glActiveTexture(GL_TEXTURE19);
-	glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(true));
     glActiveTexture(GL_TEXTURE20);
+	glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(true));
+    glActiveTexture(GL_TEXTURE21);
 	glBindTexture(GL_TEXTURE_2D, transparency->GetTexture(true));
 
-    post->SetUniform1i("frameDepth", 19);
-    post->SetUniform1i("transparencyDepth", 20);
+    post->SetUniform1i("frameDepth", 20);
+    post->SetUniform1i("transparencyDepth", 21);
 
     Renderer::GetInstance()->Bloom();
 }
