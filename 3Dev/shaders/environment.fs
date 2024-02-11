@@ -19,5 +19,5 @@ vec2 SampleMap(vec3 vec)
 void main()
 {
     vec2 coord = SampleMap(normalize(outpos)); 
-    color = vec4(texture(environment, coord).rgb, 1.0);
+    color = vec4(clamp(texture(environment, coord).rgb, vec3(0.0), vec3(500.0)), 1.0);
 }
