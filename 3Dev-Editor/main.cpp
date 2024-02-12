@@ -860,13 +860,6 @@ int main()
                 }
                 pending = next;
             }
-        
-        else if(tab == "Mat.")
-            for(auto& i : names[1])
-            {
-                materialBox->addItem(i);
-                sceneTree->addItem({ "Scene", "Materials", i });
-            }
 
         else if(tab == "Sounds")
             for(auto& i : sounds) sceneTree->addItem({ "Scene", "Sounds", i });
@@ -885,6 +878,13 @@ int main()
             auto scripts = scman.GetScripts();
             for(auto& i : scripts)
                 sceneTree->addItem({ "Scripts", std::filesystem::path(i).filename().string() });
+        }
+
+        for(auto& i : names[1])
+        {
+            materialBox->addItem(i);
+            if(tab == "Mat.")
+                sceneTree->addItem({ "Scene", "Materials", i });
         }
     };
 
