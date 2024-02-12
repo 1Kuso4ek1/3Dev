@@ -153,9 +153,14 @@ int main()
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Resize(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Resize(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->Resize(event.size.width / 2.0, event.size.height / 2.0);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGI)->Resize(event.size.width / 2.0, event.size.height / 2.0);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSR)->Resize(event.size.width, event.size.height);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(event.size.width / bloomResolutionScale, event.size.height / bloomResolutionScale);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->Resize(event.size.width / bloomResolutionScale, event.size.height / bloomResolutionScale);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong2)->Resize(event.size.width / bloomResolutionScale / 2, event.size.height / bloomResolutionScale / 2);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong3)->Resize(event.size.width / bloomResolutionScale / 2, event.size.height / bloomResolutionScale / 2);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong0)->Resize(event.size.width / 8.0, event.size.height / 8.0);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)->Resize(event.size.width / 8.0, event.size.height / 8.0);
 
             engine.SetGuiView({ 0, 0, float(event.size.width) * (guiWidth / float(event.size.width)),
                                       float(event.size.height) * (guiHeight / float(event.size.height)) });

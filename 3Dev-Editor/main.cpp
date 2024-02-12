@@ -280,6 +280,7 @@ int main()
 	auto scriptButton = editor.get<tgui::Button>("createScript");
     auto animationButton = editor.get<tgui::Button>("createAnimation");
 
+    auto treeTabs = editor.get<tgui::Tabs>("treeTabs");
     auto sceneTree = editor.get<tgui::TreeView>("scene");
 
     auto objectEditorGroup = editor.get<tgui::Group>("objectEditor");
@@ -827,52 +828,64 @@ int main()
             if(!scene.GetNode(i)->GetParent())
                 pending.push_back(i);
 
-        while(!pending.empty())
-        {
-            std::vector<std::string> next;
-            for(auto& i : pending)
+        auto tab = treeTabs->getSelected().toStdString();
+
+        if(tab == "Objects")
+            while(!pending.empty())
             {
-                auto node = scene.GetNode(i);
+                std::vector<std::string> next;
+                for(auto& i : pending)
+                {
+                    auto node = scene.GetNode(i);
 
-                if(!node->GetParent())
-                {
-                    sceneTree->addItem({ "Scene", "Objects", i });
-                    used.push_back({ i, { "Scene", "Objects", i } });
+                    if(!node->GetParent())
+                    {
+                        sceneTree->addItem({ "Scene", "Objects", i });
+                        used.push_back({ i, { "Scene", "Objects", i } });
+                    }
+                    else
+                    {
+                        auto it = std::find_if(used.begin(), used.end(), [&](auto& a)
+                                    { return scene.GetNodeName(node->GetParent()) == a.first; });
+                        auto item = it->second;
+                        item.push_back(i);
+                        sceneTree->addItem(item);
+                        sceneTree->collapse(item);
+                        used.push_back({ i, item });
+                    }
+                    auto children = node->GetChildren();
+                    for(auto j : children)
+                        if(!scene.GetNodeName(j).empty())
+                            next.push_back(scene.GetNodeName(j));
                 }
-                else
-                {
-                    auto it = std::find_if(used.begin(), used.end(), [&](auto& a)
-                                   { return scene.GetNodeName(node->GetParent()) == a.first; });
-                    auto item = it->second;
-                    item.push_back(i);
-                    sceneTree->addItem(item);
-                    sceneTree->collapse(item);
-                    used.push_back({ i, item });
-                }
-                auto children = node->GetChildren();
-                for(auto j : children)
-                    if(!scene.GetNodeName(j).empty())
-                        next.push_back(scene.GetNodeName(j));
+                pending = next;
             }
-            pending = next;
-        }
-        for(auto& i : names[1])
-        {
-            materialBox->addItem(i);
-            sceneTree->addItem({ "Scene", "Materials", i });
-        }
-        for(auto& i : sounds) sceneTree->addItem({ "Scene", "Sounds", i });
-        for(auto& i : names[5])
-        {
-            sceneTree->addItem({ "Scene", "Animations", i });
+        
+        else if(tab == "Mat.")
+            for(auto& i : names[1])
+            {
+                materialBox->addItem(i);
+                sceneTree->addItem({ "Scene", "Materials", i });
+            }
 
-            for(auto& [name, kf] : scene.GetAnimation(i)->GetKeyframes())
-                sceneTree->addItem({ "Scene", "Animations", i, name });
-        }
+        else if(tab == "Sounds")
+            for(auto& i : sounds) sceneTree->addItem({ "Scene", "Sounds", i });
 
-        auto scripts = scman.GetScripts();
-        for(auto& i : scripts)
-            sceneTree->addItem({ "Scripts", std::filesystem::path(i).filename().string() });
+        else if(tab == "Anim.")
+            for(auto& i : names[5])
+            {
+                sceneTree->addItem({ "Scene", "Animations", i });
+
+                for(auto& [name, kf] : scene.GetAnimation(i)->GetKeyframes())
+                    sceneTree->addItem({ "Scene", "Animations", i, name });
+            }
+
+        else if(tab == "Scripts")
+        {
+            auto scripts = scman.GetScripts();
+            for(auto& i : scripts)
+                sceneTree->addItem({ "Scripts", std::filesystem::path(i).filename().string() });
+        }
     };
 
     readSceneTree();
@@ -1332,6 +1345,11 @@ int main()
         code[currentFile] = codeArea->getText().toStdString();
     };
 
+    treeTabs->onTabSelect([&]()
+    {
+        readSceneTree();
+    });
+
     fileTabs->onTabSelect([&]()
     {
         if(!currentFile.empty())
@@ -1454,9 +1472,14 @@ int main()
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Resize(viewport->getSize().x, viewport->getSize().y);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Resize(viewport->getSize().x, viewport->getSize().y);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->Resize(viewport->getSize().x / 2.0, viewport->getSize().y / 2.0);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGI)->Resize(viewport->getSize().x / 2.0, viewport->getSize().y / 2.0);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSR)->Resize(viewport->getSize().x, viewport->getSize().y);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(viewport->getSize().x / properties["renderer"]["bloomResolutionScale"].asFloat(), viewport->getSize().y / properties["renderer"]["bloomResolutionScale"].asFloat());
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->Resize(viewport->getSize().x / properties["renderer"]["bloomResolutionScale"].asFloat(), viewport->getSize().y / properties["renderer"]["bloomResolutionScale"].asFloat());
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong2)->Resize(viewport->getSize().x / properties["renderer"]["bloomResolutionScale"].asFloat() / 2, viewport->getSize().y / properties["renderer"]["bloomResolutionScale"].asFloat() / 2);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong3)->Resize(viewport->getSize().x / properties["renderer"]["bloomResolutionScale"].asFloat() / 2, viewport->getSize().y / properties["renderer"]["bloomResolutionScale"].asFloat() / 2);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong0)->Resize(viewport->getSize().x / 8.0, viewport->getSize().y / 8.0);
+            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)->Resize(viewport->getSize().x / 8.0, viewport->getSize().y / 8.0);
         }
     	if(event.type == sf::Event::Closed)
     		engine.Close();

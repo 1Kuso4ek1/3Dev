@@ -475,10 +475,10 @@ ChildWindow.createWindow {
 }
 
 ChildWindow.sceneTreeWindow {
-    Position = (1330, 0);
+    Position = (1320, 0);
     PositionLocked = true;
     Renderer = &4;
-    Size = (270, 340);
+    Size = (280, 340);
     Title = Scene;
     TitleAlignment = Center;
     TitleButtons = None;
@@ -486,7 +486,8 @@ ChildWindow.sceneTreeWindow {
 
     TreeView.scene {
         ItemHeight = 20;
-        Size = (270, 100%);
+        Position = (0, 6.39%);
+        Size = (100%, 94%);
         TextSize = 13;
 
         Renderer {
@@ -514,12 +515,39 @@ ChildWindow.sceneTreeWindow {
             }
         }
     }
+
+    Tabs.treeTabs {
+        AutoSize = 0;
+        Selected = 0;
+        Size = (100%, 7.03%);
+        Tabs = [Objects, "Mat.", Sounds, "Anim.", Scripts];
+        TextSize = 10;
+
+        Renderer {
+            BackgroundColor = #242424;
+            BackgroundColorDisabled = #E6E6E6;
+            BackgroundColorHover = #505050;
+            BorderColor = black;
+            Borders = (1, 1, 1, 1);
+            SelectedBackgroundColor = #006EFF;
+            SelectedBackgroundColorHover = #1E96FF;
+            SelectedTextColor = white;
+            TextColor = #BEBEBE;
+            TextColorDisabled = #7D7D7D;
+            TextColorHover = white;
+            TextureDisabledTab = None;
+            TextureSelectedTab = None;
+            TextureSelectedTabHover = None;
+            TextureTab = None;
+            TextureTabHover = None;
+        }
+    }
 }
 
 ChildWindow.objectEditorWindow {
-    Position = (1330, 340);
+    Position = (1320, 340);
     PositionLocked = true;
-    Size = (270, 560);
+    Size = (280, 560);
     Title = "Properties editor";
     TitleAlignment = Center;
     TitleButtons = None;
@@ -2616,7 +2644,7 @@ ChildWindow.objectEditorWindow {
 ChildWindow.viewport {
     Position = (220, 0);
     PositionLocked = true;
-    Size = (1110, 660);
+    Size = (1100, 660);
     Title = Viewport;
     TitleAlignment = Center;
     TitleButtons = None;
@@ -2684,7 +2712,7 @@ ChildWindow.messagesWindow {
     Position = (220, 660);
     PositionLocked = true;
     Renderer = &4;
-    Size = (1110, 240);
+    Size = (1100, 240);
     Title = Messages;
     TitleAlignment = Center;
     TitleButtons = None;
