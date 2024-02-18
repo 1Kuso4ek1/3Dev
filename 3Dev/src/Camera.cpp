@@ -29,21 +29,23 @@ rp3d::Vector3 Camera::Move(float time, bool onlyOffset)
 	rp3d::Vector3 offset;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-		offset += (orient * rp3d::Vector3(0, 0, -1)) * speed * time;
+		offset += (orient * rp3d::Vector3(0, 0, -1)) * time;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-		offset -= (orient * rp3d::Vector3(0, 0, -1)) * speed * time;
+		offset -= (orient * rp3d::Vector3(0, 0, -1)) * time;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-		offset += (orient * rp3d::Vector3(1, 0, 0)) * speed * time;
+		offset += (orient * rp3d::Vector3(1, 0, 0)) * time;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-		offset -= (orient * rp3d::Vector3(1, 0, 0)) * speed * time;
+		offset -= (orient * rp3d::Vector3(1, 0, 0)) * time;
+
+	offset.normalize();
 
 	if(!onlyOffset)
-		pos += offset;
+		pos += offset * speed;
 
-	return offset;
+	return offset * speed;
 }
 
 void Camera::Mouse(float sensitivity)
