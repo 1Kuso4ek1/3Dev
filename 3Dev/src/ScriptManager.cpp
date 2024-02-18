@@ -747,7 +747,8 @@ void ScriptManager::RegisterTGUI()
         { "void setFocused(bool)", WRAP_MFN(tgui::BitmapButton, setFocused) },
         { "void setText(const String& in)", WRAP_MFN(tgui::BitmapButton, setText) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::BitmapButton, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::BitmapButton, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::BitmapButton, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("Button", sizeof(tgui::Button),
@@ -759,7 +760,8 @@ void ScriptManager::RegisterTGUI()
         { "void setFocused(bool)", WRAP_MFN(tgui::Button, setFocused) },
         { "void setText(const String& in)", WRAP_MFN(tgui::Button, setText) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Button, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Button, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Button, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("ChatBox", sizeof(tgui::ChatBox),
@@ -774,7 +776,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::ChatBox, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::ChatBox, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChatBox, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChatBox, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChatBox, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("CheckBox", sizeof(tgui::CheckBox),
@@ -786,7 +789,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::CheckBox, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::CheckBox, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::CheckBox, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::CheckBox, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::CheckBox, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("ChildWindow", sizeof(tgui::ChildWindow),
@@ -796,7 +800,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::ChildWindow, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::ChildWindow, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChildWindow, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChildWindow, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ChildWindow, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("ComboBox", sizeof(tgui::ComboBox),
@@ -812,7 +817,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::ComboBox, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::ComboBox, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ComboBox, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ComboBox, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ComboBox, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("EditBox", sizeof(tgui::EditBox),
@@ -824,7 +830,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::EditBox, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::EditBox, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::EditBox, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::EditBox, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::EditBox, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("Group", sizeof(tgui::Group),
@@ -834,7 +841,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::Group, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::Group, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Group, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Group, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Group, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("Knob", sizeof(tgui::Knob),
@@ -844,7 +852,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::Knob, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::Knob, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Knob, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Knob, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Knob, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("Label", sizeof(tgui::Label),
@@ -855,7 +864,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::Label, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::Label, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Label, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Label, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Label, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("ListBox", sizeof(tgui::ListBox),
@@ -865,7 +875,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::ListBox, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::ListBox, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListBox, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListBox, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListBox, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("ListView", sizeof(tgui::ListView),
@@ -883,7 +894,8 @@ void ScriptManager::RegisterTGUI()
         { "void removeAllItems()", WRAP_MFN(tgui::ListView, removeAllItems) },
         { "int getSelectedItemIndex()", WRAP_MFN(tgui::ListView, getSelectedItemIndex) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListView, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListView, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ListView, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("Panel", sizeof(tgui::Panel),
@@ -893,7 +905,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::Panel, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::Panel, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Panel, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Panel, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Panel, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("Picture", sizeof(tgui::Picture),
@@ -903,7 +916,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::Picture, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::Picture, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Picture, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Picture, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Picture, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("ProgressBar", sizeof(tgui::ProgressBar),
@@ -915,7 +929,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::ProgressBar, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::ProgressBar, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ProgressBar, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ProgressBar, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::ProgressBar, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("RadioButton", sizeof(tgui::RadioButton),
@@ -927,7 +942,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::RadioButton, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::RadioButton, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RadioButton, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RadioButton, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RadioButton, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("RangeSlider", sizeof(tgui::RangeSlider),
@@ -941,7 +957,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::RangeSlider, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::RangeSlider, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RangeSlider, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RangeSlider, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RangeSlider, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("RichTextLabel", sizeof(tgui::RichTextLabel),
@@ -952,7 +969,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::RichTextLabel, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::RichTextLabel, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RichTextLabel, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RichTextLabel, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::RichTextLabel, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("Slider", sizeof(tgui::Slider),
@@ -964,7 +982,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::Slider, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::Slider, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Slider, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Slider, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Slider, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("SpinButton", sizeof(tgui::SpinButton),
@@ -974,7 +993,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::SpinButton, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::SpinButton, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinButton, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinButton, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinButton, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("SpinControl", sizeof(tgui::SpinControl),
@@ -984,7 +1004,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::SpinControl, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::SpinControl, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinControl, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinControl, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::SpinControl, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("Tabs", sizeof(tgui::Tabs),
@@ -994,7 +1015,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::Tabs, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::Tabs, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Tabs, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Tabs, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Tabs, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("TextArea", sizeof(tgui::TextArea),
@@ -1006,7 +1028,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::TextArea, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::TextArea, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TextArea, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TextArea, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TextArea, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("TreeView", sizeof(tgui::TreeView),
@@ -1016,7 +1039,8 @@ void ScriptManager::RegisterTGUI()
         { "void setVisible(bool)", WRAP_MFN(tgui::TreeView, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::TreeView, setFocused) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TreeView, showWithEffect) },
-        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TreeView, hideWithEffect) }
+        { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::TreeView, hideWithEffect) },
+        { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
     }, {});
 
     AddType("Gui", sizeof(tgui::Gui),

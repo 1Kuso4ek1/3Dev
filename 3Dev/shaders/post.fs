@@ -12,6 +12,7 @@ uniform sampler2D frame;
 uniform sampler2D bloom;
 uniform sampler2D bloom1;
 uniform sampler2D ssr;
+uniform sampler2D ssgi;
 uniform sampler2D gcombined;
 uniform sampler2D galbedo;
 uniform sampler2D frameDepth;
@@ -86,11 +87,6 @@ vec3 ACES()
     return acesOut * (a / b);
 }
 
-float rand(vec2 v)
-{
-    return fract(sin(dot(v, vec2(12.9898, 78.233))) * 43758.5453);
-}
-
 void main()
 {
     if(transparentBuffer)
@@ -114,7 +110,7 @@ void main()
 
             vec3 f0 = mix(vec3(0.04), texture(galbedo, coord).rgb, combined.x);
 
-            vec4 ssr = texture(ssr, coord + sqrt(lod) * pixelsize * rand(coord), lod);
+            vec4 ssr = texture(ssr, coord + sqrt(lod) * pixelsize, lod);
             color.rgb += f0 * ssr.rgb;
         }
         return;
@@ -124,16 +120,21 @@ void main()
 
     float depth = pow(transparentBuffer ? texture(transparencyDepth, coord).x : texture(frameDepth, coord).x, 300.0);
     float dof = smoothstep(dofMinDistance, dofMaxDistance, abs(depth - dofFocusDistance));
+
+    vec4 combined = texture(gcombined, coord);
     if(ssrEnabled && !transparentBuffer)
     {
-        vec4 combined = texture(gcombined, coord);
         float lod = 8.0 * pow(combined.y, 2.0);
 
         vec3 f0 = mix(vec3(0.04), texture(galbedo, coord).rgb, combined.x);
 
-        vec4 ssr = texture(ssr, coord + sqrt(lod) * pixelsize * rand(coord), lod);
+        vec4 ssr = texture(ssr, coord + sqrt(lod) * pixelsize, lod);
         color.rgb += f0 * ssr.rgb;
     }
+
+    vec3 ssgi = texture(ssgi, coord).rgb;
+    color.rgb += mix(texture(galbedo, coord).rgb, color.rgb, combined.x) * ssgi;
+
     color.rgb = mix(color.rgb, texture(bloom, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0) / 2.0);
     color.rgb = mix(color.rgb, texture(bloom1, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0));
 

@@ -384,6 +384,8 @@ void Renderer::DrawFramebuffers()
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 1));
     glActiveTexture(GL_TEXTURE19);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 4));
+    glActiveTexture(GL_TEXTURE20);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::SSGIPingPong1]->GetTexture());
     shaders[ShaderType::Post]->Bind();
     shaders[ShaderType::Post]->SetUniform1f("exposure", exposure);
     shaders[ShaderType::Post]->SetUniform1f("bloomStrength", bloomStrength);
@@ -395,6 +397,7 @@ void Renderer::DrawFramebuffers()
     shaders[ShaderType::Post]->SetUniform1i("ssr", 17);
     shaders[ShaderType::Post]->SetUniform1i("galbedo", 18);
     shaders[ShaderType::Post]->SetUniform1i("gcombined", 19);
+    shaders[ShaderType::Post]->SetUniform1i("ssgi", 20);
     shaders[ShaderType::Post]->SetUniform1i("rawColor", false);
     shaders[ShaderType::Post]->SetUniform1i("ssrEnabled", ssrEnabled);
     shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);
