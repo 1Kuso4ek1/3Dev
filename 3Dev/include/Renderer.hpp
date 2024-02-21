@@ -44,8 +44,6 @@ public:
         DecalsGBuffer,
         BloomPingPong0,
         BloomPingPong1,
-        BloomPingPong2,
-        BloomPingPong3,
         SSGIPingPong0,
         SSGIPingPong1
     };
@@ -138,7 +136,7 @@ private:
     float ssgiStrength = 1.5;
 
     int ssrMaxSteps = 100;
-    int ssrMaxBinarySearchSteps = 100;
+    int ssrMaxBinarySearchSteps = 10;
     int blurIterations = 8;
     int samples = 64;
 
@@ -152,7 +150,7 @@ private:
     Matrices m;
 
     std::vector<glm::vec3> ssaoSamples, noise;
-    std::vector<Framebuffer*> pingPongBuffers, pingPongBuffers1, ssgiPingPong;
+    std::vector<Framebuffer*> pingPongBuffers, ssgiPingPong;
 
     std::shared_ptr<Framebuffer> capture, captureIrr, captureSpc, captureBRDF;
 

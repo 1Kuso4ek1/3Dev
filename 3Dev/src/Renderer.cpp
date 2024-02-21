@@ -44,9 +44,6 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     framebuffers[FramebufferType::BloomPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale, fbSize.y / bloomResolutionScale, false, false, 1, GL_LINEAR);
     framebuffers[FramebufferType::BloomPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale, fbSize.y / bloomResolutionScale, false, false, 1, GL_LINEAR);
 
-    framebuffers[FramebufferType::BloomPingPong2] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale / 2, fbSize.y / bloomResolutionScale / 2, false, false, 1, GL_LINEAR);
-    framebuffers[FramebufferType::BloomPingPong3] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / bloomResolutionScale / 2, fbSize.y / bloomResolutionScale / 2, false, false, 1, GL_LINEAR);
-
     framebuffers[FramebufferType::SSGIPingPong0] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / 8.0, fbSize.y / 8.0, false, false, 1, GL_LINEAR);
     framebuffers[FramebufferType::SSGIPingPong1] = std::make_shared<Framebuffer>(shaders[ShaderType::Bloom].get(), fbSize.x / 8.0, fbSize.y / 8.0, false, false, 1, GL_LINEAR);
 
@@ -92,12 +89,6 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     {
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0),
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)
-    };
-
-    pingPongBuffers1 = 
-    {
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong2),
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong3)
     };
 
     ssgiPingPong = 
@@ -254,27 +245,24 @@ void Renderer::Bloom()
     shaders[ShaderType::Post]->SetUniform1i("rawColor", true);
     framebuffers[FramebufferType::Transparency]->Draw();
 
+    glBindTexture(GL_TEXTURE_2D, pingPongBuffers[0]->GetTexture());
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
     for(int i = 0; i < blurIterations; i++)
     {
         pingPongBuffers[buffer]->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1f("lod", (i * 2.0) / float(blurIterations));
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
         pingPongBuffers[!buffer]->Draw();
-        buffer = !buffer; horizontal = !horizontal;
-    }
 
-    horizontal = buffer = true;
+        glBindTexture(GL_TEXTURE_2D, pingPongBuffers[buffer]->GetTexture());
+        glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-    pingPongBuffers1[0]->Bind();
-    glViewport(0, 0, pingPongBuffers1[0]->GetSize().x, pingPongBuffers1[0]->GetSize().y);
-    pingPongBuffers[buffer]->Draw();
-
-    for(int i = 0; i < blurIterations; i++)
-    {
-        pingPongBuffers1[buffer]->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
-        pingPongBuffers1[!buffer]->Draw();
         buffer = !buffer; horizontal = !horizontal;
     }
 
@@ -326,6 +314,7 @@ void Renderer::SSGI()
     {
         ssgiPingPong[buffer]->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1f("lod", 0.0);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
         ssgiPingPong[!buffer]->Draw();
         buffer = !buffer; horizontal = !horizontal;
@@ -369,8 +358,6 @@ void Renderer::DrawFramebuffers()
     glActiveTexture(GL_TEXTURE15);
     glBindTexture(GL_TEXTURE_2D, pingPongBuffers[buffer]->GetTexture());
     glActiveTexture(GL_TEXTURE16);
-    glBindTexture(GL_TEXTURE_2D, pingPongBuffers1[buffer]->GetTexture());
-    glActiveTexture(GL_TEXTURE17);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::SSR]->GetTexture());
 
     if(ssrEnabled)
@@ -380,11 +367,11 @@ void Renderer::DrawFramebuffers()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     }
 
-    glActiveTexture(GL_TEXTURE18);
+    glActiveTexture(GL_TEXTURE17);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 1));
-    glActiveTexture(GL_TEXTURE19);
+    glActiveTexture(GL_TEXTURE18);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 4));
-    glActiveTexture(GL_TEXTURE20);
+    glActiveTexture(GL_TEXTURE19);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::SSGIPingPong1]->GetTexture());
     shaders[ShaderType::Post]->Bind();
     shaders[ShaderType::Post]->SetUniform1f("exposure", exposure);
@@ -393,11 +380,10 @@ void Renderer::DrawFramebuffers()
     shaders[ShaderType::Post]->SetUniform1f("dofMaxDistance", dofMaxDistance);
     shaders[ShaderType::Post]->SetUniform1f("dofFocusDistance", dofFocusDistance);
     shaders[ShaderType::Post]->SetUniform1i("bloom", 15);
-    shaders[ShaderType::Post]->SetUniform1i("bloom1", 16);
-    shaders[ShaderType::Post]->SetUniform1i("ssr", 17);
-    shaders[ShaderType::Post]->SetUniform1i("galbedo", 18);
-    shaders[ShaderType::Post]->SetUniform1i("gcombined", 19);
-    shaders[ShaderType::Post]->SetUniform1i("ssgi", 20);
+    shaders[ShaderType::Post]->SetUniform1i("ssr", 16);
+    shaders[ShaderType::Post]->SetUniform1i("galbedo", 17);
+    shaders[ShaderType::Post]->SetUniform1i("gcombined", 18);
+    shaders[ShaderType::Post]->SetUniform1i("ssgi", 19);
     shaders[ShaderType::Post]->SetUniform1i("rawColor", false);
     shaders[ShaderType::Post]->SetUniform1i("ssrEnabled", ssrEnabled);
     shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);

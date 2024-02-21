@@ -1476,8 +1476,6 @@ int main()
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSR)->Resize(viewport->getSize().x, viewport->getSize().y);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(viewport->getSize().x / properties["renderer"]["bloomResolutionScale"].asFloat(), viewport->getSize().y / properties["renderer"]["bloomResolutionScale"].asFloat());
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->Resize(viewport->getSize().x / properties["renderer"]["bloomResolutionScale"].asFloat(), viewport->getSize().y / properties["renderer"]["bloomResolutionScale"].asFloat());
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong2)->Resize(viewport->getSize().x / properties["renderer"]["bloomResolutionScale"].asFloat() / 2, viewport->getSize().y / properties["renderer"]["bloomResolutionScale"].asFloat() / 2);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong3)->Resize(viewport->getSize().x / properties["renderer"]["bloomResolutionScale"].asFloat() / 2, viewport->getSize().y / properties["renderer"]["bloomResolutionScale"].asFloat() / 2);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong0)->Resize(viewport->getSize().x / 8.0, viewport->getSize().y / 8.0);
             Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)->Resize(viewport->getSize().x / 8.0, viewport->getSize().y / 8.0);
         }

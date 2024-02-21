@@ -197,12 +197,6 @@ int main(int argc, char* argv[])
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)
     };
 
-    std::vector<Framebuffer*> pingPongBuffers1 = 
-    {
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong2),
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong3)
-    };
-
     Framebuffer render(nullptr, w, h), renderTr(nullptr, w, h);
 
     sf::Image image;
@@ -234,18 +228,16 @@ int main(int argc, char* argv[])
         glActiveTexture(GL_TEXTURE15);
         glBindTexture(GL_TEXTURE_2D, pingPongBuffers[blurIterations % 2 == 0]->GetTexture());
         glActiveTexture(GL_TEXTURE16);
-        glBindTexture(GL_TEXTURE_2D, pingPongBuffers1[blurIterations % 2 == 0]->GetTexture());
-        glActiveTexture(GL_TEXTURE17);
         glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSR)->GetTexture());
         glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-        glActiveTexture(GL_TEXTURE18);
+        glActiveTexture(GL_TEXTURE17);
         glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->GetTexture(false, 1));
-        glActiveTexture(GL_TEXTURE19);
+        glActiveTexture(GL_TEXTURE18);
         glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->GetTexture(false, 4));
-        glActiveTexture(GL_TEXTURE20);
+        glActiveTexture(GL_TEXTURE19);
         glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)->GetTexture());
 
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
@@ -255,11 +247,10 @@ int main(int argc, char* argv[])
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("dofMaxDistance", dofMaxDistance);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("dofFocusDistance", dofFocusDistance);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom", 15);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom1", 16);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssr", 17);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("galbedo", 18);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("gcombined", 19);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssgi", 20);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssr", 16);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("galbedo", 17);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("gcombined", 18);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssgi", 19);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssrEnabled", true);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);

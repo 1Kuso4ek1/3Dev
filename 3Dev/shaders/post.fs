@@ -10,7 +10,6 @@ in vec2 coord;
 uniform vec2 pixelsize;
 uniform sampler2D frame;
 uniform sampler2D bloom;
-uniform sampler2D bloom1;
 uniform sampler2D ssr;
 uniform sampler2D ssgi;
 uniform sampler2D gcombined;
@@ -135,8 +134,7 @@ void main()
     vec3 ssgi = texture(ssgi, coord).rgb;
     color.rgb += mix(texture(galbedo, coord).rgb, color.rgb, combined.x) * ssgi;
 
-    color.rgb = mix(color.rgb, texture(bloom, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0) / 2.0);
-    color.rgb = mix(color.rgb, texture(bloom1, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0));
+    color.rgb = mix(color.rgb, texture(bloom, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0));
 
     color.rgb = ACES();
     color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
