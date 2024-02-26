@@ -13,6 +13,7 @@ uniform sampler2D bloom;
 uniform sampler2D ssr;
 uniform sampler2D ssgi;
 uniform sampler2D gcombined;
+uniform sampler2D decalsCombined;
 uniform sampler2D galbedo;
 uniform sampler2D frameDepth;
 uniform sampler2D transparencyDepth;
@@ -121,6 +122,7 @@ void main()
     float dof = smoothstep(dofMinDistance, dofMaxDistance, abs(depth - dofFocusDistance));
 
     vec4 combined = texture(gcombined, coord);
+        
     if(ssrEnabled && !transparentBuffer)
     {
         float lod = 8.0 * pow(combined.y, 2.0);
@@ -132,7 +134,9 @@ void main()
     }
 
     vec3 ssgi = texture(ssgi, coord).rgb;
-    color.rgb += mix(texture(galbedo, coord).rgb, color.rgb, combined.x) * ssgi;
+
+    if(length(texture(decalsCombined, coord)) == 0.0)
+        color.rgb += mix(texture(galbedo, coord).rgb, color.rgb, combined.x) * ssgi;
 
     color.rgb = mix(color.rgb, texture(bloom, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0));
 

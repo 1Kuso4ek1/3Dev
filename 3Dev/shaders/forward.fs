@@ -184,7 +184,7 @@ void main()
 
     pos = (invView * vec4(mpos, 1.0)).xyz;
 
-    vec3 emission = (nemission.x < 0.0 ? texture(emission, coord).xyz : nemission);
+    vec3 emission = (nemission.x < 0.0 ? texture(emission, coord).xyz : nemission) * emissionStrength;
     float rough = (nroughness < 0.0 ? texture(roughness, coord).x : nroughness);
     float metal = (nmetalness < 0.0 ? texture(metalness, coord).x : nmetalness);
     float ao = (nao ? texture(ao, coord).x : 1.0);
@@ -215,7 +215,8 @@ void main()
     vec3 diffuse = irr * alb;
     vec3 ambient = ((kdif * diffuse) + spc) * ao;
 
-    total += ambient / 2;
-    color = vec4((total * (length(emission) > 0.0 ? 1.0 : (1.0 - shadow)) + ambient / 2) + (emission * emissionStrength) + totalNoShadow, (alpha < 1.0 ? min(alpha + ((total.x + total.y, + total.z) / 3.0) * alpha, 1.0) : 1.0));
+    float shadowCoef = (length(emission) > 0.0 ? 1.0 : (1.0 - shadow));
+    total += ambient;
+    color = vec4(total * shadowCoef + ((ambient / 5.0) * (1.0 - shadowCoef)) + emission + totalNoShadow, alpha);
     color.rgb = mix(color.rgb, irr, LayeredFog() * (1.0 - clamp(length(emission), 0.0, 1.0)));
 }
