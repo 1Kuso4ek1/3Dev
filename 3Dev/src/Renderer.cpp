@@ -104,6 +104,13 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
 
 void Renderer::LoadEnvironment(const std::string& environmentMapFilename)
 {
+    if(capture->GetSize().x != skyboxSideSize)
+        capture->Resize(skyboxSideSize, skyboxSideSize);
+    if(captureIrr->GetSize().x != irradianceSideSize)
+        captureIrr->Resize(irradianceSideSize, irradianceSideSize);
+    if(captureSpc->GetSize().x != prefilteredSideSize)
+        captureSpc->Resize(prefilteredSideSize, prefilteredSideSize);
+
     if(textures.find(TextureType::Skybox) != textures.end())
         TextureManager::GetInstance()->DeleteTexture("environment");
     
@@ -131,6 +138,21 @@ void Renderer::LoadEnvironment(const std::string& environmentMapFilename)
 void Renderer::SetShadersDirectory(std::string dir)
 {
     shadersDir = dir;
+}
+
+void Renderer::SetSkyboxResolution(uint32_t res)
+{
+    this->skyboxSideSize = res;
+}
+
+void Renderer::SetIrradianceResolution(uint32_t res)
+{
+    this->irradianceSideSize = res;
+}
+
+void Renderer::SetPrefilteredResolution(uint32_t res)
+{
+    this->prefilteredSideSize = res;
 }
 
 void Renderer::SetExposure(float exposure)
@@ -398,6 +420,21 @@ void Renderer::DrawFramebuffers()
     glEnable(GL_DEPTH_TEST);
 }
 
+uint32_t Renderer::GetSkyboxResolution()
+{
+    return skyboxSideSize;
+}
+
+uint32_t Renderer::GetIrradianceResolution()
+{
+    return irradianceSideSize;
+}
+
+uint32_t Renderer::GetPrefilteredResolution()
+{
+    return prefilteredSideSize;
+}
+
 float Renderer::GetExposure()
 {
     return exposure;
@@ -458,6 +495,11 @@ int Renderer::GetBlurIterations()
     return blurIterations;
 }
 
+bool Renderer::IsSSREnabled()
+{
+    return ssrEnabled;
+}
+
 float Renderer::GetSSRRayStep()
 {
     return ssrRayStep;
@@ -471,6 +513,16 @@ int Renderer::GetSSRMaxSteps()
 int Renderer::GetSSRMaxBinarySearchSteps()
 {
     return ssrMaxBinarySearchSteps;
+}
+
+bool Renderer::IsSSGIEnabled()
+{
+    return ssgiEnabled;
+}
+
+float Renderer::GetSSGIStrength()
+{
+    return ssgiStrength;
 }
 
 GLuint Renderer::GetTexture(TextureType type)

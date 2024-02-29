@@ -57,6 +57,10 @@ public:
     void LoadEnvironment(const std::string& environmentMapFilename);
     void SetShadersDirectory(std::string dir);
 
+    void SetSkyboxResolution(uint32_t res);
+    void SetIrradianceResolution(uint32_t res);
+    void SetPrefilteredResolution(uint32_t res);
+
     void SetExposure(float exposure);
 
     void SetSSAOStrength(float strength);
@@ -91,6 +95,10 @@ public:
 
     void DrawFramebuffers();
 
+    uint32_t GetSkyboxResolution();
+    uint32_t GetIrradianceResolution();
+    uint32_t GetPrefilteredResolution();
+
     float GetExposure();
 
     float GetSSAOStrength();
@@ -108,9 +116,15 @@ public:
     float GetBloomStrength();
     int GetBlurIterations();
 
+    bool IsSSREnabled();
+
     float GetSSRRayStep();
     int GetSSRMaxSteps();
     int GetSSRMaxBinarySearchSteps();
+
+    bool IsSSGIEnabled();
+
+    float GetSSGIStrength();
 
     GLuint GetTexture(TextureType type);
     Shader* GetShader(ShaderType type);
@@ -121,6 +135,10 @@ private:
     Renderer() {}
 
     static Renderer* instance;
+
+    uint32_t skyboxSideSize = 256;
+    uint32_t irradianceSideSize = 32;
+    uint32_t prefilteredSideSize = 256;
 
     float exposure = 1.0;
     float ssaoStrength = 2.0;

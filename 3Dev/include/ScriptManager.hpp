@@ -89,6 +89,7 @@ private:
     void RegisterAnimation();
     void RegisterShader();
     void RegisterNode();
+    void RegisterRenderer();
 
     bool buildSucceded = false;
 

@@ -29,6 +29,9 @@ struct
 	std::shared_ptr<Model> object;
 } buffer;
 
+// A function from launcher, only for angelscript
+void SaveConfig(rp3d::Vector2 resolution, bool fullscreen, uint32_t maxFps, uint32_t shadowMapResolution) {}
+
 void SaveProperties(Json::Value data)
 {
     std::ofstream file(homeFolder + "properties.json");
@@ -753,25 +756,16 @@ int main()
 
     bool scriptLaunched = false;
 
-    float exposure = properties["renderer"]["exposure"].asFloat();
-    float bloomStrength = 0.3;
+    Renderer::GetInstance()->SetExposure(properties["renderer"]["exposure"].asFloat());
+    Renderer::GetInstance()->SetSSAOStrength(properties["renderer"]["ssaoStrength"].asFloat());
+    Renderer::GetInstance()->SetSSAORadius(properties["renderer"]["ssaoRadius"].asFloat());
+
     float mouseSensitivity = 1.0;
 
-    float dofMinDistance = 1.0;
-    float dofMaxDistance = 1.0;
-    float dofFocusDistance = 1.0;
-
-    float fogStart = 0.0;
-    float fogEnd = 0.0;
-    float fogHeight = 0.0;
-    
-    float ssaoStrength = properties["renderer"]["ssaoStrength"].asFloat();
-    float ssaoRadius = properties["renderer"]["ssaoRadius"].asFloat();
-
-    int blurIterations = 8;
-
     ScriptManager scman;
+    scman.AddFunction("void SaveConfig(Vector2, bool, uint, uint)", WRAP_FN(SaveConfig));
     scman.AddProperty("Engine engine", &engine);
+    scman.AddProperty("Renderer renderer", Renderer::GetInstance());
     scman.SetDefaultNamespace("Game");
     scman.AddProperty("SceneManager scene", &scene);
     scman.AddProperty("Camera camera", scene.GetCamera());
@@ -783,17 +777,6 @@ int main()
     scman.AddProperty("bool manageCameraLook", &manageCameraLook);
     scman.AddProperty("bool manageCameraMouse", &manageCameraMouse);
     scman.AddProperty("float mouseSensitivity", &mouseSensitivity);
-    scman.AddProperty("float exposure", &exposure);
-    scman.AddProperty("float bloomStrength", &bloomStrength);
-    scman.AddProperty("int blurIterations", &blurIterations);
-    scman.AddProperty("float ssaoStrength", &ssaoStrength);
-    scman.AddProperty("float ssaoRadius", &ssaoRadius);
-    scman.AddProperty("float dofMinDistance", &dofMinDistance);
-    scman.AddProperty("float dofMaxDistance", &dofMaxDistance);
-    scman.AddProperty("float dofFocusDistance", &dofFocusDistance);
-    scman.AddProperty("float fogStart", &fogStart);
-    scman.AddProperty("float fogEnd", &fogEnd);
-    scman.AddProperty("float fogHeight", &fogHeight);
     scman.SetDefaultNamespace("");
 	std::string startDecl = "void Start()", loopDecl = "void Loop()";
 
@@ -2254,18 +2237,6 @@ int main()
 
 		ListenerWrapper::SetPosition(cam.GetPosition());
 		ListenerWrapper::SetOrientation(cam.GetOrientation());
-
-        Renderer::GetInstance()->SetExposure(exposure);
-        Renderer::GetInstance()->SetBloomStrength(bloomStrength);
-        Renderer::GetInstance()->SetBlurIterations(blurIterations);
-        Renderer::GetInstance()->SetSSAOStrength(ssaoStrength);
-        Renderer::GetInstance()->SetSSAORadius(ssaoRadius);
-        Renderer::GetInstance()->SetDOFMinDistance(dofMinDistance);
-        Renderer::GetInstance()->SetDOFMaxDistance(dofMaxDistance);
-        Renderer::GetInstance()->SetDOFFocusDistance(dofFocusDistance);
-        Renderer::GetInstance()->SetFogStart(fogStart);
-        Renderer::GetInstance()->SetFogEnd(fogEnd);
-        Renderer::GetInstance()->SetFogHeight(fogHeight);
 
 		if(engine.GetWindow().hasFocus())
             engine.GetWindow().setFramerateLimit(60);

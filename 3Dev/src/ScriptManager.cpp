@@ -38,6 +38,7 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterTGUI();
     RegisterEngine();
     RegisterNetwork();
+    RegisterRenderer();
 
     AddFunction("string to_string(int)", WRAP_FN_PR(std::to_string, (int), std::string));
     AddFunction("string to_string(float)", WRAP_FN_PR(std::to_string, (float), std::string));
@@ -1214,4 +1215,50 @@ void ScriptManager::RegisterNode()
     }, {});
 
     AddFunction("Transform GetFinalTransform(Node@, Transform = Transform())", WRAP_FN(Node::GetFinalTransform));
+}
+
+void ScriptManager::RegisterRenderer()
+{
+    AddType("Renderer", sizeof(Renderer),
+    {
+        { "void SetSkyboxResolution(uint)", WRAP_MFN(Renderer, SetSkyboxResolution) },
+        { "void SetIrradianceResolution(uint)", WRAP_MFN(Renderer, SetIrradianceResolution) },
+        { "void SetPrefilteredResolution(uint)", WRAP_MFN(Renderer, SetPrefilteredResolution) },
+        { "void SetExposure(float)", WRAP_MFN(Renderer, SetExposure) },
+        { "void SetSSAOStrength(float)", WRAP_MFN(Renderer, SetSSAOStrength) },
+        { "void SetSSAORadius(float)", WRAP_MFN(Renderer, SetSSAORadius) },
+        { "void SetSSAOSamples(int)", WRAP_MFN(Renderer, SetSSAOSamples) },
+        { "void SetDOFMinDistance(float)", WRAP_MFN(Renderer, SetDOFMinDistance) },
+        { "void SetDOFMaxDistance(float)", WRAP_MFN(Renderer, SetDOFMaxDistance) },
+        { "void SetDOFFocusDistance(float)", WRAP_MFN(Renderer, SetDOFFocusDistance) },
+        { "void SetBloomStrength(float)", WRAP_MFN(Renderer, SetBloomStrength) },
+        { "void SetBlurIterations(int)", WRAP_MFN(Renderer, SetBlurIterations) },
+        { "void SetFogStart(float)", WRAP_MFN(Renderer, SetFogStart) },
+        { "void SetFogEnd(float)", WRAP_MFN(Renderer, SetFogEnd) },
+        { "void SetFogHeight(float)", WRAP_MFN(Renderer, SetFogHeight) },
+        { "void SetIsSSREnabled(bool)", WRAP_MFN(Renderer, SetIsSSREnabled) },
+        { "void SetSSRRayStep(float)", WRAP_MFN(Renderer, SetSSRRayStep) },
+        { "void SetSSRMaxSteps(int)", WRAP_MFN(Renderer, SetSSRMaxSteps) },
+        { "void SetSSRMaxBinarySearchSteps(int)", WRAP_MFN(Renderer, SetSSRMaxBinarySearchSteps) },
+        { "void SetIsSSGIEnabled(bool)", WRAP_MFN(Renderer, SetIsSSGIEnabled) },
+        { "void SetSSGIStrength(float)", WRAP_MFN(Renderer, SetSSGIStrength) },
+        { "uint GetSkyboxResolution()", WRAP_MFN(Renderer, GetSkyboxResolution) },
+        { "uint GetIrradianceResolution()", WRAP_MFN(Renderer, GetIrradianceResolution) },
+        { "uint GetPrefilteredResolution()", WRAP_MFN(Renderer, GetPrefilteredResolution) },
+        { "float GetExposure()", WRAP_MFN(Renderer, GetExposure) },
+        { "float GetSSAOStrength()", WRAP_MFN(Renderer, GetSSAOStrength) },
+        { "float GetSSAORadius()", WRAP_MFN(Renderer, GetSSAORadius) },
+        { "int GetSSAOSamples()", WRAP_MFN(Renderer, GetSSAOSamples) },
+        { "float GetDOFMinDistance()", WRAP_MFN(Renderer, GetDOFMinDistance) },
+        { "float GetDOFMaxDistance()", WRAP_MFN(Renderer, GetDOFMaxDistance) },
+        { "float GetDOFFocusDistance()", WRAP_MFN(Renderer, GetDOFFocusDistance) },
+        { "float GetFogStart()", WRAP_MFN(Renderer, GetFogStart) },
+        { "float GetFogEnd()", WRAP_MFN(Renderer, GetFogEnd) },
+        { "float GetFogHeight()", WRAP_MFN(Renderer, GetFogHeight) },
+        { "float GetBloomStrength()", WRAP_MFN(Renderer, GetBloomStrength) },
+        { "int GetBlurIterations()", WRAP_MFN(Renderer, GetBlurIterations) },
+        { "float GetSSRRayStep()", WRAP_MFN(Renderer, GetSSRRayStep) },
+        { "int GetSSRMaxSteps()", WRAP_MFN(Renderer, GetSSRMaxSteps) },
+        { "int GetSSRMaxBinarySearchSteps()", WRAP_MFN(Renderer, GetSSRMaxBinarySearchSteps) }
+    }, {});
 }

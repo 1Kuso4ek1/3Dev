@@ -1,8 +1,36 @@
 #include <Engine.hpp>
 
+Json::Value cfg;
+
+void SaveConfig(rp3d::Vector2 resolution, bool fullscreen, uint32_t maxFps, uint32_t shadowMapResolution)
+{
+    cfg["window"]["width"] = (uint32_t)resolution.x;
+    cfg["window"]["height"] = (uint32_t)resolution.y;
+    cfg["window"]["fullscreen"] = fullscreen;
+    cfg["window"]["maxFps"] = maxFps;
+
+    cfg["renderer"]["shadowMapResolution"] = shadowMapResolution;
+    cfg["renderer"]["skyboxSideSize"] = Renderer::GetInstance()->GetSkyboxResolution();
+    cfg["renderer"]["irradianceSideSize"] = Renderer::GetInstance()->GetIrradianceResolution();
+    cfg["renderer"]["prefilteredSideSize"] = Renderer::GetInstance()->GetPrefilteredResolution();
+    cfg["renderer"]["ssaoSamples"] = Renderer::GetInstance()->GetSSAOSamples();
+    cfg["renderer"]["exposure"] = Renderer::GetInstance()->GetExposure();
+    cfg["renderer"]["ssaoStrength"] = Renderer::GetInstance()->GetSSAOStrength();
+    cfg["renderer"]["ssaoRadius"] = Renderer::GetInstance()->GetSSAORadius();
+    cfg["renderer"]["ssrEnabled"] = Renderer::GetInstance()->IsSSREnabled();
+    cfg["renderer"]["ssrRayStep"] = Renderer::GetInstance()->GetSSRRayStep();
+    cfg["renderer"]["ssrMaxSteps"] = Renderer::GetInstance()->GetSSRMaxSteps();
+    cfg["renderer"]["ssrMaxBinarySearchSteps"] = Renderer::GetInstance()->GetSSRMaxBinarySearchSteps();
+    cfg["renderer"]["ssgiEnabled"] = Renderer::GetInstance()->IsSSGIEnabled();
+    cfg["renderer"]["ssgiStrength"] = Renderer::GetInstance()->GetSSGIStrength();
+
+    std::ofstream file("launcher_conf.json");
+    file << cfg.toStyledString();
+    file.close();
+}
+
 int main()
 {
-    Json::Value cfg;
     Json::CharReaderBuilder rbuilder;
 
     std::ifstream file("launcher_conf.json");
@@ -38,6 +66,9 @@ int main()
         Renderer::GetInstance()->SetShadersDirectory(cfg["renderer"]["shadersDir"].asString());
     if(cfg["renderer"]["ssaoSamples"].asInt() > 0)
         Renderer::GetInstance()->SetSSAOSamples(cfg["renderer"]["ssaoSamples"].asInt());
+    Renderer::GetInstance()->SetExposure(cfg["renderer"]["exposure"].asFloat());
+    Renderer::GetInstance()->SetSSAOStrength(cfg["renderer"]["ssaoStrength"].asFloat());
+    Renderer::GetInstance()->SetSSAORadius(cfg["renderer"]["ssaoRadius"].asFloat());
     Renderer::GetInstance()->SetIsSSREnabled(cfg["renderer"]["ssrEnabled"].asBool());
     Renderer::GetInstance()->SetSSRRayStep(cfg["renderer"]["ssrRayStep"].asFloat());
     Renderer::GetInstance()->SetSSRMaxSteps(cfg["renderer"]["ssrMaxSteps"].asInt());
@@ -87,25 +118,12 @@ int main()
          updateShadows = true, mouseCursorGrabbed = true,
          mouseCursorVisible = false;
 
-    float exposure = cfg["renderer"]["exposure"].asFloat();
-    float bloomStrength = 0.3;
     float mouseSensitivity = 1.0;
 
-    float dofMinDistance = 1.0;
-    float dofMaxDistance = 1.0;
-    float dofFocusDistance = 1.0;
-
-    float fogStart = 0.0;
-    float fogEnd = 0.0;
-    float fogHeight = 0.0;
-
-    float ssaoStrength = cfg["renderer"]["ssaoStrength"].asFloat();
-    float ssaoRadius = cfg["renderer"]["ssaoRadius"].asFloat();
-
-    int blurIterations = 8;
-
     ScriptManager scman;
+    scman.AddFunction("void SaveConfig(Vector2, bool, uint, uint)", WRAP_FN(SaveConfig));
     scman.AddProperty("Engine engine", &engine);
+    scman.AddProperty("Renderer renderer", Renderer::GetInstance());
     scman.SetDefaultNamespace("Game");
     scman.AddProperty("SceneManager scene", &scene);
     scman.AddProperty("Camera camera", scene.GetCamera());
@@ -117,17 +135,6 @@ int main()
     scman.AddProperty("bool manageCameraLook", &manageCameraLook);
     scman.AddProperty("bool manageCameraMouse", &manageCameraMouse);
     scman.AddProperty("float mouseSensitivity", &mouseSensitivity);
-    scman.AddProperty("float exposure", &exposure);
-    scman.AddProperty("float bloomStrength", &bloomStrength);
-    scman.AddProperty("int blurIterations", &blurIterations);
-    scman.AddProperty("float ssaoStrength", &ssaoStrength);
-    scman.AddProperty("float ssaoRadius", &ssaoRadius);
-    scman.AddProperty("float dofMinDistance", &dofMinDistance);
-    scman.AddProperty("float dofMaxDistance", &dofMaxDistance);
-    scman.AddProperty("float dofFocusDistance", &dofFocusDistance);
-    scman.AddProperty("float fogStart", &fogStart);
-    scman.AddProperty("float fogEnd", &fogEnd);
-    scman.AddProperty("float fogHeight", &fogHeight);
     scman.SetDefaultNamespace("");
 
     auto scPath = cfg["scenePath"].asString();
@@ -193,18 +200,6 @@ int main()
 
         ListenerWrapper::SetPosition(cam.GetPosition());
         ListenerWrapper::SetOrientation(cam.GetOrientation());
-
-        Renderer::GetInstance()->SetExposure(exposure);
-        Renderer::GetInstance()->SetBloomStrength(bloomStrength);
-        Renderer::GetInstance()->SetBlurIterations(blurIterations);
-        Renderer::GetInstance()->SetSSAOStrength(ssaoStrength);
-        Renderer::GetInstance()->SetSSAORadius(ssaoRadius);
-        Renderer::GetInstance()->SetDOFMinDistance(dofMinDistance);
-        Renderer::GetInstance()->SetDOFMaxDistance(dofMaxDistance);
-        Renderer::GetInstance()->SetDOFFocusDistance(dofFocusDistance);
-        Renderer::GetInstance()->SetFogStart(fogStart);
-        Renderer::GetInstance()->SetFogEnd(fogEnd);
-        Renderer::GetInstance()->SetFogHeight(fogHeight);
         
         cam.Update();
         if(manageCameraMovement) cam.Move(1);
