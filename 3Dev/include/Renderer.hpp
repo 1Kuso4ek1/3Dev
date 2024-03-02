@@ -22,6 +22,7 @@ public:
         SSAO,
         SSGI,
         SSR,
+        Fog,
         Decals,
         Skybox,
         Depth,
@@ -41,6 +42,7 @@ public:
         SSAO,
         SSGI,
         SSR,
+        Fog,
         DecalsGBuffer,
         BloomPingPong0,
         BloomPingPong1,
@@ -77,6 +79,7 @@ public:
     void SetFogStart(float start);
     void SetFogEnd(float end);
     void SetFogHeight(float height);
+    void SetFogIntensity(float intensity);
 
     void SetIsSSREnabled(bool ssrEnabled);
 
@@ -92,6 +95,7 @@ public:
     void SSAO();
     void SSGI();
     void SSR();
+    void Fog(rp3d::Vector3 camPos);
 
     void DrawFramebuffers();
 
@@ -112,6 +116,7 @@ public:
     float GetFogStart();
     float GetFogEnd();
     float GetFogHeight();
+    float GetFogIntensity();
     
     float GetBloomStrength();
     int GetBlurIterations();
@@ -150,6 +155,7 @@ private:
     float fogStart = 0.0;
     float fogEnd = 0.0;
     float fogHeight = 0.0;
+    float fogIntensity = 1.0;
     float ssrRayStep = 0.01;
     float ssgiStrength = 1.5;
 

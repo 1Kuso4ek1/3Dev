@@ -241,6 +241,8 @@ int main(int argc, char* argv[])
         glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer)->GetTexture(false, 3));
         glActiveTexture(GL_TEXTURE20);
         glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)->GetTexture());
+        glActiveTexture(GL_TEXTURE21);
+        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Fog)->GetTexture());
 
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exposure);
@@ -254,6 +256,7 @@ int main(int argc, char* argv[])
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("gcombined", 18);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("decalsCombined", 19);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssgi", 20);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("fog", 21);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssrEnabled", true);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);

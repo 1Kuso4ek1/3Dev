@@ -25,6 +25,7 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     shaders[ShaderType::SSAO] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "ssao.fs");
     shaders[ShaderType::SSGI] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "ssgi.fs");
     shaders[ShaderType::SSR] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "ssr.fs");
+    shaders[ShaderType::Fog] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "fog.fs");
     shaders[ShaderType::Decals] = std::make_shared<Shader>(shadersDir + "decals.vs", shadersDir + "decals.fs");
     shaders[ShaderType::Skybox] = std::make_shared<Shader>(shadersDir + "skybox.vs", shadersDir + "skybox.fs");
     shaders[ShaderType::Depth] = std::make_shared<Shader>(shadersDir + "depth.vs", shadersDir + "depth.fs");
@@ -52,6 +53,8 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     framebuffers[FramebufferType::SSGI] = std::make_shared<Framebuffer>(shaders[ShaderType::SSGI].get(), fbSize.x / 2.0, fbSize.y / 2.0, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGBA16F, GL_RGBA);
 
     framebuffers[FramebufferType::SSR] = std::make_shared<Framebuffer>(shaders[ShaderType::SSR].get(), fbSize.x, fbSize.y, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGB16F, GL_RGB);
+
+    framebuffers[FramebufferType::Fog] = std::make_shared<Framebuffer>(shaders[ShaderType::Fog].get(), fbSize.x, fbSize.y, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGBA16F, GL_RGBA);
     
     std::random_device dev;
     std::default_random_engine eng(dev());
@@ -215,6 +218,11 @@ void Renderer::SetFogHeight(float height)
     fogHeight = height;
 }
 
+void Renderer::SetFogIntensity(float intensity)
+{
+    fogIntensity = intensity;
+}
+
 void Renderer::SetIsSSREnabled(bool ssrEnabled)
 {
     this->ssrEnabled = ssrEnabled;
@@ -372,6 +380,31 @@ void Renderer::SSR()
     Framebuffer::Unbind();
 }
 
+void Renderer::Fog(rp3d::Vector3 camPos)
+{
+    if(fogEnd == 0.0) return;
+
+    framebuffers[FramebufferType::Fog]->Bind();
+    glViewport(0, 0, framebuffers[FramebufferType::Fog]->GetSize().x, framebuffers[FramebufferType::Fog]->GetSize().y);
+    glActiveTexture(GL_TEXTURE15);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 0));
+    glActiveTexture(GL_TEXTURE16);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 3));
+    glActiveTexture(GL_TEXTURE17);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textures[TextureType::Irradiance]);
+    shaders[ShaderType::Fog]->Bind();
+    shaders[ShaderType::Fog]->SetUniform1i("gposition", 15);
+    shaders[ShaderType::Fog]->SetUniform1i("gemission", 16);
+    shaders[ShaderType::Fog]->SetUniform1i("irradiance", 17);
+    shaders[ShaderType::Fog]->SetUniform1f("fogStart", fogStart);
+    shaders[ShaderType::Fog]->SetUniform1f("fogEnd", fogEnd);
+    shaders[ShaderType::Fog]->SetUniform1f("fogHeight", fogHeight);
+    shaders[ShaderType::Fog]->SetUniform3f("campos", camPos.x, camPos.y, camPos.z);
+    shaders[ShaderType::Fog]->SetUniformMatrix4("invView", glm::inverse(m.GetView()));
+    framebuffers[FramebufferType::Fog]->Draw();
+    Framebuffer::Unbind();
+}
+
 void Renderer::DrawFramebuffers()
 {
     auto size = framebuffers[FramebufferType::Main]->GetSize();
@@ -397,18 +430,22 @@ void Renderer::DrawFramebuffers()
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::DecalsGBuffer]->GetTexture(false, 3));
     glActiveTexture(GL_TEXTURE20);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::SSGIPingPong1]->GetTexture());
+    glActiveTexture(GL_TEXTURE21);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::Fog]->GetTexture());
     shaders[ShaderType::Post]->Bind();
     shaders[ShaderType::Post]->SetUniform1f("exposure", exposure);
     shaders[ShaderType::Post]->SetUniform1f("bloomStrength", bloomStrength);
     shaders[ShaderType::Post]->SetUniform1f("dofMinDistance", dofMinDistance);
     shaders[ShaderType::Post]->SetUniform1f("dofMaxDistance", dofMaxDistance);
     shaders[ShaderType::Post]->SetUniform1f("dofFocusDistance", dofFocusDistance);
+    shaders[ShaderType::Post]->SetUniform1f("fogIntensity", fogIntensity);
     shaders[ShaderType::Post]->SetUniform1i("bloom", 15);
     shaders[ShaderType::Post]->SetUniform1i("ssr", 16);
     shaders[ShaderType::Post]->SetUniform1i("galbedo", 17);
     shaders[ShaderType::Post]->SetUniform1i("gcombined", 18);
     shaders[ShaderType::Post]->SetUniform1i("decalsCombined", 19);
     shaders[ShaderType::Post]->SetUniform1i("ssgi", 20);
+    shaders[ShaderType::Post]->SetUniform1i("fog", 21);
     shaders[ShaderType::Post]->SetUniform1i("rawColor", false);
     shaders[ShaderType::Post]->SetUniform1i("ssrEnabled", ssrEnabled);
     shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);
@@ -483,6 +520,11 @@ float Renderer::GetFogEnd()
 float Renderer::GetFogHeight()
 {
     return fogHeight;
+}
+
+float Renderer::GetFogIntensity()
+{
+    return fogIntensity;
 }
 
 float Renderer::GetBloomStrength()

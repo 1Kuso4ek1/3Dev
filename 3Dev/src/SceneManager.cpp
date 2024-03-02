@@ -129,9 +129,6 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     lightingPass->SetUniform1i("decalsEmission", 18);
     lightingPass->SetUniform1i("decalsCombined", 19);
     lightingPass->SetUniform1i("ssaoEnabled", Renderer::GetInstance()->GetSSAOStrength() > 0.0);
-    lightingPass->SetUniform1f("fogStart", Renderer::GetInstance()->GetFogStart());
-    lightingPass->SetUniform1f("fogEnd", Renderer::GetInstance()->GetFogEnd());
-    lightingPass->SetUniform1f("fogHeight", Renderer::GetInstance()->GetFogHeight());
     lightingPass->SetUniformMatrix4("invView", glm::inverse(Renderer::GetInstance()->GetMatrices()->GetView()));
     Material::UpdateShaderEnvironment(lightingPass);
 
@@ -161,6 +158,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 
     Renderer::GetInstance()->SSR();
     Renderer::GetInstance()->SSGI();
+    Renderer::GetInstance()->Fog(camPos);
     
     if(!transparency) transparency = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency);
 
@@ -195,13 +193,13 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     auto post = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post);
 
     post->Bind();
-    glActiveTexture(GL_TEXTURE21);
-	glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(true));
     glActiveTexture(GL_TEXTURE22);
+	glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(true));
+    glActiveTexture(GL_TEXTURE23);
 	glBindTexture(GL_TEXTURE_2D, transparency->GetTexture(true));
 
-    post->SetUniform1i("frameDepth", 21);
-    post->SetUniform1i("transparencyDepth", 22);
+    post->SetUniform1i("frameDepth", 22);
+    post->SetUniform1i("transparencyDepth", 23);
 
     Renderer::GetInstance()->Bloom();
 }

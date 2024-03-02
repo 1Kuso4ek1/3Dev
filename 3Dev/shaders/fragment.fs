@@ -27,10 +27,6 @@ uniform mat4 invView;
 
 uniform bool ssaoEnabled;
 
-uniform float fogStart = 10.0;
-uniform float fogEnd = 30.0;
-uniform float fogHeight = 5.0;
-
 in vec2 coord;
 uniform vec3 campos;
 
@@ -148,25 +144,6 @@ vec3 CalcLight(Light light, float rough, float metal, vec3 albedo, vec3 irr, vec
     return lo;
 }
 
-float LayeredFog()
-{
-	vec3 camProj = campos; camProj.y = 0.0;
-	vec3 worldProj = pos; worldProj.y = 0.0;
-	
-	float deltaD = length(camProj - worldProj) / fogEnd;
-	float deltaY = 0.0;
-	float density = 0.0;
-	
-	if(pos.y < fogHeight)
-	{
-		deltaY = (fogHeight - pos.y) / fogHeight;
-		density = pow(deltaY, 2.0) * 0.5;
-	}
-	if(deltaY != 0.0 && fogEnd != fogStart)
-		return clamp((sqrt(1.0 + ((deltaD / deltaY) * (deltaD / deltaY)))) * density * clamp((length(campos - pos) - fogStart) / (fogEnd - fogStart), 0.0, 1.0), 0.0, 1.0); 
-	else return 0.0;
-}
-
 void main()
 {
     pos = (invView * texture(gposition, coord)).xyz;
@@ -220,10 +197,9 @@ void main()
     vec2 brdf = normalize(texture(lut, vec2(max(dot(norm, normalize(campos - pos)), 0.0), rough)).xy);
     vec3 spc = prefiltered * (f * brdf.x + brdf.y);
 
-    vec3 ambient = (((kdif * irr * alb) + spc) * ao);
+    vec3 ambient = ((kdif * irr * alb) + spc);
 
     float shadowCoef = (length(emission) > 0.0 ? 1.0 : (1.0 - shadow));
     total += ambient;
-    color = vec4(total * shadowCoef + ((ambient / 5.0) * (1.0 - shadowCoef)) + emission + totalNoShadow, alpha);
-    color.rgb = mix(color.rgb, (nirradiance.x < 0.0 ? texture(irradiance, norm).xyz : nirradiance), LayeredFog() * (1.0 - clamp(length(emission), 0.0, 1.0)));
+    color = vec4(total * ao * shadowCoef + ((ambient / 5.0) * (1.0 - shadowCoef)) + emission + (totalNoShadow * ao), alpha);
 }

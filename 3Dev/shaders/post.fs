@@ -12,6 +12,7 @@ uniform sampler2D frame;
 uniform sampler2D bloom;
 uniform sampler2D ssr;
 uniform sampler2D ssgi;
+uniform sampler2D fog;
 uniform sampler2D gcombined;
 uniform sampler2D decalsCombined;
 uniform sampler2D galbedo;
@@ -23,6 +24,7 @@ uniform float bloomStrength = 0.3;
 uniform float dofMinDistance = 1.0;
 uniform float dofMaxDistance = 1.0;
 uniform float dofFocusDistance = 1.0;
+uniform float fogIntensity = 1.0;
 
 uniform bool fxaa = true;
 uniform bool ssrEnabled;
@@ -138,7 +140,10 @@ void main()
     if(length(texture(decalsCombined, coord)) == 0.0)
         color.rgb += mix(texture(galbedo, coord).rgb, color.rgb, combined.x) * ssgi;
 
+    vec4 fog = texture(fog, coord);
+
     color.rgb = mix(color.rgb, texture(bloom, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0));
+    color.rgb = mix(color.rgb, fog.rgb, fog.a * fogIntensity);
 
     color.rgb = ACES();
     color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
