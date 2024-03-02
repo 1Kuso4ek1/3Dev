@@ -115,6 +115,12 @@ void main()
             vec4 ssr = texture(ssr, coord + sqrt(lod) * pixelsize, lod);
             color.rgb += f0 * ssr.rgb;
         }
+
+        vec4 fog = texture(fog, coord);
+        
+        if(!transparentBuffer)
+            color.rgb = mix(color.rgb, fog.rgb, fog.a * fogIntensity);
+
         return;
     }
 
@@ -142,8 +148,10 @@ void main()
 
     vec4 fog = texture(fog, coord);
 
+    if(!transparentBuffer)
+        color.rgb = mix(color.rgb, mix(fog.rgb, ssgi, 0.5), fog.a * fogIntensity);
+
     color.rgb = mix(color.rgb, texture(bloom, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0));
-    color.rgb = mix(color.rgb, fog.rgb, fog.a * fogIntensity);
 
     color.rgb = ACES();
     color.rgb = pow(color.rgb, vec3(1.0 / 2.2));

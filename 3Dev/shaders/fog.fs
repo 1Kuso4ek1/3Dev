@@ -41,7 +41,7 @@ void main()
     vec3 viewPos = texture(gposition, coord).xyz;
     vec3 pos = (invView * vec4(viewPos, 1.0)).xyz;
     if(length(viewPos) == 0.0)
-        pos = vec3(100.0, 100.0, 100.0);
+        pos = vec3(1000000.0, 100.0, 1000000.0);
 
     color = vec4(texture(irradiance, campos).xyz, LayeredFog(pos) * (1.0 - clamp(length(texture(gemission, coord).rgb), 0.0, 1.0)));
 }
