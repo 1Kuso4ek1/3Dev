@@ -27,6 +27,7 @@ uniform float dofFocusDistance = 1.0;
 uniform float fogIntensity = 1.0;
 
 uniform bool fxaa = true;
+uniform bool fogEnabled;
 uniform bool ssrEnabled;
 uniform bool rawColor;
 uniform bool transparentBuffer;
@@ -118,7 +119,7 @@ void main()
 
         vec4 fog = texture(fog, coord);
         
-        if(!transparentBuffer)
+        if(!transparentBuffer && fogEnabled)
             color.rgb = mix(color.rgb, fog.rgb, fog.a * fogIntensity);
 
         return;
@@ -148,7 +149,7 @@ void main()
 
     vec4 fog = texture(fog, coord);
 
-    if(!transparentBuffer)
+    if(!transparentBuffer && fogEnabled)
         color.rgb = mix(color.rgb, mix(fog.rgb, ssgi, 0.5), fog.a * fogIntensity);
 
     color.rgb = mix(color.rgb, texture(bloom, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0));
