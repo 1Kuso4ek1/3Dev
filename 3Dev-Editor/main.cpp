@@ -904,6 +904,7 @@ int main()
 		model->SetPhysicsManager(man.get());
 		model->CreateRigidBody();
     	scene.AddModel(model);
+        treeTabs->select(0);
     	readSceneTree();
         sceneTree->selectItem({ "Scene", "Objects", scene.GetLastAdded() });
     });
@@ -916,6 +917,7 @@ int main()
 		model->CreateRigidBody();
         model->CreateBoxShape();
         scene.AddModel(model, "cube");
+        treeTabs->select(0);
     	readSceneTree();
         sceneTree->selectItem({ "Scene", "Objects", scene.GetLastAdded() });
     });
@@ -924,6 +926,7 @@ int main()
     {
         auto light = std::make_shared<Light>(rp3d::Vector3::zero(), rp3d::Vector3::zero());
         scene.AddLight(light);
+        treeTabs->select(0);
         readSceneTree();
         sceneTree->selectItem({ "Scene", "Objects", scene.GetLastAdded() });
     });
@@ -931,6 +934,7 @@ int main()
     materialButton->onPress([&]()
     {
     	scene.AddMaterial(std::make_shared<Material>());
+        treeTabs->select(1);
     	readSceneTree();
     	materialBox->addItem(scene.GetLastAdded());
         sceneTree->selectItem({ "Scene", "Materials", scene.GetLastAdded() });
@@ -994,8 +998,8 @@ int main()
                     std::filesystem::copy(path, projectDir + "/assets/sounds/" + filename);
                 path = projectDir + "/assets/sounds/" + filename;
                 sman->LoadSound(path);
-                sceneTree->addItem({ "Scene", "Sounds", sman->GetSounds().back() });
-                sceneTree->selectItem({ "Scene", "Sounds", sman->GetSounds().back() });
+                treeTabs->select(2);
+                readSceneTree();
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
@@ -1186,6 +1190,7 @@ int main()
                     codeArea->setText(code[filename]);
                 }
                 scman.LoadScript(path);
+                treeTabs->select(4);
                 readSceneTree();
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
                 currentFile = filename;
@@ -1201,6 +1206,7 @@ int main()
     {
         auto anim = std::make_shared<Animation>("");
         scene.AddAnimation(anim);
+        treeTabs->select(3);
         readSceneTree();
         sceneTree->selectItem({ "Scene", "Animations", scene.GetLastAdded() });
     });
