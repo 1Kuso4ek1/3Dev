@@ -9,6 +9,7 @@ uniform vec3 campos;
 uniform float fogStart = 10.0;
 uniform float fogEnd = 30.0;
 uniform float fogHeight = 5.0;
+uniform float fogSkyHeight = 100.0;
 
 uniform mat4 invView;
 
@@ -41,7 +42,7 @@ void main()
     vec3 viewPos = texture(gposition, coord).xyz;
     vec3 pos = (invView * vec4(viewPos, 1.0)).xyz;
     if(length(viewPos) == 0.0)
-        pos = vec3(1000000.0, 100.0, 1000000.0);
+        pos = vec3(1000000.0, fogSkyHeight, 1000000.0);
 
     color = vec4(texture(irradiance, campos).xyz, LayeredFog(pos) * (1.0 - clamp(length(texture(gemission, coord).rgb), 0.0, 1.0)));
 }

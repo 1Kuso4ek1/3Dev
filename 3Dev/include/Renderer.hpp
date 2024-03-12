@@ -79,6 +79,7 @@ public:
     void SetFogStart(float start);
     void SetFogEnd(float end);
     void SetFogHeight(float height);
+    void SetFogSkyHeight(float skyHeight);
     void SetFogIntensity(float intensity);
 
     void SetIsSSREnabled(bool ssrEnabled);
@@ -116,6 +117,7 @@ public:
     float GetFogStart();
     float GetFogEnd();
     float GetFogHeight();
+    float GetFogSkyHeight();
     float GetFogIntensity();
     
     float GetBloomStrength();
@@ -156,6 +158,7 @@ private:
     float fogEnd = 0.0;
     float fogHeight = 0.0;
     float fogIntensity = 1.0;
+    float fogSkyHeight = 100.0;
     float ssrRayStep = 0.01;
     float ssgiStrength = 1.5;
 

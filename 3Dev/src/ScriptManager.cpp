@@ -1236,6 +1236,7 @@ void ScriptManager::RegisterRenderer()
         { "void SetFogStart(float)", WRAP_MFN(Renderer, SetFogStart) },
         { "void SetFogEnd(float)", WRAP_MFN(Renderer, SetFogEnd) },
         { "void SetFogHeight(float)", WRAP_MFN(Renderer, SetFogHeight) },
+        { "void SetFogSkyHeight(float)", WRAP_MFN(Renderer, SetFogSkyHeight) },
         { "void SetFogIntensity(float)", WRAP_MFN(Renderer, SetFogIntensity) },
         { "void SetIsSSREnabled(bool)", WRAP_MFN(Renderer, SetIsSSREnabled) },
         { "void SetSSRRayStep(float)", WRAP_MFN(Renderer, SetSSRRayStep) },

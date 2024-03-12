@@ -218,6 +218,11 @@ void Renderer::SetFogHeight(float height)
     fogHeight = height;
 }
 
+void Renderer::SetFogSkyHeight(float skyHeight)
+{
+    fogSkyHeight = skyHeight;
+}
+
 void Renderer::SetFogIntensity(float intensity)
 {
     fogIntensity = intensity;
@@ -399,6 +404,7 @@ void Renderer::Fog(rp3d::Vector3 camPos)
     shaders[ShaderType::Fog]->SetUniform1f("fogStart", fogStart);
     shaders[ShaderType::Fog]->SetUniform1f("fogEnd", fogEnd);
     shaders[ShaderType::Fog]->SetUniform1f("fogHeight", fogHeight);
+    shaders[ShaderType::Fog]->SetUniform1f("fogSkyHeight", fogSkyHeight);
     shaders[ShaderType::Fog]->SetUniform3f("campos", camPos.x, camPos.y, camPos.z);
     shaders[ShaderType::Fog]->SetUniformMatrix4("invView", glm::inverse(m.GetView()));
     framebuffers[FramebufferType::Fog]->Draw();
@@ -522,6 +528,11 @@ float Renderer::GetFogEnd()
 float Renderer::GetFogHeight()
 {
     return fogHeight;
+}
+
+float Renderer::GetFogSkyHeight()
+{
+    return fogSkyHeight;
 }
 
 float Renderer::GetFogIntensity()
