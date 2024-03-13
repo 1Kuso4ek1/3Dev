@@ -132,6 +132,12 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     lightingPass->SetUniformMatrix4("invView", glm::inverse(Renderer::GetInstance()->GetMatrices()->GetView()));
     Material::UpdateShaderEnvironment(lightingPass);
 
+    if(lightsVector.size() > 64)
+        std::sort(lightsVector.begin(), lightsVector.end(), [&](auto l, auto l1)
+        {
+            return (dynamic_cast<Light*>(l)->GetPosition() - camPos).length() < (dynamic_cast<Light*>(l1)->GetPosition() - camPos).length();
+        });
+
     for(int i = 0; i < 64; i++)
         if(i >= lightsVector.size())
             lightingPass->SetUniform1i("lights[" + std::to_string(i) + "].isactive", 0);
