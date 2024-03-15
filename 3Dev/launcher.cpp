@@ -2,32 +2,55 @@
 
 Json::Value cfg;
 
-void SaveConfig(rp3d::Vector2 resolution, bool fullscreen, uint32_t maxFps, uint32_t shadowMapResolution)
+struct Config
 {
-    cfg["window"]["width"] = (uint32_t)resolution.x;
-    cfg["window"]["height"] = (uint32_t)resolution.y;
-    cfg["window"]["fullscreen"] = fullscreen;
-    cfg["window"]["maxFps"] = maxFps;
+    Config()
+    {
+        multithreading = cfg["enableMultithreading"].asBool();
 
-    cfg["renderer"]["shadowMapResolution"] = shadowMapResolution;
-    cfg["renderer"]["skyboxSideSize"] = Renderer::GetInstance()->GetSkyboxResolution();
-    cfg["renderer"]["irradianceSideSize"] = Renderer::GetInstance()->GetIrradianceResolution();
-    cfg["renderer"]["prefilteredSideSize"] = Renderer::GetInstance()->GetPrefilteredResolution();
-    cfg["renderer"]["ssaoSamples"] = Renderer::GetInstance()->GetSSAOSamples();
-    cfg["renderer"]["exposure"] = Renderer::GetInstance()->GetExposure();
-    cfg["renderer"]["ssaoStrength"] = Renderer::GetInstance()->GetSSAOStrength();
-    cfg["renderer"]["ssaoRadius"] = Renderer::GetInstance()->GetSSAORadius();
-    cfg["renderer"]["ssrEnabled"] = Renderer::GetInstance()->IsSSREnabled();
-    cfg["renderer"]["ssrRayStep"] = Renderer::GetInstance()->GetSSRRayStep();
-    cfg["renderer"]["ssrMaxSteps"] = Renderer::GetInstance()->GetSSRMaxSteps();
-    cfg["renderer"]["ssrMaxBinarySearchSteps"] = Renderer::GetInstance()->GetSSRMaxBinarySearchSteps();
-    cfg["renderer"]["ssgiEnabled"] = Renderer::GetInstance()->IsSSGIEnabled();
-    cfg["renderer"]["ssgiStrength"] = Renderer::GetInstance()->GetSSGIStrength();
+        width = cfg["window"]["width"].asInt();
+        height = cfg["window"]["height"].asInt();
+        fullscreen = cfg["window"]["fullscreen"].asBool();
+        maxFps = cfg["window"]["maxFps"].asInt();
+        vsync = cfg["window"]["vsync"].asBool();
 
-    std::ofstream file("launcher_conf.json");
-    file << cfg.toStyledString();
-    file.close();
-}
+        shadowMapResolution = cfg["renderer"]["shadowMapResolution"].asInt();
+    }
+
+    void Save()
+    {
+        cfg["enableMultithreading"] = multithreading;
+
+        cfg["window"]["width"] = width;
+        cfg["window"]["height"] = height;
+        cfg["window"]["fullscreen"] = fullscreen;
+        cfg["window"]["maxFps"] = maxFps;
+        cfg["window"]["vsync"] = vsync;
+
+        cfg["renderer"]["shadowMapResolution"] = shadowMapResolution;
+        cfg["renderer"]["skyboxSideSize"] = Renderer::GetInstance()->GetSkyboxResolution();
+        cfg["renderer"]["irradianceSideSize"] = Renderer::GetInstance()->GetIrradianceResolution();
+        cfg["renderer"]["prefilteredSideSize"] = Renderer::GetInstance()->GetPrefilteredResolution();
+        cfg["renderer"]["ssaoSamples"] = Renderer::GetInstance()->GetSSAOSamples();
+        cfg["renderer"]["exposure"] = Renderer::GetInstance()->GetExposure();
+        cfg["renderer"]["ssaoStrength"] = Renderer::GetInstance()->GetSSAOStrength();
+        cfg["renderer"]["ssaoRadius"] = Renderer::GetInstance()->GetSSAORadius();
+        cfg["renderer"]["ssrEnabled"] = Renderer::GetInstance()->IsSSREnabled();
+        cfg["renderer"]["ssrRayStep"] = Renderer::GetInstance()->GetSSRRayStep();
+        cfg["renderer"]["ssrMaxSteps"] = Renderer::GetInstance()->GetSSRMaxSteps();
+        cfg["renderer"]["ssrMaxBinarySearchSteps"] = Renderer::GetInstance()->GetSSRMaxBinarySearchSteps();
+        cfg["renderer"]["ssgiEnabled"] = Renderer::GetInstance()->IsSSGIEnabled();
+        cfg["renderer"]["ssgiStrength"] = Renderer::GetInstance()->GetSSGIStrength();
+
+        std::ofstream file("launcher_conf.json");
+        file << cfg.toStyledString();
+        file.close();
+    }
+
+    uint32_t width, height, maxFps, shadowMapResolution;
+
+    bool fullscreen, vsync, multithreading;
+};
 
 int main()
 {
@@ -43,12 +66,14 @@ int main()
     
     Engine engine(cfg["log"]["init"].asBool(), cfg["log"]["silent"].asBool());
 
-    engine.CreateWindow(cfg["window"]["width"].asInt(), cfg["window"]["height"].asInt(), cfg["window"]["title"].asString(),
+    Config config;
+
+    engine.CreateWindow(config.width, config.height, cfg["window"]["title"].asString(),
                         cfg["window"]["fullscreen"].asBool() ? sf::Style::Fullscreen : sf::Style::Default);
     engine.Init();
 
-    engine.GetWindow().setVerticalSyncEnabled(cfg["window"]["vsync"].asBool());
-    engine.GetWindow().setFramerateLimit(cfg["window"]["maxFps"].asInt());
+    engine.GetWindow().setVerticalSyncEnabled(config.vsync);
+    engine.GetWindow().setFramerateLimit(config.maxFps);
 
     unsigned int guiWidth = cfg["gui"]["width"].asInt(), guiHeight = cfg["gui"]["height"].asInt();
     float bloomResolutionScale = cfg["renderer"]["bloomResolutionScale"].asFloat();
@@ -121,9 +146,19 @@ int main()
     float mouseSensitivity = 1.0;
 
     ScriptManager scman;
-    scman.AddFunction("void SaveConfig(Vector2, bool, uint, uint)", WRAP_FN(SaveConfig));
+    scman.AddType("Config", sizeof(Config), { { "void Save()", WRAP_MFN(Config, Save) } },
+    {
+        { "uint width", asOFFSET(Config, width) },
+        { "uint height", asOFFSET(Config, height) },
+        { "uint maxFps", asOFFSET(Config, maxFps) },
+        { "uint shadowMapResolution", asOFFSET(Config, shadowMapResolution) },
+        { "bool fullscreen", asOFFSET(Config, fullscreen) },
+        { "bool vsync", asOFFSET(Config, vsync) },
+        { "bool multithreading", asOFFSET(Config, multithreading) }
+    });
     scman.AddProperty("Engine engine", &engine);
     scman.AddProperty("Renderer renderer", Renderer::GetInstance());
+    scman.AddProperty("Config config", &config);
     scman.SetDefaultNamespace("Game");
     scman.AddProperty("SceneManager scene", &scene);
     scman.AddProperty("Camera camera", scene.GetCamera());

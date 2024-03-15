@@ -29,8 +29,16 @@ struct
 	std::shared_ptr<Model> object;
 } buffer;
 
-// A function from launcher, only for angelscript
-void SaveConfig(rp3d::Vector2 resolution, bool fullscreen, uint32_t maxFps, uint32_t shadowMapResolution) {}
+// Only for angelscript
+struct Config
+{
+    void Save() {}
+
+    uint32_t width, height, maxFps, shadowMapResolution;
+
+    bool fullscreen, vsync, multithreading;
+};
+
 
 void SaveProperties(Json::Value data)
 {
@@ -762,10 +770,22 @@ int main()
 
     float mouseSensitivity = 1.0;
 
+    Config config;
+
     ScriptManager scman;
-    scman.AddFunction("void SaveConfig(Vector2, bool, uint, uint)", WRAP_FN(SaveConfig));
+    scman.AddType("Config", sizeof(Config), { { "void Save()", WRAP_MFN(Config, Save) } },
+    {
+        { "uint width", asOFFSET(Config, width) },
+        { "uint height", asOFFSET(Config, height) },
+        { "uint maxFps", asOFFSET(Config, maxFps) },
+        { "uint shadowMapResolution", asOFFSET(Config, shadowMapResolution) },
+        { "bool fullscreen", asOFFSET(Config, fullscreen) },
+        { "bool vsync", asOFFSET(Config, vsync) },
+        { "bool multithreading", asOFFSET(Config, multithreading) }
+    });
     scman.AddProperty("Engine engine", &engine);
     scman.AddProperty("Renderer renderer", Renderer::GetInstance());
+    scman.AddProperty("Config config", &config);
     scman.SetDefaultNamespace("Game");
     scman.AddProperty("SceneManager scene", &scene);
     scman.AddProperty("Camera camera", scene.GetCamera());
