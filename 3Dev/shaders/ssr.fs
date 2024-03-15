@@ -5,8 +5,11 @@ uniform sampler2D gposition;
 uniform sampler2D gcolor;
 uniform sampler2D gnormal;
 uniform sampler2D gcombined;
+uniform sampler2D decalsNormal;
+uniform sampler2D decalsCombined;
 
 uniform mat4 projection;
+uniform mat4 view;
 
 uniform int maxSteps = 100;
 uniform int maxBinarySearchSteps = 20;
@@ -77,9 +80,16 @@ vec3 SSR(vec3 dir, vec3 pos)
 void main()
 {
     vec3 pos = texture(gposition, coord).xyz;
-    vec3 reflected = normalize(reflect(pos, normalize(texture(gnormal, coord).xyz)));
+    vec3 normal = texture(decalsNormal, coord).xyz;
+    if(length(normal) == 0.0)
+        normal = texture(gnormal, coord).xyz;
+    else normal = mat3(view) * normal;
 
-    vec4 combined = texture(gcombined, coord);
+    vec3 reflected = normalize(reflect(pos, normalize(normal)));
+
+    vec4 combined = texture(decalsCombined, coord);
+    if(length(combined) == 0.0)
+        combined = texture(gcombined, coord);
 
     if(combined.x == 0.0 && combined.y >= 0.9)
         discard;

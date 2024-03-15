@@ -138,7 +138,7 @@ void main()
     {
         float lod = 8.0 * pow(combined.y, 2.0);
 
-        vec3 f0 = mix(vec3(0.04), texture(galbedo, coord).rgb, texture(gcombined, coord).x);
+        vec3 f0 = mix(vec3(0.04), texture(galbedo, coord).rgb, combined.x);
 
         vec4 ssr = texture(ssr, coord + sqrt(lod) * pixelsize, lod);
         color.rgb += f0 * ssr.rgb;

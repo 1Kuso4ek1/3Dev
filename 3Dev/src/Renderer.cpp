@@ -372,15 +372,22 @@ void Renderer::SSR()
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::Main]->GetTexture(false));
     glActiveTexture(GL_TEXTURE18);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 4));
+    glActiveTexture(GL_TEXTURE19);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::DecalsGBuffer]->GetTexture(false, 1));
+    glActiveTexture(GL_TEXTURE20);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::DecalsGBuffer]->GetTexture(false, 3));
     shaders[ShaderType::SSR]->Bind();
     shaders[ShaderType::SSR]->SetUniform1i("gposition", 15);
     shaders[ShaderType::SSR]->SetUniform1i("gnormal", 16);
     shaders[ShaderType::SSR]->SetUniform1i("gcolor", 17);
     shaders[ShaderType::SSR]->SetUniform1i("gcombined", 18);
+    shaders[ShaderType::SSR]->SetUniform1i("decalsNormal", 19);
+    shaders[ShaderType::SSR]->SetUniform1i("decalsCombined", 20);
     shaders[ShaderType::SSR]->SetUniform1f("rayStep", ssrRayStep);
     shaders[ShaderType::SSR]->SetUniform1i("maxSteps", ssrMaxSteps);
     shaders[ShaderType::SSR]->SetUniform1i("maxBinarySearchSteps", ssrMaxBinarySearchSteps);
     shaders[ShaderType::SSR]->SetUniformMatrix4("projection", m.GetProjection());
+    shaders[ShaderType::SSR]->SetUniformMatrix4("view", m.GetView());
     framebuffers[FramebufferType::SSR]->Draw();
     Framebuffer::Unbind();
 }
