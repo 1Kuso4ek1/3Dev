@@ -153,7 +153,7 @@ int main(int argc, char* argv[])
     Renderer::GetInstance()->SetSSRMaxBinarySearchSteps(500);
     Renderer::GetInstance()->SetIsSSGIEnabled(true);
     Renderer::GetInstance()->SetSSGIStrength(ssgiStrength);
-    Renderer::GetInstance()->Init({ w, h }, env, b, 256, b, bloomResolutionScale);
+    Renderer::GetInstance()->Init({ w, h }, env, b, 64, b, bloomResolutionScale);
 
     Camera cam({ w, h });
 
@@ -259,6 +259,7 @@ int main(int argc, char* argv[])
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("fog", 21);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssrEnabled", true);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("fogEnabled", true);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
         
         Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();

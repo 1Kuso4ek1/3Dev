@@ -125,6 +125,8 @@ void main()
         return;
     }
 
+    vec4 fog = texture(fog, coord);
+
     if(fxaa) color = FXAA();
 
     float depth = pow(transparentBuffer ? texture(transparencyDepth, coord).x : texture(frameDepth, coord).x, 300.0);
@@ -147,8 +149,6 @@ void main()
     vec3 ssgi = texture(ssgi, coord).rgb;
 
     color.rgb += mix(texture(galbedo, coord).rgb, color.rgb, combined.x) * ssgi;
-
-    vec4 fog = texture(fog, coord);
 
     if(!transparentBuffer && fogEnabled)
         color.rgb = mix(color.rgb, mix(fog.rgb, ssgi, 0.5), fog.a * fogIntensity);

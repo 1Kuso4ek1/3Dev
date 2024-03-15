@@ -1,5 +1,5 @@
 # 3Dev
-![](https://img.shields.io/badge/3Dev-1.3.5-blue)
+![](https://img.shields.io/badge/3Dev-1.3.6-blue)
 ![](https://img.shields.io/badge/3Dev_Editor-1.3.9-blue)
 ![](https://img.shields.io/badge/language-C++-green)
 ![](https://img.shields.io/github/license/1kuso4ek1/3Dev)
@@ -15,7 +15,7 @@
 - Good animation system
 - Skeletal animations support
 - HDR
-- Post-processing: ACES tonemapping, FXAA, Physically based bloom, SSAO, Deferred decals, Simple Depth Of Field, Screen Space Reflections, Screen Space Global Illumination
+- Post-processing: ACES tonemapping, FXAA, Physically based bloom, SSAO, Deferred decals, Simple Depth Of Field, Screen Space Reflections, Screen Space Global Illumination, Layered fog (affected by SSGI)
 - Multithreading: parallel texture loading
 - Shadow mapping
 - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
@@ -37,3 +37,4 @@ All building instructions are [here](https://1kuso4ek1.github.io/3Dev/build.html
 ![](./Screenshots/scr2.jpg)
 ![](./Screenshots/scr3.jpg)
 ![](./Screenshots/scr4.jpg)
+![](./Screenshots/scr5.jpg)
