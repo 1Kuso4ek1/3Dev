@@ -447,6 +447,7 @@ int main()
     modeLabel->moveToFront();
 
     codeArea->enableMonospacedFontOptimization();
+    codeEditor->setSize(viewportWindow->getSize());
 
     std::shared_ptr<tgui::FileDialog> openFileDialog = nullptr;
 
@@ -1468,7 +1469,7 @@ int main()
             c->setSize({ c->getSize().x, event.size.height });
 
             viewportWindow->setSize({ p->getPosition().x - c->getSize().x, event.size.height - m->getSize().y });
-            editor.get<tgui::ChildWindow>("codeEditor")->setSize(viewportWindow->getSize());
+            codeEditor->setSize(viewportWindow->getSize());
 
             engine.SetGuiView({ 0, 0, viewportWindow->getSize().x * 1.65f, viewportWindow->getSize().y * 1.65f });
             engine.SetGuiViewport({ 221, 26, viewportWindow->getSize().x - 1, viewportWindow->getSize().y - 28 });
