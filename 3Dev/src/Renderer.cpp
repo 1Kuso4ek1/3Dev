@@ -345,13 +345,24 @@ void Renderer::SSGI()
     glViewport(0, 0, ssgiPingPong[0]->GetSize().x, ssgiPingPong[0]->GetSize().y);
     framebuffers[FramebufferType::SSGI]->Draw();
 
+    glBindTexture(GL_TEXTURE_2D, ssgiPingPong[0]->GetTexture());
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
     for(int i = 0; i < 32; i++)
     {
         ssgiPingPong[buffer]->Bind();
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1f("lod", 0.0);
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1f("lod", 1.0);
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
         ssgiPingPong[!buffer]->Draw();
+
+        glBindTexture(GL_TEXTURE_2D, ssgiPingPong[buffer]->GetTexture());
+        glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
         buffer = !buffer; horizontal = !horizontal;
     }
 
