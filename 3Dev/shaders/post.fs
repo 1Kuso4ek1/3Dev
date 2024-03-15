@@ -130,13 +130,15 @@ void main()
     float depth = pow(transparentBuffer ? texture(transparencyDepth, coord).x : texture(frameDepth, coord).x, 300.0);
     float dof = smoothstep(dofMinDistance, dofMaxDistance, abs(depth - dofFocusDistance));
 
-    vec4 combined = texture(gcombined, coord);
-        
+    vec4 combined = texture(decalsCombined, coord);
+    if(length(combined) == 0.0)
+        combined = texture(gcombined, coord);
+
     if(ssrEnabled && !transparentBuffer)
     {
         float lod = 8.0 * pow(combined.y, 2.0);
 
-        vec3 f0 = mix(vec3(0.04), texture(galbedo, coord).rgb, combined.x);
+        vec3 f0 = mix(vec3(0.04), texture(galbedo, coord).rgb, texture(gcombined, coord).x);
 
         vec4 ssr = texture(ssr, coord + sqrt(lod) * pixelsize, lod);
         color.rgb += f0 * ssr.rgb;
@@ -144,8 +146,7 @@ void main()
 
     vec3 ssgi = texture(ssgi, coord).rgb;
 
-    if(length(texture(decalsCombined, coord)) == 0.0)
-        color.rgb += mix(texture(galbedo, coord).rgb, color.rgb, combined.x) * ssgi;
+    color.rgb += mix(texture(galbedo, coord).rgb, color.rgb, combined.x) * ssgi;
 
     vec4 fog = texture(fog, coord);
 
