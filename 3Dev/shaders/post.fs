@@ -29,6 +29,7 @@ uniform float fogIntensity = 1.0;
 uniform bool fxaa = true;
 uniform bool fogEnabled;
 uniform bool ssrEnabled;
+uniform bool ssgiEnabled;
 uniform bool rawColor;
 uniform bool transparentBuffer;
 
@@ -146,12 +147,16 @@ void main()
         color.rgb += f0 * ssr.rgb;
     }
 
-    vec3 ssgi = texture(ssgi, coord).rgb;
+    vec3 gi = vec3(0.0);
 
-    color.rgb += mix(texture(galbedo, coord).rgb, color.rgb, combined.x) * ssgi;
+    if(ssgiEnabled)
+    {
+        gi = texture(ssgi, coord).rgb;
+        color.rgb += mix(texture(galbedo, coord).rgb, color.rgb, combined.x) * gi;
+    }
 
     if(!transparentBuffer && fogEnabled)
-        color.rgb = mix(color.rgb, mix(fog.rgb, ssgi, 0.5), fog.a * fogIntensity);
+        color.rgb = mix(color.rgb, mix(fog.rgb, gi, ssgiEnabled ? 0.5 : 0.0), fog.a * fogIntensity);
 
     color.rgb = mix(color.rgb, texture(bloom, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0));
 

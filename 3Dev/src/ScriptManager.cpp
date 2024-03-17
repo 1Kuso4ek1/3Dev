@@ -813,6 +813,8 @@ void ScriptManager::RegisterTGUI()
         { "bool setSelectedItemById(const String& in)", WRAP_MFN(tgui::ComboBox, setSelectedItemById) },
         { "bool setSelectedItemByIndex(uint)", WRAP_MFN(tgui::ComboBox, setSelectedItemByIndex) },
         { "String getSelectedItem()", WRAP_MFN(tgui::ComboBox, getSelectedItem) },
+        { "String getSelectedItemId()", WRAP_MFN(tgui::ComboBox, getSelectedItemId) },
+        { "int getSelectedItemIndex()", WRAP_MFN(tgui::ComboBox, getSelectedItemIndex) },
         { "void deselectItem()", WRAP_MFN(tgui::ComboBox, deselectItem) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::ComboBox, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::ComboBox, setVisible) },
@@ -1260,6 +1262,9 @@ void ScriptManager::RegisterRenderer()
         { "float GetFogIntensity()", WRAP_MFN(Renderer, GetFogIntensity) },
         { "float GetBloomStrength()", WRAP_MFN(Renderer, GetBloomStrength) },
         { "int GetBlurIterations()", WRAP_MFN(Renderer, GetBlurIterations) },
+        { "bool IsSSGIEnabled()", WRAP_MFN(Renderer, IsSSGIEnabled) },
+        { "float GetSSGIStrength()", WRAP_MFN(Renderer, GetSSGIStrength) },
+        { "bool IsSSREnabled()", WRAP_MFN(Renderer, IsSSREnabled) },
         { "float GetSSRRayStep()", WRAP_MFN(Renderer, GetSSRRayStep) },
         { "int GetSSRMaxSteps()", WRAP_MFN(Renderer, GetSSRMaxSteps) },
         { "int GetSSRMaxBinarySearchSteps()", WRAP_MFN(Renderer, GetSSRMaxBinarySearchSteps) }

@@ -83,6 +83,10 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     for(int i = 0; i < samples; i++)
         shaders[ShaderType::SSAO]->SetUniform3f("samples[" + std::to_string(i) + "]", ssaoSamples[i].x, ssaoSamples[i].y, ssaoSamples[i].z);
 
+    this->skyboxSideSize = skyboxSideSize;
+    this->irradianceSideSize = irradianceSideSize;
+    this->prefilteredSideSize = prefilteredSideSize;
+
     capture = std::make_shared<Framebuffer>(nullptr, skyboxSideSize, skyboxSideSize, false, false);
     captureIrr = std::make_shared<Framebuffer>(nullptr, irradianceSideSize, irradianceSideSize, false, false);
     captureSpc = std::make_shared<Framebuffer>(nullptr, prefilteredSideSize, prefilteredSideSize, false, false);
@@ -474,6 +478,7 @@ void Renderer::DrawFramebuffers()
     shaders[ShaderType::Post]->SetUniform1i("rawColor", false);
     shaders[ShaderType::Post]->SetUniform1i("fogEnabled", fogEnd != 0.0);
     shaders[ShaderType::Post]->SetUniform1i("ssrEnabled", ssrEnabled);
+    shaders[ShaderType::Post]->SetUniform1i("ssgiEnabled", ssgiEnabled);
     shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);
     framebuffers[FramebufferType::Main]->Draw();
     glDisable(GL_DEPTH_TEST);
