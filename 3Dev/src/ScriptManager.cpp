@@ -137,7 +137,7 @@ void ScriptManager::Save(std::string filename, bool relativePaths)
 
     if(scripts.size() > 0)
     {
-        BytecodeStream stream(fopen((std::filesystem::path(scripts[0]).parent_path().string() + "/bytecode").c_str(), "w"));
+        BytecodeStream stream(fopen((std::filesystem::path(scripts[0]).parent_path().string() + "/bytecode").c_str(), "wb"));
         builder.GetModule()->SaveByteCode(&stream, true);
     }
 }
@@ -161,7 +161,7 @@ void ScriptManager::Load(std::string filename, bool loadBytecode)
 
     if(loadBytecode && scripts.size() > 0)
     {
-        BytecodeStream stream(fopen((std::filesystem::path(scripts[0]).parent_path().string() + "/bytecode").c_str(), "r"));
+        BytecodeStream stream(fopen((std::filesystem::path(scripts[0]).parent_path().string() + "/bytecode").c_str(), "rb"));
 
         buildSucceded = (builder.GetModule()->LoadByteCode(&stream) >= 0);
     }
