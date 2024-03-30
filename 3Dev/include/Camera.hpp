@@ -28,7 +28,7 @@ public:
 	void SetFar(float far);
 	void AlwaysUp(bool a);
 
-	rp3d::Vector3 Move(float time, bool onlyOffset = false);
+	rp3d::Vector3 Move(float time, bool onlyOffset = false, bool noY = false);
 
 	rp3d::Transform GetTransform() override;
 

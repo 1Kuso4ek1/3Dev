@@ -158,6 +158,7 @@ int main()
     });
     scman.AddProperty("Engine engine", &engine);
     scman.AddProperty("Renderer renderer", Renderer::GetInstance());
+    scman.AddProperty("TextureManager textureManager", TextureManager::GetInstance());
     scman.AddProperty("Config config", &config);
     scman.SetDefaultNamespace("Game");
     scman.AddProperty("SceneManager scene", &scene);

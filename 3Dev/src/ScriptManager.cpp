@@ -39,6 +39,7 @@ ScriptManager::ScriptManager() : engine(asCreateScriptEngine())
     RegisterEngine();
     RegisterNetwork();
     RegisterRenderer();
+    RegisterTextureManager();
 
     AddFunction("string to_string(int)", WRAP_FN_PR(std::to_string, (int), std::string));
     AddFunction("string to_string(float)", WRAP_FN_PR(std::to_string, (float), std::string));
@@ -449,7 +450,7 @@ void ScriptManager::RegisterCamera()
 {
     AddType("Camera", sizeof(Camera),
     {
-        { "Vector3 Move(float, bool = false)", WRAP_MFN(Camera, Move) },
+        { "Vector3 Move(float, bool = false, bool = false)", WRAP_MFN(Camera, Move) },
         { "void SetPosition(const Vector3& in)", WRAP_MFN(Camera, SetPosition) },
         { "void SetOrientation(const Quaternion& in)", WRAP_MFN(Camera, SetOrientation) },
         { "void SetSpeed(float)", WRAP_MFN(Camera, SetSpeed) },
@@ -918,6 +919,7 @@ void ScriptManager::RegisterTGUI()
         { "void setEnabled(bool)", WRAP_MFN(tgui::Picture, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::Picture, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::Picture, setFocused) },
+        { "void load(string)", WRAP_OBJ_LAST(TGUILoadPicture) },
         { "void showWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Picture, showWithEffect) },
         { "void hideWithEffect(ShowEffectType, Duration)", WRAP_MFN(tgui::Picture, hideWithEffect) },
         { "void finishAllAnimations()", WRAP_MFN(tgui::Widget, finishAllAnimations) }
@@ -1094,6 +1096,7 @@ void ScriptManager::RegisterMaterial()
     AddType("Material", sizeof(Material),
     {
         { "void SetParameter(Vector3, int)", WRAP_OBJ_LAST(SetMaterialParameter) },
+        { "void SetParameter(uint, int)", WRAP_OBJ_LAST(SetMaterialTextureParameter) },
         { "Vector3 GetParameter(int)", WRAP_OBJ_LAST(GetMaterialParameter) },
         { "bool Contains(int)", WRAP_MFN(Material, Contains) }
     }, {});
@@ -1134,6 +1137,11 @@ void ScriptManager::RegisterNetwork()
     AddEnum("Status", { "Done", "NotReady", "Partial", "Disconnected", "Error" });
     SetDefaultNamespace("");
 
+    AddValueType("FtpResponse", sizeof(sf::Ftp::Response), asGetTypeTraits<sf::Ftp::Response>() | asOBJ_POD,
+    {
+        { "bool isOk()", WRAP_MFN(sf::Ftp::Response, isOk) }
+    }, {});
+
     AddValueType("TcpSocket", sizeof(sf::TcpSocket), asGetTypeTraits<sf::TcpSocket>(),
     {
         { "Socket::Status connect(const IpAddress& in, uint16, Time)", WRAP_MFN(sf::TcpSocket, connect) },
@@ -1147,7 +1155,7 @@ void ScriptManager::RegisterNetwork()
     AddTypeConstructor("TcpSocket", "void f()", WRAP_OBJ_LAST(MakeType<sf::TcpSocket>));
     AddTypeDestructor("TcpSocket", "void f()", WRAP_OBJ_LAST(DestroyType<sf::TcpSocket>));
 
-    AddValueType("UdpSocket", sizeof(sf::UdpSocket), asGetTypeTraits<sf::UdpSocket>() | asOBJ_POD,
+    AddValueType("UdpSocket", sizeof(sf::UdpSocket), asGetTypeTraits<sf::UdpSocket>(),
     {
         { "Socket::Status bind(uint16, const IpAddress& in)", WRAP_MFN(sf::UdpSocket, bind) },
         { "void unbind()", WRAP_MFN(sf::UdpSocket, unbind) },
@@ -1159,6 +1167,20 @@ void ScriptManager::RegisterNetwork()
 
     AddTypeConstructor("UdpSocket", "void f()", WRAP_OBJ_LAST(MakeType<sf::UdpSocket>));
     AddTypeDestructor("UdpSocket", "void f()", WRAP_OBJ_LAST(DestroyType<sf::UdpSocket>));
+
+    AddValueType("Ftp", sizeof(sf::Ftp), asGetTypeTraits<sf::Ftp>(),
+    {
+        { "FtpResponse connect(const IpAddress& in, uint16, Time)", WRAP_MFN(sf::Ftp, connect) },
+        { "FtpResponse disconnect()", WRAP_MFN(sf::Ftp, disconnect) },
+        { "FtpResponse login()", WRAP_MFN_PR(sf::Ftp, login, (), sf::Ftp::Response) },
+        { "FtpResponse login(const string& in, const string& in)", WRAP_MFN_PR(sf::Ftp, login, (const std::string&, const std::string&), sf::Ftp::Response) },
+        { "FtpResponse download(const string& in, const string& in, int = 0)", WRAP_OBJ_LAST(FtpDownload) },
+        { "FtpResponse upload(const string& in, const string& in, int = 0, bool = false)", WRAP_OBJ_LAST(FtpUpload) },
+        { "FtpResponse keepAlive()", WRAP_MFN(sf::Ftp, keepAlive) }
+    }, {});
+
+    AddTypeConstructor("Ftp", "void f()", WRAP_OBJ_LAST(MakeType<sf::Ftp>));
+    AddTypeDestructor("Ftp", "void f()", WRAP_OBJ_LAST(DestroyType<sf::Ftp>));
 }
 
 void ScriptManager::RegisterBone()
@@ -1268,5 +1290,14 @@ void ScriptManager::RegisterRenderer()
         { "float GetSSRRayStep()", WRAP_MFN(Renderer, GetSSRRayStep) },
         { "int GetSSRMaxSteps()", WRAP_MFN(Renderer, GetSSRMaxSteps) },
         { "int GetSSRMaxBinarySearchSteps()", WRAP_MFN(Renderer, GetSSRMaxBinarySearchSteps) }
+    }, {});
+}
+
+void ScriptManager::RegisterTextureManager()
+{
+    AddType("TextureManager", sizeof(TextureManager),
+    {
+        { "uint LoadTexture(string, string = \"texture\")", WRAP_MFN(TextureManager, LoadTexture) },
+        { "uint GetTexture(string)", WRAP_MFN(TextureManager, GetTexture) }
     }, {});
 }

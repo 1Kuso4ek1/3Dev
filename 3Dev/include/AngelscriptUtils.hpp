@@ -146,6 +146,11 @@ static void SetMaterialParameter(rp3d::Vector3 value, Material::Type parameter, 
     material->SetParameter(toglm(value), parameter);
 }
 
+static void SetMaterialTextureParameter(GLuint value, Material::Type parameter, Material* material)
+{
+    material->SetParameter(value, parameter);
+}
+
 static rp3d::Vector3 GetMaterialParameter(Material::Type parameter, Material* material)
 {
     if(material->Contains(parameter))
@@ -156,6 +161,7 @@ static rp3d::Vector3 GetMaterialParameter(Material::Type parameter, Material* ma
             auto vec = std::get<0>(value);
             return rp3d::Vector3(vec.x, vec.y, vec.z);
         }
+        else return rp3d::Vector3((float)(std::get<1>(value)), 0.0, 0.0);
     }
     return rp3d::Vector3::zero();
 }
@@ -257,4 +263,19 @@ static rp3d::Quaternion LookAt(const rp3d::Vector3& eye, const rp3d::Vector3& ce
     auto q = glm::conjugate(glm::toQuat(glm::lookAt(toglm(eye), toglm(center), toglm(up))));
 
     return rp3d::Quaternion(q.x, q.y, q.z, q.w);
+}
+
+static void TGUILoadPicture(std::string filename, tgui::Picture* picture)
+{
+    picture->getRenderer()->setTexture(tgui::Texture(filename));
+}
+
+static sf::Ftp::Response FtpDownload(const std::string& remote, const std::string& local, sf::Ftp::TransferMode mode, sf::Ftp* ftp)
+{
+    return ftp->download(remote, local, mode);
+}
+
+static sf::Ftp::Response FtpUpload(const std::string& local, const std::string& remote, sf::Ftp::TransferMode mode, bool append, sf::Ftp* ftp)
+{
+    return ftp->upload(local, remote, mode, append);
 }

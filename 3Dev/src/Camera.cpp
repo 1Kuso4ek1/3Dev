@@ -24,7 +24,7 @@ void Camera::Update(bool force)
 	}
 }
 
-rp3d::Vector3 Camera::Move(float time, bool onlyOffset)
+rp3d::Vector3 Camera::Move(float time, bool onlyOffset, bool noY)
 {
 	rp3d::Vector3 offset;
 
@@ -39,6 +39,9 @@ rp3d::Vector3 Camera::Move(float time, bool onlyOffset)
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 		offset -= (orient * rp3d::Vector3(1, 0, 0)) * time;
+
+	if(noY)
+		offset.y = 0.0;
 
 	offset.normalize();
 

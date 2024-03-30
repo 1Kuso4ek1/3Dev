@@ -90,6 +90,7 @@ private:
     void RegisterShader();
     void RegisterNode();
     void RegisterRenderer();
+    void RegisterTextureManager();
 
     bool buildSucceded = false;
 
