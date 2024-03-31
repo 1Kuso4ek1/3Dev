@@ -1061,7 +1061,8 @@ int main()
         if(scene.GetNode(kf))
         {
             lastAnimation.ptr->AddKeyframe(kf, Keyframe());
-            sceneTree->addItem({ "Scene", "Animations", lastAnimation.name, kf });
+            if(treeTabs->getSelected() == "Anim.")
+                sceneTree->addItem({ "Scene", "Animations", lastAnimation.name, kf });
         }
     };
 
@@ -1976,7 +1977,7 @@ int main()
                 timelineSlider->setMaximum(anim->GetDuration());
 
                 if(anim->GetState() == Animation::State::Playing)
-                    timelineSlider->setValue(anim->GetTime());
+                    timelineSlider->setValue(anim->GetTime() + anim->GetLastTime());
                 else anim->SetLastTime(timelineSlider->getValue());
 
                 lastAnimation.time = timelineSlider->getValue();

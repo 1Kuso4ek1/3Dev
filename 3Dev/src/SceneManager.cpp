@@ -4,6 +4,37 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 {
     for(auto& i : animations)
     {
+        if(i.second->GetState() == Animation::State::Playing && i.second->IsBlending())
+        {
+            auto& kf = i.second->GetKeyframes();
+
+            i.second->SetIsBlending(false);
+
+            for(auto& [name, keyframe] : kf)
+            {
+                auto node = GetNode(name);
+                if(node)
+                {
+                    if(keyframe.posStamps[0] >= 0)
+                    {
+                        keyframe.positions.insert(keyframe.positions.begin(), toglm(node->GetTransform().getPosition()));
+                        keyframe.rotations.insert(keyframe.rotations.begin(), toglm(node->GetTransform().getOrientation()));
+                        keyframe.scales.insert(keyframe.scales.begin(), toglm(node->GetSize()));
+
+                        keyframe.posStamps.insert(keyframe.posStamps.begin(), i.second->GetLastTime());
+                        keyframe.rotStamps.insert(keyframe.rotStamps.begin(), i.second->GetLastTime());
+                        keyframe.scaleStamps.insert(keyframe.scaleStamps.begin(), i.second->GetLastTime());
+                    }
+                    else
+                    {
+                        keyframe.positions[0] = toglm(node->GetTransform().getPosition());
+                        keyframe.rotations[0] = toglm(node->GetTransform().getOrientation());
+                        keyframe.scales[0] = toglm(node->GetSize());
+                    }
+                }
+            }
+        }
+
         auto actions = i.second->Update();
         for(auto& [name, transform] : actions)
         {

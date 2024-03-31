@@ -28,11 +28,12 @@ public:
     void SetTPS(float tps);
     void SetDuration(float duration);
     void SetIsRepeated(bool repeat);
+	void SetIsBlending(bool blending);
 	void SetLastTime(float lastTime);
 
     void AddKeyframe(const std::string& name, const Keyframe& keyframe);
 
-    void Play();
+    void Play(float time = 0);
     void Pause();
     void Stop();
 
@@ -42,6 +43,7 @@ public:
     std::string GetName() const;
 
 	bool IsRepeated() const;
+	bool IsBlending() const;
 	float GetTime() const;
 	float GetLastTime() const;
 	float GetDuration() const;
@@ -56,7 +58,7 @@ private:
     std::string name;
 
     State state = State::Stopped;
-	bool repeat = true;
+	bool repeat = true, blending = false;
 
 	float duration = 0.0;
 	float tps = 30.0;

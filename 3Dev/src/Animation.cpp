@@ -22,6 +22,11 @@ void Animation::SetIsRepeated(bool repeat)
     this->repeat = repeat;
 }
 
+void Animation::SetIsBlending(bool blending)
+{
+    this->blending = blending;
+}
+
 void Animation::SetLastTime(float lastTime)
 {
     this->lastTime = lastTime;
@@ -32,17 +37,23 @@ void Animation::AddKeyframe(const std::string& name, const Keyframe& keyframe)
     keyframes[name] = keyframe;
 }
 
-void Animation::Play()
+void Animation::Play(float time)
 {
+    if(state != State::Paused)
+    {
+        lastTime = time;
+        if(time < 0)
+            blending = true;
+    }
+
     state = State::Playing;
-    lastTime = 0;
-    time.restart();
+    this->time.restart();
 }
 
 void Animation::Pause()
 {
     state = State::Paused;
-    lastTime = GetTime();
+    lastTime = GetTime() + lastTime;
 }
 
 void Animation::Stop()
@@ -113,6 +124,11 @@ bool Animation::IsRepeated() const
     return repeat;
 }
 
+bool Animation::IsBlending() const
+{
+    return blending;
+}
+
 float Animation::GetTime() const
 {
     return time.getElapsedTime().asSeconds() * tps;
@@ -146,30 +162,33 @@ Json::Value Animation::Serialize()
     data["tps"] = tps;
     data["repeat"] = repeat;
 
-    int counter = 0;
+    int counter = 0, start = 0;
     for(auto& [name, kf] : keyframes)
     {
+        if(kf.posStamps[0] < 0)
+            start = 1;
+
         data["keyframes"][counter]["name"] = name;
-        for(int i = 0; i < kf.posStamps.size(); i++)
+        for(int i = start; i < kf.posStamps.size(); i++)
             data["keyframes"][counter]["posStamps"][i] = kf.posStamps[i];
-        for(int i = 0; i < kf.rotStamps.size(); i++)
+        for(int i = start; i < kf.rotStamps.size(); i++)
             data["keyframes"][counter]["rotStamps"][i] = kf.rotStamps[i];
-        for(int i = 0; i < kf.scaleStamps.size(); i++)
+        for(int i = start; i < kf.scaleStamps.size(); i++)
             data["keyframes"][counter]["scaleStamps"][i] = kf.scaleStamps[i];
-        for(int i = 0; i < kf.positions.size(); i++)
+        for(int i = start; i < kf.positions.size(); i++)
         {
             data["keyframes"][counter]["positions"][i]["x"] = kf.positions[i].x;
             data["keyframes"][counter]["positions"][i]["y"] = kf.positions[i].y;
             data["keyframes"][counter]["positions"][i]["z"] = kf.positions[i].z;
         }
-        for(int i = 0; i < kf.rotations.size(); i++)
+        for(int i = start; i < kf.rotations.size(); i++)
         {
             data["keyframes"][counter]["rotations"][i]["x"] = kf.rotations[i].x;
             data["keyframes"][counter]["rotations"][i]["y"] = kf.rotations[i].y;
             data["keyframes"][counter]["rotations"][i]["z"] = kf.rotations[i].z;
             data["keyframes"][counter]["rotations"][i]["w"] = kf.rotations[i].w;
         }
-        for(int i = 0; i < kf.scales.size(); i++)
+        for(int i = start; i < kf.scales.size(); i++)
         {
             data["keyframes"][counter]["scales"][i]["x"] = kf.scales[i].x;
             data["keyframes"][counter]["scales"][i]["y"] = kf.scales[i].y;

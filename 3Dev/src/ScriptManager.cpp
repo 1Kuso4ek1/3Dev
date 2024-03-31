@@ -1208,7 +1208,7 @@ void ScriptManager::RegisterAnimation()
 
     AddType("Animation", sizeof(Animation),
     {
-        { "void Play()", WRAP_MFN(Animation, Play) },
+        { "void Play(float = 0)", WRAP_MFN(Animation, Play) },
         { "void Pause()", WRAP_MFN(Animation, Pause) },
         { "void Stop()", WRAP_MFN(Animation, Stop) },
         { "void SetIsRepeated(bool)", WRAP_MFN(Animation, SetIsRepeated) },
