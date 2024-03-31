@@ -1014,12 +1014,11 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
-                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
-                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
+                auto path = std::filesystem::path(openFileDialog->getSelectedPaths()[0].asString().toStdString());
+                std::string filename = path.filename().string();
                 if(!std::filesystem::exists(projectDir + "/assets/sounds/" + filename))
                     std::filesystem::copy(path, projectDir + "/assets/sounds/" + filename);
-                path = projectDir + "/assets/sounds/" + filename;
-                sman->LoadSound(path);
+                sman->LoadSound(projectDir + "/assets/sounds/" + filename, path.stem().string());
                 treeTabs->select(2);
                 readSceneTree();
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
