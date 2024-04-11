@@ -73,12 +73,14 @@ void Camera::Look()
 	float tmp;
 	if(!alwaysUp) tr.getOrientation().getRotationAngleAxis(tmp, tmpv);
 	m->GetView() = glm::lookAt(toglm(tr.getPosition()), toglm(tr.getPosition() + v), alwaysUp ? glm::vec3(0.0, 1.0, 0.0) : toglm(tmpv));
+	m->GetInverseView() = glm::inverse(m->GetView());
 }
 
 void Camera::Look(const rp3d::Vector3& vec)
 {
 	auto tr = Node::GetFinalTransform(this) * GetTransform();
 	m->GetView() = glm::lookAt(toglm(tr.getPosition()), toglm(vec), glm::vec3(0, 1, 0));
+	m->GetInverseView() = glm::inverse(m->GetView());
 }
 
 void Camera::SetViewportSize(sf::Vector2u size)
@@ -184,9 +186,9 @@ rp3d::Vector3 Camera::ScreenPositionToWorld(bool useMousePos, const rp3d::Vector
 	screenPos.y = -(((screenPos.y * 2.0) / float(viewportSize.y)) - 1.0);
 
 	glm::vec4 clipPos = glm::vec4(screenPos.x, screenPos.y, -1.0, 1.0);
-	clipPos = glm::inverse(m->GetProjection()) * clipPos;
+	clipPos = m->GetInverseProjection() * clipPos;
 
-	glm::vec4 worldPos = glm::normalize(glm::inverse(m->GetView()) * glm::vec4(clipPos.x, clipPos.y, -1.0, 0.0));
+	glm::vec4 worldPos = glm::normalize(m->GetInverseView() * glm::vec4(clipPos.x, clipPos.y, -1.0, 0.0));
 
 	return { worldPos.x, worldPos.y, worldPos.z };
 }
@@ -214,6 +216,7 @@ float Camera::GetFar()
 void Camera::UpdateMatrix()
 {
 	m->GetProjection() = glm::perspective(glm::radians(fov), aspect, near, far);
+	m->GetInverseProjection() = glm::inverse(m->GetProjection());
 }
 
 Json::Value Camera::Serialize()

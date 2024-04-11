@@ -61,10 +61,11 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         auto size = fbo->GetSize();
         glViewport(0, 0, size.x, size.y);
         std::for_each(models.begin(), models.end(), [&](auto p) 
-            { p.second->SetIsMaterialsEnabled(false);
-              if(ParseName(p.first).second != "decals")
-                  p.second->Draw(camera, lightsVector);
-              p.second->SetIsMaterialsEnabled(true);
+            { 
+                p.second->SetIsMaterialsEnabled(false);
+                if(ParseName(p.first).second != "decals")
+                    p.second->Draw(camera, lightsVector);
+                p.second->SetIsMaterialsEnabled(true);
             });
         fbo->Unbind();
         return;
@@ -96,13 +97,12 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         { if(ParseName(p.first).second != "decals")
             p.second->Draw(camera, lightsVector); });
 
-    if(Renderer::GetInstance()->GetSSAOStrength() > 0.0)
-        Renderer::GetInstance()->SSAO();
+    Renderer::GetInstance()->SSAO();
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 0));
 
-    auto invView = glm::inverse(Renderer::GetInstance()->GetMatrices()->GetView());
+    auto invView = Renderer::GetInstance()->GetMatrices()->GetInverseView();
 
     auto decalsGBuffer = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer);
     auto decals = modelGroups["decals"];
@@ -145,6 +145,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     glBindTexture(GL_TEXTURE_2D, decalsGBuffer->GetTexture(false, 3));
 
     auto lightingPass = Renderer::GetInstance()->GetShader(Renderer::ShaderType::LightingPass);
+    auto forwardPass = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward);
     lightingPass->Bind();
 
     auto camPos = camera->GetPosition(true);
@@ -160,7 +161,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     lightingPass->SetUniform1i("decalsEmission", 18);
     lightingPass->SetUniform1i("decalsCombined", 19);
     lightingPass->SetUniform1i("ssaoEnabled", Renderer::GetInstance()->GetSSAOStrength() > 0.0);
-    lightingPass->SetUniformMatrix4("invView", glm::inverse(Renderer::GetInstance()->GetMatrices()->GetView()));
+    lightingPass->SetUniformMatrix4("invView", invView);
     Material::UpdateShaderEnvironment(lightingPass);
 
     if(lightsVector.size() > 64)
@@ -169,10 +170,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
             return (dynamic_cast<Light*>(l)->GetPosition() - camPos).length() < (dynamic_cast<Light*>(l1)->GetPosition() - camPos).length();
         });
 
-    for(int i = 0; i < 64; i++)
-        if(i >= lightsVector.size())
-            lightingPass->SetUniform1i("lights[" + std::to_string(i) + "].isactive", 0);
-        else dynamic_cast<Light*>(lightsVector[i])->Update(lightingPass, i);
+    UpdateLights(lightingPass);
 
     glEnable(GL_BLEND);
 
@@ -199,7 +197,7 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     
     if(!transparency) transparency = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency);
 
-    SetMainShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward), true);
+    SetMainShader(forwardPass, true);
 
     glFrontFace(GL_CW);
     glDisable(GL_CULL_FACE);
@@ -213,15 +211,20 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->Bind();
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->SetUniformMatrix4("invView", invView);
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->SetUniform1f("fogStart", Renderer::GetInstance()->GetFogStart());
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->SetUniform1f("fogEnd", Renderer::GetInstance()->GetFogEnd());
-    Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->SetUniform1f("fogHeight", Renderer::GetInstance()->GetFogHeight());
+    forwardPass->Bind();
+    forwardPass->SetUniform3f("campos", camPos.x, camPos.y, camPos.z);
+    forwardPass->SetUniformMatrix4("invView", invView);
+    forwardPass->SetUniform1f("fogStart", Renderer::GetInstance()->GetFogStart());
+    forwardPass->SetUniform1f("fogEnd", Renderer::GetInstance()->GetFogEnd());
+    forwardPass->SetUniform1f("fogHeight", Renderer::GetInstance()->GetFogHeight());
+
+    UpdateLights(forwardPass);
 
     std::for_each(models.begin(), models.end(), [&](auto p)
-        { if(ParseName(p.first).second != "decals")
-            p.second->Draw(camera, lightsVector, true); });
+        {
+            if(ParseName(p.first).second != "decals")
+                p.second->Draw(camera, lightsVector, true);
+        });
 
     transparency->Unbind();
     glEnable(GL_CULL_FACE);
@@ -1176,6 +1179,14 @@ void SceneManager::MoveToTheGroup(const std::string& from, const std::string& to
     groupVec.erase(it);
 
     modelGroups[to].push_back(model);
+}
+
+void SceneManager::UpdateLights(Shader* shader)
+{
+    for(int i = 0; i < 64; i++)
+        if(i >= lightsVector.size())
+            shader->SetUniform1i("lights[" + std::to_string(i) + "].isactive", 0);
+        else dynamic_cast<Light*>(lightsVector[i])->Update(shader, i);
 }
 
 std::pair<std::string, std::string> SceneManager::ParseName(const std::string& in)

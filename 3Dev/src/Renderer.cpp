@@ -310,6 +310,8 @@ void Renderer::Bloom()
 
 void Renderer::SSAO()
 {
+    if(ssaoStrength <= 0) return;
+
     framebuffers[FramebufferType::SSAO]->Bind();
     glViewport(0, 0, framebuffers[FramebufferType::SSAO]->GetSize().x, framebuffers[FramebufferType::SSAO]->GetSize().y);
     glActiveTexture(GL_TEXTURE15);
@@ -428,7 +430,7 @@ void Renderer::Fog(rp3d::Vector3 camPos)
     shaders[ShaderType::Fog]->SetUniform1f("fogHeight", fogHeight);
     shaders[ShaderType::Fog]->SetUniform1f("fogSkyHeight", fogSkyHeight);
     shaders[ShaderType::Fog]->SetUniform3f("campos", camPos.x, camPos.y, camPos.z);
-    shaders[ShaderType::Fog]->SetUniformMatrix4("invView", glm::inverse(m.GetView()));
+    shaders[ShaderType::Fog]->SetUniformMatrix4("invView", m.GetInverseView());
     framebuffers[FramebufferType::Fog]->Draw();
     Framebuffer::Unbind();
 }

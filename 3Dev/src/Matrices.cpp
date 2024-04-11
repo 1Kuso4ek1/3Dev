@@ -5,6 +5,8 @@ Matrices::Matrices()
     model.push_back(glm::mat4(1.0));
     view.push_back(glm::mat4(1.0));
     projection.push_back(glm::mat4(1.0));
+    invView.push_back(glm::mat4(1.0));
+    invProjection.push_back(glm::mat4(1.0));
 }
 
 void Matrices::Scale(glm::vec3 size)
@@ -26,12 +28,14 @@ void Matrices::PushMatrix()
 {
     model.push_back(model.back());
     view.push_back(view.back());
+    invView.push_back(glm::inverse(view.back()));
 }
 
 void Matrices::PopMatrix()
 {
     if(model.size() > 1) model.pop_back();
     if(view.size() > 1) view.pop_back();
+    if(invView.size() > 1) invView.pop_back();
 }
 
 glm::mat4& Matrices::GetModel()
@@ -47,6 +51,16 @@ glm::mat4& Matrices::GetView()
 glm::mat4& Matrices::GetProjection()
 {
     return projection.back();
+}
+
+glm::mat4& Matrices::GetInverseView()
+{
+    return invView.back();
+}
+
+glm::mat4& Matrices::GetInverseProjection()
+{
+    return invProjection.back();
 }
 
 void Matrices::UpdateShader(Shader* shader)

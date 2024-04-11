@@ -115,6 +115,8 @@ private:
     void RemoveFromTheGroup(const std::string& group, std::shared_ptr<Model> model);
     void MoveToTheGroup(const std::string& from, const std::string& to, std::shared_ptr<Model> model);
 
+    void UpdateLights(Shader* shader);
+
     std::pair<std::string, std::string> ParseName(const std::string& in);
 
     sf::Clock clock;

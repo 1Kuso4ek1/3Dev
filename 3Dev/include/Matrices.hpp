@@ -55,11 +55,23 @@ public:
     glm::mat4& GetProjection();
 
     /*
+     * Used to read/write inverse view matrix
+     * @return reference to the inverse view matrix
+     */
+    glm::mat4& GetInverseView();
+
+    /*
+     * Used to read/write inverse projection matrix
+     * @return reference to the inverse projection matrix
+     */
+    glm::mat4& GetInverseProjection();
+
+    /*
      * Used to update all matrix uniforms in the shader
      * @param shader pointer to the shader
      */
     void UpdateShader(Shader* shader);
 
 private:
-    std::vector<glm::mat4> model, view, projection;    
+    std::vector<glm::mat4> model, view, projection, invView, invProjection;    
 };

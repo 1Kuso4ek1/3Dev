@@ -192,16 +192,7 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
             shader->Bind();
 			if(materialsEnabled)
             	mat[mesh]->UpdateShader(shader);
-			if(transparencyPass)
-			{
-				for(int i = 0; i < 64; i++)
-					if(i >= lights.size())
-						shader->SetUniform1i("lights[" + std::to_string(i) + "].isactive", 0);
-					else dynamic_cast<Light*>(lights[i])->Update(shader, i);
-			}
 
-			auto camPos = dynamic_cast<Camera*>(cam)->GetPosition(true);
-            shader->SetUniform3f("campos", camPos.x, camPos.y, camPos.z);
             shader->SetUniformMatrix4("transformation", glm::mat4(1.0));
 			if(!pose.empty())
             	shader->SetVectorOfUniformMatrix4("pose", pose.size(), pose);
@@ -219,9 +210,6 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
     }
 
 	m->PopMatrix();
-
-	/*for(auto i : children)
-		i->Draw(cam, lights, transparencyPass);*/
 
 	tempShader = nullptr;
 }
