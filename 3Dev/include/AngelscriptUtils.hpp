@@ -57,7 +57,7 @@ static T& AssignType(const T& src, T* dst) { return *dst = src; }
 template<class T>
 static T* TypeFactory() { return new T(); }
 
-static void MakeVector2(float x, float y, float z, rp3d::Vector3* vec) { new(vec) rp3d::Vector2(x, y); }
+static void MakeVector2(float x, float y, rp3d::Vector2* vec) { new(vec) rp3d::Vector2(x, y); }
 static rp3d::Vector2 AddVector2(const rp3d::Vector2& r, rp3d::Vector2* l) { return *l + r; }
 static rp3d::Vector2 SubVector2(const rp3d::Vector2& r, rp3d::Vector2* l) { return *l - r; }
 static rp3d::Vector2 MulVector2(float r, rp3d::Vector2* l) { return *l * r; }
