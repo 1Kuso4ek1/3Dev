@@ -725,7 +725,7 @@ int main()
 	scene.SetPhysicsManager(man);
 	scene.SetCamera(&cam);
     scene.SetSkybox(skybox);
-    scene.UpdatePhysics(false);
+    scene.SetUpdatePhysics(false);
     scene.SetSoundManager(sman);
 
 	if(!projectFilename.empty())
@@ -1313,14 +1313,14 @@ int main()
 			if(scriptLaunched)
             {
                 scene.SaveState();
-                scene.UpdatePhysics(true);
+                scene.SetUpdatePhysics(true);
 				scman.ExecuteFunction(startDecl);
             }
 			else
 			{
 			    manageCameraMovement = manageCameraLook = manageCameraMouse = true;
                 engine.RemoveGui();
-			    scene.UpdatePhysics(false);
+			    scene.SetUpdatePhysics(false);
 			    scene.LoadState();
 			}
 		}
