@@ -761,7 +761,7 @@ int main()
 	bool manageCameraMovement = true, manageCameraLook = true,
          manageCameraMouse = true, manageSceneRendering = true,
          updateShadows = true, mouseCursorGrabbed = true,
-         mouseCursorVisible = false;
+         mouseCursorVisible = false, windowLostFocus = false;
 
     bool scriptLaunched = false;
 
@@ -798,6 +798,7 @@ int main()
     scman.AddProperty("bool manageCameraMovement", &manageCameraMovement);
     scman.AddProperty("bool manageCameraLook", &manageCameraLook);
     scman.AddProperty("bool manageCameraMouse", &manageCameraMouse);
+    scman.AddProperty("bool windowLostFocus", &windowLostFocus);
     scman.AddProperty("float mouseSensitivity", &mouseSensitivity);
     scman.SetDefaultNamespace("");
 	std::string startDecl = "void Start()", loopDecl = "void Loop()";

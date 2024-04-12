@@ -168,6 +168,7 @@ int main()
     scman.AddProperty("bool manageCameraMovement", &manageCameraMovement);
     scman.AddProperty("bool manageCameraLook", &manageCameraLook);
     scman.AddProperty("bool manageCameraMouse", &manageCameraMouse);
+    scman.AddProperty("bool windowLostFocus", &windowLostFocus);
     scman.AddProperty("float mouseSensitivity", &mouseSensitivity);
     scman.SetDefaultNamespace("");
 
