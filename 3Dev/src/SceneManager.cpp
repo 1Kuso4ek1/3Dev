@@ -2,60 +2,13 @@
 
 void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool updatePhysics, bool shadowPass)
 {
-    for(auto& i : animations)
-    {
-        if(i.second->GetState() == Animation::State::Playing && i.second->IsBlending())
-        {
-            auto& kf = i.second->GetKeyframes();
-
-            i.second->SetIsBlending(false);
-
-            for(auto& [name, keyframe] : kf)
-            {
-                auto node = GetNode(name);
-                if(node)
-                {
-                    if(keyframe.posStamps[0] >= 0)
-                    {
-                        keyframe.positions.insert(keyframe.positions.begin(), toglm(node->GetTransform().getPosition()));
-                        keyframe.rotations.insert(keyframe.rotations.begin(), toglm(node->GetTransform().getOrientation()));
-                        keyframe.scales.insert(keyframe.scales.begin(), toglm(node->GetSize()));
-
-                        keyframe.posStamps.insert(keyframe.posStamps.begin(), i.second->GetLastTime());
-                        keyframe.rotStamps.insert(keyframe.rotStamps.begin(), i.second->GetLastTime());
-                        keyframe.scaleStamps.insert(keyframe.scaleStamps.begin(), i.second->GetLastTime());
-                    }
-                    else
-                    {
-                        keyframe.positions[0] = toglm(node->GetTransform().getPosition());
-                        keyframe.rotations[0] = toglm(node->GetTransform().getOrientation());
-                        keyframe.scales[0] = toglm(node->GetSize());
-                    }
-                }
-            }
-        }
-
-        auto actions = i.second->Update();
-        for(auto& [name, transform] : actions)
-        {
-            if(nodes.find(name) != nodes.end())
-            {
-                nodes[name]->SetTransform(transform.first);
-                nodes[name]->SetSize(transform.second);
-            }
-        }
-    }
+    UpdateAnimations();
 
     if(!fbo) fbo = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main);
 
     if(shadowPass)
     {
-        if(this->updatePhysics && updatePhysics)
-        {
-            physicsTime += clock.restart().asSeconds();
-            pManager->Update(physicsTime);
-        }
-        else clock.restart();
+        UpdatePhysics(updatePhysics);
         
         fbo->Bind();
         auto size = fbo->GetSize();
@@ -64,19 +17,14 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
             { 
                 p.second->SetIsMaterialsEnabled(false);
                 if(ParseName(p.first).second != "decals")
-                    p.second->Draw(camera, lightsVector);
+                    p.second->Draw();
                 p.second->SetIsMaterialsEnabled(true);
             });
         fbo->Unbind();
         return;
     }
 
-    if(this->updatePhysics && updatePhysics)
-    {
-        physicsTime += clock.restart().asSeconds();
-        pManager->Update(physicsTime);
-    }
-    else clock.restart();
+    UpdatePhysics(updatePhysics);
 
     SetMainShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Deferred), true);
 
@@ -94,8 +42,10 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
 	}
 
     std::for_each(models.begin(), models.end(), [&](auto p) 
-        { if(ParseName(p.first).second != "decals")
-            p.second->Draw(camera, lightsVector); });
+        {
+            if(ParseName(p.first).second != "decals")
+                p.second->Draw();
+        });
 
     Renderer::GetInstance()->SSAO();
 
@@ -121,8 +71,10 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
         Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals)->SetUniformMatrix4("invView", invView);
 
         std::for_each(decals.begin(), decals.end(), [&](auto p) 
-            { p->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals), true);
-                p->Draw(camera, lightsVector); });
+            {
+                p->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Decals), true);
+                p->Draw();
+            });
     }
 
     glActiveTexture(GL_TEXTURE1);
@@ -188,7 +140,6 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     }
 
     gBuffer->Draw();
-
     fbo->Unbind();
 
     Renderer::GetInstance()->SSR();
@@ -217,13 +168,14 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     forwardPass->SetUniform1f("fogStart", Renderer::GetInstance()->GetFogStart());
     forwardPass->SetUniform1f("fogEnd", Renderer::GetInstance()->GetFogEnd());
     forwardPass->SetUniform1f("fogHeight", Renderer::GetInstance()->GetFogHeight());
+    forwardPass->SetUniform1i("drawTransparency", true);
 
     UpdateLights(forwardPass);
 
     std::for_each(models.begin(), models.end(), [&](auto p)
         {
             if(ParseName(p.first).second != "decals")
-                p.second->Draw(camera, lightsVector, true);
+                p.second->Draw();
         });
 
     transparency->Unbind();
@@ -233,15 +185,77 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
     auto post = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post);
 
     post->Bind();
-    glActiveTexture(GL_TEXTURE22);
-	glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(true));
     glActiveTexture(GL_TEXTURE23);
+	glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(true));
+    glActiveTexture(GL_TEXTURE24);
 	glBindTexture(GL_TEXTURE_2D, transparency->GetTexture(true));
 
-    post->SetUniform1i("frameDepth", 22);
-    post->SetUniform1i("transparencyDepth", 23);
+    post->SetUniform1i("frameDepth", 23);
+    post->SetUniform1i("transparencyDepth", 24);
 
     Renderer::GetInstance()->Bloom();
+}
+
+void SceneManager::UpdatePhysics(bool updateThisFrame, bool updateModelTransforms)
+{
+    if(updatePhysics && updateThisFrame)
+    {
+        physicsTime += clock.restart().asSeconds();
+        pManager->Update(physicsTime);
+
+        if(updateModelTransforms)
+        {
+            std::for_each(models.begin(), models.end(), [&](auto p) { p.second->UpdateTransform(); });
+        }
+    }
+    else clock.restart();
+}
+
+void SceneManager::UpdateAnimations()
+{
+    for(auto& i : animations)
+    {
+        if(i.second->GetState() == Animation::State::Playing && i.second->IsBlending())
+        {
+            auto& kf = i.second->GetKeyframes();
+
+            i.second->SetIsBlending(false);
+
+            for(auto& [name, keyframe] : kf)
+            {
+                auto node = GetNode(name);
+                if(node)
+                {
+                    if(keyframe.posStamps[0] >= 0)
+                    {
+                        keyframe.positions.insert(keyframe.positions.begin(), toglm(node->GetTransform().getPosition()));
+                        keyframe.rotations.insert(keyframe.rotations.begin(), toglm(node->GetTransform().getOrientation()));
+                        keyframe.scales.insert(keyframe.scales.begin(), toglm(node->GetSize()));
+
+                        keyframe.posStamps.insert(keyframe.posStamps.begin(), i.second->GetLastTime());
+                        keyframe.rotStamps.insert(keyframe.rotStamps.begin(), i.second->GetLastTime());
+                        keyframe.scaleStamps.insert(keyframe.scaleStamps.begin(), i.second->GetLastTime());
+                    }
+                    else
+                    {
+                        keyframe.positions[0] = toglm(node->GetTransform().getPosition());
+                        keyframe.rotations[0] = toglm(node->GetTransform().getOrientation());
+                        keyframe.scales[0] = toglm(node->GetSize());
+                    }
+                }
+            }
+        }
+
+        auto actions = i.second->Update();
+        for(auto& [name, transform] : actions)
+        {
+            if(nodes.find(name) != nodes.end())
+            {
+                nodes[name]->SetTransform(transform.first);
+                nodes[name]->SetSize(transform.second);
+            }
+        }
+    }
 }
 
 void SceneManager::AddModel(std::shared_ptr<Model> model, const std::string& name, bool checkUniqueness)
@@ -736,7 +750,7 @@ void SceneManager::SetSoundManager(std::shared_ptr<SoundManager> manager)
     sManager = manager;
 }
 
-void SceneManager::UpdatePhysics(bool update)
+void SceneManager::SetUpdatePhysics(bool update)
 {
     updatePhysics = update;
 }

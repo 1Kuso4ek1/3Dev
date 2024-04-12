@@ -195,5 +195,5 @@ void main()
 
     float shadowCoef = (length(emission) > 0.0 ? 1.0 : (1.0 - shadow));
     total += ambient;
-    color = vec4(total * ao * shadowCoef + ((ambient / 5.0) * (1.0 - shadowCoef)) + emission + (totalNoShadow * ao), alpha);
+    color = vec4(total * ao * shadowCoef + ((ambient / 5.0) * (1.0 - shadowCoef) * ao) + emission + (totalNoShadow * ao), alpha);
 }

@@ -25,7 +25,7 @@ public:
 	void Load();
 	void Unload(bool unloadTextures);
 
-	void Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass = false) override;
+	void Draw() override;
 	void DrawSkybox();
 
 	void SetTransform(const rp3d::Transform& transform) override;
@@ -61,6 +61,8 @@ public:
 	bool IsLoaded();
 	bool IsDrawable();
 	bool IsLoadingImmediatelly();
+
+	rp3d::Transform UpdateTransform();
 
 	rp3d::Transform GetTransform() override;
 	rp3d::Vector3 GetPosition();

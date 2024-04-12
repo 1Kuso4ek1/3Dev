@@ -11,6 +11,8 @@ class SceneManager
 {
 public:
     void Draw(Framebuffer* fbo = nullptr, Framebuffer* transparency = nullptr, bool updatePhysics = true, bool shadowPass = false);
+    void UpdatePhysics(bool updateThisFrame = true, bool updateModelTransforms = false);
+    void UpdateAnimations();
 
     void AddModel(std::shared_ptr<Model> model, const std::string& name = "model", bool checkUniqueness = true);
     void AddMaterial(std::shared_ptr<Material> material, const std::string& name = "material");
@@ -54,7 +56,7 @@ public:
     void SetAnimationName(const std::string& name, const std::string& newName);
     void SetLightName(const std::string& name, const std::string& newName);
 
-    void UpdatePhysics(bool update);
+    void SetUpdatePhysics(bool update);
 
     std::string GetLastAdded();
 

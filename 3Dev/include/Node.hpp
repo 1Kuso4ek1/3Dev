@@ -9,7 +9,7 @@ public:
     virtual void SetSize(const rp3d::Vector3& size);
     virtual void AddChild(Node* child);
 
-    virtual void Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass = false);
+    virtual void Draw();
 
     Node* GetParent();
     std::vector<Node*> GetChildren();

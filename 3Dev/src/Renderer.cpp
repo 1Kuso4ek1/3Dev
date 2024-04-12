@@ -459,8 +459,10 @@ void Renderer::DrawFramebuffers()
     glActiveTexture(GL_TEXTURE19);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::DecalsGBuffer]->GetTexture(false, 3));
     glActiveTexture(GL_TEXTURE20);
-    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::SSGIPingPong1]->GetTexture());
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::DecalsGBuffer]->GetTexture(false, 0));
     glActiveTexture(GL_TEXTURE21);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::SSGIPingPong1]->GetTexture());
+    glActiveTexture(GL_TEXTURE22);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::Fog]->GetTexture());
 
     shaders[ShaderType::Post]->Bind();
@@ -475,8 +477,9 @@ void Renderer::DrawFramebuffers()
     shaders[ShaderType::Post]->SetUniform1i("galbedo", 17);
     shaders[ShaderType::Post]->SetUniform1i("gcombined", 18);
     shaders[ShaderType::Post]->SetUniform1i("decalsCombined", 19);
-    shaders[ShaderType::Post]->SetUniform1i("ssgi", 20);
-    shaders[ShaderType::Post]->SetUniform1i("fog", 21);
+    shaders[ShaderType::Post]->SetUniform1i("decalsAlbedo", 20);
+    shaders[ShaderType::Post]->SetUniform1i("ssgi", 21);
+    shaders[ShaderType::Post]->SetUniform1i("fog", 22);
     shaders[ShaderType::Post]->SetUniform1i("rawColor", false);
     shaders[ShaderType::Post]->SetUniform1i("fogEnabled", fogEnd != 0.0);
     shaders[ShaderType::Post]->SetUniform1i("ssrEnabled", ssrEnabled);

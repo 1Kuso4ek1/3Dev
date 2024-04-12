@@ -27,10 +27,10 @@ void Node::AddChild(Node* child)
         children.push_back(child);
 }
 
-void Node::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
+void Node::Draw()
 {
     for(auto i : children)
-        i->Draw(cam, lights, transparencyPass);
+        i->Draw();
 }
 
 rp3d::RigidBody* Node::GetRigidBody()

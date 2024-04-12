@@ -159,20 +159,14 @@ void Model::Unload(bool unloadTextures)
 	loaded = false;
 }
 
-void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
+void Model::Draw()
 {
 	if(!loaded) return;
 
 	m->PushMatrix();
 
-	auto tr = Node::GetFinalTransform(this);
+	auto tr = UpdateTransform();
 
-	if(body)
-	{
-		if(tr == rp3d::Transform::identity())
-			transform = body->getTransform();
-		else body->setTransform(tr * transform);
-	}
 	rp3d::Vector3 tmp; float a;
 	(tr.getOrientation() * transform.getOrientation()).getRotationAngleAxis(a, tmp);
 
@@ -197,7 +191,6 @@ void Model::Draw(Node* cam, std::vector<Node*> lights, bool transparencyPass)
 			if(!pose.empty())
             	shader->SetVectorOfUniformMatrix4("pose", pose.size(), pose);
             shader->SetUniform1i("bones", !bones.empty());
-            shader->SetUniform1i("drawTransparency", transparencyPass);
 			shader->SetUniform1f("shadowBias", shadowBias);
 
             m->UpdateShader(shader);
@@ -571,6 +564,20 @@ bool Model::IsDrawable()
 bool Model::IsLoadingImmediatelly()
 {
 	return immLoad;
+}
+
+rp3d::Transform Model::UpdateTransform()
+{
+	auto tr = Node::GetFinalTransform(this);
+
+	if(body)
+	{
+		if(tr == rp3d::Transform::identity())
+			transform = body->getTransform();
+		else body->setTransform(tr * transform);
+	}
+
+	return tr;
 }
 
 rp3d::Transform Model::GetTransform()

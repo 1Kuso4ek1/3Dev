@@ -15,6 +15,7 @@ uniform sampler2D ssgi;
 uniform sampler2D fog;
 uniform sampler2D gcombined;
 uniform sampler2D decalsCombined;
+uniform sampler2D decalsAlbedo;
 uniform sampler2D galbedo;
 uniform sampler2D frameDepth;
 uniform sampler2D transparencyDepth;
@@ -137,11 +138,14 @@ void main()
     if(length(combined) == 0.0)
         combined = texture(gcombined, coord);
 
+    vec4 decalsAlbedo = texture(decalsAlbedo, coord);
+    vec3 albedo = mix(texture(galbedo, coord).rgb, decalsAlbedo.rgb, decalsAlbedo.w);
+
     if(ssrEnabled && !transparentBuffer)
     {
         float lod = 8.0 * pow(combined.y, 2.0);
 
-        vec3 f0 = mix(vec3(0.04), texture(galbedo, coord).rgb, combined.x);
+        vec3 f0 = mix(vec3(0.04), albedo, combined.x);
 
         vec4 ssr = texture(ssr, coord + sqrt(lod) * pixelsize, lod);
         color.rgb += f0 * ssr.rgb;
@@ -152,14 +156,14 @@ void main()
     if(ssgiEnabled)
     {
         gi = texture(ssgi, coord).rgb;
-        color.rgb += mix(texture(galbedo, coord).rgb, color.rgb, combined.x) * gi;
+        color.rgb += mix(albedo, color.rgb, combined.x) * gi;
     }
 
     if(!transparentBuffer && fogEnabled)
         color.rgb = mix(color.rgb, mix(fog.rgb, gi, ssgiEnabled ? 0.5 : 0.0), fog.a * fogIntensity);
 
     color.rgb = mix(color.rgb, texture(bloom, coord).rgb, clamp(bloomStrength + dof, 0.0, 1.0));
-
+    
     color.rgb = ACES();
     color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
 }

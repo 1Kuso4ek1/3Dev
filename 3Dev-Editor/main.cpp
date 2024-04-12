@@ -2271,16 +2271,22 @@ int main()
             engine.GetWindow().setFramerateLimit(60);
         else engine.GetWindow().setFramerateLimit(5);
 
-        if(manageSceneRendering) scene.Draw(nullptr, nullptr, updateShadows ? shadows.Update() : true);
+        if(manageSceneRendering)
+            scene.Draw(nullptr, nullptr, updateShadows ? shadows.Update() : true);
+        else
+        {
+            scene.UpdateAnimations();
+            scene.UpdatePhysics(true, true);
+        }
 
         gizmosFb->Bind();
         auto size = gizmosFb->GetSize();
         glViewport(0, 0, size.x, size.y);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        gizmoX->Draw(&cam, {});
-        gizmoY->Draw(&cam, {});
-        gizmoZ->Draw(&cam, {});
+        gizmoX->Draw();
+        gizmoY->Draw();
+        gizmoZ->Draw();
 
 		viewport->bindFramebuffer();
         Renderer::GetInstance()->DrawFramebuffers();

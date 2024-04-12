@@ -136,7 +136,7 @@ void ScriptManager::Save(std::string filename, bool relativePaths)
     file << data.toStyledString();
     file.close();
 
-    if(scripts.size() > 0)
+    if(scripts.size() > 0 && buildSucceded)
     {
         BytecodeStream stream(fopen((std::filesystem::path(scripts[0]).parent_path().string() + "/bytecode").c_str(), "wb"));
         builder.GetModule()->SaveByteCode(&stream, true);
@@ -508,7 +508,7 @@ void ScriptManager::RegisterSceneManager()
         { "void Save(const string& in, bool = false)", WRAP_MFN(SceneManager, Save) },
         { "void Load(const string& in, bool = false)", WRAP_MFN(SceneManager, Load) },
         { "ModelGroup GetModelGroup(const string& in)", WRAP_MFN(SceneManager, GetModelPtrGroup) },
-        { "void UpdatePhysics(bool)", WRAP_MFN(SceneManager, UpdatePhysics) },
+        { "void SetUpdatePhysics(bool)", WRAP_MFN(SceneManager, SetUpdatePhysics) },
         { "void SaveState()", WRAP_MFN(SceneManager, SaveState) },
         { "void LoadState()", WRAP_MFN(SceneManager, LoadState) },
         { "void LoadEnvironment(const string& in)", WRAP_MFN(SceneManager, LoadEnvironment) }

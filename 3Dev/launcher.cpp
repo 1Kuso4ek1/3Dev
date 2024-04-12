@@ -136,12 +136,10 @@ int main()
     if(scene.GetNames()[2].empty())
         scene.AddLight(l);
 
-    std::vector<bool> varState;
-
     bool manageCameraMovement = true, manageCameraLook = true,
          manageCameraMouse = true, manageSceneRendering = true,
          updateShadows = true, mouseCursorGrabbed = true,
-         mouseCursorVisible = false;
+         mouseCursorVisible = false, windowLostFocus = false;
 
     float mouseSensitivity = 1.0;
 
@@ -212,17 +210,13 @@ int main()
 
         if(event.type == sf::Event::LostFocus)
         {
-            varState = { manageCameraMovement, manageCameraLook, manageCameraMouse, manageSceneRendering, updateShadows, mouseCursorGrabbed, mouseCursorVisible };
-            manageCameraMouse = false; manageSceneRendering = false; updateShadows = false; mouseCursorGrabbed = false; mouseCursorVisible = true;
-            engine.GetWindow().setFramerateLimit(10);
+            windowLostFocus = true;
+            engine.GetWindow().setFramerateLimit(30);
         }
-        else if(event.type == sf::Event::GainedFocus && !varState.empty())
+        else if(event.type == sf::Event::GainedFocus)
         {
-            manageCameraMovement = varState[0]; manageCameraLook = varState[1];
-            manageCameraMouse = varState[2]; manageSceneRendering = varState[3];
-            updateShadows = varState[4]; mouseCursorGrabbed = varState[5];
-            mouseCursorVisible = varState[6];
-            engine.GetWindow().setFramerateLimit(cfg["window"]["maxFps"].asInt());
+            windowLostFocus = false;
+            engine.GetWindow().setFramerateLimit(config.maxFps);
         }
 
         if(event.type == sf::Event::Closed) engine.Close();
@@ -230,20 +224,29 @@ int main()
 
     engine.Loop([&]()
     {
-        engine.GetWindow().setMouseCursorVisible(mouseCursorVisible);
-        engine.GetWindow().setMouseCursorGrabbed(mouseCursorGrabbed);
+        engine.GetWindow().setMouseCursorVisible(mouseCursorVisible || windowLostFocus);
+        engine.GetWindow().setMouseCursorGrabbed(mouseCursorGrabbed || !windowLostFocus);
 
         scman.ExecuteFunction("void Loop()");
 
         ListenerWrapper::SetPosition(cam.GetPosition());
         ListenerWrapper::SetOrientation(cam.GetOrientation());
         
-        cam.Update();
-        if(manageCameraMovement) cam.Move(1);
-        if(manageCameraMouse) cam.Mouse(mouseSensitivity);
-        if(manageCameraLook) cam.Look();
+        if(!windowLostFocus)
+        {
+            cam.Update();
+            if(manageCameraMovement) cam.Move(1);
+            if(manageCameraMouse) cam.Mouse(mouseSensitivity);
+            if(manageCameraLook) cam.Look();
+        }
         
-        if(manageSceneRendering) scene.Draw(nullptr, nullptr, updateShadows ? shadows.Update() : true);
+        if(manageSceneRendering && !windowLostFocus)
+            scene.Draw(nullptr, nullptr, updateShadows ? shadows.Update() : true);
+        else
+        {
+            scene.UpdateAnimations();
+            scene.UpdatePhysics(true, true);
+        }
 
         Renderer::GetInstance()->DrawFramebuffers();
     });
