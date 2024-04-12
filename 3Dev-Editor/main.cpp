@@ -2284,6 +2284,9 @@ int main()
         glViewport(0, 0, size.x, size.y);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->Bind();
+        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->SetUniform1i("drawTransparency", false);
+
         gizmoX->Draw();
         gizmoY->Draw();
         gizmoZ->Draw();
