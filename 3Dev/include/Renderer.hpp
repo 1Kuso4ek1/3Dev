@@ -50,8 +50,7 @@ public:
         SSGIPingPong1
     };
 
-    static Renderer* GetInstance();
-    static void DeleteInstance();
+    static Renderer& GetInstance();
 
     void Init(sf::Vector2u fbSize, const std::string& environmentMapFilename, uint32_t skyboxSideSize = 256,
               uint32_t irradianceSideSize = 32, uint32_t prefilteredSideSize = 256, float bloomResolutionScale = 10,
@@ -140,8 +139,6 @@ public:
 
 private:
     Renderer() {}
-
-    static Renderer* instance;
 
     uint32_t skyboxSideSize = 256;
     uint32_t irradianceSideSize = 32;

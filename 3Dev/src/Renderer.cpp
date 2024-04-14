@@ -1,20 +1,9 @@
 #include <Renderer.hpp>
 
-Renderer* Renderer::instance = nullptr;
-
-Renderer* Renderer::GetInstance()
+Renderer& Renderer::GetInstance()
 {
-    if(!instance)
-    {
-        instance = new Renderer;
-        instance->SetShadersDirectory(SHADERS_DIRECTORY);
-    }
-    return instance;
-}
-
-void Renderer::DeleteInstance()
-{
-    delete instance;
+    static std::unique_ptr<Renderer> instance(new Renderer());
+    return *instance;
 }
 
 void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilename, uint32_t skyboxSideSize, uint32_t irradianceSideSize, uint32_t prefilteredSideSize, float bloomResolutionScale, bool useRGBA16F)
@@ -77,7 +66,7 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     for(int i = 0; i < 4096; i++)
         noise[i] = glm::vec3(dist(eng) * 2.0 - 1.0, dist(eng) * 2.0 - 1.0, 0.0f);
 
-    textures[TextureType::Noise] = TextureManager::GetInstance()->CreateTexture(64, 64, false, GL_NEAREST, GL_REPEAT, GL_RGB16F, GL_RGB, false, &noise[0]);
+    textures[TextureType::Noise] = TextureManager::GetInstance().CreateTexture(64, 64, false, GL_NEAREST, GL_REPEAT, GL_RGB16F, GL_RGB, false, &noise[0]);
 
     shaders[ShaderType::SSAO]->Bind();
     for(int i = 0; i < samples; i++)
@@ -94,14 +83,14 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
 
     pingPongBuffers = 
     {
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0),
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)
+        Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::BloomPingPong0),
+        Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)
     };
 
     ssgiPingPong = 
     {
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong0),
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)
+        Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::SSGIPingPong0),
+        Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)
     };
 
     LoadEnvironment(environmentMapFilename);
@@ -119,9 +108,9 @@ void Renderer::LoadEnvironment(const std::string& environmentMapFilename)
         captureSpc->Resize(prefilteredSideSize, prefilteredSideSize);
 
     if(textures.find(TextureType::Skybox) != textures.end())
-        TextureManager::GetInstance()->DeleteTexture("environment");
+        TextureManager::GetInstance().DeleteTexture("environment");
     
-    GLuint environment = TextureManager::GetInstance()->LoadTexture(environmentMapFilename, "environment");
+    GLuint environment = TextureManager::GetInstance().LoadTexture(environmentMapFilename, "environment");
     
     GLuint cubemap = capture->CaptureCubemap(shaders[ShaderType::Environment].get(),
                                              environment, m, textures.find(TextureType::Skybox) == textures.end() ? 0 : textures[TextureType::Skybox]);
@@ -292,9 +281,9 @@ void Renderer::Bloom()
     for(int i = 0; i < blurIterations; i++)
     {
         pingPongBuffers[buffer]->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1f("lod", (i * 2.0) / float(blurIterations));
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Bloom)->Bind();
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Bloom)->SetUniform1f("lod", (i * 2.0) / float(blurIterations));
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
         pingPongBuffers[!buffer]->Draw();
 
         glBindTexture(GL_TEXTURE_2D, pingPongBuffers[buffer]->GetTexture());
@@ -359,9 +348,9 @@ void Renderer::SSGI()
     for(int i = 0; i < 32; i++)
     {
         ssgiPingPong[buffer]->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1f("lod", 1.0);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Bloom)->Bind();
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Bloom)->SetUniform1f("lod", 1.0);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Bloom)->SetUniform1i("horizontal", horizontal);
         ssgiPingPong[!buffer]->Draw();
 
         glBindTexture(GL_TEXTURE_2D, ssgiPingPong[buffer]->GetTexture());

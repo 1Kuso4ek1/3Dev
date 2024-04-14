@@ -211,7 +211,7 @@ void Model::DrawSkybox()
 {
 	if(!drawable || !mat[0]->Contains(Material::Type::Cubemap)) return;
 
-	auto shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Skybox);
+	auto shader = Renderer::GetInstance().GetShader(Renderer::ShaderType::Skybox);
 
 	m->PushMatrix();
 

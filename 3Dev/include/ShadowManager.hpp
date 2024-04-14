@@ -16,7 +16,7 @@ private:
     std::vector<Light*> lights;
     std::vector<std::unique_ptr<Framebuffer>> depthBuffers;
 
-    Shader* depthShader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Depth);
+    Shader* depthShader = Renderer::GetInstance().GetShader(Renderer::ShaderType::Depth);
 
     glm::ivec2 shadowSize;
 };

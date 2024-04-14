@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
         animationsQueue = ParseAnimations(animation);
     }
 
-    Multithreading::GetInstance()->SetIsEnabled(false);
+    Multithreading::GetInstance().SetIsEnabled(false);
     
     Engine engine;
 
@@ -146,14 +146,14 @@ int main(int argc, char* argv[])
 
     engine.Init();
 
-    Renderer::GetInstance()->SetSSAOSamples(ssaoSamples);
-    Renderer::GetInstance()->SetIsSSREnabled(true);
-    Renderer::GetInstance()->SetSSRRayStep(0.01);
-    Renderer::GetInstance()->SetSSRMaxSteps(5000);
-    Renderer::GetInstance()->SetSSRMaxBinarySearchSteps(500);
-    Renderer::GetInstance()->SetIsSSGIEnabled(true);
-    Renderer::GetInstance()->SetSSGIStrength(ssgiStrength);
-    Renderer::GetInstance()->Init({ w, h }, env, b, 64, b, bloomResolutionScale);
+    Renderer::GetInstance().SetSSAOSamples(ssaoSamples);
+    Renderer::GetInstance().SetIsSSREnabled(true);
+    Renderer::GetInstance().SetSSRRayStep(0.01);
+    Renderer::GetInstance().SetSSRMaxSteps(5000);
+    Renderer::GetInstance().SetSSRMaxBinarySearchSteps(500);
+    Renderer::GetInstance().SetIsSSGIEnabled(true);
+    Renderer::GetInstance().SetSSGIStrength(ssgiStrength);
+    Renderer::GetInstance().Init({ w, h }, env, b, 64, b, bloomResolutionScale);
 
     Camera cam({ w, h });
 
@@ -164,7 +164,7 @@ int main(int argc, char* argv[])
 
     Material skyboxMaterial(
     {
-        { Renderer::GetInstance()->GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap }
+        { Renderer::GetInstance().GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap }
     });
 
     auto skybox = std::make_shared<Model>(true);
@@ -193,25 +193,25 @@ int main(int argc, char* argv[])
 
     std::vector<Framebuffer*> pingPongBuffers = 
     {
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0),
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)
+        Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::BloomPingPong0),
+        Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)
     };
 
     Framebuffer render(nullptr, w, h), renderTr(nullptr, w, h);
 
     sf::Image image;
 
-    Renderer::GetInstance()->SetExposure(exposure);
-    Renderer::GetInstance()->SetBloomStrength(bloomStrength);
-    Renderer::GetInstance()->SetBlurIterations(blurIterations);
-    Renderer::GetInstance()->SetSSAOStrength(ssaoStrength);
-    Renderer::GetInstance()->SetSSAORadius(ssaoRadius);
-    Renderer::GetInstance()->SetDOFMinDistance(dofMinDistance);
-    Renderer::GetInstance()->SetDOFMaxDistance(dofMaxDistance);
-    Renderer::GetInstance()->SetDOFFocusDistance(dofFocusDistance);
-    Renderer::GetInstance()->SetFogStart(fogStart);
-    Renderer::GetInstance()->SetFogEnd(fogEnd);
-    Renderer::GetInstance()->SetFogHeight(fogHeight);
+    Renderer::GetInstance().SetExposure(exposure);
+    Renderer::GetInstance().SetBloomStrength(bloomStrength);
+    Renderer::GetInstance().SetBlurIterations(blurIterations);
+    Renderer::GetInstance().SetSSAOStrength(ssaoStrength);
+    Renderer::GetInstance().SetSSAORadius(ssaoRadius);
+    Renderer::GetInstance().SetDOFMinDistance(dofMinDistance);
+    Renderer::GetInstance().SetDOFMaxDistance(dofMaxDistance);
+    Renderer::GetInstance().SetDOFFocusDistance(dofFocusDistance);
+    Renderer::GetInstance().SetFogStart(fogStart);
+    Renderer::GetInstance().SetFogEnd(fogEnd);
+    Renderer::GetInstance().SetFogHeight(fogHeight);
 
     auto draw = [&]()
     {
@@ -222,56 +222,56 @@ int main(int argc, char* argv[])
         scene.Draw();
 
         render.Bind();
-        auto size = Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->GetSize();
+        auto size = Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::Main)->GetSize();
         glViewport(0, 0, size.x, size.y);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glActiveTexture(GL_TEXTURE15);
         glBindTexture(GL_TEXTURE_2D, pingPongBuffers[blurIterations % 2 == 0]->GetTexture());
         glActiveTexture(GL_TEXTURE16);
-        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSR)->GetTexture());
+        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::SSR)->GetTexture());
         glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
         glActiveTexture(GL_TEXTURE17);
-        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->GetTexture(false, 1));
+        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::GBuffer)->GetTexture(false, 1));
         glActiveTexture(GL_TEXTURE18);
-        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->GetTexture(false, 4));
+        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::GBuffer)->GetTexture(false, 4));
         glActiveTexture(GL_TEXTURE19);
-        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer)->GetTexture(false, 3));
+        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer)->GetTexture(false, 3));
         glActiveTexture(GL_TEXTURE20);
-        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer)->GetTexture(false, 0));
+        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer)->GetTexture(false, 0));
         glActiveTexture(GL_TEXTURE21);
-        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)->GetTexture());
+        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)->GetTexture());
         glActiveTexture(GL_TEXTURE22);
-        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Fog)->GetTexture());
+        glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::Fog)->GetTexture());
 
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exposure);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("bloomStrength", bloomStrength);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("dofMinDistance", dofMinDistance);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("dofMaxDistance", dofMaxDistance);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1f("dofFocusDistance", dofFocusDistance);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom", 15);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssr", 16);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("galbedo", 17);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("gcombined", 18);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("decalsCombined", 19);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("decalsAlbedo", 20);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssgi", 21);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("fog", 22);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssrEnabled", true);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("fogEnabled", true);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->Bind();
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1f("exposure", exposure);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1f("bloomStrength", bloomStrength);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1f("dofMinDistance", dofMinDistance);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1f("dofMaxDistance", dofMaxDistance);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1f("dofFocusDistance", dofFocusDistance);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("bloom", 15);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssr", 16);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("galbedo", 17);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("gcombined", 18);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("decalsCombined", 19);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("decalsAlbedo", 20);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssgi", 21);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("fog", 22);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssrEnabled", true);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("fogEnabled", true);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
         
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
+        Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::Main)->Draw();
         auto pixels = render.GetPixels(glm::ivec2(0, 0), render.GetSize());
 
         renderTr.Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", true);
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->Bind();
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", true);
+        Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::Transparency)->Draw();
         auto pixelsTr = renderTr.GetPixels(glm::ivec2(0, 0), renderTr.GetSize());
 
         image.create({ w, h });

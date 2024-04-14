@@ -576,18 +576,18 @@ int main()
     loading.draw();
     engine.GetWindow().display();
         
-    Renderer::GetInstance()->SetShadersDirectory(properties["renderer"]["shadersDir"].asString());
+    Renderer::GetInstance().SetShadersDirectory(properties["renderer"]["shadersDir"].asString());
     if(properties["renderer"]["ssaoSamples"].asInt() > 0)
-        Renderer::GetInstance()->SetSSAOSamples(properties["renderer"]["ssaoSamples"].asInt());
-    Renderer::GetInstance()->SetIsSSREnabled(properties["renderer"]["ssrEnabled"].asBool());
-    Renderer::GetInstance()->SetSSRRayStep(properties["renderer"]["ssrRayStep"].asFloat());
-    Renderer::GetInstance()->SetSSRMaxSteps(properties["renderer"]["ssrMaxSteps"].asInt());
-    Renderer::GetInstance()->SetSSRMaxBinarySearchSteps(properties["renderer"]["ssrMaxBinarySearchSteps"].asInt());
+        Renderer::GetInstance().SetSSAOSamples(properties["renderer"]["ssaoSamples"].asInt());
+    Renderer::GetInstance().SetIsSSREnabled(properties["renderer"]["ssrEnabled"].asBool());
+    Renderer::GetInstance().SetSSRRayStep(properties["renderer"]["ssrRayStep"].asFloat());
+    Renderer::GetInstance().SetSSRMaxSteps(properties["renderer"]["ssrMaxSteps"].asInt());
+    Renderer::GetInstance().SetSSRMaxBinarySearchSteps(properties["renderer"]["ssrMaxBinarySearchSteps"].asInt());
     
-    Renderer::GetInstance()->SetIsSSGIEnabled(properties["renderer"]["ssgiEnabled"].asBool());
-    Renderer::GetInstance()->SetSSGIStrength(properties["renderer"]["ssgiStrength"].asFloat());
+    Renderer::GetInstance().SetIsSSGIEnabled(properties["renderer"]["ssgiEnabled"].asBool());
+    Renderer::GetInstance().SetSSGIStrength(properties["renderer"]["ssgiStrength"].asFloat());
 
-    Renderer::GetInstance()->Init({ (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y },
+    Renderer::GetInstance().Init({ (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y },
                                     properties["renderer"]["hdriPath"].asString(),
                                     properties["renderer"]["skyboxSideSize"].asInt(),
                                     properties["renderer"]["irradianceSideSize"].asInt(),
@@ -610,7 +610,7 @@ int main()
 
     Material skyboxMaterial(
     {
-        { Renderer::GetInstance()->GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap }
+        { Renderer::GetInstance().GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap }
     });
 
     auto defaultMaterial = std::make_shared<Material>();
@@ -660,11 +660,11 @@ int main()
         Log::Write(path + " saved", Log::Type::Info);
     };
 
-    Multithreading::GetInstance()->SetIsEnabled(properties["enableMultithreading"].asBool());
+    Multithreading::GetInstance().SetIsEnabled(properties["enableMultithreading"].asBool());
 
     // Gizmos
     sf::Vector2i prevMPos;
-    auto gizmosFb = std::make_shared<Framebuffer>(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post), (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y);
+    auto gizmosFb = std::make_shared<Framebuffer>(Renderer::GetInstance().GetShader(Renderer::ShaderType::Post), (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y);
 
     Material gizmoXMat(
     {
@@ -697,7 +697,7 @@ int main()
     });
 
     auto gizmoX = std::make_shared<Model>(true);
-    gizmoX->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward));
+    gizmoX->SetShader(Renderer::GetInstance().GetShader(Renderer::ShaderType::Forward));
     gizmoX->SetMaterial({ &gizmoXMat });
     gizmoX->SetPhysicsManager(gizmosMan.get());
     gizmoX->CreateRigidBody();
@@ -705,7 +705,7 @@ int main()
     gizmoX->GetRigidBody()->setType(rp3d::BodyType::STATIC);
 
     auto gizmoY = std::make_shared<Model>(true);
-    gizmoY->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward));
+    gizmoY->SetShader(Renderer::GetInstance().GetShader(Renderer::ShaderType::Forward));
     gizmoY->SetMaterial({ &gizmoYMat });
     gizmoY->SetPhysicsManager(gizmosMan.get());
     gizmoY->CreateRigidBody();
@@ -713,7 +713,7 @@ int main()
     gizmoY->GetRigidBody()->setType(rp3d::BodyType::STATIC);
 
     auto gizmoZ = std::make_shared<Model>(true);
-    gizmoZ->SetShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward));
+    gizmoZ->SetShader(Renderer::GetInstance().GetShader(Renderer::ShaderType::Forward));
     gizmoZ->SetMaterial({ &gizmoZMat });
     gizmoZ->SetPhysicsManager(gizmosMan.get());
     gizmoZ->CreateRigidBody();
@@ -765,9 +765,9 @@ int main()
 
     bool scriptLaunched = false;
 
-    Renderer::GetInstance()->SetExposure(properties["renderer"]["exposure"].asFloat());
-    Renderer::GetInstance()->SetSSAOStrength(properties["renderer"]["ssaoStrength"].asFloat());
-    Renderer::GetInstance()->SetSSAORadius(properties["renderer"]["ssaoRadius"].asFloat());
+    Renderer::GetInstance().SetExposure(properties["renderer"]["exposure"].asFloat());
+    Renderer::GetInstance().SetSSAOStrength(properties["renderer"]["ssaoStrength"].asFloat());
+    Renderer::GetInstance().SetSSAORadius(properties["renderer"]["ssaoRadius"].asFloat());
 
     float mouseSensitivity = 1.0;
 
@@ -785,8 +785,8 @@ int main()
         { "bool multithreading", asOFFSET(Config, multithreading) }
     });
     scman.AddProperty("Engine engine", &engine);
-    scman.AddProperty("Renderer renderer", Renderer::GetInstance());
-    scman.AddProperty("TextureManager textureManager", TextureManager::GetInstance());
+    scman.AddProperty("Renderer renderer", &Renderer::GetInstance());
+    scman.AddProperty("TextureManager textureManager", &TextureManager::GetInstance());
     scman.AddProperty("Config config", &config);
     scman.SetDefaultNamespace("Game");
     scman.AddProperty("SceneManager scene", &scene);
@@ -916,8 +916,8 @@ int main()
     std::vector<std::vector<tgui::String>> selectedWithShift;
     std::vector<Framebuffer*> pingPongBuffers = 
     {
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0),
-        Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)
+        Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::BloomPingPong0),
+        Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)
     };
 
     modelButton->onPress([&]()
@@ -1155,10 +1155,10 @@ int main()
                 std::string name = "texture";
                 if(std::holds_alternative<GLuint>(p))
                 {
-                    name = TextureManager::GetInstance()->GetName(std::get<1>(p));
-                    TextureManager::GetInstance()->DeleteTexture(name);
+                    name = TextureManager::GetInstance().GetName(std::get<1>(p));
+                    TextureManager::GetInstance().DeleteTexture(name);
                 }
-                mat->SetParameter(TextureManager::GetInstance()->LoadTexture(path, name), matType);
+                mat->SetParameter(TextureManager::GetInstance().LoadTexture(path, name), matType);
                 lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
                 
                 switch (matType)
@@ -1479,18 +1479,18 @@ int main()
             cam.SetViewportSize({ (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y });
             cam.SetGuiSize({ (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y });
 
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->Resize(viewport->getSize().x, viewport->getSize().y);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer)->Resize(viewport->getSize().x, viewport->getSize().y);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Resize(viewport->getSize().x, viewport->getSize().y);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Resize(viewport->getSize().x, viewport->getSize().y);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->Resize(viewport->getSize().x / 2.0, viewport->getSize().y / 2.0);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGI)->Resize(viewport->getSize().x / 2.0, viewport->getSize().y / 2.0);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSR)->Resize(viewport->getSize().x, viewport->getSize().y);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Fog)->Resize(viewport->getSize().x, viewport->getSize().y);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(viewport->getSize().x / properties["renderer"]["bloomResolutionScale"].asFloat(), viewport->getSize().y / properties["renderer"]["bloomResolutionScale"].asFloat());
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->Resize(viewport->getSize().x / properties["renderer"]["bloomResolutionScale"].asFloat(), viewport->getSize().y / properties["renderer"]["bloomResolutionScale"].asFloat());
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong0)->Resize(viewport->getSize().x / 8.0, viewport->getSize().y / 8.0);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)->Resize(viewport->getSize().x / 8.0, viewport->getSize().y / 8.0);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::GBuffer)->Resize(viewport->getSize().x, viewport->getSize().y);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer)->Resize(viewport->getSize().x, viewport->getSize().y);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::Main)->Resize(viewport->getSize().x, viewport->getSize().y);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::Transparency)->Resize(viewport->getSize().x, viewport->getSize().y);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::SSAO)->Resize(viewport->getSize().x / 2.0, viewport->getSize().y / 2.0);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::SSGI)->Resize(viewport->getSize().x / 2.0, viewport->getSize().y / 2.0);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::SSR)->Resize(viewport->getSize().x, viewport->getSize().y);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::Fog)->Resize(viewport->getSize().x, viewport->getSize().y);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(viewport->getSize().x / properties["renderer"]["bloomResolutionScale"].asFloat(), viewport->getSize().y / properties["renderer"]["bloomResolutionScale"].asFloat());
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->Resize(viewport->getSize().x / properties["renderer"]["bloomResolutionScale"].asFloat(), viewport->getSize().y / properties["renderer"]["bloomResolutionScale"].asFloat());
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::SSGIPingPong0)->Resize(viewport->getSize().x / 8.0, viewport->getSize().y / 8.0);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)->Resize(viewport->getSize().x / 8.0, viewport->getSize().y / 8.0);
         }
     	if(event.type == sf::Event::Closed)
     		engine.Close();
@@ -1886,8 +1886,8 @@ int main()
                     case Material::Type::Color:
                         if(!color.has_value() && ctmp.has_value())
                         {
-                            auto name = TextureManager::GetInstance()->GetName(std::get<1>(i.first));
-                            TextureManager::GetInstance()->DeleteTexture(name);
+                            auto name = TextureManager::GetInstance().GetName(std::get<1>(i.first));
+                            TextureManager::GetInstance().DeleteTexture(name);
                             i.first = ctmp.value();
                         }
                         if(color.has_value() && ctmp.has_value())
@@ -1896,8 +1896,8 @@ int main()
                     case Material::Type::Metalness:
                         if(!std::holds_alternative<glm::vec3>(material->GetParameter(Material::Type::Metalness)) && metal > 0.0)
                         {
-                            auto name = TextureManager::GetInstance()->GetName(std::get<1>(i.first));
-                            TextureManager::GetInstance()->DeleteTexture(name);
+                            auto name = TextureManager::GetInstance().GetName(std::get<1>(i.first));
+                            TextureManager::GetInstance().DeleteTexture(name);
                             i.first = glm::vec3(metal);
                         }
                         if(std::holds_alternative<glm::vec3>(material->GetParameter(Material::Type::Metalness)))
@@ -1906,8 +1906,8 @@ int main()
                     case Material::Type::Roughness:
                         if(!std::holds_alternative<glm::vec3>(material->GetParameter(Material::Type::Roughness)) && rough > 0.0)
                         {
-                            auto name = TextureManager::GetInstance()->GetName(std::get<1>(i.first));
-                            TextureManager::GetInstance()->DeleteTexture(name);
+                            auto name = TextureManager::GetInstance().GetName(std::get<1>(i.first));
+                            TextureManager::GetInstance().DeleteTexture(name);
                             i.first = glm::vec3(rough);
                         }
                         if(std::holds_alternative<glm::vec3>(material->GetParameter(Material::Type::Roughness)))
@@ -1916,8 +1916,8 @@ int main()
                     case Material::Type::Emission:
                         if(!emission.has_value() && etmp.has_value())
                         {
-                            auto name = TextureManager::GetInstance()->GetName(std::get<1>(i.first));
-                            TextureManager::GetInstance()->DeleteTexture(name);
+                            auto name = TextureManager::GetInstance().GetName(std::get<1>(i.first));
+                            TextureManager::GetInstance().DeleteTexture(name);
                             i.first = etmp.value();
                         }
                         if(emission.has_value() && etmp.has_value())
@@ -1929,8 +1929,8 @@ int main()
                     case Material::Type::Opacity:
                         if(!std::holds_alternative<glm::vec3>(material->GetParameter(Material::Type::Opacity)) && opacity > 0.0)
                         {
-                            auto name = TextureManager::GetInstance()->GetName(std::get<1>(i.first));
-                            TextureManager::GetInstance()->DeleteTexture(name);
+                            auto name = TextureManager::GetInstance().GetName(std::get<1>(i.first));
+                            TextureManager::GetInstance().DeleteTexture(name);
                             i.first = glm::vec3(opacity);
                         }
                         if(std::holds_alternative<glm::vec3>(material->GetParameter(Material::Type::Opacity)))
@@ -2285,18 +2285,18 @@ int main()
         glViewport(0, 0, size.x, size.y);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward)->SetUniform1i("drawTransparency", false);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Forward)->Bind();
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Forward)->SetUniform1i("drawTransparency", false);
 
         gizmoX->Draw();
         gizmoY->Draw();
         gizmoZ->Draw();
 
 		viewport->bindFramebuffer();
-        Renderer::GetInstance()->DrawFramebuffers();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->Bind();
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
-        Renderer::GetInstance()->GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
+        Renderer::GetInstance().DrawFramebuffers();
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->Bind();
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
         gizmosFb->Draw();
         Framebuffer::Unbind();
 

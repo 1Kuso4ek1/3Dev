@@ -112,8 +112,8 @@ private:
 	std::vector<glm::mat4> pose;
 	std::unordered_map<std::string, std::pair<int, glm::mat4>> bonemap;
 
-	Matrices* m = Renderer::GetInstance()->GetMatrices();
-	Shader* shader = Renderer::GetInstance()->GetShader(Renderer::ShaderType::Deferred);
+	Matrices* m = Renderer::GetInstance().GetMatrices();
+	Shader* shader = Renderer::GetInstance().GetShader(Renderer::ShaderType::Deferred);
 	Shader* tempShader = nullptr;
 
 	Json::Value data;

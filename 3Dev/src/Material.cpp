@@ -2,18 +2,18 @@
 
 Material::Material()
 {
-    SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
-    SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
-    SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::LUT), Type::LUT);
+    SetParameter(Renderer::GetInstance().GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
+    SetParameter(Renderer::GetInstance().GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
+    SetParameter(Renderer::GetInstance().GetTexture(Renderer::TextureType::LUT), Type::LUT);
 }
 
 Material::Material(std::vector<std::pair<std::variant<glm::vec3, GLuint>, Type>> parameters) : parameters(parameters)
 {
 	if(!Contains(Type::Cubemap) && !Contains(Type::Environment))
 	{
-		SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
-		SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
-		SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::LUT), Type::LUT);
+		SetParameter(Renderer::GetInstance().GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
+		SetParameter(Renderer::GetInstance().GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
+		SetParameter(Renderer::GetInstance().GetTexture(Renderer::TextureType::LUT), Type::LUT);
 	}
 }
 
@@ -120,11 +120,11 @@ void Material::UpdateShader(Shader* shader)
 void Material::UpdateShaderEnvironment(Shader* shader)
 {
 	glActiveTexture(GL_TEXTURE5);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, Renderer::GetInstance()->GetTexture(Renderer::TextureType::Irradiance));
+	glBindTexture(GL_TEXTURE_CUBE_MAP, Renderer::GetInstance().GetTexture(Renderer::TextureType::Irradiance));
 	glActiveTexture(GL_TEXTURE6);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered));
+	glBindTexture(GL_TEXTURE_CUBE_MAP, Renderer::GetInstance().GetTexture(Renderer::TextureType::Prefiltered));
 	glActiveTexture(GL_TEXTURE7);
-	glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance()->GetTexture(Renderer::TextureType::LUT));
+	glBindTexture(GL_TEXTURE_2D, Renderer::GetInstance().GetTexture(Renderer::TextureType::LUT));
 
 	shader->SetUniform3f("nirradiance", -1, 0, 0);
 	shader->SetUniform1i("irradiance", 5);
@@ -158,8 +158,8 @@ void Material::ResetShader(Shader* shader)
 
 void Material::GetEnvironmentFromRenderer()
 {
-	SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
-	SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
+	SetParameter(Renderer::GetInstance().GetTexture(Renderer::TextureType::Irradiance), Type::Irradiance);
+	SetParameter(Renderer::GetInstance().GetTexture(Renderer::TextureType::Prefiltered), Type::PrefilteredMap);
 }
 
 void Material::LoadTextures()
@@ -167,10 +167,10 @@ void Material::LoadTextures()
 	if(texturesLoaded) return;
 
 	for(auto& i : textureFilenames)
-		parameters.push_back({ TextureManager::GetInstance()->LoadTexture(i.second), i.first });
+		parameters.push_back({ TextureManager::GetInstance().LoadTexture(i.second), i.first });
 
     GetEnvironmentFromRenderer();
-    SetParameter(Renderer::GetInstance()->GetTexture(Renderer::TextureType::LUT), Type::LUT);
+    SetParameter(Renderer::GetInstance().GetTexture(Renderer::TextureType::LUT), Type::LUT);
 
 	texturesLoaded = true;
 }
@@ -183,7 +183,7 @@ void Material::UnloadTextures()
 	{
 		if((int)i->second < (int)Type::Cubemap && std::holds_alternative<GLuint>(i->first))
 		{
-			TextureManager::GetInstance()->DeleteTexture("texture" + std::to_string(std::get<1>(i->first)));
+			TextureManager::GetInstance().DeleteTexture("texture" + std::to_string(std::get<1>(i->first)));
 			parameters.erase(i);
 		}
 	}
@@ -214,18 +214,18 @@ Json::Value Material::Serialize()
 				data["color"]["g"] = std::get<0>(i.first).y;
 				data["color"]["b"] = std::get<0>(i.first).z;
 			}
-			else data["color"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
+			else data["color"]["filename"] = TextureManager::GetInstance().GetFilename(std::get<1>(i.first));
 			break;
 		case Material::Type::Normal:
-			data["normal"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
+			data["normal"]["filename"] = TextureManager::GetInstance().GetFilename(std::get<1>(i.first));
 			break;
 		case Material::Type::AmbientOcclusion:
-			data["ao"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
+			data["ao"]["filename"] = TextureManager::GetInstance().GetFilename(std::get<1>(i.first));
 			break;
 		case Material::Type::Metalness:
 			if(std::holds_alternative<glm::vec3>(i.first))
 				data["metalness"]["value"] = std::get<0>(i.first).x;
-			else data["metalness"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
+			else data["metalness"]["filename"] = TextureManager::GetInstance().GetFilename(std::get<1>(i.first));
 			break;
 		case Material::Type::Emission:
 			if(std::holds_alternative<glm::vec3>(i.first))
@@ -234,7 +234,7 @@ Json::Value Material::Serialize()
 				data["emission"]["g"] = std::get<0>(i.first).y;
 				data["emission"]["b"] = std::get<0>(i.first).z;
 			}
-			else data["emission"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
+			else data["emission"]["filename"] = TextureManager::GetInstance().GetFilename(std::get<1>(i.first));
 			break;
 		case Material::Type::EmissionStrength:
 			data["emission"]["strength"] = std::get<0>(i.first).z;
@@ -242,12 +242,12 @@ Json::Value Material::Serialize()
 		case Material::Type::Roughness:
 			if(std::holds_alternative<glm::vec3>(i.first))
 				data["roughness"]["value"] = std::get<0>(i.first).x;
-			else data["roughness"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
+			else data["roughness"]["filename"] = TextureManager::GetInstance().GetFilename(std::get<1>(i.first));
 			break;
 		case Material::Type::Opacity:
 			if(std::holds_alternative<glm::vec3>(i.first))
 				data["opacity"]["value"] = std::get<0>(i.first).x;
-			else data["opacity"]["filename"] = TextureManager::GetInstance()->GetFilename(std::get<1>(i.first));
+			else data["opacity"]["filename"] = TextureManager::GetInstance().GetFilename(std::get<1>(i.first));
 			break;
 		}
 	}

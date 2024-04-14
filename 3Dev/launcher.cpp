@@ -28,19 +28,19 @@ struct Config
         cfg["window"]["vsync"] = vsync;
 
         cfg["renderer"]["shadowMapResolution"] = shadowMapResolution;
-        cfg["renderer"]["skyboxSideSize"] = Renderer::GetInstance()->GetSkyboxResolution();
-        cfg["renderer"]["irradianceSideSize"] = Renderer::GetInstance()->GetIrradianceResolution();
-        cfg["renderer"]["prefilteredSideSize"] = Renderer::GetInstance()->GetPrefilteredResolution();
-        cfg["renderer"]["ssaoSamples"] = Renderer::GetInstance()->GetSSAOSamples();
-        cfg["renderer"]["exposure"] = Renderer::GetInstance()->GetExposure();
-        cfg["renderer"]["ssaoStrength"] = Renderer::GetInstance()->GetSSAOStrength();
-        cfg["renderer"]["ssaoRadius"] = Renderer::GetInstance()->GetSSAORadius();
-        cfg["renderer"]["ssrEnabled"] = Renderer::GetInstance()->IsSSREnabled();
-        cfg["renderer"]["ssrRayStep"] = Renderer::GetInstance()->GetSSRRayStep();
-        cfg["renderer"]["ssrMaxSteps"] = Renderer::GetInstance()->GetSSRMaxSteps();
-        cfg["renderer"]["ssrMaxBinarySearchSteps"] = Renderer::GetInstance()->GetSSRMaxBinarySearchSteps();
-        cfg["renderer"]["ssgiEnabled"] = Renderer::GetInstance()->IsSSGIEnabled();
-        cfg["renderer"]["ssgiStrength"] = Renderer::GetInstance()->GetSSGIStrength();
+        cfg["renderer"]["skyboxSideSize"] = Renderer::GetInstance().GetSkyboxResolution();
+        cfg["renderer"]["irradianceSideSize"] = Renderer::GetInstance().GetIrradianceResolution();
+        cfg["renderer"]["prefilteredSideSize"] = Renderer::GetInstance().GetPrefilteredResolution();
+        cfg["renderer"]["ssaoSamples"] = Renderer::GetInstance().GetSSAOSamples();
+        cfg["renderer"]["exposure"] = Renderer::GetInstance().GetExposure();
+        cfg["renderer"]["ssaoStrength"] = Renderer::GetInstance().GetSSAOStrength();
+        cfg["renderer"]["ssaoRadius"] = Renderer::GetInstance().GetSSAORadius();
+        cfg["renderer"]["ssrEnabled"] = Renderer::GetInstance().IsSSREnabled();
+        cfg["renderer"]["ssrRayStep"] = Renderer::GetInstance().GetSSRRayStep();
+        cfg["renderer"]["ssrMaxSteps"] = Renderer::GetInstance().GetSSRMaxSteps();
+        cfg["renderer"]["ssrMaxBinarySearchSteps"] = Renderer::GetInstance().GetSSRMaxBinarySearchSteps();
+        cfg["renderer"]["ssgiEnabled"] = Renderer::GetInstance().IsSSGIEnabled();
+        cfg["renderer"]["ssgiStrength"] = Renderer::GetInstance().GetSSGIStrength();
 
         std::ofstream file("launcher_conf.json");
         file << cfg.toStyledString();
@@ -62,7 +62,7 @@ int main()
     if(!Json::parseFromStream(rbuilder, file, &cfg, &errors))
         Log::Write("Launcher config parsing failed: " + errors, Log::Type::Critical);
 
-    Multithreading::GetInstance()->SetIsEnabled(cfg["enableMultithreading"].asBool());
+    Multithreading::GetInstance().SetIsEnabled(cfg["enableMultithreading"].asBool());
     
     Engine engine(cfg["log"]["init"].asBool(), cfg["log"]["silent"].asBool());
 
@@ -88,21 +88,21 @@ int main()
     engine.SetGuiViewport({ 0, 0, float(engine.GetWindow().getSize().x), float(engine.GetWindow().getSize().y) });
 
     if(cfg["renderer"]["shadersDir"].asString() != "default")
-        Renderer::GetInstance()->SetShadersDirectory(cfg["renderer"]["shadersDir"].asString());
+        Renderer::GetInstance().SetShadersDirectory(cfg["renderer"]["shadersDir"].asString());
     if(cfg["renderer"]["ssaoSamples"].asInt() > 0)
-        Renderer::GetInstance()->SetSSAOSamples(cfg["renderer"]["ssaoSamples"].asInt());
-    Renderer::GetInstance()->SetExposure(cfg["renderer"]["exposure"].asFloat());
-    Renderer::GetInstance()->SetSSAOStrength(cfg["renderer"]["ssaoStrength"].asFloat());
-    Renderer::GetInstance()->SetSSAORadius(cfg["renderer"]["ssaoRadius"].asFloat());
-    Renderer::GetInstance()->SetIsSSREnabled(cfg["renderer"]["ssrEnabled"].asBool());
-    Renderer::GetInstance()->SetSSRRayStep(cfg["renderer"]["ssrRayStep"].asFloat());
-    Renderer::GetInstance()->SetSSRMaxSteps(cfg["renderer"]["ssrMaxSteps"].asInt());
-    Renderer::GetInstance()->SetSSRMaxBinarySearchSteps(cfg["renderer"]["ssrMaxBinarySearchSteps"].asInt());
+        Renderer::GetInstance().SetSSAOSamples(cfg["renderer"]["ssaoSamples"].asInt());
+    Renderer::GetInstance().SetExposure(cfg["renderer"]["exposure"].asFloat());
+    Renderer::GetInstance().SetSSAOStrength(cfg["renderer"]["ssaoStrength"].asFloat());
+    Renderer::GetInstance().SetSSAORadius(cfg["renderer"]["ssaoRadius"].asFloat());
+    Renderer::GetInstance().SetIsSSREnabled(cfg["renderer"]["ssrEnabled"].asBool());
+    Renderer::GetInstance().SetSSRRayStep(cfg["renderer"]["ssrRayStep"].asFloat());
+    Renderer::GetInstance().SetSSRMaxSteps(cfg["renderer"]["ssrMaxSteps"].asInt());
+    Renderer::GetInstance().SetSSRMaxBinarySearchSteps(cfg["renderer"]["ssrMaxBinarySearchSteps"].asInt());
 
-    Renderer::GetInstance()->SetIsSSGIEnabled(cfg["renderer"]["ssgiEnabled"].asBool());
-    Renderer::GetInstance()->SetSSGIStrength(cfg["renderer"]["ssgiStrength"].asFloat());
+    Renderer::GetInstance().SetIsSSGIEnabled(cfg["renderer"]["ssgiEnabled"].asBool());
+    Renderer::GetInstance().SetSSGIStrength(cfg["renderer"]["ssgiStrength"].asFloat());
 
-    Renderer::GetInstance()->Init(engine.GetWindow().getSize(),
+    Renderer::GetInstance().Init(engine.GetWindow().getSize(),
                                   cfg["renderer"]["hdriPath"].asString(),
                                   cfg["renderer"]["skyboxSideSize"].asInt(),
                                   cfg["renderer"]["irradianceSideSize"].asInt(),
@@ -119,7 +119,7 @@ int main()
 
     Material skyboxMaterial(
     {
-        { Renderer::GetInstance()->GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap }
+        { Renderer::GetInstance().GetTexture(Renderer::TextureType::Skybox), Material::Type::Cubemap }
     });
 
     auto skybox = std::make_shared<Model>(true);
@@ -155,8 +155,8 @@ int main()
         { "bool multithreading", asOFFSET(Config, multithreading) }
     });
     scman.AddProperty("Engine engine", &engine);
-    scman.AddProperty("Renderer renderer", Renderer::GetInstance());
-    scman.AddProperty("TextureManager textureManager", TextureManager::GetInstance());
+    scman.AddProperty("Renderer renderer", &Renderer::GetInstance());
+    scman.AddProperty("TextureManager textureManager", &TextureManager::GetInstance());
     scman.AddProperty("Config config", &config);
     scman.SetDefaultNamespace("Game");
     scman.AddProperty("SceneManager scene", &scene);
@@ -190,18 +190,18 @@ int main()
     {
         if(event.type == sf::Event::Resized)
         {
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::GBuffer)->Resize(event.size.width / renderResolutionScale, event.size.height / renderResolutionScale);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer)->Resize(event.size.width / renderResolutionScale, event.size.height / renderResolutionScale);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Main)->Resize(event.size.width, event.size.height);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Transparency)->Resize(event.size.width, event.size.height);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSAO)->Resize(event.size.width / 2.0, event.size.height / 2.0);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGI)->Resize(event.size.width / 2.0, event.size.height / 2.0);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSR)->Resize(event.size.width, event.size.height);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::Fog)->Resize(event.size.width, event.size.height);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(event.size.width / bloomResolutionScale, event.size.height / bloomResolutionScale);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->Resize(event.size.width / bloomResolutionScale, event.size.height / bloomResolutionScale);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong0)->Resize(event.size.width / 8.0, event.size.height / 8.0);
-            Renderer::GetInstance()->GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)->Resize(event.size.width / 8.0, event.size.height / 8.0);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::GBuffer)->Resize(event.size.width / renderResolutionScale, event.size.height / renderResolutionScale);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer)->Resize(event.size.width / renderResolutionScale, event.size.height / renderResolutionScale);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::Main)->Resize(event.size.width, event.size.height);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::Transparency)->Resize(event.size.width, event.size.height);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::SSAO)->Resize(event.size.width / 2.0, event.size.height / 2.0);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::SSGI)->Resize(event.size.width / 2.0, event.size.height / 2.0);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::SSR)->Resize(event.size.width, event.size.height);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::Fog)->Resize(event.size.width, event.size.height);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::BloomPingPong0)->Resize(event.size.width / bloomResolutionScale, event.size.height / bloomResolutionScale);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::BloomPingPong1)->Resize(event.size.width / bloomResolutionScale, event.size.height / bloomResolutionScale);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::SSGIPingPong0)->Resize(event.size.width / 8.0, event.size.height / 8.0);
+            Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::SSGIPingPong1)->Resize(event.size.width / 8.0, event.size.height / 8.0);
 
             engine.SetGuiView({ 0, 0, float(event.size.width) * (guiWidth / float(event.size.width)),
                                       float(event.size.height) * (guiHeight / float(event.size.height)) });
@@ -249,7 +249,7 @@ int main()
             scene.UpdatePhysics(true, true);
         }
 
-        Renderer::GetInstance()->DrawFramebuffers();
+        Renderer::GetInstance().DrawFramebuffers();
     });
 
     engine.Launch();

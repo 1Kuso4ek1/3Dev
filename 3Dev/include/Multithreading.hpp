@@ -6,7 +6,7 @@ using namespace std::chrono_literals;
 class Multithreading
 {
 public:
-    static Multithreading* GetInstance();
+    static Multithreading& GetInstance();
 
     void Update();
     void AddJob(std::thread::id threadID, std::future<void>&& future);
@@ -18,8 +18,6 @@ public:
 
 private:
     Multithreading() {};
-
-    static Multithreading* instance;
 
     bool enabled = true;
 

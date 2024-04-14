@@ -6,12 +6,6 @@ Engine::Engine(bool initLog, bool silentLog)
         Log::Init("3Dev_log.txt", silentLog);
 }
 
-Engine::~Engine()
-{
-    Renderer::DeleteInstance();
-    TextureManager::DeleteInstance();
-}
-
 void Engine::Init()
 {
     glEnable(GL_BLEND);
@@ -76,7 +70,7 @@ void Engine::Launch(bool handleResize)
 
     while(running)
     {
-        Multithreading::GetInstance()->Update();
+        Multithreading::GetInstance().Update();
 
         while(window.pollEvent(event))
         {

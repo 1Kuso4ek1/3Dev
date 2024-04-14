@@ -6,7 +6,7 @@ Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, bool create
 	CalcPixelSize(glm::vec2(w, h));
     if(!isDepth)
 		for(int i = 0; i < attachments; i++)
-			textures.push_back(TextureManager::GetInstance()->CreateTexture(w, h, false, filter, wrap, internalFormat, format));
+			textures.push_back(TextureManager::GetInstance().CreateTexture(w, h, false, filter, wrap, internalFormat, format));
 		
     glGenFramebuffers(1, &fbo);
     
@@ -14,7 +14,7 @@ Framebuffer::Framebuffer(Shader* shader, int w, int h, bool isDepth, bool create
 
 	if(createDepthAttachment)
 	{
-		depth = TextureManager::GetInstance()->CreateTexture(w, h, true, filter, wrap);
+		depth = TextureManager::GetInstance().CreateTexture(w, h, true, filter, wrap);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
 	}
     
@@ -54,15 +54,15 @@ void Framebuffer::Resize(int w, int h)
 	{
 		for(auto& i : textures)
 		{
-			auto name = TextureManager::GetInstance()->GetName(i);
-			TextureManager::GetInstance()->ResizeTexture(name, false, w, h);
+			auto name = TextureManager::GetInstance().GetName(i);
+			TextureManager::GetInstance().ResizeTexture(name, false, w, h);
 		}
 	}
 	
 	if(depth)
 	{
-		auto name = TextureManager::GetInstance()->GetName(depth);
-		TextureManager::GetInstance()->ResizeTexture(name, true, w, h);
+		auto name = TextureManager::GetInstance().GetName(depth);
+		TextureManager::GetInstance().ResizeTexture(name, true, w, h);
 	}
 }
 
@@ -96,7 +96,7 @@ void Framebuffer::Draw(uint32_t attachment)
 GLuint Framebuffer::Capture(GLuint texture, GLuint output)
 {
 	if(output == 0)
-		output = TextureManager::GetInstance()->CreateTexture(size.x, size.y);
+		output = TextureManager::GetInstance().CreateTexture(size.x, size.y);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, output, 0);
 	Bind();
 	glViewport(0, 0, size.x, size.y);
@@ -119,7 +119,7 @@ GLuint Framebuffer::CaptureCubemap(Shader* shader, GLuint tex, Matrices& m, bool
 	Mesh cube;
 	cube.CreateCube();
 	if(output == 0)
-		output = TextureManager::GetInstance()->CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
+		output = TextureManager::GetInstance().CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
 	m.PushMatrix();
 	m.GetProjection() = glm::perspective(glm::radians(90.0), 1.0, 0.1, 1000.0);
 	Bind();
@@ -179,7 +179,7 @@ GLuint Framebuffer::CaptureCubemapMipmaps(Shader* shader, GLuint tex, Matrices& 
 	Mesh cube;
 	cube.CreateCube();
 	if(output == 0)
-		output = TextureManager::GetInstance()->CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
+		output = TextureManager::GetInstance().CreateCubemap(size.x, GL_LINEAR_MIPMAP_LINEAR);
 	m.PushMatrix();
 	m.GetProjection() = glm::perspective(glm::radians(90.0), 1.0, 0.1, 1000.0);
 	Bind();

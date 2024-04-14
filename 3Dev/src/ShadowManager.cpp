@@ -46,8 +46,8 @@ bool ShadowManager::Update()
         scene->Draw(depthBuffers[i].get(), nullptr, i == 0, true);
     }
 
-    UpdateShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::LightingPass));
-    UpdateShader(Renderer::GetInstance()->GetShader(Renderer::ShaderType::Forward));
+    UpdateShader(Renderer::GetInstance().GetShader(Renderer::ShaderType::LightingPass));
+    UpdateShader(Renderer::GetInstance().GetShader(Renderer::ShaderType::Forward));
 
     glCullFace(GL_BACK);
     glDisable(GL_POLYGON_OFFSET_FILL);

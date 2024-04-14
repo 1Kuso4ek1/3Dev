@@ -1,12 +1,9 @@
 #include <Multithreading.hpp>
 
-Multithreading* Multithreading::instance = nullptr;
-
-Multithreading* Multithreading::GetInstance()
+Multithreading& Multithreading::GetInstance()
 {
-    if(!instance)
-        instance = new Multithreading;
-    return instance;
+    static std::unique_ptr<Multithreading> instance(new Multithreading());
+    return *instance;
 }
 
 void Multithreading::Update()

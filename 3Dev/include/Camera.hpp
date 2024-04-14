@@ -50,7 +50,7 @@ private:
 	void UpdateMatrix();
 
 	sf::Window* window;
-	Matrices* m = Renderer::GetInstance()->GetMatrices();
+	Matrices* m = Renderer::GetInstance().GetMatrices();
 
 	float speed, fov, near, far, aspect;
 	float angleX = 0, angleY = 0;

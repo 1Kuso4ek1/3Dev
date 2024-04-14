@@ -6,8 +6,7 @@
 class TextureManager
 {
 public:
-    static TextureManager* GetInstance();
-    static void DeleteInstance();
+    static TextureManager& GetInstance();
 
     GLuint CreateTexture(uint32_t w, uint32_t h, bool depth = false, GLint filter = GL_NEAREST, GLint wrap = GL_CLAMP_TO_EDGE, GLuint internalFormat = GL_RGBA16F,
                          GLuint format = GL_RGBA, bool generateMipmap = false, void* data = nullptr, std::string name = "texture");
@@ -25,8 +24,6 @@ public:
 
 private:
     TextureManager() {}
-
-    static TextureManager* instance;
 
     std::unordered_map<std::string, GLuint> textures;
     std::unordered_map<std::string, std::string> filenames;

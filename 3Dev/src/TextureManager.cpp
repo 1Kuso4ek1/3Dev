@@ -2,18 +2,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-TextureManager* TextureManager::instance = nullptr;
-
-TextureManager* TextureManager::GetInstance()
+TextureManager& TextureManager::GetInstance()
 {
-    if(!instance)
-        instance = new TextureManager;
-    return instance;
-}
-
-void TextureManager::DeleteInstance()
-{
-    delete instance;
+    static std::unique_ptr<TextureManager> instance(new TextureManager());
+    return *instance;
 }
 
 GLuint TextureManager::CreateTexture(uint32_t w, uint32_t h, bool depth, GLint filter, GLint wrap, GLuint internalFormat, GLuint format, bool generateMipmap, void* data, std::string name)
@@ -106,7 +98,7 @@ GLuint TextureManager::LoadTexture(std::string filename, std::string name)
             Log::Write("Texture " + filename + " loaded", Log::Type::Info);
         };
 
-        if(Multithreading::GetInstance()->IsEnabled())
+        if(Multithreading::GetInstance().IsEnabled())
         {
             std::promise<void> promise;
             auto future = promise.get_future();
@@ -114,11 +106,11 @@ GLuint TextureManager::LoadTexture(std::string filename, std::string name)
             std::thread th([image, filename, texture, loadImage, uploadToGPU](std::promise<void> pr)
             {
                 loadImage();
-                Multithreading::GetInstance()->AddMainThreadJob(uploadToGPU);
+                Multithreading::GetInstance().AddMainThreadJob(uploadToGPU);
                 pr.set_value();
             }, std::move(promise));
 
-            Multithreading::GetInstance()->AddJob(th.get_id(), std::move(future));
+            Multithreading::GetInstance().AddJob(th.get_id(), std::move(future));
             th.detach();
         }
         else
