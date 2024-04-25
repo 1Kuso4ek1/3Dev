@@ -68,8 +68,8 @@ int main()
 
     Config config;
 
-    engine.CreateWindow(config.width, config.height, cfg["window"]["title"].asString(),
-                        cfg["window"]["fullscreen"].asBool() ? sf::Style::Fullscreen : sf::Style::Default);
+    engine.CreateWindow(config.width, config.height, cfg["window"]["title"].asString(), sf::Style::Default,
+                        cfg["window"]["fullscreen"].asBool() ? sf::State::Fullscreen : sf::State::Windowed);
     engine.Init();
 
     engine.GetWindow().setVerticalSyncEnabled(config.vsync);

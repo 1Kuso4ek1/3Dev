@@ -11,6 +11,8 @@ public:
     static void SetGlobalVolume(float volume);
 
 private:
+    static rp3d::Vector3 prevPos;
+
     ListenerWrapper();
 };
 
@@ -68,10 +70,10 @@ private:
 
         std::string name, filename;
 
-        float volume = 100, minDistance = 0, attenuation = 1, pitch = 1;
+        float volume = 100, minDistance = 1, attenuation = 0, pitch = 1;
         bool loop = false, relativeToListener = false;
         
-        rp3d::Vector3 pos;
+        rp3d::Vector3 pos, prevPos;
 
         sf::SoundBuffer buffer;
 
@@ -80,13 +82,24 @@ private:
             auto it = sounds.find(name + std::to_string(id));
             if(it != sounds.end())
             {
+                if(minDistance == 0)
+                    it->second->setSpatializationEnabled(false);
+                else
+                    it->second->setSpatializationEnabled(true);
+                it->second->setDopplerFactor(0.0);
                 it->second->setVolume(volume);
                 it->second->setMinDistance(minDistance);
                 it->second->setAttenuation(attenuation);
                 it->second->setPitch(pitch);
                 it->second->setLoop(loop);
                 it->second->setRelativeToListener(relativeToListener);
+
+                auto velocity = pos - prevPos;
+
                 it->second->setPosition({ pos.x, pos.y, pos.z });
+                it->second->setVelocity({ velocity.x, velocity.y, velocity.z });
+
+                prevPos = pos;
             }
         }
 

@@ -1,8 +1,15 @@
 #include <SoundManager.hpp>
 
+rp3d::Vector3 ListenerWrapper::prevPos = rp3d::Vector3::zero();
+
 void ListenerWrapper::SetPosition(const rp3d::Vector3& pos)
 {
+    auto velocity = pos - prevPos;
+
     sf::Listener::setPosition({ pos.x, pos.y, pos.z });
+    sf::Listener::setVelocity({ velocity.x, velocity.y, velocity.z });
+
+    prevPos = pos;
 }
 
 void ListenerWrapper::SetUpVector(const rp3d::Vector3& vec)
@@ -56,16 +63,19 @@ void SoundManager::Play(const std::string& name, int id)
             s->second->play();
             return;
         }
-    if(sounds.size() > 254) sounds.erase(sounds.begin());
     auto it = std::find(buffers.begin(), buffers.end(), name);
     sounds[name + std::to_string(id)] = std::make_shared<sf::Sound>(it->buffer);
     sounds[name + std::to_string(id)]->play();
+    if(!sounds[name + std::to_string(id)]->isSpatializationEnabled())
+    {
+        sounds[name + std::to_string(id)]->setRelativeToListener(true);
+        sounds[name + std::to_string(id)]->setPosition({ 0, 0, 0 });
+    }
     it->UpdateActiveSound(sounds, id);
 }
 
 void SoundManager::PlayAt(const std::string& name, int id, const rp3d::Vector3& pos)
 {
-    if(sounds.size() > 254) sounds.erase(sounds.begin());
     auto it = std::find(buffers.begin(), buffers.end(), name);
     sounds[name + std::to_string(id)] = std::make_shared<sf::Sound>(it->buffer);
     sounds[name + std::to_string(id)]->play();
@@ -76,7 +86,6 @@ void SoundManager::PlayAt(const std::string& name, int id, const rp3d::Vector3& 
 
 void SoundManager::PlayMono(const std::string& name, int id)
 {
-    if(sounds.size() > 254) sounds.erase(sounds.begin());
     auto it = std::find(buffers.begin(), buffers.end(), name);
     sounds[name + std::to_string(id)] = std::make_shared<sf::Sound>(it->buffer);
     sounds[name + std::to_string(id)]->play();

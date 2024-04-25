@@ -21,10 +21,10 @@ void Engine::Init()
     glewInit();
 }
 
-void Engine::CreateWindow(uint32_t width, uint32_t height, std::string title, uint32_t style)
+void Engine::CreateWindow(uint32_t width, uint32_t height, std::string title, uint32_t style, sf::State state)
 {
     settings.majorVersion = 4; settings.minorVersion = 5;
-    window.create(sf::VideoMode({ width, height }), title, style, settings);
+    window.create(sf::VideoMode({ width, height }), title, style, state, settings);
 }
 
 tgui::Gui* Engine::CreateGui(std::string widgets)
