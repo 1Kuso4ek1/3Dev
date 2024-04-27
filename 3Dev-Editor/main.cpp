@@ -2087,9 +2087,6 @@ int main()
             std::for_each(groups.begin(), groups.end(), [&](auto g) { g->setEnabled(false); g->setVisible(false); });
         }
 
-		if(scriptLaunched)
-			scman.ExecuteFunction(loopDecl);
-
 		cam.Update();
 		if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Right) && engine.GetWindow().hasFocus())
 		{
@@ -2123,7 +2120,6 @@ int main()
                     saveFile();
             }
         }
-        if(manageCameraLook) cam.Look();
 
         if(Shortcut({ sf::Keyboard::Key::LControl, sf::Keyboard::Key::G }))
             objectMode = !objectMode;
@@ -2265,6 +2261,9 @@ int main()
             }
         }
 
+        if(scriptLaunched)
+			scman.ExecuteFunction(loopDecl);
+
 		ListenerWrapper::SetPosition(cam.GetPosition());
 		ListenerWrapper::SetOrientation(cam.GetOrientation());
 
@@ -2273,7 +2272,10 @@ int main()
         else engine.GetWindow().setFramerateLimit(5);
 
         if(manageSceneRendering)
+        {
+            if(manageCameraLook) cam.Look();
             scene.Draw(nullptr, nullptr, updateShadows ? shadows.Update() : true);
+        }
         else
         {
             scene.UpdateAnimations();

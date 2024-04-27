@@ -227,22 +227,24 @@ int main()
     {
         engine.GetWindow().setMouseCursorVisible(mouseCursorVisible || windowLostFocus);
         engine.GetWindow().setMouseCursorGrabbed(mouseCursorGrabbed || !windowLostFocus);
-
-        scman.ExecuteFunction("void Loop()");
-
-        ListenerWrapper::SetPosition(cam.GetPosition());
-        ListenerWrapper::SetOrientation(cam.GetOrientation());
         
         if(!windowLostFocus)
         {
             cam.Update();
             if(manageCameraMovement) cam.Move(1);
             if(manageCameraMouse) cam.Mouse(mouseSensitivity);
-            if(manageCameraLook) cam.Look();
         }
+
+        scman.ExecuteFunction("void Loop()");
+
+        ListenerWrapper::SetPosition(cam.GetPosition());
+        ListenerWrapper::SetOrientation(cam.GetOrientation());
         
         if(manageSceneRendering && !windowLostFocus)
+        {
+            if(manageCameraLook) cam.Look();
             scene.Draw(nullptr, nullptr, updateShadows ? shadows.Update() : true);
+        }
         else
         {
             scene.UpdateAnimations();
