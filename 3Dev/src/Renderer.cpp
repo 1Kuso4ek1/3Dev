@@ -116,12 +116,10 @@ void Renderer::LoadEnvironment(const std::string& environmentMapFilename)
                                              environment, m, textures.find(TextureType::Skybox) == textures.end() ? 0 : textures[TextureType::Skybox]);
     textures[TextureType::Skybox] = cubemap;
 
-    GLuint irr = captureIrr->CaptureCubemap(shaders[ShaderType::Irradiance].get(), cubemap, m, true,
-                                            textures.find(TextureType::Irradiance) == textures.end() ? 0 : textures[TextureType::Irradiance]);
+    GLuint irr = captureIrr->CaptureCubemap(shaders[ShaderType::Irradiance].get(), cubemap, m, true, 0);
     textures[TextureType::Irradiance] = irr;
 
-    GLuint filtered = captureSpc->CaptureCubemapMipmaps(shaders[ShaderType::Filtering].get(), cubemap, m, 8, 1024,
-                                                        textures.find(TextureType::Prefiltered) == textures.end() ? 0 : textures[TextureType::Prefiltered]);
+    GLuint filtered = captureSpc->CaptureCubemapMipmaps(shaders[ShaderType::Filtering].get(), cubemap, m, 8, 1024, 0);
     textures[TextureType::Prefiltered] = filtered;
 
     if(textures.find(TextureType::LUT) == textures.end())
