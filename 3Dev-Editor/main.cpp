@@ -1022,7 +1022,7 @@ int main()
                 sman->LoadSound(projectDir + "/assets/sounds/" + filename, path.stem().string());
                 treeTabs->select(2);
                 readSceneTree();
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
+                lastPath = path.parent_path().string();
             }
   	    	openFileDialog = nullptr;
   	    });
@@ -1145,8 +1145,9 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
-                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
-                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
+                auto path = std::filesystem::path(openFileDialog->getSelectedPaths()[0].asString().toStdString());
+                std::string filename = path.filename().string();
+                lastPath = path.parent_path().string();
                 if(!std::filesystem::exists(projectDir + "/assets/textures/" + filename))
                     std::filesystem::copy(path, projectDir + "/assets/textures/" + filename);
                 path = projectDir + "/assets/textures/" + filename;
@@ -1158,8 +1159,7 @@ int main()
                     name = TextureManager::GetInstance().GetName(std::get<1>(p));
                     TextureManager::GetInstance().DeleteTexture(name);
                 }
-                mat->SetParameter(TextureManager::GetInstance().LoadTexture(path, name), matType);
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
+                mat->SetParameter(TextureManager::GetInstance().LoadTexture(path.string(), name), matType);
                 
                 switch (matType)
                 {
@@ -1196,8 +1196,9 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
             {
-                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
-                std::string filename = std::filesystem::path(path).filename().string();
+                auto path = std::filesystem::path(openFileDialog->getSelectedPaths()[0].asString().toStdString());
+                std::string filename = path.filename().string();
+                lastPath = path.parent_path().string();
                 if(!std::filesystem::exists(path))
                 {
                     code[filename] = "";
@@ -1205,7 +1206,7 @@ int main()
                 }
                 else
                 {
-                    std::ifstream file(openFileDialog->getSelectedPaths()[0].asString().toStdString());
+                    std::ifstream file(path);
                     std::copy(std::istreambuf_iterator<char>(file),
                               std::istreambuf_iterator<char>(),
                               std::back_inserter(code[filename]));
@@ -1215,7 +1216,6 @@ int main()
                 scman.LoadScript(path);
                 treeTabs->select(4);
                 readSceneTree();
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
                 currentFile = filename;
 
                 codeEditor->setVisible(true);
@@ -1264,8 +1264,9 @@ int main()
   	    {
             if(!openFileDialog->getSelectedPaths().empty())
 			{
-                auto path = openFileDialog->getSelectedPaths()[0].asString().toStdString();
-                std::string filename = path.substr(path.find_last_of("/") + 1, path.size());
+                auto path = std::filesystem::path(openFileDialog->getSelectedPaths()[0].asString().toStdString());
+                std::string filename = path.filename().string();
+                lastPath = path.parent_path().string();
                 if(!std::filesystem::exists(projectDir + "/assets/models/" + filename))
                     std::filesystem::copy(path, projectDir + "/assets/models/" + filename);
                 path = projectDir + "/assets/models/" + filename;
@@ -1278,7 +1279,6 @@ int main()
                 auto mtl = model->GetMaterial();
                 for(int i = 0; i < mtl.size(); i++)
                     materialsList->addItem(scene.GetMaterialName(mtl[i]), tgui::String(i));
-                lastPath = openFileDialog->getSelectedPaths()[0].getParentPath().asString().toStdString();
             }
   	    	openFileDialog = nullptr;
   	    });
