@@ -1033,7 +1033,7 @@ void ScriptManager::RegisterTGUI()
     {
         { "void setPosition(float, float)", WRAP_OBJ_LAST(SetPosition) },
         { "String getText() const", WRAP_MFN(tgui::TextArea, getText) },
-        { "void setText(const String& in)", WRAP_MFN(tgui::TextArea, setText) },
+        { "void setText(String)", WRAP_MFN(tgui::TextArea, setText) },
         { "void setEnabled(bool)", WRAP_MFN(tgui::TextArea, setEnabled) },
         { "void setVisible(bool)", WRAP_MFN(tgui::TextArea, setVisible) },
         { "void setFocused(bool)", WRAP_MFN(tgui::TextArea, setFocused) },
