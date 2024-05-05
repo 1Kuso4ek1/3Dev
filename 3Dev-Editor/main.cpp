@@ -1272,7 +1272,7 @@ int main()
                 path = projectDir + "/assets/models/" + filename;
                 auto model = scene.GetModel(sceneTree->getSelectedItem().back().toStdString());
                 scene.RemoveBones(model);
-                model->Load(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
+                model->Load(path.string(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
                 scene.StoreBones(model);
                 readSceneTree();
                 materialsList->removeAllItems();
