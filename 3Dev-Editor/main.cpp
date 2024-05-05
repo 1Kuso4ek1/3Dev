@@ -1213,7 +1213,7 @@ int main()
                     fileTabs->add(filename);
                     codeArea->setText(code[filename]);
                 }
-                scman.LoadScript(path);
+                scman.LoadScript(path.string());
                 treeTabs->select(4);
                 readSceneTree();
                 currentFile = filename;
