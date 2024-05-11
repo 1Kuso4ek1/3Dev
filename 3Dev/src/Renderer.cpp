@@ -24,6 +24,7 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
     shaders[ShaderType::Filtering] = std::make_shared<Shader>(shadersDir + "spcfiltering.vs", shadersDir + "spcfiltering.fs");
     shaders[ShaderType::BRDF] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "brdf.fs");
     shaders[ShaderType::Bloom] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "bloom.fs");
+    shaders[ShaderType::EyeAdaptation] = std::make_shared<Shader>(shadersDir + "post.vs", shadersDir + "adapt.fs");
 
     framebuffers[FramebufferType::GBuffer] = std::make_shared<Framebuffer>(shaders[ShaderType::LightingPass].get(), fbSize.x, fbSize.y, false, true, 5, GL_LINEAR, GL_CLAMP_TO_EDGE, useRGBA16F ? GL_RGBA16F : GL_RGBA32F, GL_RGBA);
     framebuffers[FramebufferType::DecalsGBuffer] = std::make_shared<Framebuffer>(nullptr, fbSize.x, fbSize.y, false, false, 4, GL_LINEAR, GL_CLAMP_TO_EDGE, useRGBA16F ? GL_RGBA16F : GL_RGBA32F, GL_RGBA);
@@ -39,11 +40,13 @@ void Renderer::Init(sf::Vector2u fbSize, const std::string& environmentMapFilena
 
     framebuffers[FramebufferType::SSAO] = std::make_shared<Framebuffer>(shaders[ShaderType::SSAO].get(), fbSize.x / 2.0, fbSize.y / 2.0, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_R16F, GL_RED);
 
-    framebuffers[FramebufferType::SSGI] = std::make_shared<Framebuffer>(shaders[ShaderType::SSGI].get(), fbSize.x / 2.0, fbSize.y / 2.0, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGBA16F, GL_RGBA);
+    framebuffers[FramebufferType::SSGI] = std::make_shared<Framebuffer>(shaders[ShaderType::SSGI].get(), fbSize.x / 2.0, fbSize.y / 2.0, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGB16F, GL_RGB);
 
     framebuffers[FramebufferType::SSR] = std::make_shared<Framebuffer>(shaders[ShaderType::SSR].get(), fbSize.x, fbSize.y, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGB16F, GL_RGB);
 
     framebuffers[FramebufferType::Fog] = std::make_shared<Framebuffer>(shaders[ShaderType::Fog].get(), fbSize.x, fbSize.y, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_RGBA16F, GL_RGBA);
+
+    framebuffers[FramebufferType::EyeAdaptation] = std::make_shared<Framebuffer>(shaders[ShaderType::EyeAdaptation].get(), 100, 100, false, false, 1, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_R16F, GL_RED);
     
     std::random_device dev;
     std::default_random_engine eng(dev());
@@ -451,6 +454,12 @@ void Renderer::DrawFramebuffers()
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::SSGIPingPong1]->GetTexture());
     glActiveTexture(GL_TEXTURE22);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::Fog]->GetTexture());
+    glActiveTexture(GL_TEXTURE23);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::EyeAdaptation]->GetTexture());
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
     shaders[ShaderType::Post]->Bind();
     shaders[ShaderType::Post]->SetUniform1f("exposure", exposure);
@@ -467,6 +476,7 @@ void Renderer::DrawFramebuffers()
     shaders[ShaderType::Post]->SetUniform1i("decalsAlbedo", 20);
     shaders[ShaderType::Post]->SetUniform1i("ssgi", 21);
     shaders[ShaderType::Post]->SetUniform1i("fog", 22);
+    shaders[ShaderType::Post]->SetUniform1i("adaptation", 23);
     shaders[ShaderType::Post]->SetUniform1i("rawColor", false);
     shaders[ShaderType::Post]->SetUniform1i("fogEnabled", fogEnd != 0.0);
     shaders[ShaderType::Post]->SetUniform1i("ssrEnabled", ssrEnabled);
@@ -478,6 +488,22 @@ void Renderer::DrawFramebuffers()
     shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", true);
     framebuffers[FramebufferType::Transparency]->Draw();
     glEnable(GL_DEPTH_TEST);
+
+    size = framebuffers[FramebufferType::EyeAdaptation]->GetSize();
+    glViewport(0, 0, size.x, size.y);
+
+    framebuffers[FramebufferType::EyeAdaptation]->Bind();
+
+    glActiveTexture(GL_TEXTURE22);
+    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::Main]->GetTexture());
+
+    shaders[ShaderType::EyeAdaptation]->Bind();
+    shaders[ShaderType::EyeAdaptation]->SetUniform1i("tex", 22);
+    shaders[ShaderType::EyeAdaptation]->SetUniform1i("prev", 23);
+
+    framebuffers[FramebufferType::EyeAdaptation]->Draw();
+
+    Framebuffer::Unbind();
 }
 
 uint32_t Renderer::GetSkyboxResolution()

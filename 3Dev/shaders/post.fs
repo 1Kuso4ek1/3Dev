@@ -13,6 +13,7 @@ uniform sampler2D bloom;
 uniform sampler2D ssr;
 uniform sampler2D ssgi;
 uniform sampler2D fog;
+uniform sampler2D adaptation;
 uniform sampler2D gcombined;
 uniform sampler2D decalsCombined;
 uniform sampler2D decalsAlbedo;
@@ -86,7 +87,7 @@ vec4 FXAA()
 
 vec3 ACES()
 {
-    vec3 v = acesIn * color.rgb * exposure;
+    vec3 v = acesIn * color.rgb * (exposure * clamp(pow(1.0 / (texture(adaptation, coord, 12.0).r + 1.0), 4.0), 0.0, 64.0));
     vec3 a = v * (v + 0.0245786) - 0.000090537;
     vec3 b = v * (0.983729 * v + 0.4329510) + 0.238081;
     return acesOut * (a / b);

@@ -31,7 +31,8 @@ public:
         Irradiance,
         Filtering,
         BRDF,
-        Bloom
+        Bloom,
+        EyeAdaptation
     };
 
     enum class FramebufferType
@@ -47,7 +48,8 @@ public:
         BloomPingPong0,
         BloomPingPong1,
         SSGIPingPong0,
-        SSGIPingPong1
+        SSGIPingPong1,
+        EyeAdaptation
     };
 
     static Renderer& GetInstance();
