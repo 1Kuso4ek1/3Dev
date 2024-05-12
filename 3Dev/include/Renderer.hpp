@@ -93,6 +93,10 @@ public:
 
     void SetSSGIStrength(float ssgiStrength);
 
+    void SetIsEyeAdaptationEnabled(bool adaptEnabled);
+
+    void SetEyeAdaptationSpeed(float adaptSpeed);
+
     void Bloom();
     void SSAO();
     void SSGI();
@@ -134,6 +138,10 @@ public:
 
     float GetSSGIStrength();
 
+    bool IsEyeAdaptationEnabled();
+
+    float GetEyeAdaptationSpeed();
+
     GLuint GetTexture(TextureType type);
     Shader* GetShader(ShaderType type);
     Framebuffer* GetFramebuffer(FramebufferType type);
@@ -160,6 +168,7 @@ private:
     float fogSkyHeight = 100.0;
     float ssrRayStep = 0.01;
     float ssgiStrength = 1.5;
+    float adaptSpeed = 0.02;
 
     int ssrMaxSteps = 100;
     int ssrMaxBinarySearchSteps = 10;
@@ -170,6 +179,7 @@ private:
     bool buffer = true;
     bool ssrEnabled = false;
     bool ssgiEnabled = false;
+    bool adaptEnabled = false;
 
     std::string shadersDir;
 

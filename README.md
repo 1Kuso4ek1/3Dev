@@ -15,7 +15,17 @@
 - Good animation system
 - Skeletal animations support
 - HDR
-- Post-processing: ACES tonemapping, FXAA, Physically based bloom, SSAO, Deferred decals, Simple Depth Of Field, Screen Space Reflections, Screen Space Global Illumination, Layered fog (affected by SSGI)
+- Post-processing:
+- - ACES tonemapping
+- - FXAA
+- - Physically based bloom
+- - SSAO
+- - Deferred decals
+- - Simple Depth Of Field
+- - Screen Space Reflections
+- - Screen Space Global Illumination
+- - Layered fog (affected by SSGI)
+- - Eye adaptation
 - Multithreading: parallel texture loading
 - Shadow mapping
 - Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps

@@ -263,6 +263,7 @@ int main(int argc, char* argv[])
         Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", false);
         Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("ssrEnabled", true);
         Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("fogEnabled", true);
+        Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("adaptEnabled", false);
         Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
         
         Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::Main)->Draw();

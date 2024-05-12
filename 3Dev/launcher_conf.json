@@ -25,6 +25,8 @@
         "ssaoStrength" : 2.0,
         "ssaoRadius" : 0.5,
         "exposure" : 1.0,
+        "eyeAdaptationEnabled" : true,
+        "eyeAdaptationSpeed" : 0.02,
         "ssrRayStep" : 0.01,
 		"ssrMaxSteps" : 100,
 		"ssrMaxBinarySearchSteps" : 20,

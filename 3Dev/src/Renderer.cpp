@@ -252,6 +252,16 @@ void Renderer::SetSSGIStrength(float ssgiStrength)
     this->ssgiStrength = ssgiStrength;
 }
 
+void Renderer::SetIsEyeAdaptationEnabled(bool adaptEnabled)
+{
+    this->adaptEnabled = adaptEnabled;
+}
+
+void Renderer::SetEyeAdaptationSpeed(float adaptSpeed)
+{
+    this->adaptSpeed = adaptSpeed;
+}
+
 void Renderer::Bloom()
 {
     if(bloomStrength <= 0) return;
@@ -481,6 +491,7 @@ void Renderer::DrawFramebuffers()
     shaders[ShaderType::Post]->SetUniform1i("fogEnabled", fogEnd != 0.0);
     shaders[ShaderType::Post]->SetUniform1i("ssrEnabled", ssrEnabled);
     shaders[ShaderType::Post]->SetUniform1i("ssgiEnabled", ssgiEnabled);
+    shaders[ShaderType::Post]->SetUniform1i("adaptEnabled", adaptEnabled);
     shaders[ShaderType::Post]->SetUniform1i("transparentBuffer", false);
     framebuffers[FramebufferType::Main]->Draw();
     glDisable(GL_DEPTH_TEST);
@@ -489,19 +500,23 @@ void Renderer::DrawFramebuffers()
     framebuffers[FramebufferType::Transparency]->Draw();
     glEnable(GL_DEPTH_TEST);
 
-    size = framebuffers[FramebufferType::EyeAdaptation]->GetSize();
-    glViewport(0, 0, size.x, size.y);
+    if(adaptEnabled)
+    {
+        size = framebuffers[FramebufferType::EyeAdaptation]->GetSize();
+        glViewport(0, 0, size.x, size.y);
 
-    framebuffers[FramebufferType::EyeAdaptation]->Bind();
+        framebuffers[FramebufferType::EyeAdaptation]->Bind();
 
-    glActiveTexture(GL_TEXTURE22);
-    glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::Main]->GetTexture());
+        glActiveTexture(GL_TEXTURE22);
+        glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::Main]->GetTexture());
 
-    shaders[ShaderType::EyeAdaptation]->Bind();
-    shaders[ShaderType::EyeAdaptation]->SetUniform1i("tex", 22);
-    shaders[ShaderType::EyeAdaptation]->SetUniform1i("prev", 23);
+        shaders[ShaderType::EyeAdaptation]->Bind();
+        shaders[ShaderType::EyeAdaptation]->SetUniform1i("tex", 22);
+        shaders[ShaderType::EyeAdaptation]->SetUniform1i("prev", 23);
+        shaders[ShaderType::EyeAdaptation]->SetUniform1f("adaptSpeed", adaptSpeed);
 
-    framebuffers[FramebufferType::EyeAdaptation]->Draw();
+        framebuffers[FramebufferType::EyeAdaptation]->Draw();
+    }
 
     Framebuffer::Unbind();
 }
@@ -619,6 +634,16 @@ bool Renderer::IsSSGIEnabled()
 float Renderer::GetSSGIStrength()
 {
     return ssgiStrength;
+}
+
+bool Renderer::IsEyeAdaptationEnabled()
+{
+    return adaptEnabled;
+}
+
+float Renderer::GetEyeAdaptationSpeed()
+{
+    return adaptSpeed;
 }
 
 GLuint Renderer::GetTexture(TextureType type)

@@ -32,6 +32,7 @@ uniform bool fxaa = true;
 uniform bool fogEnabled;
 uniform bool ssrEnabled;
 uniform bool ssgiEnabled;
+uniform bool adaptEnabled;
 uniform bool rawColor;
 uniform bool transparentBuffer;
 
@@ -87,7 +88,8 @@ vec4 FXAA()
 
 vec3 ACES()
 {
-    vec3 v = acesIn * color.rgb * (exposure * clamp(pow(1.0 / (texture(adaptation, coord, 12.0).r + 1.0), 4.0), 0.0, 64.0));
+    float adapt = adaptEnabled ? (clamp(pow(1.0 / (texture(adaptation, coord, 12.0).r + 1.0), 2.0), 0.0, 64.0) + (exposure * 0.1)) : 1.0;
+    vec3 v = acesIn * color.rgb * (exposure * adapt);
     vec3 a = v * (v + 0.0245786) - 0.000090537;
     vec3 b = v * (0.983729 * v + 0.4329510) + 0.238081;
     return acesOut * (a / b);

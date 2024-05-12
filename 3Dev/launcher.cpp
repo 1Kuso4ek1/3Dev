@@ -33,6 +33,8 @@ struct Config
         cfg["renderer"]["prefilteredSideSize"] = Renderer::GetInstance().GetPrefilteredResolution();
         cfg["renderer"]["ssaoSamples"] = Renderer::GetInstance().GetSSAOSamples();
         cfg["renderer"]["exposure"] = Renderer::GetInstance().GetExposure();
+        cfg["renderer"]["eyeAdaptationEnabled"] = Renderer::GetInstance().IsEyeAdaptationEnabled();
+        cfg["renderer"]["eyeAdaptationSpeed"] = Renderer::GetInstance().GetEyeAdaptationSpeed();
         cfg["renderer"]["ssaoStrength"] = Renderer::GetInstance().GetSSAOStrength();
         cfg["renderer"]["ssaoRadius"] = Renderer::GetInstance().GetSSAORadius();
         cfg["renderer"]["ssrEnabled"] = Renderer::GetInstance().IsSSREnabled();
@@ -101,6 +103,9 @@ int main()
 
     Renderer::GetInstance().SetIsSSGIEnabled(cfg["renderer"]["ssgiEnabled"].asBool());
     Renderer::GetInstance().SetSSGIStrength(cfg["renderer"]["ssgiStrength"].asFloat());
+
+    Renderer::GetInstance().SetIsEyeAdaptationEnabled(cfg["renderer"]["eyeAdaptationEnabled"].asBool());
+    Renderer::GetInstance().SetEyeAdaptationSpeed(cfg["renderer"]["eyeAdaptationSpeed"].asFloat());
 
     Renderer::GetInstance().Init(engine.GetWindow().getSize(),
                                   cfg["renderer"]["hdriPath"].asString(),
