@@ -121,11 +121,15 @@ void main()
             vec4 ssr = texture(ssr, coord + sqrt(lod) * pixelsize, lod);
             color.rgb += f0 * ssr.rgb;
         }
-
-        vec4 fog = texture(fog, coord);
         
         if(!transparentBuffer && fogEnabled)
-            color.rgb = mix(color.rgb, fog.rgb, fog.a * fogIntensity);
+        {
+            vec3 gi = texture(ssgi, coord).rgb;
+
+            vec4 fog = texture(fog, coord);
+            
+            color.rgb = mix(color.rgb, mix(fog.rgb, gi, ssgiEnabled ? 0.5 : 0.0), fog.a * fogIntensity);
+        }
 
         return;
     }

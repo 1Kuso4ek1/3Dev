@@ -5,6 +5,7 @@ uniform sampler2D gemission;
 uniform samplerCube irradiance;
 
 uniform vec3 campos;
+uniform vec3 camdir;
 
 uniform float fogStart = 10.0;
 uniform float fogEnd = 30.0;
@@ -41,8 +42,13 @@ void main()
 {
     vec3 viewPos = texture(gposition, coord).xyz;
     vec3 pos = (invView * vec4(viewPos, 1.0)).xyz;
-    if(length(viewPos) == 0.0)
-        pos = vec3(1000000.0, fogSkyHeight, 1000000.0);
+	vec3 cubemapPos = normalize(campos - pos);
 
-    color = vec4(texture(irradiance, campos).xyz, LayeredFog(pos) * (1.0 - clamp(length(texture(gemission, coord).rgb), 0.0, 1.0)));
+    if(length(viewPos) == 0.0)
+	{
+        pos = vec3(1000000.0, fogSkyHeight, 1000000.0);
+		cubemapPos = normalize(campos);
+	}
+
+    color = vec4(texture(irradiance, cubemapPos).xyz, LayeredFog(pos) * (1.0 - clamp(length(texture(gemission, coord).rgb), 0.0, 1.0)));
 }
