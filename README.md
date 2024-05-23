@@ -26,9 +26,10 @@
 - - Screen Space Global Illumination
 - - Layered fog (affected by SSGI)
 - - Eye adaptation
-- Multithreading: parallel texture loading
+- Multithreading:
+- - parallel texture loading
 - Shadow mapping
-- Diffuse, normal, metalness, emission, roughness, ambient occlusion and opacity maps
+- Albedo, normal, metalness, emission, roughness, ambient occlusion and opacity maps
 - 3D audio
 - User interface with TGUI
 - Separate console program for scene or animation rendering

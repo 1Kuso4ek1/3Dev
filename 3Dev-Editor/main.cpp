@@ -2299,6 +2299,7 @@ int main()
         Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->Bind();
         Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
         Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("transparentBuffer", false);
+        viewport->bindFramebuffer();
         gizmosFb->Draw();
         Framebuffer::Unbind();
 

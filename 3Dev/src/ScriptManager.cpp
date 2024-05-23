@@ -246,6 +246,8 @@ void ScriptManager::RegisterVector2()
         { "Vector2& opDivAssign(float)", WRAP_MFN_PR(rp3d::Vector2, operator/=, (float), rp3d::Vector2&) },
         { "Vector2 opAdd(const Vector2& in)", WRAP_OBJ_LAST(AddVector2) },
         { "Vector2 opSub(const Vector2& in)", WRAP_OBJ_LAST(SubVector2) },
+        { "Vector2 opMul(const Vector2& in)", WRAP_OBJ_LAST(MulVector2V) },
+        { "Vector2 opDiv(const Vector2& in)", WRAP_OBJ_LAST(DivVector2V) },
         { "Vector2 opMul(float)", WRAP_OBJ_LAST(MulVector2) },
         { "Vector2 opDiv(float)", WRAP_OBJ_LAST(DivVector2) },
         { "bool opEquals(const Vector2& in) const", WRAP_MFN_PR(rp3d::Vector2, operator==, (const rp3d::Vector2&) const, bool) }
@@ -277,6 +279,8 @@ void ScriptManager::RegisterVector3()
         { "Vector3& opDivAssign(float)", WRAP_MFN_PR(rp3d::Vector3, operator/=, (float), rp3d::Vector3&) },
         { "Vector3 opAdd(const Vector3& in)", WRAP_OBJ_LAST(AddVector3) },
         { "Vector3 opSub(const Vector3& in)", WRAP_OBJ_LAST(SubVector3) },
+        { "Vector3 opMul(const Vector3& in)", WRAP_OBJ_LAST(MulVector3V) },
+        { "Vector3 opDiv(const Vector3& in)", WRAP_OBJ_LAST(DivVector3V) },
         { "Vector3 opMul(float)", WRAP_OBJ_LAST(MulVector3) },
         { "Vector3 opDiv(float)", WRAP_OBJ_LAST(DivVector3) },
         { "bool opEquals(const Vector3& in) const", WRAP_MFN_PR(rp3d::Vector3, operator==, (const rp3d::Vector3&) const, bool) }
@@ -562,6 +566,8 @@ void ScriptManager::RegisterTransform()
     {
         { "void setPosition(const Vector3& in)", WRAP_MFN(rp3d::Transform, setPosition) },
         { "void setOrientation(const Quaternion& in)", WRAP_MFN(rp3d::Transform, setOrientation) },
+        { "Transform opMul(const Transform& in)", WRAP_OBJ_LAST(MulTransform) },
+        { "Vector3 opMul(const Vector3& in)", WRAP_OBJ_LAST(MulTransformV) },
         { "Vector3 getPosition()", WRAP_MFN(rp3d::Transform, getPosition) },
         { "Quaternion getOrientation()", WRAP_MFN(rp3d::Transform, getOrientation) }
     }, {});

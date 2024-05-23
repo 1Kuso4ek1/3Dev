@@ -60,12 +60,16 @@ static T* TypeFactory() { return new T(); }
 static void MakeVector2(float x, float y, rp3d::Vector2* vec) { new(vec) rp3d::Vector2(x, y); }
 static rp3d::Vector2 AddVector2(const rp3d::Vector2& r, rp3d::Vector2* l) { return *l + r; }
 static rp3d::Vector2 SubVector2(const rp3d::Vector2& r, rp3d::Vector2* l) { return *l - r; }
+static rp3d::Vector2 MulVector2V(const rp3d::Vector2& r, rp3d::Vector2* l) { return *l * r; }
+static rp3d::Vector2 DivVector2V(const rp3d::Vector2& r, rp3d::Vector2* l) { return *l / r; }
 static rp3d::Vector2 MulVector2(float r, rp3d::Vector2* l) { return *l * r; }
 static rp3d::Vector2 DivVector2(float r, rp3d::Vector2* l) { return *l / r; }
 
 static void MakeVector3(float x, float y, float z, rp3d::Vector3* vec) { new(vec) rp3d::Vector3(x, y, z); }
 static rp3d::Vector3 AddVector3(const rp3d::Vector3& r, rp3d::Vector3* l) { return *l + r; }
 static rp3d::Vector3 SubVector3(const rp3d::Vector3& r, rp3d::Vector3* l) { return *l - r; }
+static rp3d::Vector3 MulVector3V(const rp3d::Vector3& r, rp3d::Vector3* l) { return *l * r; }
+static rp3d::Vector3 DivVector3V(const rp3d::Vector3& r, rp3d::Vector3* l) { return *l / r; }
 static rp3d::Vector3 MulVector3(float r, rp3d::Vector3* l) { return *l * r; }
 static rp3d::Vector3 DivVector3(float r, rp3d::Vector3* l) { return *l / r; }
 
@@ -73,6 +77,9 @@ static void MakeQuaternion(float x, float y, float z, float w, rp3d::Quaternion*
 static rp3d::Quaternion AddQuaternion(const rp3d::Quaternion& r, rp3d::Quaternion* l) { return *l + r; }
 static rp3d::Quaternion SubQuaternion(const rp3d::Quaternion& r, rp3d::Quaternion* l) { return *l - r; }
 static rp3d::Quaternion MulQuaternion(const rp3d::Quaternion& r, rp3d::Quaternion* l) { return *l * r; }
+
+static rp3d::Transform MulTransform(const rp3d::Transform& r, rp3d::Transform* l) { return *l * r; }
+static rp3d::Vector3 MulTransformV(const rp3d::Vector3& r, rp3d::Transform* l) { return *l * r; }
 
 static void MakeAABB(const rp3d::Vector3& min, const rp3d::Vector3& max, rp3d::AABB* aabb) { new(aabb) rp3d::AABB(min, max); }
 static rp3d::AABB& AssignAABB(const rp3d::AABB& src, rp3d::AABB* dst) { dst->mergeWithAABB(src); return *dst; }
