@@ -564,17 +564,21 @@ void ScriptManager::RegisterTransform()
 {
     AddValueType("Transform", sizeof(rp3d::Transform), asGetTypeTraits<rp3d::Transform>(),
     {
+        { "void setToIdentity()", WRAP_MFN(rp3d::Transform, setToIdentity) },
         { "void setPosition(const Vector3& in)", WRAP_MFN(rp3d::Transform, setPosition) },
         { "void setOrientation(const Quaternion& in)", WRAP_MFN(rp3d::Transform, setOrientation) },
         { "Transform opMul(const Transform& in)", WRAP_OBJ_LAST(MulTransform) },
         { "Vector3 opMul(const Vector3& in)", WRAP_OBJ_LAST(MulTransformV) },
-        { "Vector3 getPosition()", WRAP_MFN(rp3d::Transform, getPosition) },
-        { "Quaternion getOrientation()", WRAP_MFN(rp3d::Transform, getOrientation) }
+        { "Vector3& getPosition()", WRAP_MFN(rp3d::Transform, getPosition) },
+        { "Quaternion& getOrientation()", WRAP_MFN(rp3d::Transform, getOrientation) },
+        { "Transform getInverse()", WRAP_MFN(rp3d::Transform, getInverse) },
+        { "Transform& opAssign(const Transform& in)", WRAP_OBJ_LAST(AssignTransform) }
     }, {});
 
-    AddTypeConstructor("Transform", "void f()", WRAP_OBJ_LAST(MakeType<rp3d::Transform>));
-    AddTypeConstructor("Transform", "void f(const Transform& in)", WRAP_OBJ_LAST(CopyType<rp3d::Transform>));
+    AddTypeConstructor("Transform", "void f()", WRAP_OBJ_LAST(MakeTransform));
     AddTypeDestructor("Transform", "void f()", WRAP_OBJ_LAST(DestroyType<rp3d::Transform>));
+
+    AddFunction("Transform InterpolateTransforms(const Transform& in, const Transform& in, float)", WRAP_FN(rp3d::Transform::interpolateTransforms));
 }
 
 void ScriptManager::RegisterRandom()
