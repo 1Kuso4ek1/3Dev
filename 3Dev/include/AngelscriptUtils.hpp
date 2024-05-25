@@ -78,8 +78,6 @@ static rp3d::Quaternion AddQuaternion(const rp3d::Quaternion& r, rp3d::Quaternio
 static rp3d::Quaternion SubQuaternion(const rp3d::Quaternion& r, rp3d::Quaternion* l) { return *l - r; }
 static rp3d::Quaternion MulQuaternion(const rp3d::Quaternion& r, rp3d::Quaternion* l) { return *l * r; }
 
-static void MakeTransform(rp3d::Transform* tr) { new(tr) rp3d::Transform(); }
-static rp3d::Transform& AssignTransform(const rp3d::Transform& src, rp3d::Transform* tr) { tr->setPosition(src.getPosition()); tr->setOrientation(src.getOrientation()); return *tr; }
 static rp3d::Transform MulTransform(const rp3d::Transform& r, rp3d::Transform* l) { return *l * r; }
 static rp3d::Vector3 MulTransformV(const rp3d::Vector3& r, rp3d::Transform* l) { return *l * r; }
 
