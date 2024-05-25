@@ -81,7 +81,7 @@ void Light::CalcLightSpaceMatrix()
 	else 
 		projection = glm::ortho(-200.0, 200.0, -200.0, 200.0, 0.01, 1000.0);
 	
-	glm::mat4 view = glm::lookAt(toglm(pos), toglm((tr.getOrientation() * rp3d::Vector3(0, 0, -1)) + (perspectiveShadows ? pos : rp3d::Vector3::zero())), glm::vec3(0.0, 1.0, 0.0));
+	glm::mat4 view = glm::lookAt(toglm(pos), toglm((tr.getOrientation() * rp3d::Vector3(0, 0, -1)) + pos), glm::vec3(0.0, 1.0, 0.0));
 	lightSpaceMatrix = projection * view;
 }
 
