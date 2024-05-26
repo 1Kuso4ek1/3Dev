@@ -42,7 +42,7 @@ void main()
 {
     vec3 viewPos = texture(gposition, coord).xyz;
     vec3 pos = (invView * vec4(viewPos, 1.0)).xyz;
-	vec3 cubemapPos = normalize(campos - pos);
+	vec3 cubemapPos = normalize(pos);
 
     if(length(viewPos) == 0.0)
 	{
