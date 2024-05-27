@@ -22,6 +22,7 @@ public:
 	void SetTransform(const rp3d::Transform& tr) override;
 	void SetPosition(const rp3d::Vector3& vec);
 	void SetOrientation(const rp3d::Quaternion& quat);
+	void SetPitchAndYaw(const rp3d::Vector2& vec);
 	void SetUpVector(const rp3d::Vector3& vec);
 	void SetVerticalLimits(const rp3d::Vector2& vec);
 	void SetSpeed(float speed);
@@ -35,6 +36,7 @@ public:
 
 	rp3d::Vector3 GetPosition(bool world = false);
 	rp3d::Quaternion GetOrientation();
+	rp3d::Vector2 GetPitchAndYaw();
 	rp3d::Vector3 GetUpVector();
 	rp3d::Vector2 GetVerticalLimits();
 
@@ -56,11 +58,10 @@ private:
 	Matrices* m = Renderer::GetInstance().GetMatrices();
 
 	float speed, fov, near, far, aspect;
-	float angleX = 0, angleY = 0;
 
 	sf::Vector2u viewportSize = { 0, 0 }, guiSize = { 0, 0 };
 
 	rp3d::Vector3 pos, upVector = { 0, 1, 0 };
-	rp3d::Vector2 limits = { -1.57, 1.57 };
+	rp3d::Vector2 limits = { -1.57, 1.57 }, pitchYaw;
 	rp3d::Quaternion orient = rp3d::Quaternion::identity();
 };

@@ -58,11 +58,12 @@ void Camera::Mouse(float sensitivity)
         sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
         sf::Vector2f mousexy = sf::Vector2f((float)pixelPos.x, (float)pixelPos.y);
 
-		angleY -= glm::radians(((mousexy.x - window->getSize().x / 2) / 8) * sensitivity);
-		angleX -= glm::radians(((mousexy.y - window->getSize().y / 2) / 8) * sensitivity);
-		angleX = glm::clamp(angleX, limits.x, limits.y);
+		pitchYaw.x -= glm::radians(((mousexy.y - window->getSize().y / 2) / 8) * sensitivity);
+		pitchYaw.y -= glm::radians(((mousexy.x - window->getSize().x / 2) / 8) * sensitivity);
 
-		orient = rp3d::Quaternion::fromEulerAngles(rp3d::Vector3(angleX, angleY, 0.0));
+		pitchYaw.x = glm::clamp(pitchYaw.x, limits.x, limits.y);
+		
+		orient = rp3d::Quaternion::fromEulerAngles(rp3d::Vector3(pitchYaw.x, pitchYaw.y, 0.0));
 
         sf::Mouse::setPosition(sf::Vector2i(window->getSize().x / 2, window->getSize().y / 2), *window);
     }
@@ -109,7 +110,11 @@ void Camera::SetPosition(const rp3d::Vector3& vec)
 void Camera::SetOrientation(const rp3d::Quaternion& quat)
 {
 	orient = quat;
-	angleY = EulerFromQuaternion(orient).y;
+}
+
+void Camera::SetPitchAndYaw(const rp3d::Vector2& vec)
+{
+	pitchYaw = vec;
 }
 
 void Camera::SetUpVector(const rp3d::Vector3& vec)
@@ -160,6 +165,11 @@ rp3d::Vector3 Camera::GetPosition(bool world)
 rp3d::Quaternion Camera::GetOrientation()
 {
 	return orient;
+}
+
+rp3d::Vector2 Camera::GetPitchAndYaw()
+{
+	return pitchYaw;
 }
 
 rp3d::Vector3 Camera::GetUpVector()
