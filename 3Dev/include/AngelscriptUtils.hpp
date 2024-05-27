@@ -179,12 +179,6 @@ static void SetPhysicalMaterial(const rp3d::Material& mat, rp3d::RigidBody* b)
         b->getCollider(i)->setMaterial(mat);
 }
 
-static rp3d::Vector3 EulerFromQuaternion(const rp3d::Quaternion& orientation)
-{
-    glm::vec3 euler = glm::eulerAngles(toglm(orientation));
-    return rp3d::Vector3(euler.x, euler.y, euler.z);
-}
-
 static Shader* MakeShader(const std::string& str, const std::string& str1, bool load)
 {
     return new Shader(str, str1, load);

@@ -58,9 +58,11 @@ void Camera::Mouse(float sensitivity)
         sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
         sf::Vector2f mousexy = sf::Vector2f((float)pixelPos.x, (float)pixelPos.y);
 
-        orient = rp3d::Quaternion::fromEulerAngles(0, -glm::radians(((mousexy.x - window->getSize().x / 2) / 8) * sensitivity), 0) * orient;
-        auto tmp = orient * rp3d::Quaternion::fromEulerAngles(-glm::radians(((mousexy.y - window->getSize().y / 2) / 8) * sensitivity), 0, 0);
-        if((tmp * rp3d::Vector3(0, 0, -1)).getAbsoluteVector().y < 0.99) orient = tmp;
+		angleY -= glm::radians(((mousexy.x - window->getSize().x / 2) / 8) * sensitivity);
+		angleX -= glm::radians(((mousexy.y - window->getSize().y / 2) / 8) * sensitivity);
+		angleX = glm::clamp(angleX, limits.x, limits.y);
+
+		orient = rp3d::Quaternion::fromEulerAngles(rp3d::Vector3(angleX, angleY, 0.0));
 
         sf::Mouse::setPosition(sf::Vector2i(window->getSize().x / 2, window->getSize().y / 2), *window);
     }
@@ -69,17 +71,15 @@ void Camera::Mouse(float sensitivity)
 void Camera::Look()
 {
 	auto tr = Node::GetFinalTransform(this) * GetTransform();
-	rp3d::Vector3 v = tr.getOrientation() * rp3d::Vector3(0, 0, -1), tmpv;
-	float tmp;
-	if(!alwaysUp) tr.getOrientation().getRotationAngleAxis(tmp, tmpv);
-	m->GetView() = glm::lookAt(toglm(tr.getPosition()), toglm(tr.getPosition() + v), alwaysUp ? glm::vec3(0.0, 1.0, 0.0) : toglm(tmpv));
+	rp3d::Vector3 v = tr.getOrientation() * rp3d::Vector3(0, 0, -1);
+	m->GetView() = glm::lookAt(toglm(tr.getPosition()), toglm(tr.getPosition() + v), toglm(upVector));
 	m->GetInverseView() = glm::inverse(m->GetView());
 }
 
 void Camera::Look(const rp3d::Vector3& vec)
 {
 	auto tr = Node::GetFinalTransform(this) * GetTransform();
-	m->GetView() = glm::lookAt(toglm(tr.getPosition()), toglm(vec), glm::vec3(0, 1, 0));
+	m->GetView() = glm::lookAt(toglm(tr.getPosition()), toglm(vec), toglm(upVector));
 	m->GetInverseView() = glm::inverse(m->GetView());
 }
 
@@ -109,6 +109,17 @@ void Camera::SetPosition(const rp3d::Vector3& vec)
 void Camera::SetOrientation(const rp3d::Quaternion& quat)
 {
 	orient = quat;
+	angleY = EulerFromQuaternion(orient).y;
+}
+
+void Camera::SetUpVector(const rp3d::Vector3& vec)
+{
+	upVector = vec;
+}
+
+void Camera::SetVerticalLimits(const rp3d::Vector2& vec)
+{
+	limits = vec;
 }
 
 void Camera::SetSpeed(float speed)
@@ -134,11 +145,6 @@ void Camera::SetFar(float far)
 	UpdateMatrix();
 }
 
-void Camera::AlwaysUp(bool a)
-{
-	alwaysUp = a;
-}
-
 rp3d::Transform Camera::GetTransform()
 {
 	return rp3d::Transform(pos, orient);
@@ -154,6 +160,16 @@ rp3d::Vector3 Camera::GetPosition(bool world)
 rp3d::Quaternion Camera::GetOrientation()
 {
 	return orient;
+}
+
+rp3d::Vector3 Camera::GetUpVector()
+{
+	return upVector;
+}
+
+rp3d::Vector2 Camera::GetVerticalLimits()
+{
+	return limits;
 }
 
 rp3d::Vector2 Camera::WorldPositionToScreen(const rp3d::Vector3& world, bool useGuiSize)
@@ -235,7 +251,6 @@ Json::Value Camera::Serialize()
     data["fov"] = fov;
     data["near"] = near;
     data["far"] = far;
-    data["alwaysUp"] = alwaysUp;
 
     return data;
 }
@@ -255,7 +270,6 @@ void Camera::Deserialize(Json::Value data)
     fov = data["fov"].asFloat();
     near = data["near"].asFloat();
     far = data["far"].asFloat();
-    alwaysUp = data["alwaysUp"].asBool();
 
 	UpdateMatrix();
 }

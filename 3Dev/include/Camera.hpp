@@ -22,11 +22,12 @@ public:
 	void SetTransform(const rp3d::Transform& tr) override;
 	void SetPosition(const rp3d::Vector3& vec);
 	void SetOrientation(const rp3d::Quaternion& quat);
+	void SetUpVector(const rp3d::Vector3& vec);
+	void SetVerticalLimits(const rp3d::Vector2& vec);
 	void SetSpeed(float speed);
 	void SetFOV(float fov);
 	void SetNear(float near);
 	void SetFar(float far);
-	void AlwaysUp(bool a);
 
 	rp3d::Vector3 Move(float time, bool onlyOffset = false, bool noY = false);
 
@@ -34,6 +35,8 @@ public:
 
 	rp3d::Vector3 GetPosition(bool world = false);
 	rp3d::Quaternion GetOrientation();
+	rp3d::Vector3 GetUpVector();
+	rp3d::Vector2 GetVerticalLimits();
 
 	rp3d::Vector2 WorldPositionToScreen(const rp3d::Vector3& world, bool useGuiSize = true);
 	rp3d::Vector3 ScreenPositionToWorld(bool useMousePos, const rp3d::Vector2& screen = { 0, 0 });
@@ -54,10 +57,10 @@ private:
 
 	float speed, fov, near, far, aspect;
 	float angleX = 0, angleY = 0;
-	bool alwaysUp = true;
 
 	sf::Vector2u viewportSize = { 0, 0 }, guiSize = { 0, 0 };
 
-	rp3d::Vector3 pos;
+	rp3d::Vector3 pos, upVector = { 0, 1, 0 };
+	rp3d::Vector2 limits = { -1.57, 1.57 };
 	rp3d::Quaternion orient = rp3d::Quaternion::identity();
 };

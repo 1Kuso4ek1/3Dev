@@ -94,3 +94,9 @@ static std::pair<rp3d::Transform, rp3d::Vector3> ToRP3DTransform(const glm::mat4
 
     return { ret, size };
 }
+
+static rp3d::Vector3 EulerFromQuaternion(const rp3d::Quaternion& orientation)
+{
+    glm::vec3 euler = glm::eulerAngles(toglm(orientation));
+    return rp3d::Vector3(euler.x, euler.y, euler.z);
+}
