@@ -106,10 +106,10 @@ GLuint TextureManager::LoadTexture(std::string filename, std::string name)
             std::thread th([image, filename, texture, loadImage, uploadToGPU](std::promise<void> pr)
             {
                 loadImage();
-                Multithreading::GetInstance().AddMainThreadJob(uploadToGPU);
                 pr.set_value();
             }, std::move(promise));
 
+            Multithreading::GetInstance().AddMainThreadJob(uploadToGPU);
             Multithreading::GetInstance().AddJob(th.get_id(), std::move(future));
             th.detach();
         }
