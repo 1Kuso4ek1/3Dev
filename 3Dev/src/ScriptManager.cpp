@@ -388,6 +388,7 @@ void ScriptManager::RegisterLight()
         { "void SetAttenuation(float, float, float)", WRAP_MFN(Light, SetAttenuation) },
         { "void SetCutoff(float)", WRAP_MFN(Light, SetCutoff) },
         { "void SetOuterCutoff(float)", WRAP_MFN(Light, SetOuterCutoff) },
+        { "void SetOrthoBorders(float)", WRAP_MFN(Light, SetOrthoBorders) },
         { "void CalcLightSpaceMatrix()", WRAP_MFN(Light, CalcLightSpaceMatrix) },
         { "void SetIsCastingShadows(bool)", WRAP_MFN(Light, SetIsCastingShadows) },
         { "void SetIsCastingPerspectiveShadows(bool)", WRAP_MFN(Light, SetIsCastingPerspectiveShadows) },
@@ -400,7 +401,8 @@ void ScriptManager::RegisterLight()
         { "Vector3 GetColor()", WRAP_MFN(Light, GetColor) },
         { "Vector3 GetAttenuation()", WRAP_MFN(Light, GetAttenuation) },
         { "float GetCutoff()", WRAP_MFN(Light, GetCutoff) },
-        { "float GetOuterCutoff()", WRAP_MFN(Light, GetOuterCutoff) }
+        { "float GetOuterCutoff()", WRAP_MFN(Light, GetOuterCutoff) },
+        { "float GetOrthoBorders()", WRAP_MFN(Light, GetOrthoBorders) }
     }, {});
 
     engine->RegisterObjectMethod("Node", "Light@ opCast()", WRAP_OBJ_LAST(CastToLight), asCALL_GENERIC);
@@ -1213,6 +1215,7 @@ void ScriptManager::RegisterBone()
         { "void Rotate(const Quaternion& in)", WRAP_MFN(Bone, Rotate) },
         { "void Expand(const Vector3& in)", WRAP_MFN(Bone, Expand) },
         { "Node@ opCast()", WRAP_OBJ_LAST(CastBone) },
+        { "Transform GetTransform()", WRAP_MFN(Bone, GetTransform) },
         { "Vector3 GetPosition()", WRAP_MFN(Bone, GetPosition) },
         { "Quaternion GetOrientation()", WRAP_MFN(Bone, GetOrientation) },
         { "Vector3 GetSize()", WRAP_MFN(Bone, GetSize) }
@@ -1240,6 +1243,8 @@ void ScriptManager::RegisterShader()
 {
     AddType("Shader", sizeof(Shader),
     {
+        { "void Bind()", WRAP_MFN(Shader, Bind) },
+        { "void Unbind()", WRAP_FN(Shader::Unbind) },
         { "void SetUniform1i(const string& in, int)", WRAP_MFN(Shader, SetUniform1i) },
         { "void SetUniform1f(const string& in, float)", WRAP_MFN(Shader, SetUniform1f) },
         { "void SetUniform2f(const string& in, float, float)", WRAP_MFN(Shader, SetUniform2f) },
@@ -1262,6 +1267,12 @@ void ScriptManager::RegisterNode()
 
 void ScriptManager::RegisterRenderer()
 {
+    SetDefaultNamespace("ShaderType");
+    AddEnum("ShaderType", { "Deferred", "Forward", "LightingPass", "SSAO", "SSGI", "SSR",
+                            "Fog", "Decals", "Skybox", "Depth", "Post", "Environment",
+                            "Irradiance", "Filtering", "BRDF", "Bloom", "EyeAdaptation" });
+    SetDefaultNamespace("");
+
     AddType("Renderer", sizeof(Renderer),
     {
         { "void SetSkyboxResolution(uint)", WRAP_MFN(Renderer, SetSkyboxResolution) },
@@ -1289,6 +1300,7 @@ void ScriptManager::RegisterRenderer()
         { "void SetSSGIStrength(float)", WRAP_MFN(Renderer, SetSSGIStrength) },
         { "void SetIsEyeAdaptationEnabled(bool)", WRAP_MFN(Renderer, SetIsEyeAdaptationEnabled) },
         { "void SetEyeAdaptationSpeed(float)", WRAP_MFN(Renderer, SetEyeAdaptationSpeed) },
+        { "Shader@ GetShader(int)", WRAP_MFN(Renderer, GetShader) },
         { "uint GetSkyboxResolution()", WRAP_MFN(Renderer, GetSkyboxResolution) },
         { "uint GetIrradianceResolution()", WRAP_MFN(Renderer, GetIrradianceResolution) },
         { "uint GetPrefilteredResolution()", WRAP_MFN(Renderer, GetPrefilteredResolution) },

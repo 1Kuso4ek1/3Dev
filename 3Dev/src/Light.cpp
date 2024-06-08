@@ -69,6 +69,11 @@ void Light::SetOuterCutoff(float outerCutoff)
 	this->outerCutoff = outerCutoff;
 }
 
+void Light::SetOrthoBorders(float orthoBorders)
+{
+	this->orthoBorders = orthoBorders;
+}
+
 void Light::CalcLightSpaceMatrix()
 {
 	glm::mat4 projection;
@@ -79,7 +84,7 @@ void Light::CalcLightSpaceMatrix()
 	if(perspectiveShadows)
 		projection = glm::perspective(glm::radians(90.0), 1.0, 0.01, 1000.0);
 	else 
-		projection = glm::ortho(-200.0, 200.0, -200.0, 200.0, 0.01, 1000.0);
+		projection = glm::ortho(-orthoBorders, orthoBorders, -orthoBorders, orthoBorders, 0.01f, 1000.0f);
 	
 	glm::mat4 view = glm::lookAt(toglm(pos), toglm((tr.getOrientation() * rp3d::Vector3(0, 0, -1)) + pos), glm::vec3(0.0, 1.0, 0.0));
 	lightSpaceMatrix = projection * view;
@@ -164,6 +169,11 @@ float Light::GetCutoff()
 float Light::GetOuterCutoff()
 {
 	return outerCutoff;
+}
+
+float Light::GetOrthoBorders()
+{
+	return orthoBorders;
 }
 
 Json::Value Light::Serialize()

@@ -29,6 +29,8 @@ public:
 	void SetCutoff(float cutoff);
 	void SetOuterCutoff(float outerCutoff);
 
+	void SetOrthoBorders(float orthoBorders);
+
 	void CalcLightSpaceMatrix();
 
 	void SetIsCastingShadows(bool castShadows);
@@ -49,6 +51,8 @@ public:
 
 	float GetCutoff();
 	float GetOuterCutoff();
+	
+	float GetOrthoBorders();
 
 	Json::Value Serialize();
 	void Deserialize(Json::Value data);
@@ -63,5 +67,6 @@ private:
 
 	float constant = 1.0, linear = 0.0, quadratic = 0.0;
 	float cutoff = 360.0, outerCutoff = 0.0;
+	float orthoBorders = 200.0;
 };
 
