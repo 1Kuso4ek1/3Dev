@@ -107,6 +107,15 @@ void main()
     }
 
     color = texture(frame, coord);
+    
+    if(fxaa) color = FXAA();
+
+    vec4 combined = texture(decalsCombined, coord);
+    if(length(combined) == 0.0)
+        combined = texture(gcombined, coord);
+
+    vec4 decalsAlbedo = texture(decalsAlbedo, coord);
+    vec3 albedo = mix(texture(galbedo, coord).rgb, decalsAlbedo.rgb, decalsAlbedo.w);
 
     if(rawColor)
     {
@@ -121,11 +130,17 @@ void main()
             vec4 ssr = texture(ssr, coord + sqrt(lod) * pixelsize, lod);
             color.rgb += f0 * ssr.rgb;
         }
+
+        vec3 gi = vec3(0.0);
+
+        if(ssgiEnabled)
+        {
+            gi = texture(ssgi, coord).rgb;
+            color.rgb += mix(albedo, color.rgb, combined.x) * gi;
+        }
         
         if(!transparentBuffer && fogEnabled)
         {
-            vec3 gi = texture(ssgi, coord).rgb;
-
             vec4 fog = texture(fog, coord);
             
             color.rgb = mix(color.rgb, mix(fog.rgb, gi, ssgiEnabled ? 0.5 : 0.0), fog.a * fogIntensity);
@@ -136,17 +151,8 @@ void main()
 
     vec4 fog = texture(fog, coord);
 
-    if(fxaa) color = FXAA();
-
     float depth = pow(transparentBuffer ? texture(transparencyDepth, coord).x : texture(frameDepth, coord).x, 300.0);
     float dof = smoothstep(dofMinDistance, dofMaxDistance, abs(depth - dofFocusDistance));
-
-    vec4 combined = texture(decalsCombined, coord);
-    if(length(combined) == 0.0)
-        combined = texture(gcombined, coord);
-
-    vec4 decalsAlbedo = texture(decalsAlbedo, coord);
-    vec3 albedo = mix(texture(galbedo, coord).rgb, decalsAlbedo.rgb, decalsAlbedo.w);
 
     if(ssrEnabled && !transparentBuffer)
     {
