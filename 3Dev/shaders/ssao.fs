@@ -19,7 +19,10 @@ out vec4 color;
 
 void main()
 {
-    vec3 pos = texture(gposition, coord).xyz;
+    vec3 pos = texture(gposition, coord, -2.0).xyz;
+    if(length(pos) == 0.0)
+        return;
+
     vec3 normal = texture(gnormal, coord).xyz;
     vec3 random = texture(noise, coord * pixelsize * 1.0).xyz;
 
@@ -38,7 +41,7 @@ void main()
         offset.xyz /= offset.w;
         offset.xyz = offset.xyz * 0.5 + 0.5;
 
-        float sampleDepth = texture(gposition, offset.xy).z;
+        float sampleDepth = texture(gposition, offset.xy, -2.0).z;
         vec3 sampleNormal = texture(gnormal, offset.xy).xyz;
         if(sampleDepth == 0.0 || (dot(normal, sampleNormal) > 0.99)) continue;
 
