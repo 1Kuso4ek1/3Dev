@@ -36,7 +36,7 @@ void main()
 {
     vec2 uv = (mpos.xy / mpos.w) * 0.5 + 0.5;
 
-    vec4 worldPos = invView * vec4(texture(gposition, uv).xyz, 1.0);
+    vec4 worldPos = invView * vec4(texture(gposition, uv, 2.0).xyz, 1.0);
     vec4 pos = invModel * worldPos;
     vec3 bounds = 1.0 - abs(pos.xyz);
     if(bounds.x < 0.0 || bounds.y < 0.0 || bounds.z < 0.0)
@@ -57,8 +57,8 @@ void main()
     vec3 norm = vec3(0.0);
     if(nnormalMap)
     {
-        vec3 posdx = worldPos.xyz - (invView * texture(gposition, uv + vec2(0.01, 0.0))).xyz;
-        vec3 posdy = worldPos.xyz - (invView * texture(gposition, uv + vec2(0.0, 0.01))).xyz;
+        vec3 posdx = dFdxFine(worldPos.xyz);
+        vec3 posdy = dFdyFine(worldPos.xyz);
 
         vec3 normal = normalize(cross(posdx, posdy));
         mat3 tbn = mat3(normalize(posdx), normalize(posdy), normal);

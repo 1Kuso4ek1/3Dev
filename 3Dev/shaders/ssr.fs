@@ -79,7 +79,7 @@ vec3 SSR(vec3 dir, vec3 pos)
 
 void main()
 {
-    vec3 pos = texture(gposition, coord).xyz;
+    vec3 pos = texture(gposition, coord, 4.0).xyz;
     vec3 normal = texture(decalsNormal, coord).xyz;
     if(length(normal) == 0.0)
         normal = texture(gnormal, coord).xyz;
