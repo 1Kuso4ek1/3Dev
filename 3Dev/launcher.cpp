@@ -212,6 +212,8 @@ int main()
                                       float(event.size.height) * (guiHeight / float(event.size.height)) });
 
             engine.SetGuiViewport({ 0, 0, float(event.size.width), float(event.size.height) });
+
+            cam.SetViewportSize({ (uint32_t)event.size.width, (uint32_t)event.size.height });
         }
 
         if(event.type == sf::Event::LostFocus)

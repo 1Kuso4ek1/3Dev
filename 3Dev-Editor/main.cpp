@@ -1479,6 +1479,7 @@ int main()
             cam.SetViewportSize({ (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y });
             cam.SetGuiSize({ (uint32_t)viewport->getSize().x, (uint32_t)viewport->getSize().y });
 
+            gizmosFb->Resize(viewport->getSize().x, viewport->getSize().y);
             Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::GBuffer)->Resize(viewport->getSize().x, viewport->getSize().y);
             Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::DecalsGBuffer)->Resize(viewport->getSize().x, viewport->getSize().y);
             Renderer::GetInstance().GetFramebuffer(Renderer::FramebufferType::Main)->Resize(viewport->getSize().x, viewport->getSize().y);
@@ -2295,6 +2296,7 @@ int main()
         gizmoZ->Draw();
 
 		viewport->bindFramebuffer();
+        glViewport(0, 0, viewport->getSize().x, viewport->getSize().y);
         Renderer::GetInstance().DrawFramebuffers();
         Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->Bind();
         Renderer::GetInstance().GetShader(Renderer::ShaderType::Post)->SetUniform1i("rawColor", true);
