@@ -335,11 +335,6 @@ void Renderer::SSAO()
     glViewport(0, 0, framebuffers[FramebufferType::SSAO]->GetSize().x, framebuffers[FramebufferType::SSAO]->GetSize().y);
     glActiveTexture(GL_TEXTURE15);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 0));
-
-    glGenerateMipmap(GL_TEXTURE_2D);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
     glActiveTexture(GL_TEXTURE16);
     glBindTexture(GL_TEXTURE_2D, framebuffers[FramebufferType::GBuffer]->GetTexture(false, 2));
     glActiveTexture(GL_TEXTURE17);

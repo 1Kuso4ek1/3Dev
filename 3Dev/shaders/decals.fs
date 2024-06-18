@@ -36,7 +36,12 @@ void main()
 {
     vec2 uv = (mpos.xy / mpos.w) * 0.5 + 0.5;
 
-    vec4 worldPos = invView * vec4(texture(gposition, uv, 2.0).xyz, 1.0);
+    vec4 worldPos = vec4(0.0);
+    if(nnormalMap)
+        worldPos = invView * vec4(texture(gposition, uv, 2.0).xyz, 1.0);
+    else
+        worldPos = invView * vec4(texture(gposition, uv, -2.0).xyz, 1.0);
+
     vec4 pos = invModel * worldPos;
     vec3 bounds = 1.0 - abs(pos.xyz);
     if(bounds.x < 0.0 || bounds.y < 0.0 || bounds.z < 0.0)

@@ -47,6 +47,13 @@ void SceneManager::Draw(Framebuffer* fbo, Framebuffer* transparency, bool update
                 p.second->Draw();
         });
 
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, gBuffer->GetTexture(false, 0));
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
     Renderer::GetInstance().SSAO();
 
     glActiveTexture(GL_TEXTURE0);
