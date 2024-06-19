@@ -200,6 +200,16 @@ void SoundManager::SetPitch(float pitch, const std::string& name, int id)
     }
 }
 
+void SoundManager::SetDopplerFactor(float dopplerFactor, const std::string& name, int id)
+{
+    auto it = std::find(buffers.begin(), buffers.end(), name);
+    if(it != buffers.end())
+    {
+        it->dopplerFactor = dopplerFactor;
+        it->UpdateActiveSound(sounds, id);
+    }
+}
+
 rp3d::Vector3 SoundManager::GetPosition(const std::string& name, int id)
 {
     auto it = std::find(buffers.begin(), buffers.end(), name);
@@ -253,6 +263,14 @@ float SoundManager::GetPitch(const std::string& name, int id)
     auto it = std::find(buffers.begin(), buffers.end(), name);
     if(it != buffers.end())
         return it->pitch;
+    return 0;
+}
+
+float SoundManager::GetDopplerFactor(const std::string& name, int id)
+{
+    auto it = std::find(buffers.begin(), buffers.end(), name);
+    if(it != buffers.end())
+        return it->dopplerFactor;
     return 0;
 }
 

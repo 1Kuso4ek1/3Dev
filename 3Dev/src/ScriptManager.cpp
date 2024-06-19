@@ -716,6 +716,7 @@ void ScriptManager::RegisterSoundManager()
         { "void SetMinDistance(float, const string& in, int = 0)", WRAP_MFN(SoundManager, SetMinDistance) },
         { "void SetAttenuation(float, const string& in, int = 0)", WRAP_MFN(SoundManager, SetAttenuation) },
         { "void SetPitch(float, const string& in, int = 0)", WRAP_MFN(SoundManager, SetPitch) },
+        { "void SetDopplerFactor(float, const string& in, int = 0)", WRAP_MFN(SoundManager, SetDopplerFactor) },
         { "Vector3 GetPosition(const string& in, int = 0)", WRAP_MFN(SoundManager, GetPosition) },
         { "bool GetRelativeToListener(const string& in, int = 0)", WRAP_MFN(SoundManager, GetRelativeToListener) },
         { "bool GetLoop(const string& in, int = 0)", WRAP_MFN(SoundManager, GetLoop) },
@@ -723,6 +724,7 @@ void ScriptManager::RegisterSoundManager()
         { "float GetMinDistance(const string& in, int = 0)", WRAP_MFN(SoundManager, GetMinDistance) },
         { "float GetAttenuation(const string& in, int = 0)", WRAP_MFN(SoundManager, GetAttenuation) },
         { "float GetPitch(const string& in, int = 0)", WRAP_MFN(SoundManager, GetPitch) },
+        { "float GetDopplerFactor(const string& in, int = 0)", WRAP_MFN(SoundManager, GetDopplerFactor) },
         { "void UpdateAll()", WRAP_MFN_PR(SoundManager, UpdateAll, (), void) },
         { "void UpdateAll(const string& in)", WRAP_MFN_PR(SoundManager, UpdateAll, (const std::string&), void) }
     }, {});

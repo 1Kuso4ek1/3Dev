@@ -38,6 +38,7 @@ public:
     void SetMinDistance(float dist, const std::string& name, int id = 0);
     void SetAttenuation(float attenuation, const std::string& name, int id = 0);
     void SetPitch(float pitch, const std::string& name, int id = 0);
+    void SetDopplerFactor(float dopplerFactor, const std::string& name, int id = 0);
 
     rp3d::Vector3 GetPosition(const std::string& name, int id = 0);
     bool GetRelativeToListener(const std::string& name, int id = 0);
@@ -46,6 +47,7 @@ public:
     float GetMinDistance(const std::string& name, int id = 0);
     float GetAttenuation(const std::string& name, int id = 0);
     float GetPitch(const std::string& name, int id = 0);
+    float GetDopplerFactor(const std::string& name, int id = 0);
 
     void UpdateAll();
     void UpdateAll(const std::string& name);
@@ -70,7 +72,7 @@ private:
 
         std::string name, filename;
 
-        float volume = 100, minDistance = 1, attenuation = 0, pitch = 1;
+        float volume = 100, minDistance = 1, attenuation = 0, pitch = 1, dopplerFactor = 0;
         bool loop = false, relativeToListener = false;
         
         rp3d::Vector3 pos, prevPos;
@@ -86,7 +88,7 @@ private:
                     it->second->setSpatializationEnabled(false);
                 else
                     it->second->setSpatializationEnabled(true);
-                it->second->setDopplerFactor(0.0);
+                it->second->setDopplerFactor(dopplerFactor);
                 it->second->setVolume(volume);
                 it->second->setMinDistance(minDistance);
                 it->second->setAttenuation(attenuation);
