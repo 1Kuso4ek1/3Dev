@@ -18,7 +18,7 @@ float rand(vec2 v)
 
 void main()
 {
-    vec3 pos = texture(gposition, coord).xyz;
+    vec3 pos = texture(gposition, coord, -2.0).xyz;
     if(pos.z == 0.0) discard;
 
     float randAngle = rand(coord);
@@ -33,7 +33,7 @@ void main()
 
         vec3 lightColor = texture(galbedo, coord + uv).rgb;
 
-        vec3 lightPosition = texture(gposition, coord + uv).xyz;
+        vec3 lightPosition = texture(gposition, coord + uv, -2.0).xyz;
 
         if(lightPosition.z == 0.0) continue;
 
