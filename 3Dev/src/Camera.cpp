@@ -61,6 +61,9 @@ void Camera::Mouse(float sensitivity)
 		pitchYaw.x -= glm::radians(((mousexy.y - window->getSize().y / 2) / 8) * sensitivity);
 		pitchYaw.y -= glm::radians(((mousexy.x - window->getSize().x / 2) / 8) * sensitivity);
 
+		if(abs(pitchYaw.y) >= M_PI * 2.0)
+			pitchYaw.y = 0.0;
+
 		pitchYaw.x = glm::clamp(pitchYaw.x, limits.x, limits.y);
 		
 		orient = rp3d::Quaternion::fromEulerAngles(rp3d::Vector3(pitchYaw.x, pitchYaw.y, 0.0));
