@@ -20,7 +20,7 @@ in vec2 coord;
 
 out vec4 color;
 
-float falloff;
+const float depthBias = 1.1;
 
 vec2 uv;
 
@@ -39,7 +39,7 @@ void BinarySearch(vec3 dir, vec3 pos)
         float depth = texture(gposition, uv).z;
  
         float delta = pos.z - depth;
-        if(abs(delta) < 0.1) return;
+        if(abs(delta) < 0.1 && abs(depth) > depthBias) return;
 
         dir *= 0.5;
         pos += dir * sign(delta);
@@ -66,8 +66,9 @@ vec3 SSR(vec3 dir, vec3 pos)
         {
             if(delta <= 0.0)
             {
-                BinarySearch(dir, pos);
-                if(uv != vec2(-1.0))
+                if(maxBinarySearchSteps > 0)
+                    BinarySearch(dir, pos);
+                if(uv != vec2(-1.0) && abs(depth) > depthBias)
                     return texture(gcolor, uv).rgb;
                 else break;
             }
@@ -79,7 +80,7 @@ vec3 SSR(vec3 dir, vec3 pos)
 
 void main()
 {
-    vec3 pos = texture(gposition, coord, 4.0).xyz;
+    vec3 pos = texture(gposition, coord, 2.0).xyz;
     vec3 normal = texture(decalsNormal, coord).xyz;
     if(length(normal) == 0.0)
         normal = texture(gnormal, coord).xyz;

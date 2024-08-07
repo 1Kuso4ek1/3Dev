@@ -123,7 +123,7 @@ void main()
         if(ssrEnabled && !transparentBuffer)
         {
             vec4 combined = texture(gcombined, coord);
-            float lod = 8.0 * pow(combined.y, 2.0);
+            float lod = 8.0 * combined.y;
 
             vec3 f0 = mix(vec3(0.04), texture(galbedo, coord).rgb, combined.x);
 
@@ -156,7 +156,7 @@ void main()
 
     if(ssrEnabled && !transparentBuffer)
     {
-        float lod = 8.0 * pow(combined.y, 2.0);
+        float lod = 8.0 * combined.y;
 
         vec3 f0 = mix(vec3(0.04), albedo, combined.x);
 
