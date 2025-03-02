@@ -1,3 +1,7 @@
+# BE AWARE!
+This engine is a complete disaster. It is no longer maintained and is not recommended for anyone to use.  
+Instead, I'd recommend you to check my new project - [Lustra](https://github.com/1Kuso4ek1/Lustra)!
+
 # 3Dev
 ![](https://img.shields.io/badge/3Dev-1.3.6-blue)
 ![](https://img.shields.io/badge/3Dev_Editor-1.3.10-blue)
