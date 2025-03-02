@@ -2,6 +2,12 @@
 This engine is a complete disaster. It is no longer maintained and is not recommended for anyone to use.  
 Instead, I'd recommend you to check my new project - [Lustra](https://github.com/1Kuso4ek1/Lustra)!
 
+# But...
+
+​I must admit... There was a lot of work put into this project. It became something working and something that is possible to make games with... I love it, despite the bad code, strange architecture and awful optimization. It's a work of art in some perspective. This was a long lasting journey that will continue with my Lustra. 3Dev gave me a lot of experience, it gave us Bloodbath, but everything related to it is unmaintainable...    
+
+You can try to use it if you want. It's an interesting engine.
+
 # 3Dev
 ![](https://img.shields.io/badge/3Dev-1.3.6-blue)
 ![](https://img.shields.io/badge/3Dev_Editor-1.3.10-blue)
